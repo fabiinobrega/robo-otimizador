@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registo - Robô Otimizador de Campanhas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .register-header h1 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .register-header p {
+            color: #666;
+            margin: 0;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-register {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        .input-group-text {
+            background: transparent;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+        .input-group .form-control {
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+        }
+        .password-strength {
+            height: 5px;
+            border-radius: 3px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+        .strength-weak { background-color: #dc3545; }
+        .strength-medium { background-color: #ffc107; }
+        .strength-strong { background-color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="register-card">
+                    <div class="register-header">
+                        <h1><i class="fas fa-user-plus"></i> Criar Conta</h1>
+                        <p>Junte-se ao Sistema de Automação de Marketing</p>
+                    </div>
+                    
+                    <div id="alert-container"></div>
+                    
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Nome de Utilizador" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                        </div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                        <small class="text-muted">A password deve ter pelo menos 8 caracteres</small>
+                        
+                        <div class="input-group mb-3 mt-3">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirmar Password" required>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                            <label class="form-check-label" for="terms">
+                                Aceito os <a href="#" class="text-decoration-none">Termos de Serviço</a> e <a href="#" class="text-decoration-none">Política de Privacidade</a>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                            <label class="form-check-label" for="newsletter">
+                                Quero receber atualizações e dicas por email
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-register">
+                            <i class="fas fa-user-plus"></i> Criar Conta
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            Já tem conta? <a href="/login" class="text-decoration-none">Fazer Login</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Verificar força da password
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            strengthBar.className = 'password-strength';
+            if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+            } else if (strength <= 3) {
+                strengthBar.classList.add('strength-medium');
+            } else {
+                strengthBar.classList.add('strength-strong');
+            }
+        });
+        
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            // Validar passwords
+            if (password !== confirmPassword) {
+                showAlert('As passwords não coincidem', 'danger');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showAlert('A password deve ter pelo menos 8 caracteres', 'danger');
+                return;
+            }
+            
+            const data = {
+                username: formData.get('username'),
+                email: formData.get('email'),
+                password: password,
+                terms: formData.get('terms') === 'on',
+                newsletter: formData.get('newsletter') === 'on'
+            };
+            
+            // Mostrar loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando conta...';
+            submitBtn.disabled = true;
+            
+            fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showAlert('Conta criada com sucesso! Redirecionando para login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão. Tente novamente.', 'danger');
+            })
+            .finally(() => {
+                // Restaurar botão
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+        
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+        
+        // Verificar se já está logado
+        if (sessionStorage.getItem('session_token')) {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

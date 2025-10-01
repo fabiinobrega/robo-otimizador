@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Campanha Avançada - Robô Otimizador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            color: white;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #667eea;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .form-label {
+            color: white;
+            font-weight: 500;
+        }
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .media-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .media-item:hover {
+            transform: scale(1.05);
+        }
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+        }
+        .media-item.selected {
+            border: 3px solid #28a745;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+        }
+        .media-item .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .media-item:hover .overlay {
+            opacity: 1;
+        }
+        .media-item.selected .overlay {
+            opacity: 1;
+            background: rgba(40, 167, 69, 0.8);
+        }
+        .upload-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-zone:hover {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .upload-zone.dragover {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+        .targeting-suggestions {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .suggestion-tag {
+            display: inline-block;
+            background: rgba(40, 167, 69, 0.2);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            margin: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .suggestion-tag:hover {
+            background: rgba(40, 167, 69, 0.4);
+        }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .step.active .step-number {
+            background: #28a745;
+            color: white;
+        }
+        .step.completed .step-number {
+            background: #6c757d;
+            color: white;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: bold;
+        }
+        .step-line {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: -1;
+        }
+        .step:last-child .step-line {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-robot"></i> Robô Otimizador
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Dashboard</a>
+                <a class="nav-link" href="/campaigns">Campanhas</a>
+                <a class="nav-link active" href="/create-campaign">Nova Campanha</a>
+                <a class="nav-link" href="/media-library">Biblioteca</a>
+                <a class="nav-link" href="/settings">Configurações</a>
+                <a class="nav-link" href="/logout">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h1 class="mb-4">
+                        <i class="fas fa-rocket"></i> Criar Campanha Avançada
+                    </h1>
+                    
+                    <!-- Progress Steps -->
+                    <div class="progress-steps">
+                        <div class="step active" id="step1">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Básico</div>
+                            <div class="step-line"></div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Copy</div>
+                            <div class="step-line"></div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Targeting</div>
+                            <div class="step-line"></div>
+                        </div>
+                        <div class="step" id="step4">
+                            <div class="step-number">4</div>
+                            <div class="step-title">Mídia</div>
+                            <div class="step-line"></div>
+                        </div>
+                        <div class="step" id="step5">
+                            <div class="step-number">5</div>
+                            <div class="step-title">Revisão</div>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" action="/create-campaign" id="campaignForm">
+                        <!-- Etapa 1: Informações Básicas -->
+                        <div class="form-step active" id="formStep1">
+                            <div class="form-section">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-info-circle"></i> Informações Básicas
+                                </h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label class="form-label">Nome da Campanha *</label>
+                                        <input type="text" class="form-control" name="name" 
+                                               placeholder="Ex: Black Friday 2024 - Curso Marketing" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Plataforma *</label>
+                                        <select class="form-select" name="platform" required>
+                                            <option value="facebook">Facebook Ads</option>
+                                            <option value="google">Google Ads</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Orçamento Diário (R$) *</label>
+                                        <input type="number" class="form-control" name="budget" 
+                                               placeholder="50.00" step="0.01" min="1" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Objetivo da Campanha</label>
+                                        <select class="form-select" name="objective">
+                                            <option value="CONVERSIONS">Conversões</option>
+                                            <option value="TRAFFIC">Tráfego</option>
+                                            <option value="REACH">Alcance</option>
+                                            <option value="BRAND_AWARENESS">Reconhecimento</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Landing Page</label>
+                                        <input type="url" class="form-control" name="landing_page" 
+                                               placeholder="https://seusite.com/produto">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Produto/Serviço</label>
+                                        <input type="text" class="form-control" name="produto" 
+                                               placeholder="Ex: Curso de Marketing Digital">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Nicho</label>
+                                        <input type="text" class="form-control" name="nicho" 
+                                               placeholder="Ex: Marketing Digital">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Público-Alvo</label>
+                                        <input type="text" class="form-control" name="publico_alvo" 
+                                               placeholder="Ex: Empreendedores">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Etapa 2: Copy do Anúncio -->
+                        <div class="form-step" id="formStep2">
+                            <div class="form-section">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-edit"></i> Copy do Anúncio
+                                </h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Título Principal *</label>
+                                        <input type="text" class="form-control" name="titulo" 
+                                               placeholder="Ex: Transforme Seu Negócio!" maxlength="25" required>
+                                        <small class="text-muted">Máximo 25 caracteres</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Subtítulo</label>
+                                        <input type="text" class="form-control" name="subtitulo" 
+                                               placeholder="Ex: Com Estratégias Comprovadas" maxlength="30">
+                                        <small class="text-muted">Máximo 30 caracteres</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label class="form-label">Descrição *</label>
+                                        <textarea class="form-control" name="descricao" rows="3" 
+                                                  placeholder="Descrição atrativa do seu produto ou serviço..." 
+                                                  maxlength="90" required></textarea>
+                                        <small class="text-muted">Máximo 90 caracteres</small>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Call-to-Action *</label>
+                                        <input type="text" class="form-control" name="cta" 
+                                               placeholder="Ex: Compre Agora" maxlength="20" required>
+                                        <small class="text-muted">Máximo 20 caracteres</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-outline-light" onclick="generateCopyWithAI()">
+                                        <i class="fas fa-magic"></i> Gerar Copy com IA
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Etapa 3: Targeting Avançado -->
+                        <div class="form-step" id="formStep3">
+                            <div class="form-section">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-crosshairs"></i> Targeting Avançado
+                                </h4>
+                                
+                                <!-- Localização Geográfica -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Países</label>
+                                        <select class="form-select" name="countries" multiple>
+                                            <option value="BR" selected>Brasil</option>
+                                            <option value="US">Estados Unidos</option>
+                                            <option value="PT">Portugal</option>
+                                            <option value="AR">Argentina</option>
+                                        </select>
+                                        <small class="text-muted">Segure Ctrl para selecionar múltiplos</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Cidades Específicas</label>
+                                        <input type="text" class="form-control" name="cities" 
+                                               placeholder="São Paulo, Rio de Janeiro, Belo Horizonte">
+                                        <small class="text-muted">Separar por vírgula</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Demografia -->
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Idade Mínima</label>
+                                        <input type="number" class="form-control" name="age_min" 
+                                               value="18" min="13" max="65">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Idade Máxima</label>
+                                        <input type="number" class="form-control" name="age_max" 
+                                               value="65" min="18" max="65">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Gênero</label>
+                                        <select class="form-select" name="genders" multiple>
+                                            <option value="todos" selected>Todos</option>
+                                            <option value="masculino">Masculino</option>
+                                            <option value="feminino">Feminino</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Interesses e Comportamentos -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Interesses</label>
+                                        <input type="text" class="form-control" name="interests" 
+                                               placeholder="Marketing Digital, Empreendedorismo, Vendas">
+                                        <small class="text-muted">Separar por vírgula</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Palavras-chave (Google Ads)</label>
+                                        <input type="text" class="form-control" name="keywords" 
+                                               placeholder="curso marketing, marketing digital, vendas online">
+                                        <small class="text-muted">Separar por vírgula</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Comportamentos</label>
+                                    <input type="text" class="form-control" name="behaviors" 
+                                           placeholder="Compradores online, Usuários de dispositivos móveis">
+                                    <small class="text-muted">Separar por vírgula</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-outline-light" onclick="generateTargetingWithAI()">
+                                        <i class="fas fa-magic"></i> Gerar Targeting com IA
+                                    </button>
+                                </div>
+                                
+                                <!-- Sugestões da IA -->
+                                <div id="targetingSuggestions" class="targeting-suggestions" style="display: none;">
+                                    <h6><i class="fas fa-lightbulb"></i> Sugestões da IA:</h6>
+                                    <div id="suggestionsContent"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Etapa 4: Mídia -->
+                        <div class="form-step" id="formStep4">
+                            <div class="form-section">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-images"></i> Mídia dos Anúncios
+                                </h4>
+                                
+                                <!-- Upload Zone -->
+                                <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                    <h5>Clique para fazer upload ou arraste arquivos aqui</h5>
+                                    <p class="text-muted">Suporte: PNG, JPG, GIF, MP4, MOV (máx. 50MB)</p>
+                                    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                                </div>
+                                
+                                <!-- Biblioteca de Mídia -->
+                                <div class="mt-4">
+                                    <h6>Biblioteca de Mídia</h6>
+                                    <div class="media-grid" id="mediaGrid">
+                                        {% for media in media_files %}
+                                        <div class="media-item" data-media-id="{{ media.id }}" onclick="toggleMediaSelection(this)">
+                                            {% if media.file_type in ['jpg', 'jpeg', 'png', 'gif'] %}
+                                                <img src="{{ url_for('static', filename='uploads/' + media.filename) }}" alt="{{ media.original_name }}">
+                                            {% elif media.file_type in ['mp4', 'mov', 'avi', 'webm'] %}
+                                                <video src="{{ url_for('static', filename='uploads/' + media.filename) }}" muted></video>
+                                            {% endif %}
+                                            <div class="overlay">
+                                                <i class="fas fa-check fa-2x"></i>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Mídia Selecionada -->
+                                <input type="hidden" name="selected_media" id="selectedMedia">
+                            </div>
+                        </div>
+
+                        <!-- Etapa 5: Revisão -->
+                        <div class="form-step" id="formStep5">
+                            <div class="form-section">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-eye"></i> Revisão da Campanha
+                                </h4>
+                                
+                                <div id="campaignPreview">
+                                    <!-- Preview será gerado dinamicamente -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões de Navegação -->
+                        <div class="row mt-4">
+                            <div class="col-12 d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i> Anterior
+                                </button>
+                                <div></div>
+                                <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                                    Próximo <i class="fas fa-arrow-right"></i>
+                                </button>
+                                <button type="submit" class="btn btn-success btn-lg" id="submitBtn" style="display: none;">
+                                    <i class="fas fa-rocket"></i> Criar Campanha
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+        let selectedMedia = [];
+        
+        function changeStep(direction) {
+            const newStep = currentStep + direction;
+            
+            if (newStep < 1 || newStep > totalSteps) return;
+            
+            // Validar etapa atual antes de avançar
+            if (direction > 0 && !validateCurrentStep()) return;
+            
+            // Ocultar etapa atual
+            document.getElementById(`formStep${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.add('completed');
+            
+            // Mostrar nova etapa
+            currentStep = newStep;
+            document.getElementById(`formStep${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            // Atualizar botões
+            updateButtons();
+            
+            // Gerar preview na última etapa
+            if (currentStep === 5) {
+                generatePreview();
+            }
+        }
+        
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+            nextBtn.style.display = currentStep < totalSteps ? 'block' : 'none';
+            submitBtn.style.display = currentStep === totalSteps ? 'block' : 'none';
+        }
+        
+        function validateCurrentStep() {
+            const currentForm = document.getElementById(`formStep${currentStep}`);
+            const requiredFields = currentForm.querySelectorAll('[required]');
+            
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    alert('Preencha todos os campos obrigatórios antes de continuar.');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        function toggleMediaSelection(element) {
+            const mediaId = element.dataset.mediaId;
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedMedia = selectedMedia.filter(id => id !== mediaId);
+            } else {
+                element.classList.add('selected');
+                selectedMedia.push(mediaId);
+            }
+            
+            document.getElementById('selectedMedia').value = selectedMedia.join(',');
+        }
+        
+        function generateTargetingWithAI() {
+            const produto = document.querySelector('input[name="produto"]').value;
+            const nicho = document.querySelector('input[name="nicho"]').value;
+            const publico_alvo = document.querySelector('input[name="publico_alvo"]').value;
+            
+            if (!produto || !nicho || !publico_alvo) {
+                alert('Preencha produto, nicho e público-alvo na primeira etapa para gerar sugestões.');
+                return;
+            }
+            
+            // Mostrar loading
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
+            btn.disabled = true;
+            
+            fetch('/api/generate-targeting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    produto: produto,
+                    nicho: nicho,
+                    publico_alvo: publico_alvo
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showTargetingSuggestions(data.suggestions);
+                } else {
+                    alert('Erro ao gerar sugestões: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com a IA');
+            })
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+        
+        function showTargetingSuggestions(suggestions) {
+            const container = document.getElementById('targetingSuggestions');
+            const content = document.getElementById('suggestionsContent');
+            
+            let html = '';
+            
+            if (suggestions.interesses) {
+                html += '<div class="mb-2"><strong>Interesses sugeridos:</strong><br>';
+                suggestions.interesses.forEach(interest => {
+                    html += `<span class="suggestion-tag" onclick="addToField('interests', '${interest}')">${interest}</span>`;
+                });
+                html += '</div>';
+            }
+            
+            if (suggestions.palavras_chave) {
+                html += '<div class="mb-2"><strong>Palavras-chave sugeridas:</strong><br>';
+                suggestions.palavras_chave.forEach(keyword => {
+                    html += `<span class="suggestion-tag" onclick="addToField('keywords', '${keyword}')">${keyword}</span>`;
+                });
+                html += '</div>';
+            }
+            
+            if (suggestions.localizacoes_sugeridas) {
+                html += '<div class="mb-2"><strong>Localizações sugeridas:</strong><br>';
+                suggestions.localizacoes_sugeridas.forEach(location => {
+                    html += `<span class="suggestion-tag" onclick="addToField('cities', '${location}')">${location}</span>`;
+                });
+                html += '</div>';
+            }
+            
+            content.innerHTML = html;
+            container.style.display = 'block';
+        }
+        
+        function addToField(fieldName, value) {
+            const field = document.querySelector(`input[name="${fieldName}"]`);
+            const currentValue = field.value.trim();
+            
+            if (currentValue) {
+                field.value = currentValue + ', ' + value;
+            } else {
+                field.value = value;
+            }
+        }
+        
+        function generatePreview() {
+            const formData = new FormData(document.getElementById('campaignForm'));
+            const data = Object.fromEntries(formData);
+            
+            const preview = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Informações da Campanha</h5>
+                        <p><strong>Nome:</strong> ${data.name}</p>
+                        <p><strong>Plataforma:</strong> ${data.platform.toUpperCase()}</p>
+                        <p><strong>Orçamento:</strong> R$ ${data.budget}/dia</p>
+                        <p><strong>Objetivo:</strong> ${data.objective}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Copy do Anúncio</h5>
+                        <p><strong>Título:</strong> ${data.titulo}</p>
+                        <p><strong>Descrição:</strong> ${data.descricao}</p>
+                        <p><strong>CTA:</strong> ${data.cta}</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h5>Targeting</h5>
+                        <p><strong>Idade:</strong> ${data.age_min} - ${data.age_max} anos</p>
+                        <p><strong>Localização:</strong> ${data.cities || 'Brasil'}</p>
+                        <p><strong>Interesses:</strong> ${data.interests || 'Não especificado'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Mídia</h5>
+                        <p><strong>Arquivos selecionados:</strong> ${selectedMedia.length}</p>
+                        <p><strong>Landing Page:</strong> ${data.landing_page || 'Não especificada'}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('campaignPreview').innerHTML = preview;
+        }
+        
+        // Upload de arquivos
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            
+            for (let file of files) {
+                uploadFile(file);
+            }
+        });
+        
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload-media', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    addMediaToGrid(data);
+                } else {
+                    alert('Erro no upload: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro no upload');
+            });
+        }
+        
+        function addMediaToGrid(mediaData) {
+            const grid = document.getElementById('mediaGrid');
+            const mediaItem = document.createElement('div');
+            mediaItem.className = 'media-item';
+            mediaItem.dataset.mediaId = mediaData.media_id;
+            mediaItem.onclick = () => toggleMediaSelection(mediaItem);
+            
+            const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(mediaData.filename.split('.').pop().toLowerCase());
+            
+            mediaItem.innerHTML = `
+                ${isImage ? 
+                    `<img src="${mediaData.url}" alt="${mediaData.original_name}">` :
+                    `<video src="${mediaData.url}" muted></video>`
+                }
+                <div class="overlay">
+                    <i class="fas fa-check fa-2x"></i>
+                </div>
+            `;
+            
+            grid.insertBefore(mediaItem, grid.firstChild);
+        }
+        
+        // Drag and drop
+        const uploadZone = document.querySelector('.upload-zone');
+        
+        uploadZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            for (let file of files) {
+                uploadFile(file);
+            }
+        });
+        
+        // Contador de caracteres
+        document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(function(element) {
+            const maxLength = element.getAttribute('maxlength');
+            
+            element.addEventListener('input', function() {
+                const currentLength = this.value.length;
+                const small = this.nextElementSibling;
+                
+                if (small && small.tagName === 'SMALL') {
+                    small.textContent = `${currentLength}/${maxLength} caracteres`;
+                    
+                    if (currentLength > maxLength * 0.9) {
+                        small.style.color = '#ffc107';
+                    } else if (currentLength > maxLength * 0.95) {
+                        small.style.color = '#dc3545';
+                    } else {
+                        small.style.color = 'rgba(255, 255, 255, 0.7)';
+                    }
+                }
+            });
+        });
+        
+        // Inicializar
+        updateButtons();
+    </script>
+</body>
+</html>

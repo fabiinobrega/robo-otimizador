@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Automática de Produto - Robô Otimizador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        .ai-analyzer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .url-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .analysis-result {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #28a745;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .campaign-preview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .targeting-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .keyword-tag {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin: 3px;
+            font-size: 12px;
+        }
+        
+        .interest-tag {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin: 3px;
+            font-size: 12px;
+        }
+        
+        .create-campaign-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0,0,0,0.1);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-robot me-2"></i>Robô Otimizador
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a>
+                <a class="nav-link" href="/campaigns"><i class="fas fa-bullhorn me-1"></i>Campanhas</a>
+                <a class="nav-link" href="/settings"><i class="fas fa-cog me-1"></i>Configurações</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="glass-card p-4">
+                    <div class="ai-analyzer text-center">
+                        <h2><i class="fas fa-magic me-2"></i>Análise Automática de Produto</h2>
+                        <p class="mb-4">Cole o link do seu produto e deixe a IA criar a campanha perfeita automaticamente!</p>
+                        
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <input type="url" id="productUrl" class="url-input" placeholder="https://exemplo.com/meu-produto" required>
+                                <button onclick="analyzeProduct()" class="analyze-btn">
+                                    <i class="fas fa-magic me-2"></i>Analisar com IA
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="loading-spinner" id="loadingSpinner">
+                            <div class="spinner-border text-light" role="status">
+                                <span class="visually-hidden">Analisando...</span>
+                            </div>
+                            <p class="mt-2">Analisando produto e criando campanha...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-result" id="analysisResult">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <h5><i class="fas fa-chart-line text-primary me-2"></i>Análise do Produto</h5>
+                                    <div id="productAnalysis">
+                                        <!-- Será preenchido pela IA -->
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <h5><i class="fas fa-users text-success me-2"></i>Público-Alvo Sugerido</h5>
+                                    <div id="targetingAnalysis">
+                                        <!-- Será preenchido pela IA -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <h5><i class="fas fa-search text-info me-2"></i>Palavras-Chave (Google)</h5>
+                                    <div id="keywordAnalysis">
+                                        <!-- Será preenchido pela IA -->
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <h5><i class="fas fa-heart text-danger me-2"></i>Interesses (Facebook)</h5>
+                                    <div id="interestAnalysis">
+                                        <!-- Será preenchido pela IA -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="campaign-preview">
+                            <h4><i class="fas fa-eye me-2"></i>Preview da Campanha</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="targeting-section">
+                                        <h6><i class="fab fa-facebook text-primary me-2"></i>Facebook Ads</h6>
+                                        <div id="facebookPreview">
+                                            <!-- Preview Facebook -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="targeting-section">
+                                        <h6><i class="fab fa-google text-danger me-2"></i>Google Ads</h6>
+                                        <div id="googlePreview">
+                                            <!-- Preview Google -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="createCampaignFromAI()" class="create-campaign-btn">
+                                <i class="fas fa-rocket me-2"></i>Criar Campanha Automaticamente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let analysisData = {};
+        
+        async function analyzeProduct() {
+            const url = document.getElementById('productUrl').value;
+            if (!url) {
+                alert('Por favor, insira um URL válido');
+                return;
+            }
+            
+            // Mostrar loading
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('analysisResult').style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/analyze-product-ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    analysisData = data.analysis;
+                    displayAnalysis(data.analysis);
+                } else {
+                    alert('Erro na análise: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro na análise: ' + error.message);
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+        
+        function displayAnalysis(analysis) {
+            // Análise do Produto
+            document.getElementById('productAnalysis').innerHTML = `
+                <p><strong>Produto:</strong> ${analysis.product_name}</p>
+                <p><strong>Categoria:</strong> ${analysis.category}</p>
+                <p><strong>Preço:</strong> ${analysis.price}</p>
+                <p><strong>Descrição:</strong> ${analysis.description}</p>
+                <p><strong>Benefícios:</strong> ${analysis.benefits.join(', ')}</p>
+            `;
+            
+            // Público-Alvo
+            document.getElementById('targetingAnalysis').innerHTML = `
+                <p><strong>Idade:</strong> ${analysis.targeting.age_range}</p>
+                <p><strong>Gênero:</strong> ${analysis.targeting.gender}</p>
+                <p><strong>Localização:</strong> ${analysis.targeting.location.join(', ')}</p>
+                <p><strong>Comportamentos:</strong> ${analysis.targeting.behaviors.join(', ')}</p>
+            `;
+            
+            // Palavras-chave
+            const keywords = analysis.keywords.map(kw => 
+                `<span class="keyword-tag">${kw.keyword} (${kw.match_type})</span>`
+            ).join('');
+            document.getElementById('keywordAnalysis').innerHTML = keywords;
+            
+            // Interesses
+            const interests = analysis.interests.map(interest => 
+                `<span class="interest-tag">${interest}</span>`
+            ).join('');
+            document.getElementById('interestAnalysis').innerHTML = interests;
+            
+            // Preview Facebook
+            document.getElementById('facebookPreview').innerHTML = `
+                <div class="border p-3 rounded">
+                    <h6>${analysis.ad_copy.facebook.headline}</h6>
+                    <p>${analysis.ad_copy.facebook.description}</p>
+                    <small class="text-muted">CTA: ${analysis.ad_copy.facebook.cta}</small>
+                </div>
+            `;
+            
+            // Preview Google
+            document.getElementById('googlePreview').innerHTML = `
+                <div class="border p-3 rounded">
+                    <h6>${analysis.ad_copy.google.headline}</h6>
+                    <p>${analysis.ad_copy.google.description}</p>
+                    <small class="text-muted">URL: ${analysis.ad_copy.google.display_url}</small>
+                </div>
+            `;
+            
+            document.getElementById('analysisResult').style.display = 'block';
+        }
+        
+        async function createCampaignFromAI() {
+            if (!analysisData) {
+                alert('Nenhuma análise disponível');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/create-campaign-from-ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ analysis: analysisData })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Campanha criada com sucesso!');
+                    window.location.href = '/campaigns';
+                } else {
+                    alert('Erro ao criar campanha: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro ao criar campanha: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

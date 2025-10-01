@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Robô Otimizador de Campanhas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            color: white;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #667eea;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .form-label {
+            color: white;
+            font-weight: 500;
+        }
+        .btn-test {
+            background: rgba(40, 167, 69, 0.8);
+            border: none;
+            color: white;
+        }
+        .btn-test:hover {
+            background: rgba(40, 167, 69, 1);
+        }
+        .api-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-connected { background-color: #28a745; }
+        .status-disconnected { background-color: #dc3545; }
+        .status-error { background-color: #ffc107; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-robot"></i> Robô Otimizador
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Dashboard</a>
+                <a class="nav-link" href="/campaigns">Campanhas</a>
+                <a class="nav-link active" href="/settings">Configurações</a>
+                <a class="nav-link" href="/logout">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-white mb-4">
+                    <i class="fas fa-cog"></i> Configurações de API
+                </h1>
+            </div>
+        </div>
+        
+        <form method="POST">
+            <!-- OpenAI Configuration -->
+            <div class="api-section">
+                <div class="glass-card p-4">
+                    <h4 class="mb-3">
+                        <i class="fas fa-brain"></i> OpenAI
+                        <span id="openai-status" class="float-end">
+                            <span class="status-indicator status-disconnected"></span>
+                            <small>Desconectado</small>
+                        </span>
+                    </h4>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="form-label">API Key</label>
+                            <input type="password" class="form-control" name="openai_api_key" 
+                                   placeholder="sk-..." autocomplete="off">
+                            <small class="text-muted">Obtenha em: https://platform.openai.com/api-keys</small>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-test w-100" onclick="testAPI('openai')">
+                                <i class="fas fa-plug"></i> Testar Conexão
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manus AI Configuration -->
+            <div class="api-section">
+                <div class="glass-card p-4">
+                    <h4 class="mb-3">
+                        <i class="fas fa-robot"></i> Manus AI
+                        <span id="manus-status" class="float-end">
+                            <span class="status-indicator status-disconnected"></span>
+                            <small>Desconectado</small>
+                        </span>
+                    </h4>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="form-label">API Key</label>
+                            <input type="password" class="form-control" name="manus_api_key" 
+                                   placeholder="manus_..." autocomplete="off">
+                            <small class="text-muted">Obtenha em: https://manus.im/api-keys</small>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-test w-100" onclick="testAPI('manus')">
+                                <i class="fas fa-plug"></i> Testar Conexão
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facebook Ads Configuration -->
+            <div class="api-section">
+                <div class="glass-card p-4">
+                    <h4 class="mb-3">
+                        <i class="fab fa-facebook"></i> Facebook Ads
+                        <span id="facebook-status" class="float-end">
+                            <span class="status-indicator status-disconnected"></span>
+                            <small>Desconectado</small>
+                        </span>
+                    </h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">App ID</label>
+                            <input type="text" class="form-control" name="fb_app_id" 
+                                   placeholder="1234567890" autocomplete="off">
+                            <small class="text-muted">ID do aplicativo Facebook</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">App Secret</label>
+                            <input type="password" class="form-control" name="fb_app_secret" 
+                                   placeholder="abc123def456..." autocomplete="off">
+                            <small class="text-muted">Chave secreta do aplicativo</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Access Token</label>
+                            <input type="password" class="form-control" name="fb_access_token" 
+                                   placeholder="EAAJZCZAoZAo..." autocomplete="off">
+                            <small class="text-muted">Token de acesso de longa duração</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Ad Account ID</label>
+                            <input type="text" class="form-control" name="fb_account_id" 
+                                   placeholder="act_1234567890" autocomplete="off">
+                            <small class="text-muted">ID da conta de anúncios</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-test" onclick="testAPI('facebook')">
+                                <i class="fas fa-plug"></i> Testar Conexão Facebook
+                            </button>
+                            <small class="text-muted ms-3">
+                                <i class="fas fa-info-circle"></i> 
+                                Configure em: https://developers.facebook.com/apps/
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Ads Configuration -->
+            <div class="api-section">
+                <div class="glass-card p-4">
+                    <h4 class="mb-3">
+                        <i class="fab fa-google"></i> Google Ads
+                        <span id="google-status" class="float-end">
+                            <span class="status-indicator status-disconnected"></span>
+                            <small>Desconectado</small>
+                        </span>
+                    </h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Developer Token</label>
+                            <input type="password" class="form-control" name="google_developer_token" 
+                                   placeholder="Developer token..." autocomplete="off">
+                            <small class="text-muted">Token de desenvolvedor Google Ads</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Customer ID</label>
+                            <input type="text" class="form-control" name="google_customer_id" 
+                                   placeholder="123-456-7890" autocomplete="off">
+                            <small class="text-muted">ID do cliente Google Ads</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Client ID</label>
+                            <input type="text" class="form-control" name="google_client_id" 
+                                   placeholder="Client ID..." autocomplete="off">
+                            <small class="text-muted">OAuth2 Client ID</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Client Secret</label>
+                            <input type="password" class="form-control" name="google_client_secret" 
+                                   placeholder="Client Secret..." autocomplete="off">
+                            <small class="text-muted">OAuth2 Client Secret</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Refresh Token</label>
+                            <input type="password" class="form-control" name="google_refresh_token" 
+                                   placeholder="Refresh token..." autocomplete="off">
+                            <small class="text-muted">Token de atualização OAuth2</small>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end mb-3">
+                            <button type="button" class="btn btn-test w-100" onclick="testAPI('google')">
+                                <i class="fas fa-plug"></i> Testar Conexão
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i> 
+                                Configure em: https://console.cloud.google.com/
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="glass-card p-4 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Salvar Todas as Configurações
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function testAPI(provider) {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testando...';
+            button.disabled = true;
+            
+            fetch('/api/test-apis')
+                .then(response => response.json())
+                .then(data => {
+                    const status = data[provider];
+                    const statusElement = document.getElementById(provider + '-status');
+                    const indicator = statusElement.querySelector('.status-indicator');
+                    const text = statusElement.querySelector('small');
+                    
+                    if (status.status === 'connected') {
+                        indicator.className = 'status-indicator status-connected';
+                        text.textContent = 'Conectado';
+                    } else if (status.status === 'error') {
+                        indicator.className = 'status-indicator status-error';
+                        text.textContent = 'Erro';
+                    } else {
+                        indicator.className = 'status-indicator status-disconnected';
+                        text.textContent = 'Desconectado';
+                    }
+                    
+                    // Mostrar mensagem
+                    showAlert(status.message, status.status === 'connected' ? 'success' : 'warning');
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    showAlert('Erro ao testar conexão', 'danger');
+                })
+                .finally(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                });
+        }
+        
+        function showAlert(message, type) {
+            const alertContainer = document.querySelector('.container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            alertContainer.insertBefore(alert, alertContainer.firstChild.nextSibling);
+            
+            // Auto-remove após 5 segundos
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+        
+        // Testar todas as APIs ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/test-apis')
+                .then(response => response.json())
+                .then(data => {
+                    Object.keys(data).forEach(provider => {
+                        const status = data[provider];
+                        const statusElement = document.getElementById(provider + '-status');
+                        if (statusElement) {
+                            const indicator = statusElement.querySelector('.status-indicator');
+                            const text = statusElement.querySelector('small');
+                            
+                            if (status.status === 'connected') {
+                                indicator.className = 'status-indicator status-connected';
+                                text.textContent = 'Conectado';
+                            } else if (status.status === 'error') {
+                                indicator.className = 'status-indicator status-error';
+                                text.textContent = 'Erro';
+                            } else {
+                                indicator.className = 'status-indicator status-disconnected';
+                                text.textContent = 'Desconectado';
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Erro ao verificar status das APIs:', error));
+        });
+    </script>
+</body>
+</html>

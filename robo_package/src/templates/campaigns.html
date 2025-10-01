@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campanhas - Robô Otimizador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            color: white;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .table {
+            color: white;
+        }
+        .table th {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .table td {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .btn-launch {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-launch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+        .btn-launch:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-draft {
+            background: rgba(108, 117, 125, 0.8);
+            color: white;
+        }
+        .status-active {
+            background: rgba(40, 167, 69, 0.8);
+            color: white;
+        }
+        .status-paused {
+            background: rgba(255, 193, 7, 0.8);
+            color: black;
+        }
+        .launch-modal .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-robot"></i> Robô Otimizador
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Dashboard</a>
+                <a class="nav-link active" href="/campaigns">Campanhas</a>
+                <a class="nav-link" href="/create-campaign">Nova Campanha</a>
+                <a class="nav-link" href="/settings">Configurações</a>
+                <a class="nav-link" href="/logout">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="mb-0">
+                            <i class="fas fa-bullhorn"></i> Minhas Campanhas
+                        </h1>
+                        <a href="/create-campaign" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Nova Campanha
+                        </a>
+                    </div>
+                    
+                    {% if campaigns %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Plataforma</th>
+                                    <th>Orçamento</th>
+                                    <th>Status</th>
+                                    <th>Criada em</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for campaign in campaigns %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ campaign.name }}</strong>
+                                        {% if campaign.facebook_id %}
+                                        <br><small class="text-muted">ID: {{ campaign.facebook_id }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if campaign.platform == 'facebook' %}
+                                            <i class="fab fa-facebook text-primary"></i> Facebook
+                                        {% elif campaign.platform == 'google' %}
+                                            <i class="fab fa-google text-warning"></i> Google
+                                        {% else %}
+                                            {{ campaign.platform|title }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ "R$ %.2f"|format(campaign.budget|float) }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ campaign.status }}">
+                                            {% if campaign.status == 'draft' %}
+                                                <i class="fas fa-edit"></i> Rascunho
+                                            {% elif campaign.status == 'active' %}
+                                                <i class="fas fa-play"></i> Ativa
+                                            {% elif campaign.status == 'paused' %}
+                                                <i class="fas fa-pause"></i> Pausada
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ campaign.created_at.strftime('%d/%m/%Y %H:%M') if campaign.created_at else 'N/A' }}</td>
+                                    <td>
+                                        {% if campaign.status == 'draft' %}
+                                            <button class="btn btn-launch btn-sm" 
+                                                    onclick="launchCampaign({{ campaign.id }}, '{{ campaign.name }}', '{{ campaign.platform }}')">
+                                                <i class="fas fa-rocket"></i> LANÇAR
+                                            </button>
+                                        {% elif campaign.status == 'active' %}
+                                            <button class="btn btn-warning btn-sm" disabled>
+                                                <i class="fas fa-eye"></i> No Ar
+                                            </button>
+                                        {% endif %}
+                                        
+                                        <button class="btn btn-outline-light btn-sm ms-1" 
+                                                onclick="viewCampaign({{ campaign.id }})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-bullhorn fa-4x mb-3" style="opacity: 0.3;"></i>
+                        <h4>Nenhuma campanha criada ainda</h4>
+                        <p class="text-muted">Crie sua primeira campanha para começar a automatizar seus anúncios.</p>
+                        <a href="/create-campaign" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus"></i> Criar Primeira Campanha
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Lançamento -->
+    <div class="modal fade launch-modal" id="launchModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-rocket text-success"></i> Lançar Campanha
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                        </div>
+                        <h4>Confirmar Lançamento</h4>
+                        <p>Você está prestes a lançar a campanha <strong id="campaignName"></strong> na plataforma <strong id="campaignPlatform"></strong>.</p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Atenção:</strong> Esta ação irá criar uma campanha REAL na plataforma selecionada e começará a consumir seu orçamento imediatamente.
+                        </div>
+                        <p class="text-muted">Tem certeza que deseja continuar?</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" id="confirmLaunch">
+                        <i class="fas fa-rocket"></i> SIM, LANÇAR AGORA!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Progresso -->
+    <div class="modal fade" id="progressModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body text-center py-5">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                    <h4>Lançando Campanha...</h4>
+                    <p class="text-muted" id="progressText">Conectando com a plataforma...</p>
+                    <div class="progress mt-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             style="width: 0%" id="progressBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentCampaignId = null;
+        
+        function launchCampaign(campaignId, campaignName, platform) {
+            currentCampaignId = campaignId;
+            document.getElementById('campaignName').textContent = campaignName;
+            document.getElementById('campaignPlatform').textContent = platform.toUpperCase();
+            
+            const launchModal = new bootstrap.Modal(document.getElementById('launchModal'));
+            launchModal.show();
+        }
+        
+        document.getElementById('confirmLaunch').addEventListener('click', function() {
+            if (!currentCampaignId) return;
+            
+            // Fechar modal de confirmação
+            bootstrap.Modal.getInstance(document.getElementById('launchModal')).hide();
+            
+            // Mostrar modal de progresso
+            const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+            progressModal.show();
+            
+            // Simular progresso
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            const steps = [
+                'Validando credenciais...',
+                'Criando campanha...',
+                'Configurando público-alvo...',
+                'Definindo orçamento...',
+                'Ativando campanha...',
+                'Finalizando...'
+            ];
+            
+            const progressInterval = setInterval(() => {
+                progress += 16.67;
+                progressBar.style.width = progress + '%';
+                
+                const stepIndex = Math.floor(progress / 16.67) - 1;
+                if (stepIndex >= 0 && stepIndex < steps.length) {
+                    progressText.textContent = steps[stepIndex];
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    // Fazer requisição real
+                    launchCampaignReal();
+                }
+            }, 500);
+        });
+        
+        function launchCampaignReal() {
+            fetch('/api/launch-campaign', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    campaign_id: currentCampaignId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Fechar modal de progresso
+                bootstrap.Modal.getInstance(document.getElementById('progressModal')).hide();
+                
+                if (data.success) {
+                    // Sucesso
+                    showAlert('🚀 ' + data.message, 'success');
+                    
+                    // Recarregar página após 2 segundos
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    // Erro
+                    showAlert('❌ ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                // Fechar modal de progresso
+                bootstrap.Modal.getInstance(document.getElementById('progressModal')).hide();
+                
+                console.error('Erro:', error);
+                showAlert('❌ Erro ao lançar campanha: ' + error.message, 'danger');
+            });
+        }
+        
+        function viewCampaign(campaignId) {
+            // Implementar visualização da campanha
+            alert('Funcionalidade de visualização em desenvolvimento');
+        }
+        
+        function showAlert(message, type) {
+            const alertContainer = document.querySelector('.container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            alertContainer.insertBefore(alert, alertContainer.firstChild.nextSibling);
+            
+            // Auto-remove após 5 segundos
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

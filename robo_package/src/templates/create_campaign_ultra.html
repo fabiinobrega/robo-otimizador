@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Campanha Ultra-Avançada - Robô Otimizador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            padding: 30px;
+            max-width: 1200px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            color: #fff;
+            transform: scale(1.1);
+        }
+        
+        .step.completed {
+            color: #28a745;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            border: 2px solid transparent;
+        }
+        
+        .step.active .step-number {
+            background: #007bff;
+            border-color: #fff;
+        }
+        
+        .step.completed .step-number {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .form-section h4 {
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-section h4 i {
+            margin-right: 10px;
+            color: #ffd700;
+        }
+        
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #007bff;
+            color: #fff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+        
+        .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+        
+        .targeting-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .targeting-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .targeting-card h6 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .targeting-card h6 i {
+            margin-right: 8px;
+        }
+        
+        .interest-tag {
+            display: inline-block;
+            background: rgba(0, 123, 255, 0.3);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin: 3px;
+            font-size: 0.9em;
+            border: 1px solid rgba(0, 123, 255, 0.5);
+        }
+        
+        .interest-tag.selected {
+            background: #007bff;
+            border-color: #007bff;
+        }
+        
+        .media-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .media-upload-area:hover {
+            border-color: #007bff;
+            background: rgba(0, 123, 255, 0.1);
+        }
+        
+        .media-upload-area.dragover {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+        
+        .media-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .media-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            aspect-ratio: 1;
+        }
+        
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.8);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .ai-suggestion {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .ai-suggestion h6 {
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .ai-suggestion h6 i {
+            margin-right: 8px;
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+        
+        .auto-analysis-section {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        
+        .auto-analysis-section h4 {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .auto-analysis-section h4 i {
+            margin-right: 10px;
+            font-size: 1.5em;
+        }
+        
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .url-input-group input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+        
+        .url-input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .platform-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .platform-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .platform-btn.active {
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .platform-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .analysis-results {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .step-indicator {
+                flex-wrap: wrap;
+            }
+            
+            .step {
+                margin: 5px;
+            }
+            
+            .targeting-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .url-input-group {
+                flex-direction: column;
+            }
+            
+            .platform-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h2 class="text-white mb-2">
+                    <i class="fas fa-rocket me-2"></i>
+                    Criar Campanha Ultra-Avançada
+                </h2>
+                <p class="text-white-50">Sistema profissional com IA automática e segmentação avançada</p>
+            </div>
+            
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <span>Análise IA</span>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <span>Configuração</span>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <span>Targeting</span>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <span>Mídia</span>
+                </div>
+                <div class="step" data-step="5">
+                    <div class="step-number">5</div>
+                    <span>Revisão</span>
+                </div>
+            </div>
+            
+            <form id="campaignForm" method="post" enctype="multipart/form-data">
+                <!-- Etapa 1: Análise Automática com IA -->
+                <div class="step-content active" data-step="1">
+                    <div class="auto-analysis-section">
+                        <h4>
+                            <i class="fas fa-magic"></i>
+                            Análise Automática com IA
+                        </h4>
+                        <p class="mb-3">Cole o link do seu produto e a IA criará a campanha automaticamente com targeting profissional!</p>
+                        
+                        <div class="url-input-group">
+                            <input type="url" id="productUrl" class="form-control" placeholder="https://exemplo.com/seu-produto" required>
+                            <button type="button" class="btn btn-light" onclick="analyzeProduct()">
+                                <i class="fas fa-search me-2"></i>Analisar
+                            </button>
+                        </div>
+                        
+                        <div class="platform-selector">
+                            <div class="platform-btn active" data-platform="both">
+                                <i class="fab fa-facebook me-2"></i>
+                                <i class="fab fa-google me-2"></i>
+                                Ambas Plataformas
+                            </div>
+                            <div class="platform-btn" data-platform="facebook">
+                                <i class="fab fa-facebook me-2"></i>
+                                Apenas Facebook
+                            </div>
+                            <div class="platform-btn" data-platform="google">
+                                <i class="fab fa-google me-2"></i>
+                                Apenas Google
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-success flex-fill" onclick="generateCompleteCampaign()">
+                                <i class="fas fa-magic me-2"></i>
+                                Gerar Campanha Completa (1 Clique)
+                            </button>
+                            <button type="button" class="btn btn-outline-light" onclick="manualMode()">
+                                <i class="fas fa-cog me-2"></i>
+                                Modo Manual
+                            </button>
+                        </div>
+                        
+                        <div class="analysis-results" id="analysisResults">
+                            <h6 class="text-warning mb-3">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Análise do Produto
+                            </h6>
+                            <div id="analysisContent"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container" id="progressContainer">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-white">Analisando produto...</span>
+                            <span class="text-white" id="progressText">0%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Etapa 2: Configuração Básica -->
+                <div class="step-content" data-step="2">
+                    <div class="form-section">
+                        <h4>
+                            <i class="fas fa-cog"></i>
+                            Configuração da Campanha
+                        </h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label text-white">Nome da Campanha</label>
+                                <input type="text" name="campaign_name" class="form-control" placeholder="Ex: Lançamento Produto X" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white">Plataforma</label>
+                                <select name="platform" class="form-select" required>
+                                    <option value="">Selecione a plataforma</option>
+                                    <option value="facebook">Facebook Ads</option>
+                                    <option value="google">Google Ads</option>
+                                    <option value="both">Ambas</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <label class="form-label text-white">Orçamento Diário (R$)</label>
+                                <input type="number" name="daily_budget" class="form-control" placeholder="100" min="10" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-white">Objetivo</label>
+                                <select name="objective" class="form-select" required>
+                                    <option value="conversions">Conversões</option>
+                                    <option value="traffic">Tráfego</option>
+                                    <option value="leads">Geração de Leads</option>
+                                    <option value="brand_awareness">Reconhecimento da Marca</option>
+                                    <option value="reach">Alcance</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-white">Estratégia de Lance</label>
+                                <select name="bid_strategy" class="form-select">
+                                    <option value="lowest_cost">Menor Custo</option>
+                                    <option value="target_cost">CPA Alvo</option>
+                                    <option value="highest_value">Maior Valor</option>
+                                    <option value="target_roas">ROAS Alvo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white">URL de Destino</label>
+                                <input type="url" name="landing_page" class="form-control" placeholder="https://seusite.com/produto" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white">Pixel de Conversão</label>
+                                <input type="text" name="conversion_pixel" class="form-control" placeholder="ID do pixel (opcional)">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4>
+                            <i class="fas fa-edit"></i>
+                            Copy do Anúncio
+                        </h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label text-white">Título Principal</label>
+                                <input type="text" name="headline" class="form-control" placeholder="Título chamativo do anúncio" maxlength="40" required>
+                                <small class="text-white-50">Máximo 40 caracteres</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white">Subtítulo</label>
+                                <input type="text" name="subheadline" class="form-control" placeholder="Subtítulo complementar" maxlength="60">
+                                <small class="text-white-50">Máximo 60 caracteres</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label class="form-label text-white">Descrição</label>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Descrição detalhada do produto/serviço..." maxlength="125" required></textarea>
+                            <small class="text-white-50">Máximo 125 caracteres</small>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white">Call-to-Action</label>
+                                <select name="cta_type" class="form-select" required>
+                                    <option value="LEARN_MORE">Saiba Mais</option>
+                                    <option value="SHOP_NOW">Compre Agora</option>
+                                    <option value="SIGN_UP">Inscreva-se</option>
+                                    <option value="DOWNLOAD">Baixar</option>
+                                    <option value="CONTACT_US">Entre em Contato</option>
+                                    <option value="APPLY_NOW">Candidatar-se</option>
+                                    <option value="BOOK_TRAVEL">Reservar</option>
+                                    <option value="GET_QUOTE">Solicitar Orçamento</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white">Tom de Voz</label>
+                                <select name="tone" class="form-select">
+                                    <option value="professional">Profissional</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="urgent">Urgente</option>
+                                    <option value="friendly">Amigável</option>
+                                    <option value="authoritative">Autoritativo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-outline-light" onclick="generateCopyWithAI()">
+                                <i class="fas fa-magic me-2"></i>
+                                Gerar Copy com IA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Etapa 3: Targeting Profissional -->
+                <div class="step-content" data-step="3">
+                    <div class="form-section">
+                        <h4>
+                            <i class="fas fa-bullseye"></i>
+                            Segmentação Profissional
+                        </h4>
+                        
+                        <div class="targeting-grid">
+                            <!-- Localização Geográfica -->
+                            <div class="targeting-card">
+                                <h6>
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Localização Geográfica
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Países</label>
+                                    <select name="countries[]" class="form-select" multiple>
+                                        <option value="BR" selected>Brasil</option>
+                                        <option value="US">Estados Unidos</option>
+                                        <option value="PT">Portugal</option>
+                                        <option value="AR">Argentina</option>
+                                        <option value="MX">México</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Cidades Específicas</label>
+                                    <input type="text" name="cities" class="form-control" placeholder="São Paulo, Rio de Janeiro, Belo Horizonte">
+                                    <small class="text-white-50">Separar por vírgula</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Raio (km)</label>
+                                    <select name="radius" class="form-select">
+                                        <option value="10">10 km</option>
+                                        <option value="25" selected>25 km</option>
+                                        <option value="50">50 km</option>
+                                        <option value="100">100 km</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Tipo de Localização</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="location_types[]" value="home" checked>
+                                        <label class="form-check-label text-white-50">Pessoas que moram neste local</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="location_types[]" value="recent">
+                                        <label class="form-check-label text-white-50">Pessoas que estiveram recentemente</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="location_types[]" value="travel">
+                                        <label class="form-check-label text-white-50">Pessoas viajando neste local</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Demografia -->
+                            <div class="targeting-card">
+                                <h6>
+                                    <i class="fas fa-users"></i>
+                                    Demografia
+                                </h6>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label text-white-50">Idade Mínima</label>
+                                        <select name="age_min" class="form-select">
+                                            <option value="18">18</option>
+                                            <option value="21">21</option>
+                                            <option value="25" selected>25</option>
+                                            <option value="30">30</option>
+                                            <option value="35">35</option>
+                                            <option value="40">40</option>
+                                            <option value="45">45</option>
+                                            <option value="50">50</option>
+                                            <option value="55">55</option>
+                                            <option value="60">60</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label text-white-50">Idade Máxima</label>
+                                        <select name="age_max" class="form-select">
+                                            <option value="25">25</option>
+                                            <option value="30">30</option>
+                                            <option value="35">35</option>
+                                            <option value="40">40</option>
+                                            <option value="45">45</option>
+                                            <option value="50">50</option>
+                                            <option value="55" selected>55</option>
+                                            <option value="60">60</option>
+                                            <option value="65">65+</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Gênero</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gender" value="all" checked>
+                                        <label class="form-check-label text-white-50">Todos</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gender" value="male">
+                                        <label class="form-check-label text-white-50">Masculino</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gender" value="female">
+                                        <label class="form-check-label text-white-50">Feminino</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Idiomas</label>
+                                    <select name="languages[]" class="form-select" multiple>
+                                        <option value="pt" selected>Português</option>
+                                        <option value="en">Inglês</option>
+                                        <option value="es">Espanhol</option>
+                                        <option value="fr">Francês</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Estado Civil</label>
+                                    <select name="relationship_status[]" class="form-select" multiple>
+                                        <option value="single">Solteiro(a)</option>
+                                        <option value="in_relationship">Em relacionamento</option>
+                                        <option value="married">Casado(a)</option>
+                                        <option value="engaged">Noivo(a)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Interesses -->
+                            <div class="targeting-card">
+                                <h6>
+                                    <i class="fas fa-heart"></i>
+                                    Interesses
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <input type="text" id="interestSearch" class="form-control" placeholder="Buscar interesses...">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Categorias Populares</label>
+                                    <div id="interestCategories">
+                                        <div class="interest-tag" data-interest="business">Negócios</div>
+                                        <div class="interest-tag" data-interest="technology">Tecnologia</div>
+                                        <div class="interest-tag" data-interest="fitness">Fitness</div>
+                                        <div class="interest-tag" data-interest="travel">Viagem</div>
+                                        <div class="interest-tag" data-interest="food">Alimentação</div>
+                                        <div class="interest-tag" data-interest="fashion">Moda</div>
+                                        <div class="interest-tag" data-interest="education">Educação</div>
+                                        <div class="interest-tag" data-interest="health">Saúde</div>
+                                        <div class="interest-tag" data-interest="finance">Finanças</div>
+                                        <div class="interest-tag" data-interest="marketing">Marketing</div>
+                                        <div class="interest-tag" data-interest="sports">Esportes</div>
+                                        <div class="interest-tag" data-interest="music">Música</div>
+                                        <div class="interest-tag" data-interest="movies">Filmes</div>
+                                        <div class="interest-tag" data-interest="books">Livros</div>
+                                        <div class="interest-tag" data-interest="gaming">Games</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Interesses Selecionados</label>
+                                    <div id="selectedInterests"></div>
+                                    <input type="hidden" name="interests" id="interestsInput">
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-light btn-sm" onclick="suggestInterestsWithAI()">
+                                    <i class="fas fa-magic me-1"></i>
+                                    Sugerir com IA
+                                </button>
+                            </div>
+                            
+                            <!-- Comportamentos -->
+                            <div class="targeting-card">
+                                <h6>
+                                    <i class="fas fa-chart-line"></i>
+                                    Comportamentos
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Comportamentos de Compra</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="behaviors[]" value="online_shoppers">
+                                        <label class="form-check-label text-white-50">Compradores online</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="behaviors[]" value="frequent_travelers">
+                                        <label class="form-check-label text-white-50">Viajantes frequentes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="behaviors[]" value="luxury_shoppers">
+                                        <label class="form-check-label text-white-50">Compradores de luxo</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="behaviors[]" value="mobile_users">
+                                        <label class="form-check-label text-white-50">Usuários móveis</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Dispositivos</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="device_platforms[]" value="mobile" checked>
+                                        <label class="form-check-label text-white-50">Mobile</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="device_platforms[]" value="desktop" checked>
+                                        <label class="form-check-label text-white-50">Desktop</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Plataformas</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="publisher_platforms[]" value="facebook" checked>
+                                        <label class="form-check-label text-white-50">Facebook</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="publisher_platforms[]" value="instagram" checked>
+                                        <label class="form-check-label text-white-50">Instagram</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="publisher_platforms[]" value="messenger">
+                                        <label class="form-check-label text-white-50">Messenger</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="publisher_platforms[]" value="audience_network">
+                                        <label class="form-check-label text-white-50">Audience Network</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Públicos Personalizados -->
+                            <div class="targeting-card">
+                                <h6>
+                                    <i class="fas fa-users-cog"></i>
+                                    Públicos Personalizados
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Custom Audiences</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="custom_audiences[]" value="website_visitors">
+                                        <label class="form-check-label text-white-50">Visitantes do site</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="custom_audiences[]" value="page_engagement">
+                                        <label class="form-check-label text-white-50">Engajamento com página</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="custom_audiences[]" value="video_viewers">
+                                        <label class="form-check-label text-white-50">Visualizadores de vídeo</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="custom_audiences[]" value="app_users">
+                                        <label class="form-check-label text-white-50">Usuários do app</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Lookalike Audiences</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="lookalike_audiences[]" value="customers_1">
+                                        <label class="form-check-label text-white-50">Semelhante a clientes (1%)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="lookalike_audiences[]" value="customers_2">
+                                        <label class="form-check-label text-white-50">Semelhante a clientes (2%)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="lookalike_audiences[]" value="high_value_customers">
+                                        <label class="form-check-label text-white-50">Semelhante a clientes de alto valor</label>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-light btn-sm" onclick="createCustomAudience()">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Criar Público
+                                </button>
+                            </div>
+                            
+                            <!-- Google Ads - Palavras-chave -->
+                            <div class="targeting-card" id="googleKeywords" style="display: none;">
+                                <h6>
+                                    <i class="fab fa-google"></i>
+                                    Palavras-chave (Google Ads)
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Palavras-chave Exatas [palavra]</label>
+                                    <textarea name="keywords_exact" class="form-control" rows="3" placeholder="[curso online]&#10;[marketing digital]&#10;[vendas online]"></textarea>
+                                    <small class="text-white-50">Uma por linha. Use colchetes para correspondência exata.</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Palavras-chave de Frase "palavra"</label>
+                                    <textarea name="keywords_phrase" class="form-control" rows="3" placeholder='"como vender online"&#10;"curso de marketing"&#10;"estratégias de vendas"'></textarea>
+                                    <small class="text-white-50">Uma por linha. Use aspas para correspondência de frase.</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Palavras-chave Amplas</label>
+                                    <textarea name="keywords_broad" class="form-control" rows="3" placeholder="marketing digital&#10;vendas online&#10;empreendedorismo"></textarea>
+                                    <small class="text-white-50">Uma por linha. Sem símbolos para correspondência ampla.</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50">Palavras-chave Negativas</label>
+                                    <textarea name="keywords_negative" class="form-control" rows="2" placeholder="grátis&#10;free&#10;barato&#10;pirata"></textarea>
+                                    <small class="text-white-50">Uma por linha. Evita cliques irrelevantes.</small>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-light btn-sm" onclick="suggestKeywordsWithAI()">
+                                    <i class="fas fa-magic me-1"></i>
+                                    Sugerir com IA
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Configurações Avançadas -->
+                        <div class="form-section mt-4">
+                            <h5 class="text-white mb-3">
+                                <i class="fas fa-sliders-h me-2"></i>
+                                Configurações Avançadas
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="targeting-card">
+                                        <h6>
+                                            <i class="fas fa-clock"></i>
+                                            Controle de Frequência
+                                        </h6>
+                                        
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="enable_frequency_cap" id="enableFrequencyCap">
+                                            <label class="form-check-label text-white-50" for="enableFrequencyCap">
+                                                Ativar controle de frequência
+                                            </label>
+                                        </div>
+                                        
+                                        <div id="frequencyCapSettings" style="display: none;">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label class="form-label text-white-50">Máx. impressões</label>
+                                                    <select name="frequency_cap_max" class="form-select">
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3" selected>3</option>
+                                                        <option value="5">5</option>
+                                                        <option value="10">10</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label text-white-50">Por período</label>
+                                                    <select name="frequency_cap_days" class="form-select">
+                                                        <option value="1">1 dia</option>
+                                                        <option value="7" selected>7 dias</option>
+                                                        <option value="30">30 dias</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="targeting-card">
+                                        <h6>
+                                            <i class="fas fa-calendar-alt"></i>
+                                            Agendamento
+                                        </h6>
+                                        
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="enable_schedule" id="enableSchedule">
+                                            <label class="form-check-label text-white-50" for="enableSchedule">
+                                                Agendar exibição
+                                            </label>
+                                        </div>
+                                        
+                                        <div id="scheduleSettings" style="display: none;">
+                                            <div class="mb-2">
+                                                <label class="form-label text-white-50">Dias da semana</label>
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="schedule_days[]" value="1" id="monday">
+                                                        <label class="form-check-label text-white-50" for="monday">Seg</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="schedule_days[]" value="2" id="tuesday">
+                                                        <label class="form-check-label text-white-50" for="tuesday">Ter</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="schedule_days[]" value="3" id="wednesday">
+                                                        <label class="form-check-label text-white-50" for="wednesday">Qua</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="schedule_days[]" value="4" id="thursday">
+                                                        <label class="form-check-label text-white-50" for="thursday">Qui</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="schedule_days[]" value="5" id="friday">
+                                                        <label class="form-check-label text-white-50" for="friday">Sex</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="schedule_days[]" value="6" id="saturday">
+                                                        <label class="form-check-label text-white-50" for="saturday">Sáb</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" name="schedule_days[]" value="0" id="sunday">
+                                                        <label class="form-check-label text-white-50" for="sunday">Dom</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label class="form-label text-white-50">Hora início</label>
+                                                    <input type="time" name="schedule_start_time" class="form-control" value="08:00">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label text-white-50">Hora fim</label>
+                                                    <input type="time" name="schedule_end_time" class="form-control" value="22:00">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Etapa 4: Upload de Mídia -->
+                <div class="step-content" data-step="4">
+                    <div class="form-section">
+                        <h4>
+                            <i class="fas fa-images"></i>
+                            Biblioteca de Mídia
+                        </h4>
+                        
+                        <div class="media-upload-area" id="mediaUploadArea">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-white-50 mb-3"></i>
+                            <h5 class="text-white mb-2">Arraste e solte seus arquivos aqui</h5>
+                            <p class="text-white-50 mb-3">ou clique para selecionar</p>
+                            <input type="file" id="mediaFiles" name="media_files[]" multiple accept="image/*,video/*" style="display: none;">
+                            <button type="button" class="btn btn-outline-light" onclick="document.getElementById('mediaFiles').click()">
+                                <i class="fas fa-plus me-2"></i>
+                                Selecionar Arquivos
+                            </button>
+                            <p class="text-white-50 mt-2 mb-0">
+                                <small>Formatos: PNG, JPG, GIF, MP4, MOV, AVI, WEBM | Máximo: 50MB por arquivo</small>
+                            </p>
+                        </div>
+                        
+                        <div class="media-preview" id="mediaPreview"></div>
+                        
+                        <div class="mt-4">
+                            <h5 class="text-white mb-3">
+                                <i class="fas fa-folder me-2"></i>
+                                Mídia Existente
+                            </h5>
+                            <div class="media-preview" id="existingMedia">
+                                <!-- Mídia existente será carregada aqui -->
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <h6>
+                                <i class="fas fa-lightbulb"></i>
+                                Dicas de Mídia com IA
+                            </h6>
+                            <ul class="mb-0">
+                                <li>Use imagens com pessoas para aumentar o engajamento</li>
+                                <li>Vídeos de até 15 segundos têm melhor performance</li>
+                                <li>Teste diferentes formatos: quadrado, vertical e horizontal</li>
+                                <li>Inclua texto na imagem, mas não mais que 20% da área</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Etapa 5: Revisão e Lançamento -->
+                <div class="step-content" data-step="5">
+                    <div class="form-section">
+                        <h4>
+                            <i class="fas fa-eye"></i>
+                            Revisão da Campanha
+                        </h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="targeting-card">
+                                    <h6>
+                                        <i class="fas fa-info-circle"></i>
+                                        Informações Básicas
+                                    </h6>
+                                    <div id="reviewBasicInfo"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="targeting-card">
+                                    <h6>
+                                        <i class="fas fa-bullseye"></i>
+                                        Segmentação
+                                    </h6>
+                                    <div id="reviewTargeting"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="targeting-card mt-3">
+                            <h6>
+                                <i class="fas fa-edit"></i>
+                                Preview do Anúncio
+                            </h6>
+                            <div id="adPreview" class="p-3" style="background: rgba(255,255,255,0.1); border-radius: 10px;">
+                                <!-- Preview será gerado aqui -->
+                            </div>
+                        </div>
+                        
+                        <div class="targeting-card mt-3">
+                            <h6>
+                                <i class="fas fa-chart-bar"></i>
+                                Estimativas de Performance
+                            </h6>
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <div class="text-white">
+                                        <h4 id="estimatedReach">-</h4>
+                                        <small class="text-white-50">Alcance Estimado</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-white">
+                                        <h4 id="estimatedClicks">-</h4>
+                                        <small class="text-white-50">Cliques/Dia</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-white">
+                                        <h4 id="estimatedCPC">-</h4>
+                                        <small class="text-white-50">CPC Médio</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-white">
+                                        <h4 id="estimatedCTR">-</h4>
+                                        <small class="text-white-50">CTR Estimado</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <h6>
+                                <i class="fas fa-robot"></i>
+                                Recomendações Finais da IA
+                            </h6>
+                            <div id="finalRecommendations">
+                                <ul>
+                                    <li>Sua segmentação está bem definida para o público-alvo</li>
+                                    <li>Considere testar diferentes horários de exibição</li>
+                                    <li>Monitore o CTR nas primeiras 24h e ajuste se necessário</li>
+                                    <li>Prepare variações de copy para testes A/B futuros</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <div class="form-check form-check-inline mb-3">
+                                <input class="form-check-input" type="checkbox" id="confirmLaunch" required>
+                                <label class="form-check-label text-white" for="confirmLaunch">
+                                    Confirmo que revisei todos os dados e autorizo o lançamento da campanha com orçamento real
+                                </label>
+                            </div>
+                            
+                            <div class="d-flex gap-3 justify-content-center">
+                                <button type="button" class="btn btn-outline-light" onclick="saveDraft()">
+                                    <i class="fas fa-save me-2"></i>
+                                    Salvar Rascunho
+                                </button>
+                                
+                                <button type="button" class="btn btn-success btn-lg" onclick="launchCampaign()" id="launchBtn" disabled>
+                                    <i class="fas fa-rocket me-2"></i>
+                                    LANÇAR CAMPANHA REAL
+                                </button>
+                            </div>
+                            
+                            <p class="text-warning mt-2 mb-0">
+                                <small>
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    Atenção: Esta ação criará uma campanha real que consumirá orçamento nas plataformas selecionadas
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-outline-light" id="prevBtn" onclick="previousStep()" style="display: none;">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Anterior
+                    </button>
+                    
+                    <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                        Próximo
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+        let totalSteps = 5;
+        let selectedInterests = [];
+        let uploadedFiles = [];
+        let analysisData = null;
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadExistingMedia();
+            updateStepIndicator();
+        });
+        
+        function setupEventListeners() {
+            // Platform selector
+            document.querySelectorAll('.platform-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show/hide Google keywords section
+                    const platform = this.dataset.platform;
+                    const googleKeywords = document.getElementById('googleKeywords');
+                    if (platform === 'google' || platform === 'both') {
+                        googleKeywords.style.display = 'block';
+                    } else {
+                        googleKeywords.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Interest tags
+            document.querySelectorAll('.interest-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                    const interest = this.dataset.interest;
+                    
+                    if (this.classList.contains('selected')) {
+                        if (!selectedInterests.includes(interest)) {
+                            selectedInterests.push(interest);
+                        }
+                    } else {
+                        selectedInterests = selectedInterests.filter(i => i !== interest);
+                    }
+                    
+                    updateSelectedInterests();
+                });
+            });
+            
+            // Media upload
+            const mediaUploadArea = document.getElementById('mediaUploadArea');
+            const mediaFiles = document.getElementById('mediaFiles');
+            
+            mediaUploadArea.addEventListener('click', () => mediaFiles.click());
+            
+            mediaUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                mediaUploadArea.classList.add('dragover');
+            });
+            
+            mediaUploadArea.addEventListener('dragleave', () => {
+                mediaUploadArea.classList.remove('dragover');
+            });
+            
+            mediaUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                mediaUploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            mediaFiles.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+            
+            // Frequency cap toggle
+            document.getElementById('enableFrequencyCap').addEventListener('change', function() {
+                const settings = document.getElementById('frequencyCapSettings');
+                settings.style.display = this.checked ? 'block' : 'none';
+            });
+            
+            // Schedule toggle
+            document.getElementById('enableSchedule').addEventListener('change', function() {
+                const settings = document.getElementById('scheduleSettings');
+                settings.style.display = this.checked ? 'block' : 'none';
+            });
+            
+            // Confirm launch checkbox
+            document.getElementById('confirmLaunch').addEventListener('change', function() {
+                document.getElementById('launchBtn').disabled = !this.checked;
+            });
+            
+            // Form validation
+            document.getElementById('campaignForm').addEventListener('input', validateCurrentStep);
+        }
+        
+        function updateStepIndicator() {
+            document.querySelectorAll('.step').forEach((step, index) => {
+                const stepNumber = index + 1;
+                step.classList.remove('active', 'completed');
+                
+                if (stepNumber < currentStep) {
+                    step.classList.add('completed');
+                } else if (stepNumber === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').style.display = currentStep > 1 ? 'block' : 'none';
+            document.getElementById('nextBtn').style.display = currentStep < totalSteps ? 'block' : 'none';
+        }
+        
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                    currentStep++;
+                    document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+                    updateStepIndicator();
+                    
+                    if (currentStep === 5) {
+                        generateReview();
+                    }
+                }
+            }
+        }
+        
+        function previousStep() {
+            if (currentStep > 1) {
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                currentStep--;
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+                updateStepIndicator();
+            }
+        }
+        
+        function validateCurrentStep() {
+            const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
+            const requiredFields = currentStepElement.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            return isValid;
+        }
+        
+        // Análise automática de produto
+        async function analyzeProduct() {
+            const productUrl = document.getElementById('productUrl').value.trim();
+            const platform = document.querySelector('.platform-btn.active').dataset.platform;
+            
+            if (!productUrl) {
+                alert('Por favor, insira a URL do produto');
+                return;
+            }
+            
+            showProgress('Analisando produto...', 0);
+            
+            try {
+                const response = await fetch('/api/analyze-product', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_url: productUrl,
+                        platform: platform
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    analysisData = data;
+                    showAnalysisResults(data);
+                    updateProgress('Análise concluída!', 100);
+                    
+                    // Auto-fill form with AI suggestions
+                    fillFormWithAnalysis(data);
+                } else {
+                    alert('Erro na análise: ' + data.error);
+                    hideProgress();
+                }
+            } catch (error) {
+                alert('Erro na análise: ' + error.message);
+                hideProgress();
+            }
+        }
+        
+        async function generateCompleteCampaign() {
+            const productUrl = document.getElementById('productUrl').value.trim();
+            const platform = document.querySelector('.platform-btn.active').dataset.platform;
+            
+            if (!productUrl) {
+                alert('Por favor, insira a URL do produto');
+                return;
+            }
+            
+            showProgress('Gerando campanha completa...', 0);
+            
+            try {
+                const response = await fetch('/api/generate-complete-campaign', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_url: productUrl,
+                        platform: platform,
+                        auto_launch: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateProgress('Campanha gerada com sucesso!', 100);
+                    
+                    // Show success message
+                    alert(`${data.campaigns_created.length} campanha(s) criada(s) automaticamente! Redirecionando para a lista de campanhas.`);
+                    
+                    // Redirect to campaigns page
+                    window.location.href = '/campaigns';
+                } else {
+                    alert('Erro ao gerar campanha: ' + data.error);
+                    hideProgress();
+                }
+            } catch (error) {
+                alert('Erro ao gerar campanha: ' + error.message);
+                hideProgress();
+            }
+        }
+        
+        function manualMode() {
+            nextStep();
+        }
+        
+        function showAnalysisResults(data) {
+            const resultsDiv = document.getElementById('analysisResults');
+            const contentDiv = document.getElementById('analysisContent');
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-info">Dados do Produto:</h6>
+                        <ul class="text-white-50">
+                            <li><strong>Título:</strong> ${data.product_data.title || 'N/A'}</li>
+                            <li><strong>Preço:</strong> ${data.product_data.price || 'N/A'}</li>
+                            <li><strong>Categoria:</strong> ${data.product_data.category || 'N/A'}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success">Sugestões de Targeting:</h6>
+                        <ul class="text-white-50">
+            `;
+            
+            if (data.targeting_suggestions.facebook) {
+                html += `<li><strong>Idade:</strong> ${data.targeting_suggestions.facebook.age_min}-${data.targeting_suggestions.facebook.age_max} anos</li>`;
+                html += `<li><strong>Interesses:</strong> ${data.targeting_suggestions.facebook.interests.slice(0, 3).join(', ')}</li>`;
+            }
+            
+            html += `
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            contentDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+        
+        function fillFormWithAnalysis(data) {
+            // Fill basic info
+            if (data.product_data.title) {
+                document.querySelector('[name="campaign_name"]').value = `Campanha - ${data.product_data.title.substring(0, 30)}`;
+            }
+            
+            // Fill copy
+            if (data.copy_suggestions.facebook) {
+                const copy = data.copy_suggestions.facebook;
+                if (copy.headlines && copy.headlines.length > 0) {
+                    document.querySelector('[name="headline"]').value = copy.headlines[0];
+                }
+                if (copy.descriptions && copy.descriptions.length > 0) {
+                    document.querySelector('[name="description"]').value = copy.descriptions[0];
+                }
+            }
+            
+            // Fill targeting
+            if (data.targeting_suggestions.facebook) {
+                const targeting = data.targeting_suggestions.facebook;
+                
+                if (targeting.age_min) {
+                    document.querySelector('[name="age_min"]').value = targeting.age_min;
+                }
+                if (targeting.age_max) {
+                    document.querySelector('[name="age_max"]').value = targeting.age_max;
+                }
+                
+                // Add interests
+                if (targeting.interests) {
+                    targeting.interests.forEach(interest => {
+                        if (!selectedInterests.includes(interest)) {
+                            selectedInterests.push(interest);
+                        }
+                    });
+                    updateSelectedInterests();
+                }
+            }
+            
+            // Fill budget suggestion
+            if (data.campaign_suggestions && data.campaign_suggestions.budget_suggestions) {
+                document.querySelector('[name="daily_budget"]').value = data.campaign_suggestions.budget_suggestions.daily_recommended || 100;
+            }
+        }
+        
+        function showProgress(message, percent) {
+            const container = document.getElementById('progressContainer');
+            const text = document.getElementById('progressText');
+            const bar = document.getElementById('progressBar');
+            
+            container.style.display = 'block';
+            text.textContent = `${percent}%`;
+            bar.style.width = `${percent}%`;
+            
+            // Simulate progress
+            if (percent < 100) {
+                setTimeout(() => {
+                    showProgress(message, Math.min(percent + 10, 90));
+                }, 200);
+            }
+        }
+        
+        function updateProgress(message, percent) {
+            const text = document.getElementById('progressText');
+            const bar = document.getElementById('progressBar');
+            
+            text.textContent = `${percent}%`;
+            bar.style.width = `${percent}%`;
+            
+            if (percent >= 100) {
+                setTimeout(hideProgress, 2000);
+            }
+        }
+        
+        function hideProgress() {
+            document.getElementById('progressContainer').style.display = 'none';
+        }
+        
+        function updateSelectedInterests() {
+            const container = document.getElementById('selectedInterests');
+            const input = document.getElementById('interestsInput');
+            
+            container.innerHTML = '';
+            selectedInterests.forEach(interest => {
+                const tag = document.createElement('span');
+                tag.className = 'interest-tag selected';
+                tag.innerHTML = `${interest} <i class="fas fa-times ms-1" onclick="removeInterest('${interest}')"></i>`;
+                container.appendChild(tag);
+            });
+            
+            input.value = selectedInterests.join(',');
+        }
+        
+        function removeInterest(interest) {
+            selectedInterests = selectedInterests.filter(i => i !== interest);
+            updateSelectedInterests();
+            
+            // Update visual tags
+            document.querySelectorAll('.interest-tag').forEach(tag => {
+                if (tag.dataset.interest === interest) {
+                    tag.classList.remove('selected');
+                }
+            });
+        }
+        
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.size > 50 * 1024 * 1024) {
+                    alert(`Arquivo ${file.name} é muito grande. Máximo 50MB.`);
+                    return;
+                }
+                
+                uploadedFiles.push(file);
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('mediaPreview');
+                    const item = document.createElement('div');
+                    item.className = 'media-item';
+                    
+                    if (file.type.startsWith('image/')) {
+                        item.innerHTML = `
+                            <img src="${e.target.result}" alt="${file.name}">
+                            <button type="button" class="remove-btn" onclick="removeFile('${file.name}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                    } else if (file.type.startsWith('video/')) {
+                        item.innerHTML = `
+                            <video src="${e.target.result}" controls></video>
+                            <button type="button" class="remove-btn" onclick="removeFile('${file.name}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                    }
+                    
+                    preview.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function removeFile(filename) {
+            uploadedFiles = uploadedFiles.filter(f => f.name !== filename);
+            // Remove from preview
+            document.querySelectorAll('.media-item').forEach(item => {
+                if (item.querySelector('img, video').alt === filename || item.querySelector('img, video').src.includes(filename)) {
+                    item.remove();
+                }
+            });
+        }
+        
+        function loadExistingMedia() {
+            // Load existing media from server
+            fetch('/api/media-library')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const container = document.getElementById('existingMedia');
+                        data.media.forEach(media => {
+                            const item = document.createElement('div');
+                            item.className = 'media-item';
+                            item.innerHTML = `
+                                <img src="${media.thumbnail_path || media.file_path}" alt="${media.original_name}">
+                                <button type="button" class="btn btn-sm btn-primary" onclick="selectExistingMedia('${media.id}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            `;
+                            container.appendChild(item);
+                        });
+                    }
+                })
+                .catch(error => console.error('Erro ao carregar mídia:', error));
+        }
+        
+        function selectExistingMedia(mediaId) {
+            // Add to selected media
+            console.log('Selected media:', mediaId);
+        }
+        
+        function generateReview() {
+            // Generate campaign review
+            const formData = new FormData(document.getElementById('campaignForm'));
+            
+            // Basic info
+            document.getElementById('reviewBasicInfo').innerHTML = `
+                <p><strong>Nome:</strong> ${formData.get('campaign_name')}</p>
+                <p><strong>Plataforma:</strong> ${formData.get('platform')}</p>
+                <p><strong>Orçamento:</strong> R$ ${formData.get('daily_budget')}/dia</p>
+                <p><strong>Objetivo:</strong> ${formData.get('objective')}</p>
+            `;
+            
+            // Targeting
+            document.getElementById('reviewTargeting').innerHTML = `
+                <p><strong>Idade:</strong> ${formData.get('age_min')}-${formData.get('age_max')} anos</p>
+                <p><strong>Gênero:</strong> ${formData.get('gender')}</p>
+                <p><strong>Interesses:</strong> ${selectedInterests.join(', ')}</p>
+                <p><strong>Localização:</strong> ${formData.get('countries') || 'Brasil'}</p>
+            `;
+            
+            // Ad preview
+            document.getElementById('adPreview').innerHTML = `
+                <div style="max-width: 400px; margin: 0 auto; background: white; color: black; padding: 15px; border-radius: 10px;">
+                    <h6>${formData.get('headline')}</h6>
+                    <p>${formData.get('description')}</p>
+                    <button class="btn btn-primary btn-sm">${formData.get('cta_type').replace('_', ' ')}</button>
+                </div>
+            `;
+            
+            // Estimates
+            const budget = parseFloat(formData.get('daily_budget')) || 100;
+            document.getElementById('estimatedReach').textContent = Math.round(budget * 50).toLocaleString();
+            document.getElementById('estimatedClicks').textContent = Math.round(budget / 2);
+            document.getElementById('estimatedCPC').textContent = 'R$ 2,50';
+            document.getElementById('estimatedCTR').textContent = '2,8%';
+        }
+        
+        async function launchCampaign() {
+            if (!document.getElementById('confirmLaunch').checked) {
+                alert('Por favor, confirme que deseja lançar a campanha');
+                return;
+            }
+            
+            const formData = new FormData(document.getElementById('campaignForm'));
+            
+            // Add uploaded files
+            uploadedFiles.forEach(file => {
+                formData.append('media_files[]', file);
+            });
+            
+            // Add selected interests
+            formData.set('interests', selectedInterests.join(','));
+            
+            showProgress('Lançando campanha...', 0);
+            
+            try {
+                const response = await fetch('/api/launch-campaign', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateProgress('Campanha lançada com sucesso!', 100);
+                    
+                    setTimeout(() => {
+                        alert('Campanha lançada com sucesso! Redirecionando para o dashboard.');
+                        window.location.href = '/campaigns';
+                    }, 2000);
+                } else {
+                    alert('Erro ao lançar campanha: ' + data.message);
+                    hideProgress();
+                }
+            } catch (error) {
+                alert('Erro ao lançar campanha: ' + error.message);
+                hideProgress();
+            }
+        }
+        
+        async function saveDraft() {
+            const formData = new FormData(document.getElementById('campaignForm'));
+            formData.set('status', 'draft');
+            formData.set('interests', selectedInterests.join(','));
+            
+            try {
+                const response = await fetch('/api/save-campaign', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Rascunho salvo com sucesso!');
+                } else {
+                    alert('Erro ao salvar rascunho: ' + data.message);
+                }
+            } catch (error) {
+                alert('Erro ao salvar rascunho: ' + error.message);
+            }
+        }
+        
+        // AI functions
+        async function generateCopyWithAI() {
+            const productUrl = document.getElementById('productUrl').value;
+            const tone = document.querySelector('[name="tone"]').value;
+            
+            if (!productUrl) {
+                alert('Por favor, insira a URL do produto primeiro');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/generate-copy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_url: productUrl,
+                        tone: tone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.querySelector('[name="headline"]').value = data.copy.headline;
+                    document.querySelector('[name="description"]').value = data.copy.description;
+                    alert('Copy gerado com IA!');
+                } else {
+                    alert('Erro ao gerar copy: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro ao gerar copy: ' + error.message);
+            }
+        }
+        
+        async function suggestInterestsWithAI() {
+            const productUrl = document.getElementById('productUrl').value;
+            
+            if (!productUrl) {
+                alert('Por favor, insira a URL do produto primeiro');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/suggest-interests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_url: productUrl
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    data.interests.forEach(interest => {
+                        if (!selectedInterests.includes(interest)) {
+                            selectedInterests.push(interest);
+                        }
+                    });
+                    updateSelectedInterests();
+                    alert('Interesses sugeridos pela IA adicionados!');
+                } else {
+                    alert('Erro ao sugerir interesses: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro ao sugerir interesses: ' + error.message);
+            }
+        }
+        
+        async function suggestKeywordsWithAI() {
+            const productUrl = document.getElementById('productUrl').value;
+            
+            if (!productUrl) {
+                alert('Por favor, insira a URL do produto primeiro');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/suggest-keywords', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_url: productUrl
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.querySelector('[name="keywords_exact"]').value = data.keywords.exact.join('\n');
+                    document.querySelector('[name="keywords_phrase"]').value = data.keywords.phrase.join('\n');
+                    document.querySelector('[name="keywords_broad"]').value = data.keywords.broad.join('\n');
+                    document.querySelector('[name="keywords_negative"]').value = data.keywords.negative.join('\n');
+                    alert('Palavras-chave sugeridas pela IA!');
+                } else {
+                    alert('Erro ao sugerir palavras-chave: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro ao sugerir palavras-chave: ' + error.message);
+            }
+        }
+        
+        function createCustomAudience() {
+            alert('Funcionalidade de criação de público personalizado será implementada em breve!');
+        }
+    </script>
+</body>
+</html>

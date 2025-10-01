@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Híbrida - Robô Otimizador de Campanhas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="fas fa-home"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/copy-generator">
+                                <i class="fas fa-pen-fancy"></i>
+                                Gerador de Copy
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/competitor-analysis">
+                                <i class="fas fa-search"></i>
+                                Análise de Concorrentes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/campaign-sandbox">
+                                <i class="fas fa-flask"></i>
+                                Sandbox de Campanhas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/hybrid-ai">
+                                <i class="fas fa-brain"></i>
+                                IA Híbrida
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/campaigns">
+                                <i class="fas fa-bullhorn"></i>
+                                Campanhas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/settings">
+                                <i class="fas fa-cogs"></i>
+                                Configurações
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Sistema de IA Híbrida</h1>
+                </div>
+
+                <!-- Status dos Provedores -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-server"></i> Status dos Provedores de IA</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row" id="provider-status">
+                                    <!-- Será preenchido via JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seleção de Tarefa -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-tasks"></i> Selecionar Tarefa</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="task-type" class="form-label">Tipo de Tarefa</label>
+                                    <select class="form-select" id="task-type">
+                                        <option value="copy_generation">Geração de Copy</option>
+                                        <option value="competitor_analysis">Análise de Concorrentes</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="provider-selection" class="form-label">Provedor de IA</label>
+                                    <select class="form-select" id="provider-selection">
+                                        <option value="auto">Seleção Automática (Recomendado)</option>
+                                        <option value="openai">OpenAI</option>
+                                        <option value="manus">Manus AI</option>
+                                        <option value="compare">Comparar Todos</option>
+                                    </select>
+                                </div>
+
+                                <!-- Formulário para Geração de Copy -->
+                                <div id="copy-form" style="display: block;">
+                                    <h6>Parâmetros para Geração de Copy</h6>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control" id="copy-produto" placeholder="Produto/Serviço">
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control" id="copy-nicho" placeholder="Nicho">
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control" id="copy-publico" placeholder="Público-Alvo">
+                                    </div>
+                                    <div class="mb-2">
+                                        <select class="form-select" id="copy-objetivo">
+                                            <option>Vendas</option>
+                                            <option>Leads</option>
+                                            <option>Engajamento</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <select class="form-select" id="copy-tom">
+                                            <option>Profissional</option>
+                                            <option>Amigável</option>
+                                            <option>Urgente</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Formulário para Análise de Concorrentes -->
+                                <div id="competitor-form" style="display: none;">
+                                    <h6>Parâmetros para Análise de Concorrentes</h6>
+                                    <div class="mb-2">
+                                        <input type="url" class="form-control" id="competitor-url" placeholder="URL do Concorrente">
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-primary" onclick="executeTask()">
+                                    <i class="fas fa-play"></i> Executar Tarefa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-bar"></i> Resultados</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="results-container">
+                                    <p class="text-muted">Selecione uma tarefa e execute para ver os resultados.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Carregar status dos provedores
+        function loadProviderStatus() {
+            fetch('/api/provider-status')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('provider-status');
+                    container.innerHTML = '';
+                    
+                    Object.entries(data).forEach(([id, provider]) => {
+                        const statusClass = provider.status === 'connected' ? 'success' : 'danger';
+                        const statusIcon = provider.status === 'connected' ? 'check-circle' : 'times-circle';
+                        
+                        container.innerHTML += `
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-${statusClass}">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-${statusIcon} text-${statusClass}"></i>
+                                            ${provider.name}
+                                        </h6>
+                                        <p class="card-text">
+                                            <small>Status: ${provider.status}</small><br>
+                                            <small>Custo: R$ ${provider.cost_per_request} por requisição</small><br>
+                                            <small>Capacidades: ${provider.capabilities.join(', ')}</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+        }
+
+        // Alternar formulários baseado na tarefa selecionada
+        document.getElementById('task-type').addEventListener('change', function() {
+            const taskType = this.value;
+            document.getElementById('copy-form').style.display = taskType === 'copy_generation' ? 'block' : 'none';
+            document.getElementById('competitor-form').style.display = taskType === 'competitor_analysis' ? 'block' : 'none';
+        });
+
+        // Executar tarefa
+        function executeTask() {
+            const taskType = document.getElementById('task-type').value;
+            const provider = document.getElementById('provider-selection').value;
+            
+            let data = {
+                task: taskType,
+                provider: provider
+            };
+
+            if (taskType === 'copy_generation') {
+                data.input_data = {
+                    produto: document.getElementById('copy-produto').value,
+                    nicho: document.getElementById('copy-nicho').value,
+                    publico_alvo: document.getElementById('copy-publico').value,
+                    objetivo: document.getElementById('copy-objetivo').value,
+                    tom_voz: document.getElementById('copy-tom').value
+                };
+            } else if (taskType === 'competitor_analysis') {
+                data.input_data = {
+                    url: document.getElementById('competitor-url').value
+                };
+            }
+
+            fetch('/api/hybrid-ai-execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                displayResults(result, provider);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('results-container').innerHTML = '<p class="text-danger">Erro ao executar tarefa.</p>';
+            });
+        }
+
+        // Exibir resultados
+        function displayResults(result, provider) {
+            const container = document.getElementById('results-container');
+            
+            if (provider === 'compare') {
+                // Exibir comparação
+                container.innerHTML = '<h6>Comparação de Provedores:</h6>';
+                Object.entries(result).forEach(([providerName, data]) => {
+                    container.innerHTML += `
+                        <div class="mb-3">
+                            <h6>${providerName.toUpperCase()}</h6>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                });
+            } else {
+                // Exibir resultado único
+                container.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+            }
+        }
+
+        // Carregar status na inicialização
+        loadProviderStatus();
+    </script>
+</body>
+</html>

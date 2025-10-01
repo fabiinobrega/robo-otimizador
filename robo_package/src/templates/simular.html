@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}Simulador de Campanhas - Robô Otimizador{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-flask"></i> Simulador de Campanhas</h1>
+            <button class="btn btn-outline-primary" onclick="resetForm()">
+                <i class="fas fa-refresh"></i> Limpar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Formulário de Configuração -->
+    <div class="col-lg-6">
+        <div class="card glass-card h-100">
+            <div class="card-header">
+                <h5><i class="fas fa-cog"></i> Configuração da Simulação</h5>
+            </div>
+            <div class="card-body">
+                <form id="simulationForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Plataforma</label>
+                            <select class="form-select" name="plataforma" required>
+                                <option value="">Selecione...</option>
+                                <option value="Facebook">Facebook Ads</option>
+                                <option value="Google">Google Ads</option>
+                                <option value="Instagram">Instagram Ads</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Objetivo</label>
+                            <select class="form-select" name="objetivo" required>
+                                <option value="">Selecione...</option>
+                                <option value="Vendas">Vendas</option>
+                                <option value="Leads">Geração de Leads</option>
+                                <option value="Trafego">Tráfego</option>
+                                <option value="Engajamento">Engajamento</option>
+                                <option value="Reconhecimento">Reconhecimento de Marca</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Orçamento Diário (R$)</label>
+                            <input type="number" class="form-control" name="orcamento_diario" min="10" max="10000" step="0.01" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Duração (dias)</label>
+                            <input type="number" class="form-control" name="duracao_dias" min="1" max="365" value="7" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Público-Alvo</label>
+                        <select class="form-select" name="publico_alvo" required>
+                            <option value="">Selecione...</option>
+                            <option value="Amplo">Público Amplo</option>
+                            <option value="Personalizado">Público Personalizado</option>
+                            <option value="Lookalike">Público Semelhante</option>
+                            <option value="Retargeting">Retargeting</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Idade Mínima</label>
+                            <input type="number" class="form-control" name="idade_min" min="13" max="65" value="18">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Idade Máxima</label>
+                            <input type="number" class="form-control" name="idade_max" min="13" max="65" value="65">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Localização</label>
+                        <select class="form-select" name="localizacao">
+                            <option value="Brasil">Brasil</option>
+                            <option value="São Paulo">São Paulo</option>
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Minas Gerais">Minas Gerais</option>
+                            <option value="Região Sudeste">Região Sudeste</option>
+                            <option value="Região Sul">Região Sul</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nicho/Setor</label>
+                        <select class="form-select" name="nicho">
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Educação">Educação</option>
+                            <option value="Saúde">Saúde e Bem-estar</option>
+                            <option value="Tecnologia">Tecnologia</option>
+                            <option value="Finanças">Finanças</option>
+                            <option value="Imobiliário">Imobiliário</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Moda">Moda e Beleza</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-play"></i> Executar Simulação
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados da Simulação -->
+    <div class="col-lg-6">
+        <div class="card glass-card h-100">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line"></i> Resultados da Simulação</h5>
+            </div>
+            <div class="card-body">
+                <div id="simulationResults" class="text-center text-muted">
+                    <i class="fas fa-flask fa-3x mb-3"></i>
+                    <p>Configure os parâmetros e execute a simulação para ver os resultados estimados.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Métricas Detalhadas -->
+<div class="row mt-4" id="detailedMetrics" style="display: none;">
+    <div class="col-12">
+        <div class="card glass-card">
+            <div class="card-header">
+                <h5><i class="fas fa-analytics"></i> Métricas Detalhadas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="metricsContent">
+                    <!-- Conteúdo será preenchido via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('simulationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Mostrar loading
+    const resultsDiv = document.getElementById('simulationResults');
+    resultsDiv.innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Executando simulação...</p>
+        </div>
+    `;
+    
+    // Simular chamada à API
+    fetch('/api/simulate-campaign', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        displayResults(result);
+        showDetailedMetrics(result);
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        resultsDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                Erro ao executar simulação. Tente novamente.
+            </div>
+        `;
+    });
+});
+
+function displayResults(result) {
+    const resultsDiv = document.getElementById('simulationResults');
+    
+    resultsDiv.innerHTML = `
+        <div class="row text-center">
+            <div class="col-6 mb-3">
+                <div class="metric-card">
+                    <h3 class="text-primary">${result.impressoes_estimadas.toLocaleString()}</h3>
+                    <small class="text-muted">Impressões</small>
+                </div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="metric-card">
+                    <h3 class="text-success">${result.cliques_estimados.toLocaleString()}</h3>
+                    <small class="text-muted">Cliques</small>
+                </div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="metric-card">
+                    <h3 class="text-info">${result.conversoes_estimadas}</h3>
+                    <small class="text-muted">Conversões</small>
+                </div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="metric-card">
+                    <h3 class="text-warning">R$ ${result.orcamento_total.toFixed(2)}</h3>
+                    <small class="text-muted">Orçamento Total</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-4 text-center">
+                <strong>CTR</strong><br>
+                <span class="text-primary">${result.ctr_estimado}%</span>
+            </div>
+            <div class="col-4 text-center">
+                <strong>CPC</strong><br>
+                <span class="text-success">R$ ${result.cpc_estimado.toFixed(2)}</span>
+            </div>
+            <div class="col-4 text-center">
+                <strong>Taxa de Conversão</strong><br>
+                <span class="text-info">${result.taxa_conversao}%</span>
+            </div>
+        </div>
+    `;
+}
+
+function showDetailedMetrics(result) {
+    const metricsDiv = document.getElementById('metricsContent');
+    const detailedDiv = document.getElementById('detailedMetrics');
+    
+    let dailyMetricsHtml = '';
+    if (result.metricas_diarias) {
+        dailyMetricsHtml = result.metricas_diarias.map(day => `
+            <div class="col-md-2 mb-2">
+                <div class="card text-center">
+                    <div class="card-body p-2">
+                        <h6>Dia ${day.dia}</h6>
+                        <small>${day.cliques} cliques</small><br>
+                        <small>${day.conversoes} conv.</small>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    metricsDiv.innerHTML = `
+        <div class="col-12 mb-3">
+            <h6>Projeção Diária:</h6>
+            <div class="row">
+                ${dailyMetricsHtml}
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <h6>Fatores Considerados:</h6>
+            <ul class="list-unstyled">
+                ${result.fatores_considerados.map(factor => `<li><i class="fas fa-check text-success"></i> ${factor}</li>`).join('')}
+            </ul>
+        </div>
+        
+        <div class="col-md-6">
+            <h6>Recomendações:</h6>
+            <ul class="list-unstyled">
+                <li><i class="fas fa-lightbulb text-warning"></i> Teste diferentes criativos</li>
+                <li><i class="fas fa-lightbulb text-warning"></i> Monitore CTR nas primeiras 48h</li>
+                <li><i class="fas fa-lightbulb text-warning"></i> Ajuste público se CPC > R$ ${(result.cpc_estimado * 1.5).toFixed(2)}</li>
+            </ul>
+        </div>
+    `;
+    
+    detailedDiv.style.display = 'block';
+}
+
+function resetForm() {
+    document.getElementById('simulationForm').reset();
+    document.getElementById('simulationResults').innerHTML = `
+        <i class="fas fa-flask fa-3x mb-3"></i>
+        <p>Configure os parâmetros e execute a simulação para ver os resultados estimados.</p>
+    `;
+    document.getElementById('detailedMetrics').style.display = 'none';
+}
+</script>
+
+<style>
+.metric-card {
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+</style>
+{% endblock %}

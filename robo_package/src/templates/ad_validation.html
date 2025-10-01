@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de Anúncios - Robô Otimizador de Campanhas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="fas fa-home"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/ad-validation">
+                                <i class="fas fa-shield-alt"></i>
+                                Validação de Anúncios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/campaigns">
+                                <i class="fas fa-bullhorn"></i>
+                                Campanhas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/settings">
+                                <i class="fas fa-cogs"></i>
+                                Configurações
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Validação de Anúncios</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-edit"></i> Dados do Anúncio para Validação</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="validationForm">
+                                    <div class="mb-3">
+                                        <label for="copy_titulo" class="form-label">Título do Anúncio</label>
+                                        <input type="text" class="form-control" id="copy_titulo" name="copy_titulo" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="copy_descricao" class="form-label">Descrição do Anúncio</label>
+                                        <textarea class="form-control" id="copy_descricao" name="copy_descricao" rows="3" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="copy_cta" class="form-label">Call-to-Action</label>
+                                        <input type="text" class="form-control" id="copy_cta" name="copy_cta" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="url_destino" class="form-label">URL de Destino</label>
+                                        <input type="url" class="form-control" id="url_destino" name="url_destino" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="nicho" class="form-label">Nicho</label>
+                                        <select class="form-select" id="nicho" name="nicho">
+                                            <option value="geral">Geral</option>
+                                            <option value="saude">Saúde</option>
+                                            <option value="financas">Finanças</option>
+                                            <option value="emagrecimento">Emagrecimento</option>
+                                            <option value="educacao">Educação</option>
+                                            <option value="tecnologia">Tecnologia</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <h6>Segmentação de Público</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="age_min" class="form-label">Idade Mínima</label>
+                                            <input type="number" class="form-control" id="age_min" name="age_min" value="18" min="18">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="age_max" class="form-label">Idade Máxima</label>
+                                            <input type="number" class="form-control" id="age_max" name="age_max" value="65" max="65">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 mt-3">
+                                        <label for="interests" class="form-label">Interesses (separados por vírgula)</label>
+                                        <input type="text" class="form-control" id="interests" name="interests" placeholder="marketing, tecnologia, negócios">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="audience_size" class="form-label">Tamanho Estimado do Público</label>
+                                        <input type="number" class="form-control" id="audience_size" name="audience_size" value="50000">
+                                    </div>
+                                    
+                                    <h6>Especificações de Criativo (Opcional)</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label for="creative_width" class="form-label">Largura (px)</label>
+                                            <input type="number" class="form-control" id="creative_width" name="creative_width" value="1080">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="creative_height" class="form-label">Altura (px)</label>
+                                            <input type="number" class="form-control" id="creative_height" name="creative_height" value="1080">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="file_size" class="form-label">Tamanho (MB)</label>
+                                            <input type="number" step="0.1" class="form-control" id="file_size" name="file_size" value="2.5">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 mt-3">
+                                        <label for="text_overlay" class="form-label">% de Texto na Imagem</label>
+                                        <input type="number" step="0.01" max="1" class="form-control" id="text_overlay" name="text_overlay" value="0.15">
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-shield-alt"></i> Validar Anúncio
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div id="validation-results" style="display: none;">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-clipboard-check"></i> Resultados da Validação</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="overall-status"></div>
+                                    <div id="validation-details"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('validationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                copy_titulo: formData.get('copy_titulo'),
+                copy_descricao: formData.get('copy_descricao'),
+                copy_cta: formData.get('copy_cta'),
+                url_destino: formData.get('url_destino'),
+                nicho: formData.get('nicho'),
+                targeting: {
+                    age_min: parseInt(formData.get('age_min')),
+                    age_max: parseInt(formData.get('age_max')),
+                    interests: formData.get('interests').split(',').map(s => s.trim()).filter(s => s),
+                    audience_size: parseInt(formData.get('audience_size'))
+                },
+                creative_specs: {
+                    width: parseInt(formData.get('creative_width')),
+                    height: parseInt(formData.get('creative_height')),
+                    file_size: parseFloat(formData.get('file_size')) * 1024 * 1024 // Convert MB to bytes
+                },
+                text_overlay_ratio: parseFloat(formData.get('text_overlay'))
+            };
+            
+            fetch('/api/validate-ad', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                displayValidationResults(result);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro na validação');
+            });
+        });
+        
+        function displayValidationResults(result) {
+            document.getElementById('validation-results').style.display = 'block';
+            
+            // Status geral
+            const statusContainer = document.getElementById('overall-status');
+            const statusClass = getStatusClass(result.overall_status);
+            const statusIcon = getStatusIcon(result.overall_status);
+            
+            statusContainer.innerHTML = `
+                <div class="alert alert-${statusClass}">
+                    <h6><i class="fas fa-${statusIcon}"></i> Status: ${getStatusText(result.overall_status)}</h6>
+                    <p><strong>Nível de Risco:</strong> ${getRiskText(result.risk_level)}</p>
+                </div>
+            `;
+            
+            // Detalhes das validações
+            const detailsContainer = document.getElementById('validation-details');
+            let detailsHtml = '<h6>Detalhes das Validações:</h6>';
+            
+            Object.entries(result.validations).forEach(([type, validation]) => {
+                const validationStatusClass = getStatusClass(validation.status);
+                const validationStatusIcon = getStatusIcon(validation.status);
+                
+                detailsHtml += `
+                    <div class="card mb-2">
+                        <div class="card-header">
+                            <small><i class="fas fa-${validationStatusIcon} text-${validationStatusClass}"></i> ${getValidationTypeText(type)}</small>
+                        </div>
+                        <div class="card-body">
+                            ${validation.issues && validation.issues.length > 0 ? `
+                                <h6>Problemas:</h6>
+                                <ul>
+                                    ${validation.issues.map(issue => `<li class="text-danger">${issue}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                            ${validation.recommendations && validation.recommendations.length > 0 ? `
+                                <h6>Recomendações:</h6>
+                                <ul>
+                                    ${validation.recommendations.map(rec => `<li class="text-warning">${rec}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            detailsContainer.innerHTML = detailsHtml;
+        }
+        
+        function getStatusClass(status) {
+            switch(status) {
+                case 'approved': return 'success';
+                case 'review_required': return 'warning';
+                case 'rejected': return 'danger';
+                default: return 'secondary';
+            }
+        }
+        
+        function getStatusIcon(status) {
+            switch(status) {
+                case 'approved': return 'check-circle';
+                case 'review_required': return 'exclamation-triangle';
+                case 'rejected': return 'times-circle';
+                default: return 'question-circle';
+            }
+        }
+        
+        function getStatusText(status) {
+            switch(status) {
+                case 'approved': return 'Aprovado';
+                case 'review_required': return 'Revisão Necessária';
+                case 'rejected': return 'Rejeitado';
+                default: return 'Desconhecido';
+            }
+        }
+        
+        function getRiskText(risk) {
+            switch(risk) {
+                case 'low': return 'Baixo';
+                case 'medium': return 'Médio';
+                case 'high': return 'Alto';
+                default: return 'Desconhecido';
+            }
+        }
+        
+        function getValidationTypeText(type) {
+            switch(type) {
+                case 'content_policy': return 'Políticas de Conteúdo';
+                case 'landing_page': return 'Landing Page';
+                case 'creative_specs': return 'Especificações de Criativo';
+                case 'audience_targeting': return 'Segmentação de Público';
+                case 'claims_and_brands': return 'Marcas e Alegações';
+                default: return type;
+            }
+        }
+    </script>
+</body>
+</html>

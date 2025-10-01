@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Avançado - Robô Otimizador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px 0 rgba(31, 38, 135, 0.5);
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        .metric-change.positive {
+            color: #28a745;
+        }
+        
+        .metric-change.negative {
+            color: #dc3545;
+        }
+        
+        .platform-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-connected {
+            background: #28a745;
+        }
+        
+        .status-disconnected {
+            background: #dc3545;
+        }
+        
+        .status-warning {
+            background: #ffc107;
+        }
+        
+        .quick-action-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            color: white;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .campaign-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .campaign-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .campaign-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-paused {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-draft {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .ai-suggestion {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .suggestion-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0,0,0,0.1);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-robot me-2"></i>Robô Otimizador
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a>
+                <a class="nav-link" href="/ai-analyzer"><i class="fas fa-magic me-1"></i>IA Automática</a>
+                <a class="nav-link" href="/campaigns"><i class="fas fa-bullhorn me-1"></i>Campanhas</a>
+                <a class="nav-link" href="/settings"><i class="fas fa-cog me-1"></i>Configurações</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Métricas Principais -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <div class="metric-value text-primary">{{ metrics.total_campaigns or 0 }}</div>
+                    <div class="metric-label">Campanhas Ativas</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i> +12% este mês
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <div class="metric-value text-success">R$ {{ "%.2f"|format(metrics.total_spent or 0) }}</div>
+                    <div class="metric-label">Investimento Total</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i> +8% este mês
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <div class="metric-value text-info">{{ "%.1f"|format(metrics.avg_ctr or 0) }}%</div>
+                    <div class="metric-label">CTR Médio</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i> +15% este mês
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <div class="metric-value text-warning">{{ "%.1f"|format(metrics.roas or 0) }}x</div>
+                    <div class="metric-label">ROAS</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i> +22% este mês
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Status das Plataformas -->
+            <div class="col-lg-4">
+                <div class="glass-card p-4 mb-4">
+                    <h5 class="text-white mb-3"><i class="fas fa-plug me-2"></i>Status das Integrações</h5>
+                    
+                    <div class="platform-status">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator {{ 'status-connected' if api_status.openai else 'status-disconnected' }}"></div>
+                            <span>OpenAI</span>
+                        </div>
+                        <span class="badge bg-{{ 'success' if api_status.openai else 'danger' }}">
+                            {{ 'Conectado' if api_status.openai else 'Desconectado' }}
+                        </span>
+                    </div>
+                    
+                    <div class="platform-status">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator {{ 'status-connected' if api_status.manus else 'status-disconnected' }}"></div>
+                            <span>Manus AI</span>
+                        </div>
+                        <span class="badge bg-{{ 'success' if api_status.manus else 'danger' }}">
+                            {{ 'Conectado' if api_status.manus else 'Desconectado' }}
+                        </span>
+                    </div>
+                    
+                    <div class="platform-status">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator {{ 'status-connected' if api_status.facebook else 'status-disconnected' }}"></div>
+                            <span>Facebook Ads</span>
+                        </div>
+                        <span class="badge bg-{{ 'success' if api_status.facebook else 'danger' }}">
+                            {{ 'Conectado' if api_status.facebook else 'Desconectado' }}
+                        </span>
+                    </div>
+                    
+                    <div class="platform-status">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator {{ 'status-connected' if api_status.google else 'status-disconnected' }}"></div>
+                            <span>Google Ads</span>
+                        </div>
+                        <span class="badge bg-{{ 'success' if api_status.google else 'danger' }}">
+                            {{ 'Conectado' if api_status.google else 'Desconectado' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="glass-card p-4 mb-4">
+                    <h5 class="text-white mb-3"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h5>
+                    <div class="text-center">
+                        <a href="/ai-analyzer" class="quick-action-btn">
+                            <i class="fas fa-magic me-2"></i>IA Automática
+                        </a>
+                        <a href="/create-campaign" class="quick-action-btn">
+                            <i class="fas fa-plus me-2"></i>Nova Campanha
+                        </a>
+                        <a href="/campaigns" class="quick-action-btn">
+                            <i class="fas fa-eye me-2"></i>Ver Campanhas
+                        </a>
+                        <a href="/settings" class="quick-action-btn">
+                            <i class="fas fa-cog me-2"></i>Configurações
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos e Performance -->
+            <div class="col-lg-8">
+                <div class="metric-card">
+                    <h5><i class="fas fa-chart-line me-2"></i>Performance das Campanhas</h5>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Campanhas Recentes -->
+            <div class="col-lg-6">
+                <div class="metric-card">
+                    <h5><i class="fas fa-bullhorn me-2"></i>Campanhas Recentes</h5>
+                    {% for campaign in recent_campaigns %}
+                    <div class="campaign-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ campaign.name }}</h6>
+                                <small class="text-muted">{{ campaign.platform }} • R$ {{ "%.2f"|format(campaign.budget) }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="campaign-status status-{{ campaign.status }}">{{ campaign.status }}</span>
+                                <div class="mt-1">
+                                    <small class="text-muted">CTR: {{ "%.2f"|format(campaign.ctr) }}%</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="text-center mt-3">
+                        <a href="/campaigns" class="btn btn-outline-primary">Ver Todas as Campanhas</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sugestões da IA -->
+            <div class="col-lg-6">
+                <div class="ai-suggestion">
+                    <h5><i class="fas fa-lightbulb me-2"></i>Sugestões da IA</h5>
+                    
+                    <div class="suggestion-item">
+                        <h6><i class="fas fa-target me-2"></i>Otimização de Público</h6>
+                        <p class="mb-0">Suas campanhas de "Curso Online" têm melhor performance com público de 25-35 anos. Considere ajustar o targeting.</p>
+                    </div>
+                    
+                    <div class="suggestion-item">
+                        <h6><i class="fas fa-clock me-2"></i>Horário Ideal</h6>
+                        <p class="mb-0">Seus anúncios têm 23% mais conversões entre 19h-22h. Ajuste os horários de exibição.</p>
+                    </div>
+                    
+                    <div class="suggestion-item">
+                        <h6><i class="fas fa-dollar-sign me-2"></i>Orçamento</h6>
+                        <p class="mb-0">Campanha "Marketing Digital" está com ROAS de 4.2x. Considere aumentar o orçamento em 30%.</p>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <button class="btn btn-light btn-sm">
+                            <i class="fas fa-magic me-2"></i>Aplicar Sugestões Automaticamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gráfico de Performance
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        const performanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'CTR (%)',
+                    data: [2.1, 2.3, 2.8, 3.1, 2.9, 3.4],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'ROAS',
+                    data: [3.2, 3.5, 3.8, 4.1, 3.9, 4.3],
+                    borderColor: '#764ba2',
+                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Atualizar métricas em tempo real
+        setInterval(updateMetrics, 30000); // A cada 30 segundos
+        
+        function updateMetrics() {
+            fetch('/api/dashboard-metrics')
+                .then(response => response.json())
+                .then(data => {
+                    // Atualizar métricas na interface
+                    console.log('Métricas atualizadas:', data);
+                })
+                .catch(error => console.error('Erro ao atualizar métricas:', error));
+        }
+    </script>
+</body>
+</html>

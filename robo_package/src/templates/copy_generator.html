@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Copy - Robô Otimizador de Campanhas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="fas fa-home"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/copy-generator">
+                                <i class="fas fa-pen-fancy"></i>
+                                Gerador de Copy
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-bullhorn"></i>
+                                Campanhas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/settings">
+                                <i class="fas fa-cogs"></i>
+                                Configurações
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Gerador de Copy com IA</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <form action="/copy-generator" method="post">
+                                    <div class="mb-3">
+                                        <label for="produto" class="form-label">Produto/Serviço</label>
+                                        <input type="text" class="form-control" id="produto" name="produto" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="nicho" class="form-label">Nicho de Mercado</label>
+                                        <input type="text" class="form-control" id="nicho" name="nicho">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="publico_alvo" class="form-label">Público-Alvo</label>
+                                        <input type="text" class="form-control" id="publico_alvo" name="publico_alvo">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="objetivo" class="form-label">Objetivo da Campanha</label>
+                                        <select class="form-select" id="objetivo" name="objetivo">
+                                            <option>Vendas</option>
+                                            <option>Leads</option>
+                                            <option>Engajamento</option>
+                                            <option>Tráfego</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tom_voz" class="form-label">Tom de Voz</label>
+                                        <select class="form-select" id="tom_voz" name="tom_voz">
+                                            <option>Profissional</option>
+                                            <option>Amigável</option>
+                                            <option>Urgente</option>
+                                            <option>Informativo</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Gerar Copy</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {% if copies %}
+                            {% for copy in copies %}
+                                <div class="card mb-3">
+                                    <div class="card-header">Variação {{ loop.index }}</div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ copy.titulo }}</h5>
+                                        <p class="card-text">{{ copy.descricao }}</p>
+                                        <p class="card-text"><small class="text-muted">CTA: {{ copy.cta }}</small></p>
+                                        <p class="card-text"><small class="text-muted">Score: {{ copy.score }}</small></p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
