@@ -1,61 +1,67 @@
 import os
-import sqlite3
 import psycopg2
+import sqlite3
 from psycopg2.extras import RealDictCursor
 from werkzeug.security import generate_password_hash
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
-    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+# Verificar qual banco está sendo usado
+print("🔎 DATABASE_URL =", os.getenv("DATABASE_URL"))
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 def get_db_connection():
     if DATABASE_URL:
-        return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor), 'pg'
+        print("➡️ Conectando ao PostgreSQL...")
+        return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     else:
-        conn = sqlite3.connect('robo.db')
+        print("⚠️ Sem DATABASE_URL, caindo no SQLite local...")
+        conn = sqlite3.connect("robo.db")
         conn.row_factory = sqlite3.Row
-        return conn, 'sqlite'
+        return conn
 
 def create_admin():
-    conn, kind = get_db_connection()
+    conn = get_db_connection()
     cur = conn.cursor()
 
-    # Cria tabela users se não existir
-    if kind == 'pg':
+    # Criar tabela se não existir
+    if DATABASE_URL:
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                username VARCHAR(80) UNIQUE NOT NULL,
-                password_hash VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(80) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
         """)
     else:
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
         """)
 
-    # Insere usuário admin
-    admin_password = generate_password_hash('admin123')
-    if kind == 'pg':
-        cur.execute(
-            "INSERT INTO users (username, password_hash) VALUES (%s, %s) ON CONFLICT (username) DO NOTHING",
-            ('admin', admin_password)
-        )
-    else:
-        cur.execute(
-            "INSERT OR IGNORE INTO users (username, password_hash) VALUES (?, ?)",
-            ('admin', admin_password)
-        )
+    # Verificar se já existe admin
+    cur.execute("SELECT * FROM users WHERE username = %s" if DATABASE_URL else "SELECT * FROM users WHERE username = ?", ("admin",))
+    user = cur.fetchone()
 
-    conn.commit()
+    if not user:
+        hashed_pw = generate_password_hash("admin123")
+        if DATABASE_URL:
+            cur.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", ("admin", hashed_pw))
+        else:
+            cur.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)", ("admin", hashed_pw))
+        conn.commit()
+        print("✅ Usuário admin/admin123 criado com sucesso!")
+    else:
+        print("ℹ️ Usuário admin já existe.")
+
     conn.close()
-    print("✅ Usuário admin/admin123 criado!")
 
 if __name__ == "__main__":
     create_admin()
