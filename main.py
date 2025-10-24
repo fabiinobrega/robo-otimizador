@@ -8,7 +8,7 @@ import random
 
 # Importação dos módulos de serviços
 try:
-    from services import meta_ads_publisher
+    from services import facebook_ads_service
     from services import google_ads_publisher
     from services import competitor_spy_service
     from services import dco_service
