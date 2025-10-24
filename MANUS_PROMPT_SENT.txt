@@ -1,0 +1,328 @@
+================================================================================
+ROBÔ OTIMIZADOR MANUSIA - PROMPT ORIGINAL E INSTRUÇÕES
+================================================================================
+
+DATA: 23 de Outubro de 2025
+VERSÃO: 3.0
+DESENVOLVIDO POR: Manus AI
+
+================================================================================
+REQUISITOS ORIGINAIS
+================================================================================
+
+1. OBJETIVO GERAL
+   - Criar/Reescrever projeto "robo-otimizador" com UI + Backend completos
+   - Todas as páginas e 94 funcionalidades implementadas
+   - Integrações reais com Google Ads e Meta/Instagram/Facebook
+   - Integração com Manus AI agent
+   - Empacotar e commitar no GitHub
+   - Preparar para deploy no Render
+
+2. STACK TÉCNICO
+   - Linguagem: Python 3.9+
+   - Framework: Flask
+   - Banco: SQLite (dev) com suporte a PostgreSQL (prod)
+   - Templates: Jinja2
+   - Frontend: Bootstrap 5 + JavaScript vanilla
+   - Responsividade: Mobile-first (100% funcional em iPhone, Android, Tablets)
+
+3. ESTRUTURA DE ARQUIVOS (EXATA)
+   robo-otimizador/
+   ├─ main.py
+   ├─ schema.sql
+   ├─ requirements.txt
+   ├─ Procfile
+   ├─ runtime.txt
+   ├─ .render.yaml
+   ├─ README.md
+   ├─ PLAYBOOK_DEPLOY.md
+   ├─ .env.example
+   ├─ services/
+   │  ├─ __init__.py
+   │  ├─ mc_bot_01.py
+   │  ├─ manus_adapter.py
+   │  ├─ openai_adapter.py
+   │  ├─ google_ads_service.py
+   │  ├─ facebook_ads_service.py
+   │  ├─ tiktok_ads_service.py
+   │  ├─ pinterest_ads_service.py
+   │  ├─ linkedin_ads_service.py
+   │  ├─ competitor_spy_service.py
+   │  ├─ dco_service.py
+   │  ├─ funnel_builder_service.py
+   │  ├─ landing_page_builder_service.py
+   │  ├─ media_management_service.py
+   │  ├─ reporting_service.py
+   │  ├─ segmentation_service.py
+   │  ├─ budget_calculator_service.py
+   │  ├─ sandbox_service.py
+   │  └─ image_generation_service.py
+   ├─ templates/
+   │  ├─ index.html
+   │  ├─ dashboard.html
+   │  ├─ create_campaign.html
+   │  ├─ campaigns.html
+   │  ├─ campaign_detail.html
+   │  ├─ campaign_sandbox.html
+   │  ├─ competitor_spy.html
+   │  ├─ dco_builder.html
+   │  ├─ funnel_builder.html
+   │  ├─ landing_page_builder.html
+   │  ├─ media_library.html
+   │  ├─ reports_dashboard.html
+   │  ├─ report_view.html
+   │  ├─ segmentation.html
+   │  ├─ settings.html
+   │  ├─ activity_logs.html
+   │  ├─ notifications.html
+   │  ├─ subscriptions.html
+   │  ├─ affiliates.html
+   │  ├─ developer_api.html
+   │  ├─ not_found.html
+   │  └─ components/
+   │      ├─ top_nav.html
+   │      ├─ side_nav.html
+   │      ├─ cards.html
+   │      └─ ai_status_indicator.html
+   └─ static/
+       ├─ css/
+       │  ├─ base.css
+       │  └─ dashboard.css
+       ├─ js/
+       │  ├─ main.js
+       │  ├─ dashboard.js
+       │  ├─ create_campaign.js
+       │  └─ ...
+       └─ uploads/
+
+4. FUNCIONALIDADES PRINCIPAIS (94 FEATURES)
+   - Dashboard com métricas em tempo real
+   - Criar Campanha com Wizard 5 passos
+   - Minhas Campanhas (CRUD completo)
+   - Detalhes da Campanha
+   - Biblioteca de Mídias
+   - Espionagem de Concorrentes
+   - DCO Builder (Dynamic Creative Optimization)
+   - Funnel Builder
+   - Landing Page Builder
+   - Relatórios Customizados
+   - Segmentação Avançada
+   - Sandbox de Campanhas
+   - Configurações (Google Ads, Meta Ads, Chaves de API)
+   - Logs de Atividade
+   - Notificações
+   - Assinaturas
+   - Afiliados
+   - Developer API
+   - E mais...
+
+5. RESPONSIVIDADE MOBILE
+   - 100% responsivo em iPhone, Android, Tablets
+   - Todas as 94 funcionalidades disponíveis em mobile
+   - Menu hambúrguer automático
+   - Formulários otimizados para toque
+   - Gráficos redimensionáveis
+   - Upload de mídia com drag-and-drop
+   - Pré-visualização de anúncio em mobile
+
+6. INTEGRAÇÕES REAIS
+   - Google Ads API (OAuth2, Developer Token, Refresh Token)
+   - Meta Ads API (Access Token, Ad Account ID)
+   - OpenAI API (para geração de copy)
+   - Manus AI Agent (para tarefas de IA)
+   - TikTok Ads, Pinterest Ads, LinkedIn Ads (interfaces prontas)
+
+7. ENDPOINTS OBRIGATÓRIOS
+   - GET / → redirect /dashboard
+   - GET /dashboard
+   - GET /create-campaign
+   - GET /campaigns, GET /campaigns/<id>
+   - POST /api/create-campaign
+   - POST /api/media/upload
+   - POST /api/analyze-landing-page
+   - POST /api/competitor-spy
+   - POST /api/dco/generate, /api/dco/generate-copy
+   - GET /api/dashboard/metrics
+   - GET /api/monitor-credits
+   - POST /api/ai-action
+   - POST /api/select-ai
+   - POST /api/sandbox/simulate
+   - GET /api/activity-logs
+   - GET /api/notifications
+   - POST /api/reports/generate
+   - POST /api/segmentation/run
+   - POST /api/budget/calculate
+   - POST /api/campaigns/<id>/status
+   - E mais...
+
+8. FORMATO DE RESPOSTAS JSON
+   {
+     "success": true|false,
+     "message": "texto explicativo",
+     "data": {...}
+   }
+
+9. VARIÁVEIS DE AMBIENTE
+   - SECRET_KEY
+   - DATABASE_URL (opcional, PostgreSQL)
+   - PORT
+   - OPENAI_API_KEY
+   - MANUS_API_KEY, MANUS_AGENT_ID
+   - GOOGLE_ADS_CREDENTIALS_PATH, GOOGLE_ADS_CLIENT_ID, etc.
+   - FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_ACCESS_TOKEN, etc.
+   - TIKTOK_ACCESS_TOKEN, PINTEREST_ACCESS_TOKEN, LINKEDIN_ACCESS_TOKEN
+   - SENTRY_DSN (opcional)
+
+10. TRATAMENTO DE CREDENCIAIS
+    - Se credenciais ausentes, retornar mensagem clara
+    - Instruir usuário a configurar em Settings
+    - Não falhar silenciosamente
+    - Implementar fallbacks com dados simulados
+
+11. DOCUMENTAÇÃO
+    - README.md com instruções de instalação e uso
+    - PLAYBOOK_DEPLOY.md com passo-a-passo para Render
+    - .env.example com todas as variáveis
+    - Código comentado e bem estruturado
+
+12. TESTES
+    - Testes básicos com pytest
+    - Cobertura de endpoints principais
+    - Testes locais verdes
+
+13. DEPLOY
+    - Procfile para Gunicorn
+    - runtime.txt com Python 3.9+
+    - .render.yaml com configuração de build/deploy
+    - ZIP pronto para upload no Render
+    - Commit no GitHub com histórico
+
+14. CHECKLIST DE ACEITAÇÃO
+    ✓ Repositório GitHub com commits e histórico
+    ✓ ZIP (robo-otimizador-completo.zip) pronto para Render
+    ✓ main.py sem erros com todas as rotas
+    ✓ schema.sql completo
+    ✓ services/ com implementações reais para Google Ads & Facebook
+    ✓ Templates HTML sem erros Jinja
+    ✓ JS/CSS funcionando, upload de mídia com preview
+    ✓ Endpoints API conforme listados com JSON padrão
+    ✓ README.md e PLAYBOOK_DEPLOY.md completos
+    ✓ .env.example com todas as variáveis
+    ✓ Testes básicos verdes
+    ✓ Responsividade mobile 100%
+    ✓ Sem página de login (tudo acessível)
+    ✓ MANUS_PROMPT_SENT.txt na raiz
+
+================================================================================
+INSTRUÇÕES PARA EXECUTAR LOCALMENTE
+================================================================================
+
+1. Clone o repositório:
+   git clone https://github.com/fabiinobrega/robo-otimizador.git
+   cd robo-otimizador
+
+2. Crie um ambiente virtual:
+   python3 -m venv venv
+   source venv/bin/activate  # No Windows: venv\Scripts\activate
+
+3. Instale as dependências:
+   pip install -r requirements.txt
+
+4. Configure as variáveis de ambiente:
+   cp .env.example .env
+   # Edite o arquivo .env com suas credenciais
+
+5. Inicie o servidor:
+   python main.py
+
+6. Acesse a aplicação:
+   http://localhost:5000
+
+7. Execute os testes:
+   pytest tests/
+
+================================================================================
+INSTRUÇÕES PARA DEPLOY NO RENDER
+================================================================================
+
+Veja PLAYBOOK_DEPLOY.md para instruções detalhadas.
+
+Resumo rápido:
+1. Push para GitHub
+2. Crie um Web Service no Render
+3. Conecte ao repositório GitHub
+4. Configure as variáveis de ambiente
+5. Deploy automático
+
+================================================================================
+ESTRUTURA DO BANCO DE DADOS
+================================================================================
+
+Tabelas principais:
+- campaigns: id, name, platform, status, budget, config, created_at, updated_at
+- activity_logs: id, timestamp, action, details
+- media_files: id, filename, url, filetype, uploaded_at
+- api_credentials: id, platform, credentials, status
+- ad_templates, custom_reports, custom_audiences, notifications, subscriptions
+
+Veja schema.sql para detalhes completos.
+
+================================================================================
+ENDPOINTS DA API
+================================================================================
+
+Dashboard:
+- GET /api/dashboard/metrics
+- GET /api/ai/status
+
+Campanhas:
+- POST /api/create-campaign
+- GET /api/campaigns
+- GET /api/campaigns/<id>
+- PUT /api/campaigns/<id>
+- DELETE /api/campaigns/<id>
+- POST /api/campaigns/<id>/status
+
+Mídias:
+- POST /api/media/upload
+- GET /api/media
+- DELETE /api/media/<id>
+
+IA:
+- POST /api/analyze-landing-page
+- POST /api/competitor-spy
+- POST /api/dco/generate
+- POST /api/dco/generate-copy
+- POST /api/select-ai
+- GET /api/monitor-credits
+
+Outros:
+- POST /api/sandbox/simulate
+- GET /api/activity-logs
+- GET /api/notifications
+- POST /api/reports/generate
+- POST /api/segmentation/run
+- POST /api/budget/calculate
+
+Veja main.py para detalhes de cada endpoint.
+
+================================================================================
+SUPORTE E TROUBLESHOOTING
+================================================================================
+
+Para problemas:
+1. Verifique os logs no console
+2. Verifique as variáveis de ambiente
+3. Verifique se o banco de dados foi inicializado
+4. Abra uma issue no GitHub
+
+Para problemas com Render:
+- Veja https://render.com/docs
+- Verifique os logs no painel do Render
+
+================================================================================
+CONTATO
+================================================================================
+
+Desenvolvido com ❤️ por Manus AI
+GitHub: https://github.com/fabiinobrega/robo-otimizador
