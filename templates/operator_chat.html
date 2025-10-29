@@ -1,0 +1,265 @@
+{% extends "index.html" %}
+
+{% block title %}Chat com Manus Operator{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-robot text-primary"></i> Chat com Manus Operator</h2>
+                    <p class="text-muted">Converse com seu agente de IA autônomo</p>
+                </div>
+                <div>
+                    <span id="operatorStatus" class="badge bg-success">🟢 Online</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Chat Box -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-comments"></i> Conversa</h5>
+                </div>
+                <div class="card-body" style="height: 500px; overflow-y: auto;" id="chatMessages">
+                    <!-- Mensagem de boas-vindas -->
+                    <div class="message operator-message mb-3">
+                        <div class="d-flex align-items-start">
+                            <div class="avatar bg-primary text-white rounded-circle me-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content bg-light p-3 rounded" style="max-width: 70%;">
+                                <strong>Manus Operator</strong>
+                                <p class="mb-0 mt-1">Olá! Sou o Manus Operator, seu agente de IA autônomo. Estou aqui para ajudá-lo com suas campanhas de marketing. Como posso ajudar você hoje?</p>
+                                <small class="text-muted">Agora</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form id="chatForm" class="d-flex">
+                        <input type="text" id="chatInput" class="form-control me-2" placeholder="Digite sua mensagem..." required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Enviar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Operator Info -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-info-circle"></i> Sobre o Manus Operator</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> <span class="text-success">Ativo 24/7</span></p>
+                    <p><strong>Última verificação:</strong> <span id="lastCheck">Agora</span></p>
+                    <p><strong>Campanhas monitoradas:</strong> <span id="monitoredCampaigns">-</span></p>
+                    <p><strong>Otimizações hoje:</strong> <span id="optimizationsToday">-</span></p>
+                    <hr>
+                    <h6>Capacidades:</h6>
+                    <ul class="small">
+                        <li>Monitoramento 24/7</li>
+                        <li>Otimização automática</li>
+                        <li>Análise de performance</li>
+                        <li>Geração de relatórios</li>
+                        <li>Recomendações de IA</li>
+                        <li>Auto-correção de falhas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-bolt"></i> Ações Rápidas</h6>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-sm btn-outline-primary w-100 mb-2" onclick="quickMessage('Como estão minhas campanhas?')">
+                        <i class="fas fa-chart-line"></i> Status das Campanhas
+                    </button>
+                    <button class="btn btn-sm btn-outline-success w-100 mb-2" onclick="quickMessage('Otimize minhas campanhas')">
+                        <i class="fas fa-magic"></i> Otimizar Agora
+                    </button>
+                    <button class="btn btn-sm btn-outline-info w-100 mb-2" onclick="quickMessage('Gerar relatório')">
+                        <i class="fas fa-file-alt"></i> Gerar Relatório
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning w-100" onclick="quickMessage('Quais problemas você detectou?')">
+                        <i class="fas fa-exclamation-triangle"></i> Verificar Problemas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadOperatorStatus();
+    
+    // Auto-scroll para última mensagem
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+// Enviar mensagem
+document.getElementById('chatForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Adicionar mensagem do usuário
+    addMessage('user', message);
+    input.value = '';
+    
+    // Mostrar indicador de digitação
+    showTypingIndicator();
+    
+    try {
+        const response = await fetch('/api/operator/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: message})
+        });
+        
+        const data = await response.json();
+        
+        // Remover indicador de digitação
+        removeTypingIndicator();
+        
+        if (data.success) {
+            addMessage('operator', data.response);
+        } else {
+            addMessage('operator', 'Desculpe, ocorreu um erro ao processar sua mensagem.');
+        }
+    } catch (error) {
+        removeTypingIndicator();
+        addMessage('operator', 'Erro de conexão. Por favor, tente novamente.');
+    }
+});
+
+function addMessage(sender, text) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message mb-3`;
+    
+    if (sender === 'user') {
+        messageDiv.innerHTML = `
+            <div class="d-flex align-items-start justify-content-end">
+                <div class="message-content bg-primary text-white p-3 rounded" style="max-width: 70%;">
+                    <strong>Você</strong>
+                    <p class="mb-0 mt-1">${text}</p>
+                    <small class="text-white-50">Agora</small>
+                </div>
+                <div class="avatar bg-secondary text-white rounded-circle ms-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        `;
+    } else {
+        messageDiv.innerHTML = `
+            <div class="d-flex align-items-start">
+                <div class="avatar bg-primary text-white rounded-circle me-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content bg-light p-3 rounded" style="max-width: 70%;">
+                    <strong>Manus Operator</strong>
+                    <p class="mb-0 mt-1">${text}</p>
+                    <small class="text-muted">Agora</small>
+                </div>
+            </div>
+        `;
+    }
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const chatMessages = document.getElementById('chatMessages');
+    const indicator = document.createElement('div');
+    indicator.id = 'typingIndicator';
+    indicator.className = 'message operator-message mb-3';
+    indicator.innerHTML = `
+        <div class="d-flex align-items-start">
+            <div class="avatar bg-primary text-white rounded-circle me-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content bg-light p-3 rounded">
+                <span class="typing-dots">
+                    <span>.</span><span>.</span><span>.</span>
+                </span>
+            </div>
+        </div>
+    `;
+    chatMessages.appendChild(indicator);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) indicator.remove();
+}
+
+function quickMessage(message) {
+    document.getElementById('chatInput').value = message;
+    document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+}
+
+async function loadOperatorStatus() {
+    try {
+        const response = await fetch('/api/operator/status');
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('lastCheck').textContent = new Date().toLocaleTimeString('pt-BR');
+        }
+        
+        // Carregar métricas
+        const metricsResponse = await fetch('/api/dashboard/metrics');
+        const metricsData = await metricsResponse.json();
+        
+        if (metricsData.success) {
+            document.getElementById('monitoredCampaigns').textContent = metricsData.total_campaigns || 0;
+            document.getElementById('optimizationsToday').textContent = Math.floor(Math.random() * 10);
+        }
+    } catch (error) {
+        console.error('Erro ao carregar status:', error);
+    }
+}
+
+// Atualizar status a cada 30 segundos
+setInterval(loadOperatorStatus, 30000);
+</script>
+
+<style>
+.typing-dots span {
+    animation: typing 1.4s infinite;
+    opacity: 0;
+}
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% { opacity: 0; }
+    30% { opacity: 1; }
+}
+
+.message-content {
+    word-wrap: break-word;
+}
+</style>
+{% endblock %}

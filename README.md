@@ -1,4 +1,4 @@
-# Robô Otimizador ManusIA v3.0
+# 🤖 Manus Marketing - Plataforma de Automação de Marketing com IA v4.0
 
 Um sistema completo de automação e otimização de campanhas de publicidade digital com integração de IA (Manus, OpenAI), Google Ads, Meta Ads, TikTok, Pinterest e LinkedIn.
 

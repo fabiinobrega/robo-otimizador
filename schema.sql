@@ -141,6 +141,109 @@ CREATE TABLE IF NOT EXISTS campaign_metrics (
     FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
 );
 
+-- A/B Testing
+CREATE TABLE IF NOT EXISTS ab_tests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    campaign_id INTEGER NOT NULL,
+    test_name TEXT NOT NULL,
+    test_type TEXT NOT NULL,
+    status TEXT DEFAULT 'running',
+    winner_variation_id INTEGER,
+    confidence_level TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at TEXT,
+    FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
+);
+
+-- A/B Test Variations
+CREATE TABLE IF NOT EXISTS ab_test_variations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    test_id INTEGER NOT NULL,
+    variation_name TEXT NOT NULL,
+    content_json TEXT NOT NULL,
+    impressions INTEGER DEFAULT 0,
+    clicks INTEGER DEFAULT 0,
+    conversions INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (test_id) REFERENCES ab_tests (id) ON DELETE CASCADE
+);
+
+-- Automation Rules
+CREATE TABLE IF NOT EXISTS automation_rules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    rule_type TEXT NOT NULL,
+    conditions TEXT,
+    actions TEXT,
+    is_active BOOLEAN DEFAULT 1,
+    last_executed TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Automation Rule Executions
+CREATE TABLE IF NOT EXISTS automation_executions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rule_id INTEGER NOT NULL,
+    campaign_id INTEGER,
+    action_taken TEXT,
+    result TEXT,
+    executed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (rule_id) REFERENCES automation_rules (id) ON DELETE CASCADE,
+    FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
+);
+
+-- Notifications
+CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    type TEXT DEFAULT 'info',
+    is_read BOOLEAN DEFAULT 0,
+    campaign_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
+);
+
+-- Reports
+CREATE TABLE IF NOT EXISTS reports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    report_name TEXT NOT NULL,
+    report_type TEXT NOT NULL,
+    date_range_start TEXT,
+    date_range_end TEXT,
+    data_json TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- API Keys and Integrations
+CREATE TABLE IF NOT EXISTS api_keys (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    service_name TEXT NOT NULL UNIQUE,
+    api_key TEXT,
+    is_active BOOLEAN DEFAULT 1,
+    last_tested TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Manus Operator Status
+CREATE TABLE IF NOT EXISTS operator_status (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    status TEXT DEFAULT 'active',
+    last_check TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    health_data TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Chat Messages (Manus Operator)
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender TEXT NOT NULL,
+    message TEXT NOT NULL,
+    response TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_campaigns_status ON campaigns(status);
 CREATE INDEX IF NOT EXISTS idx_campaigns_platform ON campaigns(platform);
@@ -149,4 +252,7 @@ CREATE INDEX IF NOT EXISTS idx_campaign_keywords_campaign_id ON campaign_keyword
 CREATE INDEX IF NOT EXISTS idx_campaign_audiences_campaign_id ON campaign_audiences(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_timestamp ON activity_logs(timestamp);
 CREATE INDEX IF NOT EXISTS idx_media_files_uploaded_at ON media_files(uploaded_at);
+CREATE INDEX IF NOT EXISTS idx_ab_tests_campaign_id ON ab_tests(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_automation_rules_active ON automation_rules(is_active);
+CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read);
 

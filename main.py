@@ -14,6 +14,9 @@ try:
     from services import dco_service
     from services import landing_page_builder_service
     from services import segmentation_service
+    from services.manus_operator import operator as manus_operator
+    from services.ab_testing_service import ab_testing_service
+    from services.automation_service import automation_service
 except ImportError as e:
     print(f"Warning: Some service modules not found: {e}")
 
@@ -59,6 +62,13 @@ if not os.path.exists(app.config["UPLOAD_FOLDER"]):
 with app.app_context():
     try:
         init_db()
+        # Verificar se precisa fazer seed
+        db = get_db()
+        count = db.execute("SELECT COUNT(*) as count FROM campaigns").fetchone()[0]
+        if count == 0:
+            print("Database vazio, executando seed...")
+            import seed_data
+            seed_data.seed_database(DATABASE)
     except Exception as e:
         print(f"DB initialization warning: {e}")
 
@@ -642,6 +652,41 @@ def landing_page_builder():
     return render_template("landing_page_builder.html")
 
 
+@app.route("/operator-chat")
+def operator_chat():
+    return render_template("operator_chat.html")
+
+
+@app.route("/ab-testing")
+def ab_testing():
+    return render_template("ab_testing.html")
+
+
+@app.route("/automation")
+def automation():
+    return render_template("automation.html")
+
+
+@app.route("/all-features")
+def all_features():
+    return render_template("all_features.html")
+
+
+@app.route("/activity-logs")
+def activity_logs():
+    return render_template("activity_logs.html")
+
+
+@app.route("/campaign-sandbox")
+def campaign_sandbox():
+    return render_template("campaign_sandbox.html")
+
+
+@app.route("/dco-builder")
+def dco_builder():
+    return render_template("dco_builder.html")
+
+
 @app.route("/health")
 def health_check():
     return jsonify({"status": "ok"})
@@ -680,6 +725,304 @@ def api_upload_media():
             "filename": filename,
             "url": file_url,
             "filetype": filetype
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# ===== MANUS OPERATOR ENDPOINTS =====
+
+@app.route("/api/operator/status", methods=["GET"])
+def api_operator_status():
+    """Get Manus Operator status"""
+    try:
+        status = manus_operator.health_check()
+        return jsonify({"success": True, **status})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/operator/monitor", methods=["GET"])
+def api_operator_monitor():
+    """Monitor campaigns"""
+    try:
+        result = manus_operator.monitor_campaigns()
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/operator/optimize", methods=["POST"])
+def api_operator_optimize():
+    """Optimize campaigns automatically"""
+    try:
+        result = manus_operator.auto_optimize_campaigns()
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/operator/chat", methods=["POST"])
+def api_operator_chat():
+    """Chat with Manus Operator"""
+    data = request.get_json()
+    message = data.get("message", "")
+    
+    try:
+        # Salvar mensagem no banco
+        db = get_db()
+        db.execute(
+            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
+            ("user", message)
+        )
+        db.commit()
+        
+        # Gerar resposta
+        response = manus_operator.chat_response(message)
+        
+        # Salvar resposta
+        db.execute(
+            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
+            ("operator", response)
+        )
+        db.commit()
+        
+        return jsonify({
+            "success": True,
+            "response": response
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/operator/recommendations/<int:campaign_id>", methods=["GET"])
+def api_operator_recommendations(campaign_id):
+    """Get AI recommendations for a campaign"""
+    try:
+        result = manus_operator.generate_ai_recommendations(campaign_id)
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# ===== A/B TESTING ENDPOINTS =====
+
+@app.route("/api/ab-test/create", methods=["POST"])
+def api_ab_test_create():
+    """Create A/B test"""
+    data = request.get_json()
+    
+    try:
+        db = get_db()
+        cursor = db.execute("""
+            INSERT INTO ab_tests (campaign_id, test_name, test_type, status)
+            VALUES (?, ?, ?, ?)
+        """, (
+            data.get("campaign_id"),
+            data.get("test_name"),
+            data.get("test_type"),
+            "running"
+        ))
+        test_id = cursor.lastrowid
+        
+        # Create variations
+        variations = ab_testing_service.create_variations(
+            data.get("original_content", {}),
+            data.get("test_type")
+        )
+        
+        for i, variation in enumerate(variations):
+            db.execute("""
+                INSERT INTO ab_test_variations (test_id, variation_name, content_json)
+                VALUES (?, ?, ?)
+            """, (
+                test_id,
+                f"Variação {chr(65 + i)}",
+                json.dumps(variation)
+            ))
+        
+        db.commit()
+        log_activity("Teste A/B Criado", f"Teste '{data.get('test_name')}' criado com {len(variations)} variações")
+        
+        return jsonify({
+            "success": True,
+            "test_id": test_id,
+            "variations": variations
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/ab-test/analyze/<int:test_id>", methods=["GET"])
+def api_ab_test_analyze(test_id):
+    """Analyze A/B test results"""
+    try:
+        db = get_db()
+        variations = db.execute(
+            "SELECT * FROM ab_test_variations WHERE test_id = ?",
+            (test_id,)
+        ).fetchall()
+        
+        test_data = {
+            "variations": [dict(v) for v in variations]
+        }
+        
+        result = ab_testing_service.analyze_test_results(test_data)
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/ab-test/suggestions", methods=["GET"])
+def api_ab_test_suggestions():
+    """Get A/B test suggestions"""
+    try:
+        suggestions = ab_testing_service.get_test_suggestions({})
+        return jsonify({"success": True, "suggestions": suggestions})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/ab-test/library", methods=["GET"])
+def api_ab_test_library():
+    """Get winning variations library"""
+    try:
+        library = ab_testing_service.get_winning_variations_library()
+        return jsonify({"success": True, "library": library})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# ===== AUTOMATION ENDPOINTS =====
+
+@app.route("/api/automation/rules", methods=["GET"])
+def api_automation_rules():
+    """Get available automation rules"""
+    try:
+        templates = automation_service.get_available_rule_templates()
+        return jsonify({"success": True, "templates": templates})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/automation/execute", methods=["POST"])
+def api_automation_execute():
+    """Execute automation rules"""
+    try:
+        result = automation_service.execute_rules()
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/automation/history", methods=["GET"])
+def api_automation_history():
+    """Get automation history"""
+    try:
+        history = automation_service.get_rule_history()
+        return jsonify({"success": True, "history": history})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# ===== NOTIFICATIONS ENDPOINTS =====
+
+@app.route("/api/notifications", methods=["GET"])
+def api_notifications():
+    """Get notifications"""
+    db = get_db()
+    try:
+        notifications = db.execute(
+            "SELECT * FROM notifications ORDER BY created_at DESC LIMIT 50"
+        ).fetchall()
+        
+        return jsonify({
+            "success": True,
+            "notifications": [dict(n) for n in notifications]
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/notifications/<int:notification_id>/read", methods=["POST"])
+def api_notification_read(notification_id):
+    """Mark notification as read"""
+    db = get_db()
+    try:
+        db.execute(
+            "UPDATE notifications SET is_read = 1 WHERE id = ?",
+            (notification_id,)
+        )
+        db.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# ===== REPORTS ENDPOINTS =====
+
+@app.route("/api/reports/generate", methods=["POST"])
+def api_report_generate():
+    """Generate report"""
+    data = request.get_json()
+    db = get_db()
+    
+    try:
+        # Buscar dados das campanhas
+        campaigns = db.execute("""
+            SELECT c.*, m.impressions, m.clicks, m.conversions, m.spend, m.revenue, m.roas
+            FROM campaigns c
+            LEFT JOIN campaign_metrics m ON c.id = m.campaign_id
+            WHERE c.created_at BETWEEN ? AND ?
+        """, (
+            data.get("date_range_start"),
+            data.get("date_range_end")
+        )).fetchall()
+        
+        report_data = {
+            "campaigns": [dict(c) for c in campaigns],
+            "summary": {
+                "total_campaigns": len(campaigns),
+                "total_spend": sum(c["spend"] or 0 for c in campaigns),
+                "total_revenue": sum(c["revenue"] or 0 for c in campaigns),
+                "avg_roas": sum(c["roas"] or 0 for c in campaigns) / len(campaigns) if campaigns else 0
+            }
+        }
+        
+        # Salvar relatório
+        cursor = db.execute("""
+            INSERT INTO reports (report_name, report_type, date_range_start, date_range_end, data_json)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            data.get("report_name", "Relatório Personalizado"),
+            data.get("report_type", "performance"),
+            data.get("date_range_start"),
+            data.get("date_range_end"),
+            json.dumps(report_data)
+        ))
+        db.commit()
+        
+        return jsonify({
+            "success": True,
+            "report_id": cursor.lastrowid,
+            "data": report_data
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/reports/list", methods=["GET"])
+def api_reports_list():
+    """List all reports"""
+    db = get_db()
+    try:
+        reports = db.execute(
+            "SELECT id, report_name, report_type, created_at FROM reports ORDER BY created_at DESC"
+        ).fetchall()
+        
+        return jsonify({
+            "success": True,
+            "reports": [dict(r) for r in reports]
         })
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

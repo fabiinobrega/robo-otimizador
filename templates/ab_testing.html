@@ -1,0 +1,296 @@
+{% extends "index.html" %}
+
+{% block title %}A/B Testing{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-flask text-primary"></i> A/B Testing</h2>
+                    <p class="text-muted">Teste variações e descubra o que converte melhor</p>
+                </div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTestModal">
+                    <i class="fas fa-plus"></i> Criar Novo Teste
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sugestões de Testes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Sugestões de Testes</h5>
+                </div>
+                <div class="card-body">
+                    <div id="testSuggestions" class="row">
+                        <!-- Carregado via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testes Ativos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-play-circle"></i> Testes em Andamento</h5>
+                </div>
+                <div class="card-body">
+                    <div id="activeTests">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Nenhum teste ativo no momento. Crie seu primeiro teste!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biblioteca de Variações Vencedoras -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-trophy"></i> Biblioteca de Variações Vencedoras</h5>
+                </div>
+                <div class="card-body">
+                    <div id="winningLibrary" class="row">
+                        <!-- Carregado via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Criar Teste -->
+<div class="modal fade" id="createTestModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-flask"></i> Criar Novo Teste A/B</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createTestForm">
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Teste</label>
+                        <input type="text" class="form-control" id="testName" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Teste</label>
+                        <select class="form-select" id="testType" required>
+                            <option value="">Selecione...</option>
+                            <option value="headline">Teste de Título</option>
+                            <option value="description">Teste de Descrição</option>
+                            <option value="cta">Teste de CTA</option>
+                            <option value="image">Teste de Imagem</option>
+                            <option value="audience">Teste de Público</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Campanha (opcional)</label>
+                        <select class="form-select" id="testCampaign">
+                            <option value="">Teste independente</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Conteúdo Original</label>
+                        <textarea class="form-control" id="originalContent" rows="3" placeholder="Digite o conteúdo original que será testado"></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> O sistema criará automaticamente 3-4 variações para teste baseadas no tipo selecionado.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="createTest()">
+                    <i class="fas fa-check"></i> Criar Teste
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadTestSuggestions();
+    loadWinningLibrary();
+    loadCampaigns();
+});
+
+async function loadTestSuggestions() {
+    try {
+        const response = await fetch('/api/ab-test/suggestions');
+        const data = await response.json();
+        
+        if (data.success && data.suggestions) {
+            const container = document.getElementById('testSuggestions');
+            container.innerHTML = data.suggestions.map(suggestion => `
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 border-${suggestion.priority === 'high' ? 'danger' : 'warning'}">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-${getIconForType(suggestion.type)}"></i> 
+                                ${suggestion.title}
+                            </h6>
+                            <p class="card-text small">${suggestion.description}</p>
+                            <span class="badge bg-${suggestion.priority === 'high' ? 'danger' : 'warning'}">
+                                Impacto: ${suggestion.estimated_impact}
+                            </span>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-outline-primary w-100" onclick="startTestFromSuggestion('${suggestion.type}')">
+                                <i class="fas fa-play"></i> Iniciar Teste
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar sugestões:', error);
+    }
+}
+
+async function loadWinningLibrary() {
+    try {
+        const response = await fetch('/api/ab-test/library');
+        const data = await response.json();
+        
+        if (data.success && data.library) {
+            const container = document.getElementById('winningLibrary');
+            container.innerHTML = data.library.map(item => `
+                <div class="col-md-6 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-success mb-2">${item.type}</span>
+                                    <h6 class="card-title">${item.content}</h6>
+                                </div>
+                                <i class="fas fa-trophy text-warning fa-2x"></i>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <small class="text-muted">CTR/CVR Médio</small>
+                                    <p class="mb-0 fw-bold">${item.avg_ctr || item.avg_cvr}%</p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Testes Vencidos</small>
+                                    <p class="mb-0 fw-bold">${item.tests_won}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-outline-success w-100" onclick="useWinningVariation('${item.content}')">
+                                <i class="fas fa-copy"></i> Usar Esta Variação
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar biblioteca:', error);
+    }
+}
+
+async function loadCampaigns() {
+    try {
+        const response = await fetch('/api/campaign/list?limit=100');
+        const data = await response.json();
+        
+        if (data.success && data.campaigns) {
+            const select = document.getElementById('testCampaign');
+            data.campaigns.forEach(campaign => {
+                const option = document.createElement('option');
+                option.value = campaign.id;
+                option.textContent = campaign.name;
+                select.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao carregar campanhas:', error);
+    }
+}
+
+async function createTest() {
+    const testName = document.getElementById('testName').value;
+    const testType = document.getElementById('testType').value;
+    const campaignId = document.getElementById('testCampaign').value || null;
+    const originalContent = document.getElementById('originalContent').value;
+    
+    if (!testName || !testType) {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/ab-test/create', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                test_name: testName,
+                test_type: testType,
+                campaign_id: campaignId,
+                original_content: {
+                    headline: originalContent,
+                    description: originalContent,
+                    cta: originalContent
+                }
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Teste A/B criado com sucesso! ' + data.variations.length + ' variações foram geradas.');
+            bootstrap.Modal.getInstance(document.getElementById('createTestModal')).hide();
+            document.getElementById('createTestForm').reset();
+            location.reload();
+        } else {
+            alert('❌ Erro ao criar teste: ' + data.message);
+        }
+    } catch (error) {
+        alert('❌ Erro de conexão: ' + error.message);
+    }
+}
+
+function getIconForType(type) {
+    const icons = {
+        'headline': 'heading',
+        'description': 'align-left',
+        'cta': 'hand-pointer',
+        'image': 'image',
+        'audience': 'users',
+        'targeting': 'bullseye',
+        'creative': 'palette',
+        'budget': 'dollar-sign'
+    };
+    return icons[type] || 'flask';
+}
+
+function startTestFromSuggestion(type) {
+    document.getElementById('testType').value = type;
+    const modal = new bootstrap.Modal(document.getElementById('createTestModal'));
+    modal.show();
+}
+
+function useWinningVariation(content) {
+    navigator.clipboard.writeText(content);
+    alert('✅ Variação copiada para a área de transferência!');
+}
+</script>
+{% endblock %}
