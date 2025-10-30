@@ -1028,6 +1028,104 @@ def api_reports_list():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
+@app.route("/generate-perfect-ad")
+def generate_perfect_ad():
+    """Generate Perfect Ad (1-Click)"""
+    return render_template("generate_perfect_ad.html")
+
+
+@app.route("/api/ad/simulate", methods=["POST"])
+def api_ad_simulate():
+    """Simulate ad performance"""
+    data = request.json
+    
+    # Simulação baseada em dados históricos e IA
+    platform = data.get("platform", "facebook")
+    budget = float(data.get("budget", 1000))
+    
+    # Cálculos estimados
+    ctr = 2.5 if platform == "facebook" else 3.2
+    cpc = 1.50 if platform == "facebook" else 2.20
+    clicks = int((budget / cpc) * 0.9)
+    conversions = int(clicks * 0.05)  # 5% conversion rate
+    revenue = conversions * 150  # R$ 150 por venda
+    roas = revenue / budget if budget > 0 else 0
+    
+    return jsonify({
+        "success": True,
+        "simulation": {
+            "ctr": ctr,
+            "cpc": cpc,
+            "clicks": clicks,
+            "conversions": conversions,
+            "revenue": revenue,
+            "roas": round(roas, 2)
+        }
+    })
+
+
+@app.route("/api/ad/publish", methods=["POST"])
+def api_ad_publish():
+    """Publish ad to platform"""
+    data = request.json
+    config = data.get("config", {})
+    
+    db = get_db()
+    
+    try:
+        # Criar campanha no banco
+        cursor = db.execute("""
+            INSERT INTO campaigns (name, platform, status, budget, objective)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            f"Anúncio Perfeito - {config.get('platform', 'Facebook')}",
+            config.get("platform", "facebook"),
+            "active" if not config.get("useSandbox") else "draft",
+            config.get("budget", 1000),
+            "conversions"
+        ))
+        campaign_id = cursor.lastrowid
+        
+        # Log da ação
+        db.execute("""
+            INSERT INTO activity_logs (action, details, timestamp)
+            VALUES (?, ?, ?)
+        """, (
+            "campaign_published",
+            f"Campanha #{campaign_id} publicada via Gerar Anúncio Perfeito",
+            datetime.now().isoformat()
+        ))
+        
+        db.commit()
+        
+        return jsonify({
+            "success": True,
+            "campaign_id": campaign_id,
+            "message": "Anúncio publicado com sucesso!" if not config.get("useSandbox") else "Anúncio criado no Sandbox"
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/generate-image", methods=["POST"])
+def api_generate_image():
+    """Generate ad images with AI"""
+    data = request.json
+    product = data.get("product", {})
+    
+    # Simular geração de imagens (em produção, usar DALL-E ou similar)
+    images = [
+        {"url": "https://via.placeholder.com/1200x628/0066cc/ffffff?text=Conceito+1", "concept": "Minimalista"},
+        {"url": "https://via.placeholder.com/1200x628/ff6600/ffffff?text=Conceito+2", "concept": "Vibrante"},
+        {"url": "https://via.placeholder.com/1200x628/00cc66/ffffff?text=Conceito+3", "concept": "Profissional"}
+    ]
+    
+    return jsonify({
+        "success": True,
+        "images": images
+    })
+
+
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 

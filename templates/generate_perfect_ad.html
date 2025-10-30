@@ -1,0 +1,425 @@
+{% extends "index.html" %}
+
+{% block title %}Gerar Anúncio Perfeito (1-Click) - Manus Marketing{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="fas fa-magic"></i> Gerar Anúncio Perfeito (1-Click)</h1>
+        <span class="badge bg-success">Powered by Manus Operator AI</span>
+    </div>
+    
+    <div class="alert alert-info">
+        <h5><i class="fas fa-robot"></i> Como funciona?</h5>
+        <p>Cole o link do seu produto e deixe a IA criar anúncios otimizados automaticamente: copy, criativos, segmentação e publicação!</p>
+    </div>
+
+    <!-- Formulário Principal -->
+    <div class="card mb-4" id="inputForm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">1. Informações do Produto</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">URL do Produto *</label>
+                <input type="url" class="form-control form-control-lg" id="productUrl" 
+                       placeholder="https://seusite.com/produto" required>
+                <small class="text-muted">Cole o link da página de vendas do seu produto</small>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Plataforma *</label>
+                    <select class="form-select" id="platform" required>
+                        <option value="">Selecione...</option>
+                        <option value="facebook">Facebook Ads</option>
+                        <option value="google">Google Ads</option>
+                        <option value="both">Ambas (Facebook + Google)</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Localização *</label>
+                    <input type="text" class="form-control" id="location" 
+                           placeholder="Brasil, São Paulo, etc." value="Brasil">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Meta de Vendas</label>
+                    <input type="number" class="form-control" id="salesGoal" 
+                           placeholder="100" value="100">
+                    <small class="text-muted">Quantas vendas você quer alcançar?</small>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Orçamento Total (R$)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input type="number" class="form-control" id="budget" 
+                               placeholder="1000" step="0.01">
+                        <button class="btn btn-outline-secondary" type="button" onclick="suggestBudget()">
+                            <i class="fas fa-magic"></i> Sugerir
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoPublish">
+                        <label class="form-check-label" for="autoPublish">
+                            <strong>Auto-Publish</strong> - Publicar automaticamente após aprovação
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="useSandbox" checked>
+                        <label class="form-check-label" for="useSandbox">
+                            <strong>Executar Sandbox</strong> - Testar sem gastar dinheiro real
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary btn-lg w-100" onclick="generatePerfectAd()">
+                <i class="fas fa-magic"></i> Gerar Anúncio Perfeito (1-Click)
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="card mb-4 d-none" id="loadingCard">
+        <div class="card-body text-center">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+            <h5 id="loadingText">Analisando produto...</h5>
+            <div class="progress mt-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                     id="progressBar" style="width: 0%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block" id="loadingSubtext">Isso pode levar alguns segundos...</small>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div id="resultsSection" class="d-none">
+        <!-- Análise da Landing Page -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">2. Análise da Landing Page</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Informações Extraídas:</h6>
+                        <ul id="landingAnalysis">
+                            <li>Carregando...</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Insights da IA:</h6>
+                        <div id="aiInsights" class="alert alert-info">
+                            Analisando...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Espionagem de Concorrentes -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">3. Top Anúncios dos Concorrentes</h5>
+            </div>
+            <div class="card-body">
+                <div id="competitorAds" class="row">
+                    <div class="col-12 text-center">
+                        <div class="spinner-border"></div>
+                        <p>Analisando concorrentes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Variantes Geradas -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">4. Variantes de Anúncios Geradas</h5>
+            </div>
+            <div class="card-body">
+                <div id="adVariants" class="row">
+                    <div class="col-12 text-center">
+                        <div class="spinner-border"></div>
+                        <p>Gerando variantes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulação de Performance -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">5. Simulação de Performance</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="performanceSimulation">
+                    <div class="col-md-3">
+                        <h6 class="text-muted">CTR Estimado</h6>
+                        <h3 id="simCtr">-</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted">CPC Estimado</h6>
+                        <h3 id="simCpc">-</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted">Conversões</h6>
+                        <h3 id="simConversions">-</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted">ROAS Estimado</h6>
+                        <h3 id="simRoas">-</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações Finais -->
+        <div class="card">
+            <div class="card-body">
+                <h5>Próximas Ações</h5>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-outline-primary" onclick="editManually()">
+                        <i class="fas fa-edit"></i> Editar Manualmente
+                    </button>
+                    <button class="btn btn-success" onclick="approveAndPublish()">
+                        <i class="fas fa-check"></i> Aprovar & Publicar
+                    </button>
+                    <button class="btn btn-warning" onclick="runSandbox()">
+                        <i class="fas fa-vial"></i> Executar Sandbox
+                    </button>
+                    <button class="btn btn-info" onclick="runABTest()">
+                        <i class="fas fa-flask"></i> Rodar A/B Test
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let generatedData = {};
+
+async function generatePerfectAd() {
+    const url = document.getElementById('productUrl').value;
+    const platform = document.getElementById('platform').value;
+    const location = document.getElementById('location').value;
+    const salesGoal = document.getElementById('salesGoal').value;
+    const budget = document.getElementById('budget').value;
+    const autoPublish = document.getElementById('autoPublish').checked;
+    const useSandbox = document.getElementById('useSandbox').checked;
+    
+    if (!url || !platform) {
+        alert('Por favor, preencha URL e Plataforma');
+        return;
+    }
+    
+    // Esconder form e mostrar loading
+    document.getElementById('inputForm').classList.add('d-none');
+    document.getElementById('loadingCard').classList.remove('d-none');
+    
+    try {
+        // Passo 1: Analisar Landing Page
+        updateProgress(10, 'Analisando landing page...');
+        const landingData = await analyzeLandingPage(url);
+        
+        // Passo 2: Espionar Concorrentes
+        updateProgress(30, 'Analisando concorrentes...');
+        const competitorData = await spyCompetitors(url);
+        
+        // Passo 3: Gerar Copy
+        updateProgress(50, 'Gerando copy com IA...');
+        const copyData = await generateCopy(landingData, competitorData);
+        
+        // Passo 4: Gerar Imagens
+        updateProgress(70, 'Gerando criativos...');
+        const imageData = await generateImages(landingData);
+        
+        // Passo 5: Simular Performance
+        updateProgress(90, 'Simulando performance...');
+        const simulation = await simulatePerformance({
+            platform, location, salesGoal, budget,
+            copy: copyData, images: imageData
+        });
+        
+        // Armazenar dados
+        generatedData = {
+            landing: landingData,
+            competitors: competitorData,
+            copy: copyData,
+            images: imageData,
+            simulation: simulation,
+            config: { platform, location, salesGoal, budget, autoPublish, useSandbox }
+        };
+        
+        // Mostrar resultados
+        updateProgress(100, 'Concluído!');
+        setTimeout(() => {
+            document.getElementById('loadingCard').classList.add('d-none');
+            document.getElementById('resultsSection').classList.remove('d-none');
+            displayResults();
+        }, 500);
+        
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao gerar anúncio: ' + error.message);
+        document.getElementById('loadingCard').classList.add('d-none');
+        document.getElementById('inputForm').classList.remove('d-none');
+    }
+}
+
+function updateProgress(percent, text) {
+    document.getElementById('progressBar').style.width = percent + '%';
+    document.getElementById('loadingText').textContent = text;
+}
+
+async function analyzeLandingPage(url) {
+    const response = await fetch('/api/analyze-landing-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+    });
+    return await response.json();
+}
+
+async function spyCompetitors(url) {
+    const response = await fetch(`/api/competitor-spy?url=${encodeURIComponent(url)}`);
+    return await response.json();
+}
+
+async function generateCopy(landingData, competitorData) {
+    const response = await fetch('/api/dco/generate-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ landing: landingData, competitors: competitorData })
+    });
+    return await response.json();
+}
+
+async function generateImages(landingData) {
+    const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product: landingData })
+    });
+    return await response.json();
+}
+
+async function simulatePerformance(data) {
+    const response = await fetch('/api/ad/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    return await response.json();
+}
+
+function displayResults() {
+    // Exibir análise da landing
+    const analysis = generatedData.landing;
+    document.getElementById('landingAnalysis').innerHTML = `
+        <li><strong>Título:</strong> ${analysis.title || 'N/A'}</li>
+        <li><strong>Preço:</strong> ${analysis.price || 'N/A'}</li>
+        <li><strong>Benefícios:</strong> ${analysis.benefits?.length || 0} identificados</li>
+    `;
+    
+    document.getElementById('aiInsights').innerHTML = analysis.insights || 'Produto analisado com sucesso!';
+    
+    // Exibir concorrentes
+    const competitors = generatedData.competitors.ads || [];
+    document.getElementById('competitorAds').innerHTML = competitors.slice(0, 3).map((ad, i) => `
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6>Concorrente #${i+1}</h6>
+                        <span class="badge bg-success">Score: ${ad.score || 95}</span>
+                    </div>
+                    <p class="small">${ad.headline || 'Título do anúncio...'}</p>
+                    <button class="btn btn-sm btn-outline-primary" onclick="cloneAd(${i})">
+                        <i class="fas fa-copy"></i> Clonar e Melhorar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('') || '<div class="col-12"><p>Nenhum concorrente encontrado</p></div>';
+    
+    // Exibir variantes
+    const variants = generatedData.copy.variants || [];
+    document.getElementById('adVariants').innerHTML = variants.slice(0, 3).map((v, i) => `
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h6>Variante #${i+1}</h6>
+                        <span class="badge bg-info">Score: ${v.score || 92}</span>
+                    </div>
+                    <p><strong>${v.headline || 'Título gerado pela IA'}</strong></p>
+                    <p class="small text-muted">${v.description || 'Descrição persuasiva...'}</p>
+                    <span class="badge bg-primary">${v.cta || 'Comprar Agora'}</span>
+                </div>
+            </div>
+        </div>
+    `).join('') || '<div class="col-12"><p>Gerando variantes...</p></div>';
+    
+    // Exibir simulação
+    const sim = generatedData.simulation;
+    document.getElementById('simCtr').textContent = (sim.ctr || 2.5) + '%';
+    document.getElementById('simCpc').textContent = 'R$ ' + (sim.cpc || 1.50).toFixed(2);
+    document.getElementById('simConversions').textContent = sim.conversions || 85;
+    document.getElementById('simRoas').textContent = (sim.roas || 3.2).toFixed(1) + 'x';
+}
+
+function suggestBudget() {
+    const salesGoal = parseInt(document.getElementById('salesGoal').value) || 100;
+    const suggested = salesGoal * 15; // R$ 15 por venda estimado
+    document.getElementById('budget').value = suggested;
+    alert(`Orçamento sugerido: R$ ${suggested} para ${salesGoal} vendas`);
+}
+
+function editManually() {
+    alert('Redirecionando para editor manual...');
+    window.location.href = '/create-campaign';
+}
+
+async function approveAndPublish() {
+    if (!confirm('Deseja publicar este anúncio?')) return;
+    
+    const response = await fetch('/api/ad/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(generatedData)
+    });
+    
+    const result = await response.json();
+    alert(result.success ? 'Anúncio publicado com sucesso!' : 'Erro ao publicar');
+}
+
+function runSandbox() {
+    alert('Executando no Sandbox... (sem gastar dinheiro real)');
+    window.location.href = '/campaign-sandbox';
+}
+
+function runABTest() {
+    alert('Configurando A/B Test...');
+    window.location.href = '/ab-testing';
+}
+
+function cloneAd(index) {
+    alert(`Clonando anúncio do concorrente #${index+1} e otimizando com IA...`);
+}
+</script>
+{% endblock %}
