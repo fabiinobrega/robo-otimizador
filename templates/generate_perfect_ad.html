@@ -66,6 +66,19 @@
                 </div>
             </div>
             
+            <!-- Upload de Mídias -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-images"></i> Suas Mídias (Opcional)</label>
+                <div class="border rounded p-3 bg-light">
+                    <input type="file" class="form-control mb-2" id="mediaUpload" 
+                           accept="image/*,video/*" multiple onchange="previewMedia()">
+                    <small class="text-muted">Faça upload de suas próprias imagens/vídeos ou deixe a IA gerar para você</small>
+                    
+                    <!-- Preview das mídias -->
+                    <div id="mediaPreview" class="row mt-3 g-2"></div>
+                </div>
+            </div>
+            
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <div class="form-check form-switch">
@@ -420,6 +433,100 @@ function runABTest() {
 
 function cloneAd(index) {
     alert(`Clonando anúncio do concorrente #${index+1} e otimizando com IA...`);
+}
+
+let uploadedMedia = [];
+
+function previewMedia() {
+    const input = document.getElementById('mediaUpload');
+    const preview = document.getElementById('mediaPreview');
+    const files = input.files;
+    
+    uploadedMedia = [];
+    preview.innerHTML = '';
+    
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const isVideo = file.type.startsWith('video/');
+            const mediaItem = {
+                name: file.name,
+                type: file.type,
+                data: e.target.result,
+                size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+            };
+            
+            uploadedMedia.push(mediaItem);
+            
+            const col = document.createElement('div');
+            col.className = 'col-md-3';
+            col.innerHTML = `
+                <div class="card">
+                    <div class="position-relative">
+                        ${isVideo ? 
+                            `<video src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;" controls></video>` :
+                            `<img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="${file.name}">`
+                        }
+                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" 
+                                onclick="removeMedia(${i})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-2">
+                        <small class="text-muted">${file.name}</small><br>
+                        <small class="badge bg-secondary">${mediaItem.size}</small>
+                    </div>
+                </div>
+            `;
+            preview.appendChild(col);
+        };
+        
+        reader.readAsDataURL(file);
+    }
+    
+    if (files.length > 0) {
+        const toast = document.createElement('div');
+        toast.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
+            <strong><i class="fas fa-check"></i> ${files.length} mídia(s) carregada(s)!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+}
+
+function removeMedia(index) {
+    uploadedMedia.splice(index, 1);
+    const preview = document.getElementById('mediaPreview');
+    preview.children[index]?.remove();
+}
+
+async function uploadMediaToServer() {
+    if (uploadedMedia.length === 0) return [];
+    
+    const formData = new FormData();
+    const input = document.getElementById('mediaUpload');
+    
+    for (let i = 0; i < input.files.length; i++) {
+        formData.append('media', input.files[i]);
+    }
+    
+    try {
+        const response = await fetch('/api/media/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        return result.files || [];
+    } catch (error) {
+        console.error('Erro ao fazer upload:', error);
+        return [];
+    }
 }
 </script>
 {% endblock %}

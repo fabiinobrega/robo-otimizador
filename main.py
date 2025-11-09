@@ -694,37 +694,48 @@ def health_check():
 
 @app.route("/api/media/upload", methods=["POST"])
 def api_upload_media():
-    """Upload media files."""
-    if "mediaFile" not in request.files:
+    """Upload media files (single or multiple)."""
+    # Suportar tanto 'mediaFile' (single) quanto 'media' (multiple)
+    files_key = 'media' if 'media' in request.files else 'mediaFile'
+    
+    if files_key not in request.files:
         return jsonify({"success": False, "message": "Nenhum arquivo enviado"}), 400
 
-    file = request.files["mediaFile"]
-    if file.filename == "":
+    files = request.files.getlist(files_key)
+    if not files or files[0].filename == "":
         return jsonify({"success": False, "message": "Nenhum arquivo selecionado"}), 400
 
     try:
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.root_path, app.config["UPLOAD_FOLDER"], filename)
-        file.save(filepath)
-
-        file_url = url_for("static", filename=f"uploads/{filename}", _external=True)
-        filetype = file.mimetype.split("/")[0] if file.mimetype else "unknown"
-
+        uploaded_files = []
         db = get_db()
-        db.execute(
-            "INSERT INTO media_files (filename, url, filetype) VALUES (?, ?, ?)",
-            (filename, file_url, filetype),
-        )
-        db.commit()
+        
+        for file in files:
+            if file.filename:
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.root_path, app.config["UPLOAD_FOLDER"], filename)
+                file.save(filepath)
 
-        log_activity("Upload de Mídia", f"Arquivo enviado: {filename}")
+                file_url = url_for("static", filename=f"uploads/{filename}", _external=True)
+                filetype = file.mimetype.split("/")[0] if file.mimetype else "unknown"
+
+                db.execute(
+                    "INSERT INTO media_files (filename, url, filetype) VALUES (?, ?, ?)",
+                    (filename, file_url, filetype),
+                )
+                
+                uploaded_files.append({
+                    "filename": filename,
+                    "url": file_url,
+                    "filetype": filetype
+                })
+        
+        db.commit()
+        log_activity("Upload de Mídia", f"{len(uploaded_files)} arquivo(s) enviado(s)")
 
         return jsonify({
             "success": True,
-            "message": "Arquivo carregado com sucesso!",
-            "filename": filename,
-            "url": file_url,
-            "filetype": filetype
+            "message": f"{len(uploaded_files)} arquivo(s) carregado(s) com sucesso!",
+            "files": uploaded_files
         })
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
