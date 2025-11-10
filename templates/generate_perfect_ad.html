@@ -404,8 +404,16 @@ function suggestBudget() {
 }
 
 function editManually() {
-    alert('Redirecionando para editor manual...');
-    window.location.href = '/create-campaign';
+    // Passar dados gerados para o editor
+    const editorData = {
+        headline: generatedData.copy?.variants?.[0]?.headline || '',
+        description: generatedData.copy?.variants?.[0]?.description || '',
+        cta: generatedData.copy?.variants?.[0]?.cta || '',
+        url: document.getElementById('productUrl').value
+    };
+    
+    const dataParam = encodeURIComponent(JSON.stringify(editorData));
+    window.location.href = `/ad-editor?data=${dataParam}`;
 }
 
 async function approveAndPublish() {

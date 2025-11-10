@@ -1,0 +1,368 @@
+{% extends "index.html" %}
+
+{% block title %}Editor de Anúncio - Manus Marketing{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="fas fa-edit"></i> Editor de Anúncio</h1>
+        <div>
+            <button class="btn btn-outline-secondary" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            <button class="btn btn-success" onclick="saveAndPublish()">
+                <i class="fas fa-check"></i> Salvar e Publicar
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Coluna Esquerda: Formulário de Edição -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">✏️ Editar Conteúdo do Anúncio</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Headlines -->
+                    <div class="mb-4">
+                        <label class="form-label"><strong>Headline (Título Principal)</strong></label>
+                        <input type="text" class="form-control form-control-lg" id="headline" 
+                               placeholder="Digite o título do anúncio..." maxlength="40">
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">Máximo 40 caracteres</small>
+                            <small id="headlineCount" class="text-muted">0/40</small>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label class="form-label"><strong>Description (Descrição)</strong></label>
+                        <textarea class="form-control" id="description" rows="3" 
+                                  placeholder="Digite a descrição do anúncio..." maxlength="125"></textarea>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">Máximo 125 caracteres</small>
+                            <small id="descriptionCount" class="text-muted">0/125</small>
+                        </div>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="mb-4">
+                        <label class="form-label"><strong>CTA (Call-to-Action)</strong></label>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="cta" 
+                                       placeholder="Ex: Comprar Agora" maxlength="20">
+                                <small class="text-muted" id="ctaCount">0/20 caracteres</small>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select" id="ctaPreset" onchange="useCTAPreset()">
+                                    <option value="">Usar modelo...</option>
+                                    <option value="Comprar Agora">Comprar Agora</option>
+                                    <option value="Saiba Mais">Saiba Mais</option>
+                                    <option value="Quero Aproveitar">Quero Aproveitar</option>
+                                    <option value="Garantir Desconto">Garantir Desconto</option>
+                                    <option value="Ver Oferta">Ver Oferta</option>
+                                    <option value="Inscreva-se">Inscreva-se</option>
+                                    <option value="Baixar Agora">Baixar Agora</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Mídias -->
+                    <div class="mb-4">
+                        <label class="form-label"><strong>Mídias (Imagens/Vídeos)</strong></label>
+                        <input type="file" class="form-control mb-2" id="adMedia" 
+                               accept="image/*,video/*" multiple onchange="previewAdMedia()">
+                        <div id="adMediaPreview" class="row g-2 mt-2"></div>
+                    </div>
+
+                    <hr>
+
+                    <!-- URL de Destino -->
+                    <div class="mb-4">
+                        <label class="form-label"><strong>URL de Destino</strong></label>
+                        <input type="url" class="form-control" id="destinationUrl" 
+                               placeholder="https://seusite.com/produto">
+                        <small class="text-muted">Para onde o usuário será direcionado ao clicar</small>
+                    </div>
+
+                    <!-- Configurações Avançadas -->
+                    <div class="accordion" id="advancedSettings">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapseAdvanced">
+                                    ⚙️ Configurações Avançadas
+                                </button>
+                            </h2>
+                            <div id="collapseAdvanced" class="accordion-collapse collapse" 
+                                 data-bs-parent="#advancedSettings">
+                                <div class="accordion-body">
+                                    <!-- Plataforma -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Plataforma</label>
+                                        <select class="form-select" id="platform">
+                                            <option value="facebook">Facebook Ads</option>
+                                            <option value="google">Google Ads</option>
+                                            <option value="both">Ambas</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Orçamento -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Orçamento Diário (R$)</label>
+                                        <input type="number" class="form-control" id="dailyBudget" 
+                                               value="50" step="0.01" min="1">
+                                    </div>
+
+                                    <!-- Localização -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Localização</label>
+                                        <input type="text" class="form-control" id="location" 
+                                               value="Brasil">
+                                    </div>
+
+                                    <!-- Idade -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Faixa Etária</label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="number" class="form-control" id="ageMin" 
+                                                       placeholder="Min" value="18" min="13" max="65">
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="number" class="form-control" id="ageMax" 
+                                                       placeholder="Max" value="65" min="18" max="65">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Gênero -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Gênero</label>
+                                        <select class="form-select" id="gender">
+                                            <option value="all">Todos</option>
+                                            <option value="male">Masculino</option>
+                                            <option value="female">Feminino</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Interesses -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Interesses (separados por vírgula)</label>
+                                        <input type="text" class="form-control" id="interests" 
+                                               placeholder="Ex: tecnologia, esportes, moda">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita: Preview -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">👁️ Preview do Anúncio</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Preview Facebook -->
+                    <div id="facebookPreview" class="mb-4">
+                        <h6 class="text-muted">Facebook/Instagram</h6>
+                        <div class="border rounded p-3 bg-light">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-secondary rounded-circle" style="width: 40px; height: 40px;"></div>
+                                <div class="ms-2">
+                                    <strong>Sua Página</strong><br>
+                                    <small class="text-muted">Patrocinado</small>
+                                </div>
+                            </div>
+                            <p id="previewDescription" class="mb-2">Sua descrição aparecerá aqui...</p>
+                            <div id="previewImageContainer" class="mb-2">
+                                <div class="bg-secondary" style="width: 100%; height: 200px; display: flex; align-items: center; justify-content: center;">
+                                    <span class="text-white">Imagem do anúncio</span>
+                                </div>
+                            </div>
+                            <h5 id="previewHeadline" class="mb-1">Seu título aparecerá aqui</h5>
+                            <small class="text-muted">seusite.com</small><br>
+                            <button class="btn btn-primary btn-sm mt-2 w-100" id="previewCTA">CTA</button>
+                        </div>
+                    </div>
+
+                    <!-- Métricas Estimadas -->
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6>📊 Métricas Estimadas</h6>
+                            <div class="row text-center">
+                                <div class="col-6 mb-2">
+                                    <small class="text-muted">CTR</small><br>
+                                    <strong id="estimatedCTR">2.5%</strong>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <small class="text-muted">CPC</small><br>
+                                    <strong id="estimatedCPC">R$ 1,50</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Alcance/dia</small><br>
+                                    <strong id="estimatedReach">~5.000</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Conversões/dia</small><br>
+                                    <strong id="estimatedConversions">~12</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Atualizar contadores de caracteres
+document.getElementById('headline').addEventListener('input', function() {
+    const count = this.value.length;
+    document.getElementById('headlineCount').textContent = count + '/40';
+    document.getElementById('previewHeadline').textContent = this.value || 'Seu título aparecerá aqui';
+});
+
+document.getElementById('description').addEventListener('input', function() {
+    const count = this.value.length;
+    document.getElementById('descriptionCount').textContent = count + '/125';
+    document.getElementById('previewDescription').textContent = this.value || 'Sua descrição aparecerá aqui...';
+});
+
+document.getElementById('cta').addEventListener('input', function() {
+    const count = this.value.length;
+    document.getElementById('ctaCount').textContent = count + '/20 caracteres';
+    document.getElementById('previewCTA').textContent = this.value || 'CTA';
+});
+
+// Usar CTA preset
+function useCTAPreset() {
+    const preset = document.getElementById('ctaPreset').value;
+    if (preset) {
+        document.getElementById('cta').value = preset;
+        document.getElementById('cta').dispatchEvent(new Event('input'));
+    }
+}
+
+// Preview de mídias
+function previewAdMedia() {
+    const input = document.getElementById('adMedia');
+    const preview = document.getElementById('adMediaPreview');
+    const files = input.files;
+    
+    preview.innerHTML = '';
+    
+    if (files.length > 0) {
+        const file = files[0]; // Mostrar apenas a primeira
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const isVideo = file.type.startsWith('video/');
+            
+            const previewContainer = document.getElementById('previewImageContainer');
+            previewContainer.innerHTML = isVideo ?
+                `<video src="${e.target.result}" class="w-100" style="max-height: 200px;" controls></video>` :
+                `<img src="${e.target.result}" class="w-100" style="max-height: 200px; object-fit: cover;">`;
+            
+            // Adicionar thumbs
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                const r = new FileReader();
+                r.onload = function(ev) {
+                    const col = document.createElement('div');
+                    col.className = 'col-4';
+                    col.innerHTML = `
+                        <div class="card">
+                            <img src="${ev.target.result}" class="card-img-top" style="height: 80px; object-fit: cover;">
+                        </div>
+                    `;
+                    preview.appendChild(col);
+                };
+                r.readAsDataURL(f);
+            }
+        };
+        
+        reader.readAsDataURL(file);
+    }
+}
+
+// Salvar e publicar
+async function saveAndPublish() {
+    const adData = {
+        headline: document.getElementById('headline').value,
+        description: document.getElementById('description').value,
+        cta: document.getElementById('cta').value,
+        destinationUrl: document.getElementById('destinationUrl').value,
+        platform: document.getElementById('platform').value,
+        dailyBudget: parseFloat(document.getElementById('dailyBudget').value),
+        location: document.getElementById('location').value,
+        targeting: {
+            ageMin: parseInt(document.getElementById('ageMin').value),
+            ageMax: parseInt(document.getElementById('ageMax').value),
+            gender: document.getElementById('gender').value,
+            interests: document.getElementById('interests').value.split(',').map(i => i.trim())
+        }
+    };
+    
+    // Validar
+    if (!adData.headline || !adData.description || !adData.cta) {
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+    }
+    
+    if (confirm('Deseja salvar e publicar este anúncio?')) {
+        try {
+            const response = await fetch('/api/ad/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ config: adData })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('✅ Anúncio publicado com sucesso!');
+                window.location.href = '/campaigns';
+            } else {
+                alert('❌ Erro ao publicar: ' + result.message);
+            }
+        } catch (error) {
+            alert('❌ Erro ao publicar: ' + error.message);
+        }
+    }
+}
+
+// Carregar dados se vier de outra página
+window.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get('data');
+    
+    if (data) {
+        try {
+            const adData = JSON.parse(decodeURIComponent(data));
+            document.getElementById('headline').value = adData.headline || '';
+            document.getElementById('description').value = adData.description || '';
+            document.getElementById('cta').value = adData.cta || '';
+            document.getElementById('destinationUrl').value = adData.url || '';
+            
+            // Disparar eventos para atualizar preview
+            document.getElementById('headline').dispatchEvent(new Event('input'));
+            document.getElementById('description').dispatchEvent(new Event('input'));
+            document.getElementById('cta').dispatchEvent(new Event('input'));
+        } catch (e) {
+            console.error('Erro ao carregar dados:', e);
+        }
+    }
+});
+</script>
+{% endblock %}

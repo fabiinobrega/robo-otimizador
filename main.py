@@ -17,6 +17,7 @@ try:
     from services.manus_operator import operator as manus_operator
     from services.ab_testing_service import ab_testing_service
     from services.automation_service import automation_service
+    from services import openai_service
 except ImportError as e:
     print(f"Warning: Some service modules not found: {e}")
 
@@ -1043,6 +1044,43 @@ def api_reports_list():
 def generate_perfect_ad():
     """Generate Perfect Ad (1-Click)"""
     return render_template("generate_perfect_ad.html")
+
+
+@app.route("/ad-editor")
+def ad_editor():
+    """Ad Editor - Edit everything after AI generation"""
+    return render_template("ad_editor.html")
+
+
+@app.route("/api/ad/generate-copy", methods=["POST"])
+def api_ad_generate_copy():
+    """Generate ad copy with OpenAI GPT-4"""
+    data = request.json
+    product_info = data.get("product", {})
+    platform = data.get("platform", "facebook")
+    num_variants = data.get("num_variants", 5)
+    
+    try:
+        result = openai_service.generate_ad_copy(product_info, platform, num_variants)
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/landing/analyze", methods=["POST"])
+def api_landing_analyze():
+    """Analyze landing page with AI"""
+    data = request.json
+    url = data.get("url")
+    
+    if not url:
+        return jsonify({"success": False, "message": "URL is required"}), 400
+    
+    try:
+        result = openai_service.analyze_landing_page(url)
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 @app.route("/api/ad/simulate", methods=["POST"])
