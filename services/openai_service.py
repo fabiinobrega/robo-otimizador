@@ -7,8 +7,15 @@ import os
 import json
 from openai import OpenAI
 
+# Importar IA nativa
+try:
+    from services.native_ai_engine import native_ai
+    NATIVE_AI_AVAILABLE = True
+except ImportError:
+    NATIVE_AI_AVAILABLE = False
+
 # Inicializar cliente OpenAI
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) if os.getenv("OPENAI_API_KEY") else None
 
 
 def generate_ad_copy(product_info, platform="facebook", num_variants=5):
@@ -24,8 +31,15 @@ def generate_ad_copy(product_info, platform="facebook", num_variants=5):
         dict: Variantes geradas com headlines, descriptions e CTAs
     """
     
+    # Priorizar IA nativa
+    if NATIVE_AI_AVAILABLE:
+        try:
+            return native_ai.generate_ad_copy(product_info, platform, num_variants)
+        except Exception as e:
+            print(f"Erro na IA nativa, tentando OpenAI: {e}")
+    
     # Se não tiver API key, retorna simulado
-    if not os.getenv("OPENAI_API_KEY"):
+    if not client or not os.getenv("OPENAI_API_KEY"):
         return _generate_mock_copy(product_info, num_variants)
     
     try:
@@ -104,7 +118,14 @@ def analyze_landing_page(url, html_content=None):
         dict: Análise da página
     """
     
-    if not os.getenv("OPENAI_API_KEY"):
+    # Priorizar IA nativa
+    if NATIVE_AI_AVAILABLE:
+        try:
+            return native_ai.analyze_landing_page(url, html_content)
+        except Exception as e:
+            print(f"Erro na IA nativa, tentando OpenAI: {e}")
+    
+    if not client or not os.getenv("OPENAI_API_KEY"):
         return _generate_mock_analysis(url)
     
     try:

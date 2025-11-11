@@ -256,3 +256,34 @@ CREATE INDEX IF NOT EXISTS idx_ab_tests_campaign_id ON ab_tests(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_automation_rules_active ON automation_rules(is_active);
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read);
 
+
+-- Tabela para histórico de aprendizado da IA
+CREATE TABLE IF NOT EXISTS ai_learning_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    campaign_id INTEGER,
+    timestamp TEXT NOT NULL,
+    results TEXT,
+    patterns TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela para modelos treinados
+CREATE TABLE IF NOT EXISTS ai_models (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    model_name TEXT NOT NULL,
+    version TEXT NOT NULL,
+    metrics TEXT,
+    trained_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    status TEXT DEFAULT 'active'
+);
+
+-- Tabela para experimentos A/B
+CREATE TABLE IF NOT EXISTS ab_experiments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    variants TEXT,
+    results TEXT,
+    winner_id INTEGER,
+    status TEXT DEFAULT 'running',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);

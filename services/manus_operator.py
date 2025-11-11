@@ -9,6 +9,14 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 import requests
 
+# Importar motor de IA nativa
+try:
+    from services.native_ai_engine import native_ai
+    AI_AVAILABLE = True
+except ImportError:
+    AI_AVAILABLE = False
+    print("Warning: Native AI engine not available")
+
 
 class ManusOperator:
     """Agente autônomo inteligente para automação de marketing"""
