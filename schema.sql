@@ -287,3 +287,48 @@ CREATE TABLE IF NOT EXISTS ab_experiments (
     status TEXT DEFAULT 'running',
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ===== TABELAS DE INTEGRAÇÃO COM API MANUS =====
+
+-- Tokens de autenticação OAuth2
+CREATE TABLE IF NOT EXISTS manus_api_tokens (
+    id INTEGER PRIMARY KEY,
+    access_token TEXT NOT NULL,
+    refresh_token TEXT,
+    expires_at TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Estados OAuth para validação CSRF
+CREATE TABLE IF NOT EXISTS oauth_states (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    state TEXT NOT NULL UNIQUE,
+    created_at TEXT NOT NULL
+);
+
+-- Logs de sincronização
+CREATE TABLE IF NOT EXISTS manus_sync_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sync_type TEXT NOT NULL,
+    pushed INTEGER DEFAULT 0,
+    pulled INTEGER DEFAULT 0,
+    errors TEXT,
+    synced_at TEXT NOT NULL
+);
+
+-- Webhooks registrados
+CREATE TABLE IF NOT EXISTS manus_webhooks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event TEXT NOT NULL,
+    url TEXT NOT NULL,
+    webhook_id TEXT,
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Adicionar coluna de sincronização nas campanhas existentes
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS synced_with_manus INTEGER DEFAULT 0;
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS manus_id TEXT;
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS last_synced_at TEXT;
+

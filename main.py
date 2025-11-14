@@ -7,6 +7,7 @@ import json
 import random
 
 # Importação dos módulos de serviços
+# Import dos serviços
 try:
     from services import facebook_ads_service
     from services import google_ads_service
@@ -20,6 +21,13 @@ try:
     from services import openai_service
 except ImportError as e:
     print(f"Warning: Some service modules not found: {e}")
+
+# Import do cliente Manus API (separado para evitar erros)
+try:
+    from services.manus_api_client import manus_api
+except ImportError as e:
+    print(f"Warning: Manus API client not available: {e}")
+    manus_api = None
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "uma_chave_secreta_muito_segura")
@@ -1173,6 +1181,132 @@ def api_generate_image():
         "success": True,
         "images": images
     })
+
+
+# ===== ENDPOINTS DE INTEGRAÇÃO COM API MANUS =====
+
+@app.route('/manus/connect')
+def manus_connect():
+    """Página de conexão com API Manus"""
+    if manus_api is None:
+        status = {'connected': False, 'has_token': False, 'token_valid': False, 'last_sync': None, 'api_url': 'N/A'}
+    else:
+        status = manus_api.get_connection_status()
+    return render_template('manus_connection.html', status=status)
+
+@app.route('/manus/oauth/authorize')
+def manus_oauth_authorize():
+    """Inicia fluxo OAuth2 com API Manus"""
+    auth_url = manus_api.get_authorization_url()
+    return redirect(auth_url)
+
+@app.route('/oauth/callback')
+def oauth_callback():
+    """Callback OAuth2 da API Manus"""
+    code = request.args.get('code')
+    state = request.args.get('state')
+    
+    if not code or not state:
+        return jsonify({'success': False, 'error': 'Parâmetros inválidos'}), 400
+    
+    result = manus_api.exchange_code_for_token(code, state)
+    
+    if result['success']:
+        return redirect(url_for('manus_connect'))
+    else:
+        return jsonify(result), 400
+
+@app.route('/api/manus/status')
+def api_manus_status():
+    """Retorna status da conexão com API Manus"""
+    status = manus_api.get_connection_status()
+    return jsonify(status)
+
+@app.route('/api/manus/test')
+def api_manus_test():
+    """Testa conexão com API Manus"""
+    result = manus_api.test_connection()
+    return jsonify(result)
+
+@app.route('/api/manus/sync/campaigns', methods=['POST'])
+def api_manus_sync_campaigns():
+    """Sincroniza campanhas com API Manus"""
+    direction = request.json.get('direction', 'both')
+    result = manus_api.sync_campaigns(direction)
+    return jsonify(result)
+
+@app.route('/api/manus/sync/ads', methods=['POST'])
+def api_manus_sync_ads():
+    """Sincroniza anúncios com API Manus"""
+    campaign_id = request.json.get('campaign_id')
+    result = manus_api.sync_ads(campaign_id)
+    return jsonify(result)
+
+@app.route('/api/manus/reports', methods=['GET'])
+def api_manus_reports():
+    """Puxa relatórios da API Manus"""
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    if not start_date or not end_date:
+        return jsonify({'success': False, 'error': 'Datas obrigatórias'}), 400
+    
+    result = manus_api.pull_reports(start_date, end_date)
+    return jsonify(result)
+
+@app.route('/api/manus/credits/balance')
+def api_manus_credits_balance():
+    """Consulta saldo de créditos"""
+    result = manus_api.get_credits_balance()
+    return jsonify(result)
+
+@app.route('/api/manus/credits/consume', methods=['POST'])
+def api_manus_credits_consume():
+    """Consome créditos"""
+    amount = request.json.get('amount')
+    description = request.json.get('description', 'Consumo via API')
+    
+    if not amount:
+        return jsonify({'success': False, 'error': 'Amount obrigatório'}), 400
+    
+    result = manus_api.consume_credits(amount, description)
+    return jsonify(result)
+
+@app.route('/api/manus/webhooks/register', methods=['POST'])
+def api_manus_webhooks_register():
+    """Registra webhook na API Manus"""
+    event = request.json.get('event')
+    url = request.json.get('url')
+    
+    if not event or not url:
+        return jsonify({'success': False, 'error': 'Event e URL obrigatórios'}), 400
+    
+    result = manus_api.register_webhook(event, url)
+    return jsonify(result)
+
+@app.route('/webhooks/manus', methods=['POST'])
+def webhooks_manus():
+    """Recebe webhooks da API Manus"""
+    signature = request.headers.get('X-Manus-Signature')
+    payload = request.get_data(as_text=True)
+    
+    # Verificar assinatura
+    if not manus_api.verify_webhook_signature(payload, signature):
+        return jsonify({'error': 'Invalid signature'}), 401
+    
+    # Processar webhook
+    data = request.json
+    event = data.get('event')
+    
+    # Log do webhook
+    db = get_db()
+    db.execute("""
+        INSERT INTO manus_sync_logs (sync_type, pushed, pulled, errors, synced_at)
+        VALUES (?, 0, 1, '[]', ?)
+    """, (f'webhook_{event}', datetime.now().isoformat()))
+    db.commit()
+    
+    return jsonify({'success': True, 'received': True})
 
 
 if __name__ == "__main__":

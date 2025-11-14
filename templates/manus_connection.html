@@ -1,0 +1,355 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-plug"></i> Conexão com API Manus</h2>
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+
+            <!-- Status da Conexão -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card {% if status.connected %}border-success{% else %}border-warning{% endif %}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-2">
+                                        {% if status.connected %}
+                                            <i class="fas fa-check-circle text-success"></i> Conectado
+                                        {% else %}
+                                            <i class="fas fa-exclamation-circle text-warning"></i> Desconectado
+                                        {% endif %}
+                                    </h4>
+                                    <p class="mb-0 text-muted">
+                                        {% if status.connected %}
+                                            Sistema sincronizado com a plataforma Manus oficial
+                                        {% else %}
+                                            Conecte-se à plataforma Manus para sincronizar dados
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div>
+                                    {% if not status.connected %}
+                                        <a href="/manus/oauth/authorize" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-link"></i> Conectar Agora
+                                        </a>
+                                    {% else %}
+                                        <button onclick="testConnection()" class="btn btn-success">
+                                            <i class="fas fa-heartbeat"></i> Testar Conexão
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações da Conexão -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-key fa-3x text-primary mb-3"></i>
+                            <h5>Token</h5>
+                            <p class="mb-0">
+                                {% if status.has_token %}
+                                    <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Ausente</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                            <h5>Validade</h5>
+                            <p class="mb-0">
+                                {% if status.token_valid %}
+                                    <span class="badge bg-success">Válido</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Expirado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-sync fa-3x text-info mb-3"></i>
+                            <h5>Última Sync</h5>
+                            <p class="mb-0 small">
+                                {% if status.last_sync %}
+                                    {{ status.last_sync }}
+                                {% else %}
+                                    Nunca
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-server fa-3x text-secondary mb-3"></i>
+                            <h5>API URL</h5>
+                            <p class="mb-0 small text-truncate">
+                                {{ status.api_url }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sincronização -->
+            {% if status.connected %}
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-sync-alt"></i> Sincronização de Dados</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6><i class="fas fa-bullhorn"></i> Campanhas</h6>
+                                    <div class="btn-group w-100" role="group">
+                                        <button onclick="syncData('campaigns', 'push')" class="btn btn-outline-primary">
+                                            <i class="fas fa-arrow-up"></i> Enviar
+                                        </button>
+                                        <button onclick="syncData('campaigns', 'pull')" class="btn btn-outline-success">
+                                            <i class="fas fa-arrow-down"></i> Receber
+                                        </button>
+                                        <button onclick="syncData('campaigns', 'both')" class="btn btn-primary">
+                                            <i class="fas fa-sync"></i> Ambos
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6><i class="fas fa-ad"></i> Anúncios</h6>
+                                    <div class="btn-group w-100" role="group">
+                                        <button onclick="syncData('ads', 'push')" class="btn btn-outline-primary">
+                                            <i class="fas fa-arrow-up"></i> Enviar
+                                        </button>
+                                        <button onclick="syncData('ads', 'pull')" class="btn btn-outline-success">
+                                            <i class="fas fa-arrow-down"></i> Receber
+                                        </button>
+                                        <button onclick="syncData('ads', 'both')" class="btn btn-primary">
+                                            <i class="fas fa-sync"></i> Ambos
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6><i class="fas fa-chart-line"></i> Relatórios</h6>
+                                    <button onclick="pullReports()" class="btn btn-success w-100">
+                                        <i class="fas fa-download"></i> Puxar Relatórios
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="syncResult" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Créditos -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fas fa-coins"></i> Créditos Manus</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="creditsInfo" class="text-center">
+                                <button onclick="checkCredits()" class="btn btn-warning">
+                                    <i class="fas fa-sync"></i> Consultar Saldo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-bell"></i> Webhooks</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">Eventos registrados:</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> campaign.created</li>
+                                <li><i class="fas fa-check text-success"></i> campaign.updated</li>
+                                <li><i class="fas fa-check text-success"></i> ad.published</li>
+                                <li><i class="fas fa-check text-success"></i> report.generated</li>
+                            </ul>
+                            <small class="text-muted">
+                                URL: https://robo-otimizador1.onrender.com/webhooks/manus
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Configuração -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-cog"></i> Configuração</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Como Configurar</h6>
+                                <ol class="mb-0">
+                                    <li>Entre em contato com o suporte Manus em <a href="mailto:support@manus.im">support@manus.im</a></li>
+                                    <li>Solicite acesso à API oficial e credenciais OAuth2</li>
+                                    <li>Configure as variáveis de ambiente:
+                                        <ul>
+                                            <li><code>MANUS_API_BASE_URL</code></li>
+                                            <li><code>MANUS_CLIENT_ID</code></li>
+                                            <li><code>MANUS_CLIENT_SECRET</code></li>
+                                        </ul>
+                                    </li>
+                                    <li>Clique em "Conectar Agora" para autorizar</li>
+                                </ol>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle"></i> Importante</h6>
+                                <p class="mb-0">
+                                    Esta integração requer credenciais oficiais da API Manus. 
+                                    Sem as credenciais, o sistema continuará funcionando normalmente, 
+                                    mas sem sincronização com a plataforma Manus.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Testar conexão
+function testConnection() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testando...';
+    
+    fetch('/api/manus/test')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', `Conexão OK! Latência: ${data.latency_ms.toFixed(0)}ms`);
+            } else {
+                showAlert('danger', `Erro: ${data.error}`);
+            }
+        })
+        .catch(err => {
+            showAlert('danger', `Erro na requisição: ${err.message}`);
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-heartbeat"></i> Testar Conexão';
+        });
+}
+
+// Sincronizar dados
+function syncData(type, direction) {
+    const resultDiv = document.getElementById('syncResult');
+    resultDiv.innerHTML = '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Sincronizando...</div>';
+    
+    fetch(`/api/manus/sync/${type}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({direction: direction})
+    })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check"></i> Sincronização Concluída</h6>
+                        <p class="mb-0">
+                            <strong>Enviados:</strong> ${data.pushed} | 
+                            <strong>Recebidos:</strong> ${data.pulled} | 
+                            <strong>Erros:</strong> ${data.errors.length}
+                        </p>
+                        ${data.errors.length > 0 ? `<small>Erros: ${data.errors.join(', ')}</small>` : ''}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-danger">Erro: ${data.error}</div>`;
+            }
+        })
+        .catch(err => {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Erro: ${err.message}</div>`;
+        });
+}
+
+// Puxar relatórios
+function pullReports() {
+    const today = new Date().toISOString().split('T')[0];
+    const lastWeek = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
+    
+    fetch(`/api/manus/reports?start_date=${lastWeek}&end_date=${today}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', 'Relatórios sincronizados com sucesso!');
+            } else {
+                showAlert('danger', `Erro: ${data.error}`);
+            }
+        })
+        .catch(err => {
+            showAlert('danger', `Erro: ${err.message}`);
+        });
+}
+
+// Consultar créditos
+function checkCredits() {
+    const div = document.getElementById('creditsInfo');
+    div.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Consultando...';
+    
+    fetch('/api/manus/credits/balance')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const balance = data.balance;
+                div.innerHTML = `
+                    <h3 class="mb-0">${balance.amount || 0} créditos</h3>
+                    <p class="text-muted mb-0">Plano: ${balance.plan || 'Gratuito'}</p>
+                `;
+            } else {
+                div.innerHTML = `<p class="text-danger">Erro: ${data.error}</p>`;
+            }
+        })
+        .catch(err => {
+            div.innerHTML = `<p class="text-danger">Erro: ${err.message}</p>`;
+        });
+}
+
+// Mostrar alerta
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+    
+    setTimeout(() => alertDiv.remove(), 5000);
+}
+</script>
+{% endblock %}
