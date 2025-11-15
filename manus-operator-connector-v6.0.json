@@ -1,0 +1,790 @@
+{
+  "name": "manus-operator-api-connector",
+  "version": "6.0.0",
+  "displayName": "Manus Operator – API Connector",
+  "description": "Conector completo para integração com o Manus Operator, permitindo sincronização de campanhas, anúncios, relatórios, gerenciamento de créditos e webhooks via OAuth2.",
+  "author": "Fabiana Nobrega Pacheco Ferreira",
+  "homepage": "https://robo-otimizador1.onrender.com",
+  "repository": "https://github.com/fabiinobrega/robo-otimizador",
+  "icon": "🤖",
+  "category": "marketing",
+  "tags": ["marketing", "automation", "ai", "ads", "campaigns"],
+  
+  "authentication": {
+    "type": "oauth2",
+    "flow": "authorization_code",
+    "authorizationUrl": "{{api_base_url}}/oauth/authorize",
+    "tokenUrl": "{{api_base_url}}/oauth/token",
+    "refreshUrl": "{{api_base_url}}/oauth/refresh",
+    "scopes": [
+      "campaigns:read",
+      "campaigns:write",
+      "ads:read",
+      "ads:write",
+      "reports:read",
+      "credits:read",
+      "credits:write",
+      "webhooks:manage"
+    ],
+    "defaultScopes": [
+      "campaigns:read",
+      "campaigns:write",
+      "ads:read",
+      "ads:write",
+      "reports:read"
+    ]
+  },
+  
+  "configuration": {
+    "fields": [
+      {
+        "name": "api_base_url",
+        "type": "string",
+        "label": "API Base URL",
+        "description": "URL base da API do Manus Operator",
+        "required": true,
+        "default": "https://robo-otimizador1.onrender.com",
+        "placeholder": "https://robo-otimizador1.onrender.com"
+      },
+      {
+        "name": "client_id",
+        "type": "string",
+        "label": "Client ID",
+        "description": "Client ID fornecido pelo Manus Operator",
+        "required": true,
+        "secret": false
+      },
+      {
+        "name": "client_secret",
+        "type": "string",
+        "label": "Client Secret",
+        "description": "Client Secret fornecido pelo Manus Operator",
+        "required": true,
+        "secret": true
+      },
+      {
+        "name": "redirect_uri",
+        "type": "string",
+        "label": "Redirect URI",
+        "description": "URI de redirecionamento após autenticação",
+        "required": true,
+        "default": "https://app.manus.im/oauth/callback"
+      }
+    ]
+  },
+  
+  "actions": [
+    {
+      "name": "get_authorization_url",
+      "displayName": "Obter URL de Autorização",
+      "description": "Gera a URL para iniciar o fluxo OAuth2",
+      "category": "authentication",
+      "input": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "description": "State CSRF para segurança",
+            "required": false
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Escopos solicitados",
+            "required": false
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "authorization_url": {
+            "type": "string",
+            "description": "URL completa de autorização"
+          },
+          "state": {
+            "type": "string",
+            "description": "State gerado"
+          }
+        }
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{api_base_url}}/api/manus/authorize",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "query": {
+          "client_id": "{{client_id}}",
+          "redirect_uri": "{{redirect_uri}}",
+          "response_type": "code",
+          "scope": "{{input.scope}}",
+          "state": "{{input.state}}"
+        }
+      }
+    },
+    
+    {
+      "name": "exchange_code",
+      "displayName": "Trocar Código por Token",
+      "description": "Troca o código de autorização por access_token e refresh_token",
+      "category": "authentication",
+      "input": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código de autorização recebido",
+            "required": true
+          },
+          "state": {
+            "type": "string",
+            "description": "State para validação CSRF",
+            "required": false
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "Token de acesso"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Token de renovação"
+          },
+          "token_type": {
+            "type": "string",
+            "description": "Tipo do token (Bearer)"
+          },
+          "expires_in": {
+            "type": "number",
+            "description": "Tempo de expiração em segundos"
+          },
+          "scope": {
+            "type": "string",
+            "description": "Escopos concedidos"
+          }
+        }
+      },
+      "http": {
+        "method": "POST",
+        "url": "{{api_base_url}}/api/manus/token",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "grant_type": "authorization_code",
+          "code": "{{input.code}}",
+          "client_id": "{{client_id}}",
+          "client_secret": "{{client_secret}}",
+          "redirect_uri": "{{redirect_uri}}"
+        }
+      }
+    },
+    
+    {
+      "name": "refresh_token",
+      "displayName": "Renovar Token",
+      "description": "Renova o access_token usando o refresh_token",
+      "category": "authentication",
+      "input": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "description": "Refresh token atual",
+            "required": true
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "Novo token de acesso"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Novo token de renovação"
+          },
+          "token_type": {
+            "type": "string",
+            "description": "Tipo do token"
+          },
+          "expires_in": {
+            "type": "number",
+            "description": "Tempo de expiração"
+          }
+        }
+      },
+      "http": {
+        "method": "POST",
+        "url": "{{api_base_url}}/api/manus/token",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "grant_type": "refresh_token",
+          "refresh_token": "{{input.refresh_token}}",
+          "client_id": "{{client_id}}",
+          "client_secret": "{{client_secret}}"
+        }
+      }
+    },
+    
+    {
+      "name": "get_status",
+      "displayName": "Status da Integração",
+      "description": "Retorna o status atual da integração com a API",
+      "category": "authentication",
+      "input": {
+        "type": "object",
+        "properties": {}
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "connected": {
+            "type": "boolean",
+            "description": "Se está conectado"
+          },
+          "token_valid": {
+            "type": "boolean",
+            "description": "Se o token é válido"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Data de expiração do token"
+          },
+          "scope": {
+            "type": "string",
+            "description": "Escopos ativos"
+          }
+        }
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{api_base_url}}/api/manus/status",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    
+    {
+      "name": "test_connection",
+      "displayName": "Testar Conexão",
+      "description": "Testa se a conexão com a API está funcionando",
+      "category": "authentication",
+      "input": {
+        "type": "object",
+        "properties": {}
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Se o teste foi bem-sucedido"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de retorno"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Data/hora do teste"
+          }
+        }
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{api_base_url}}/api/manus/test",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    
+    {
+      "name": "sync_campaigns",
+      "displayName": "Sincronizar Campanhas",
+      "description": "Sincroniza campanhas entre Manus e Manus Operator",
+      "category": "campaigns",
+      "input": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": ["push", "pull", "both"],
+            "description": "Direção da sincronização",
+            "required": true,
+            "default": "both"
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Se a sincronização foi bem-sucedida"
+          },
+          "pushed": {
+            "type": "number",
+            "description": "Número de campanhas enviadas"
+          },
+          "pulled": {
+            "type": "number",
+            "description": "Número de campanhas recebidas"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Lista de erros encontrados"
+          },
+          "synced_at": {
+            "type": "string",
+            "description": "Data/hora da sincronização"
+          }
+        }
+      },
+      "http": {
+        "method": "POST",
+        "url": "{{api_base_url}}/api/manus/sync/campaigns",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "direction": "{{input.direction}}"
+        }
+      }
+    },
+    
+    {
+      "name": "sync_ads",
+      "displayName": "Sincronizar Anúncios",
+      "description": "Sincroniza anúncios de uma campanha específica",
+      "category": "ads",
+      "input": {
+        "type": "object",
+        "properties": {
+          "campaign_id": {
+            "type": "number",
+            "description": "ID da campanha (opcional, null para todas)",
+            "required": false
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["push", "pull", "both"],
+            "description": "Direção da sincronização",
+            "required": true,
+            "default": "both"
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Se a sincronização foi bem-sucedida"
+          },
+          "pushed": {
+            "type": "number",
+            "description": "Número de anúncios enviados"
+          },
+          "pulled": {
+            "type": "number",
+            "description": "Número de anúncios recebidos"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Lista de erros"
+          }
+        }
+      },
+      "http": {
+        "method": "POST",
+        "url": "{{api_base_url}}/api/manus/sync/ads",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "campaign_id": "{{input.campaign_id}}",
+          "direction": "{{input.direction}}"
+        }
+      }
+    },
+    
+    {
+      "name": "get_reports",
+      "displayName": "Obter Relatórios",
+      "description": "Obtém relatórios de performance das campanhas",
+      "category": "reports",
+      "input": {
+        "type": "object",
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "description": "Data inicial (YYYY-MM-DD)",
+            "required": false
+          },
+          "end_date": {
+            "type": "string",
+            "description": "Data final (YYYY-MM-DD)",
+            "required": false
+          },
+          "campaign_id": {
+            "type": "number",
+            "description": "ID da campanha específica",
+            "required": false
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Se a requisição foi bem-sucedida"
+          },
+          "reports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "campaign_id": {
+                  "type": "number"
+                },
+                "campaign_name": {
+                  "type": "string"
+                },
+                "impressions": {
+                  "type": "number"
+                },
+                "clicks": {
+                  "type": "number"
+                },
+                "ctr": {
+                  "type": "number"
+                },
+                "cpc": {
+                  "type": "number"
+                },
+                "conversions": {
+                  "type": "number"
+                },
+                "roas": {
+                  "type": "number"
+                },
+                "spend": {
+                  "type": "number"
+                },
+                "revenue": {
+                  "type": "number"
+                }
+              }
+            },
+            "description": "Lista de relatórios"
+          }
+        }
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{api_base_url}}/api/manus/reports",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        },
+        "query": {
+          "start_date": "{{input.start_date}}",
+          "end_date": "{{input.end_date}}",
+          "campaign_id": "{{input.campaign_id}}"
+        }
+      }
+    },
+    
+    {
+      "name": "get_credits_balance",
+      "displayName": "Consultar Saldo de Créditos",
+      "description": "Consulta o saldo atual de créditos disponíveis",
+      "category": "credits",
+      "input": {
+        "type": "object",
+        "properties": {}
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Se a consulta foi bem-sucedida"
+          },
+          "balance": {
+            "type": "number",
+            "description": "Saldo atual de créditos"
+          },
+          "plan": {
+            "type": "string",
+            "description": "Plano ativo"
+          },
+          "usage_this_month": {
+            "type": "number",
+            "description": "Uso no mês atual"
+          }
+        }
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{api_base_url}}/api/manus/credits/balance",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    
+    {
+      "name": "consume_credits",
+      "displayName": "Consumir Créditos",
+      "description": "Registra o consumo de créditos por uma atividade",
+      "category": "credits",
+      "input": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Quantidade de créditos a consumir",
+            "required": true,
+            "minimum": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da atividade",
+            "required": true
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Se o consumo foi registrado"
+          },
+          "new_balance": {
+            "type": "number",
+            "description": "Novo saldo após consumo"
+          },
+          "consumed": {
+            "type": "number",
+            "description": "Quantidade consumida"
+          }
+        }
+      },
+      "http": {
+        "method": "POST",
+        "url": "{{api_base_url}}/api/manus/credits/consume",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "amount": "{{input.amount}}",
+          "description": "{{input.description}}"
+        }
+      }
+    },
+    
+    {
+      "name": "register_webhook",
+      "displayName": "Registrar Webhook",
+      "description": "Registra um webhook para receber eventos",
+      "category": "webhooks",
+      "input": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "campaign.created",
+              "campaign.updated",
+              "ad.published",
+              "report.generated"
+            ],
+            "description": "Tipo de evento",
+            "required": true
+          },
+          "url": {
+            "type": "string",
+            "description": "URL de callback",
+            "required": true,
+            "format": "uri"
+          },
+          "secret": {
+            "type": "string",
+            "description": "Secret para validação de assinatura",
+            "required": false
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Se o webhook foi registrado"
+          },
+          "webhook_id": {
+            "type": "number",
+            "description": "ID do webhook criado"
+          },
+          "event": {
+            "type": "string",
+            "description": "Evento registrado"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL de callback"
+          }
+        }
+      },
+      "http": {
+        "method": "POST",
+        "url": "{{api_base_url}}/api/manus/webhooks/register",
+        "headers": {
+          "Authorization": "Bearer {{access_token}}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "event": "{{input.event}}",
+          "url": "{{input.url}}",
+          "secret": "{{input.secret}}"
+        }
+      }
+    },
+    
+    {
+      "name": "verify_webhook",
+      "displayName": "Verificar Webhook",
+      "description": "Verifica a assinatura de um webhook recebido",
+      "category": "webhooks",
+      "input": {
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string",
+            "description": "Assinatura SHA256 recebida",
+            "required": true
+          },
+          "payload": {
+            "type": "string",
+            "description": "Payload JSON recebido",
+            "required": true
+          },
+          "secret": {
+            "type": "string",
+            "description": "Secret compartilhado",
+            "required": true
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean",
+            "description": "Se a assinatura é válida"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de validação"
+          }
+        }
+      },
+      "http": {
+        "method": "POST",
+        "url": "{{api_base_url}}/webhooks/verify",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "signature": "{{input.signature}}",
+          "payload": "{{input.payload}}",
+          "secret": "{{input.secret}}"
+        }
+      }
+    }
+  ],
+  
+  "security": {
+    "csrf_protection": true,
+    "https_only": true,
+    "token_expiration": 86400,
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 60,
+      "requests_per_hour": 1000
+    },
+    "webhook_signature": {
+      "algorithm": "sha256",
+      "header": "X-Manus-Signature"
+    }
+  },
+  
+  "error_handling": {
+    "retry": {
+      "enabled": true,
+      "max_attempts": 3,
+      "backoff": "exponential",
+      "initial_delay": 1000
+    },
+    "timeout": {
+      "connect": 5000,
+      "read": 30000
+    }
+  },
+  
+  "logging": {
+    "enabled": true,
+    "level": "info",
+    "include_headers": false,
+    "include_body": true
+  },
+  
+  "metadata": {
+    "created_at": "2024-11-09",
+    "updated_at": "2024-11-09",
+    "version_history": [
+      {
+        "version": "6.0.0",
+        "date": "2024-11-09",
+        "changes": [
+          "Implementação completa OAuth2",
+          "Sincronização bidirecional de campanhas e anúncios",
+          "Gerenciamento de créditos",
+          "Sistema de webhooks",
+          "Segurança avançada com JWT",
+          "Rate limiting e retry logic",
+          "Documentação completa"
+        ]
+      }
+    ]
+  }
+}
