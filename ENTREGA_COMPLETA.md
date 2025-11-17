@@ -21,7 +21,7 @@ Cada página foi testada individualmente e está renderizando perfeitamente:
 6. ✅ **/media-library** - Biblioteca de mídia
 7. ✅ **/reports** - Relatórios e analytics
 8. ✅ **/settings** - Configurações do sistema
-9. ✅ **/operator-chat** - Chat com Manus Operator
+9. ✅ **/operator-chat** - Chat com Velyra Prime
 10. ✅ **/ab-testing** - A/B Testing e experimentos
 11. ✅ **/automation** - Automação e regras
 12. ✅ **/segmentation** - Segmentação avançada
@@ -56,14 +56,14 @@ Cada página foi testada individualmente e está renderizando perfeitamente:
 - `GET /api/competitor-spy` - Espionagem
 - `POST /api/media/upload` - Upload de mídia
 - `GET /api/activity-logs` - Logs de atividade
-- `GET /api/operator/status` - Status do Manus Operator
+- `GET /api/operator/status` - Status do Velyra Prime
 - `POST /api/operator/chat` - Chat com Operator
 - `GET /api/ab-testing/tests` - Lista de testes A/B
 - `POST /api/automation/rules` - Criar regra de automação
 - `GET /api/reports/generate` - Gerar relatório
 
 #### Serviços Implementados
-- `manus_operator.py` - Agente autônomo com 5 níveis de inteligência
+- `velyra_prime.py` - Agente autônomo com 5 níveis de inteligência
 - `ab_testing_service.py` - A/B Testing completo
 - `automation_service.py` - Regras e automação
 - `openai_adapter.py` - Integração OpenAI
@@ -89,7 +89,7 @@ Cada página foi testada individualmente e está renderizando perfeitamente:
 
 #### Componentes
 - Menu lateral com 12 categorias
-- Navbar com status do Manus Operator
+- Navbar com status do Velyra Prime
 - Cards de métricas
 - Tabelas interativas
 - Formulários validados
@@ -109,7 +109,7 @@ Cada página foi testada individualmente e está renderizando perfeitamente:
 - Filtro por status
 - Busca rápida
 
-### **Manus Operator (10/10) ✅**
+### **Velyra Prime (10/10) ✅**
 - Chat conversacional
 - Monitoramento 24/7
 - Otimização automática
@@ -249,7 +249,7 @@ Cada página foi testada individualmente e está renderizando perfeitamente:
 - **Dashboard:** Visão geral de métricas
 - **Criar Campanha:** Wizard de 5 passos
 - **Campanhas:** Gerenciar campanhas
-- **Manus Operator:** Chat com IA
+- **Velyra Prime:** Chat com IA
 - **Espionagem:** Analisar concorrentes
 
 ---

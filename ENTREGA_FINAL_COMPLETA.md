@@ -9,7 +9,7 @@
 
 ## 📦 O QUE FOI ENTREGUE
 
-### **🤖 ROBÔ EXECUTOR INTERNO (Manus Operator) - ATIVO**
+### **🤖 ROBÔ EXECUTOR INTERNO (Velyra Prime) - ATIVO**
 
 ✅ **Motor de IA Nativa Própria** - 100% independente, sem APIs externas  
 ✅ **Sistema de Aprendizado Contínuo** - Melhora automaticamente  
@@ -33,7 +33,7 @@
 | 6 | `/media-library` | ✅ 100% | Biblioteca de mídia |
 | 7 | `/reports` | ✅ 100% | Relatórios e analytics |
 | 8 | `/settings` | ✅ 100% | Configurações |
-| 9 | `/operator-chat` | ✅ 100% | Chat com Manus Operator |
+| 9 | `/operator-chat` | ✅ 100% | Chat com Velyra Prime |
 | 10 | `/ab-testing` | ✅ 100% | A/B Testing |
 | 11 | `/automation` | ✅ 100% | Automação e regras |
 | 12 | `/segmentation` | ✅ 100% | Segmentação de público |
@@ -115,7 +115,7 @@
 #### **Serviços**
 - `native_ai_engine.py` - Motor de IA nativa (500+ linhas)
 - `training_pipeline.py` - Pipeline de treinamento (400+ linhas)
-- `manus_operator.py` - Agente autônomo (300+ linhas)
+- `velyra_prime.py` - Agente autônomo (300+ linhas)
 - `openai_service.py` - Integração OpenAI (200+ linhas)
 - `ab_testing_service.py` - A/B Testing (150+ linhas)
 - `automation_service.py` - Automação (150+ linhas)

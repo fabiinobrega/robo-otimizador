@@ -10,7 +10,7 @@
 
 ### **🔌 Integração Completa com API Manus Oficial**
 
-Implementei uma estrutura completa de integração entre o **Manus Operator** e a **API Manus oficial**, pronta para ser ativada assim que você receber as credenciais do suporte Manus.
+Implementei uma estrutura completa de integração entre o **Velyra Prime** e a **API Manus oficial**, pronta para ser ativada assim que você receber as credenciais do suporte Manus.
 
 ---
 
@@ -351,7 +351,7 @@ Olá, equipe Manus!
 
 Meu nome é Fabiana Nobrega Pacheco Ferreira e estou 
 desenvolvendo um sistema de automação integrado ao 
-Manus Operator.
+Velyra Prime.
 
 Gostaria de solicitar acesso à API oficial Manus, incluindo:
 - Documentação dos endpoints
@@ -609,7 +609,7 @@ A **integração completa com a API Manus oficial** está **100% implementada e 
 
 ---
 
-**O Manus Operator agora pode operar em perfeita harmonia com a plataforma Manus oficial!** 🚀
+**O Velyra Prime agora pode operar em perfeita harmonia com a plataforma Manus oficial!** 🚀
 
 ---
 

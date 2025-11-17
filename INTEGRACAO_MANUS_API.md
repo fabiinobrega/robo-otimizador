@@ -22,7 +22,7 @@
 
 ## 🎯 VISÃO GERAL
 
-O **Manus Operator** agora possui integração completa com a **API Manus oficial**, permitindo sincronização bidirecional de dados, autenticação OAuth2 e comunicação via webhooks.
+O **Velyra Prime** agora possui integração completa com a **API Manus oficial**, permitindo sincronização bidirecional de dados, autenticação OAuth2 e comunicação via webhooks.
 
 ### **O que foi implementado:**
 
@@ -72,7 +72,7 @@ O **Manus Operator** agora possui integração completa com a **API Manus oficia
 2. Redireciona para API Manus (OAuth2)
 3. Usuário autoriza o acesso
 4. API Manus retorna código de autorização
-5. Manus Operator troca código por access token
+5. Velyra Prime troca código por access token
 6. Token é salvo no banco de dados
 7. Renovação automática a cada 24h
 ```
@@ -536,7 +536,7 @@ Assim que você receber as credenciais do suporte Manus, basta configurar as var
 - ✅ Gerenciamento de créditos
 - ✅ Interface visual completa
 
-**O Manus Operator agora pode operar em perfeita harmonia com a plataforma Manus oficial!** 🚀
+**O Velyra Prime agora pode operar em perfeita harmonia com a plataforma Manus oficial!** 🚀
 
 ---
 

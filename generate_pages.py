@@ -87,7 +87,7 @@ create_campaign_content = '''
                 </div>
                 
                 <div class="alert alert-info">
-                    <i class="fas fa-robot"></i> <strong>Manus Operator:</strong> Posso analisar sua landing page e sugerir o melhor objetivo e copy!
+                    <i class="fas fa-robot"></i> <strong>Velyra Prime:</strong> Posso analisar sua landing page e sugerir o melhor objetivo e copy!
                 </div>
                 
                 <div class="d-flex justify-content-between">

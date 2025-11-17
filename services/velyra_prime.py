@@ -1,5 +1,5 @@
 """
-Manus Operator - Agente Autônomo de IA
+Velyra Prime - Agente Autônomo de IA
 Sistema inteligente que monitora, otimiza e executa ações automaticamente
 """
 import os
@@ -18,7 +18,7 @@ except ImportError:
     print("Warning: Native AI engine not available")
 
 
-class ManusOperator:
+class VelyraPrime:
     """Agente autônomo inteligente para automação de marketing"""
     
     def __init__(self, db_path: str = "database.db"):
@@ -39,7 +39,7 @@ class ManusOperator:
         try:
             db.execute(
                 "INSERT INTO activity_logs (action, details) VALUES (?, ?)",
-                (f"[Manus Operator] {action}", details)
+                (f"[Velyra Prime] {action}", details)
             )
             db.commit()
         except Exception as e:
@@ -235,7 +235,7 @@ class ManusOperator:
         message_lower = user_message.lower()
         
         if 'status' in message_lower or 'como está' in message_lower:
-            return "🟢 Manus Operator está ativo e monitorando suas campanhas 24/7. Tudo funcionando perfeitamente!"
+            return "🟢 Velyra Prime está ativo e monitorando suas campanhas 24/7. Tudo funcionando perfeitamente!"
         
         elif 'campanha' in message_lower and ('criar' in message_lower or 'nova' in message_lower):
             return "Para criar uma nova campanha, acesse a página 'Criar Campanha' no menu lateral. Posso ajudá-lo com análise de produto, geração de copy e otimização de budget!"
@@ -322,4 +322,4 @@ Como posso ajudar você hoje?"""
 
 
 # Instância global do operador
-operator = ManusOperator()
+operator = VelyraPrime()

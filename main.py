@@ -15,7 +15,7 @@ try:
     from services import dco_service
     from services import landing_page_builder_service
     from services import segmentation_service
-    from services.manus_operator import operator as manus_operator
+    from services.velyra_prime import operator as velyra_prime
     from services.ab_testing_service import ab_testing_service
     from services.automation_service import automation_service
     from services import openai_service
@@ -754,9 +754,9 @@ def api_upload_media():
 
 @app.route("/api/operator/status", methods=["GET"])
 def api_operator_status():
-    """Get Manus Operator status"""
+    """Get Velyra Prime status"""
     try:
-        status = manus_operator.health_check()
+        status = velyra_prime.health_check()
         return jsonify({"success": True, **status})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -766,7 +766,7 @@ def api_operator_status():
 def api_operator_monitor():
     """Monitor campaigns"""
     try:
-        result = manus_operator.monitor_campaigns()
+        result = velyra_prime.monitor_campaigns()
         return jsonify({"success": True, **result})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -776,7 +776,7 @@ def api_operator_monitor():
 def api_operator_optimize():
     """Optimize campaigns automatically"""
     try:
-        result = manus_operator.auto_optimize_campaigns()
+        result = velyra_prime.auto_optimize_campaigns()
         return jsonify({"success": True, **result})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -784,7 +784,7 @@ def api_operator_optimize():
 
 @app.route("/api/operator/chat", methods=["POST"])
 def api_operator_chat():
-    """Chat with Manus Operator"""
+    """Chat with Velyra Prime"""
     data = request.get_json()
     message = data.get("message", "")
     
@@ -798,7 +798,7 @@ def api_operator_chat():
         db.commit()
         
         # Gerar resposta
-        response = manus_operator.chat_response(message)
+        response = velyra_prime.chat_response(message)
         
         # Salvar resposta
         db.execute(
@@ -819,7 +819,7 @@ def api_operator_chat():
 def api_operator_recommendations(campaign_id):
     """Get AI recommendations for a campaign"""
     try:
-        result = manus_operator.generate_ai_recommendations(campaign_id)
+        result = velyra_prime.generate_ai_recommendations(campaign_id)
         return jsonify({"success": True, **result})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -1311,4 +1311,82 @@ def webhooks_manus():
 
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
+
+# ===== CREDITS ALERT ENDPOINTS =====
+
+# Inicializar Credits Alert Service
+from services.credits_alert_service import CreditsAlertService
+credits_alert = CreditsAlertService()
+
+@app.route("/api/credits/check-alert", methods=["GET"])
+def api_credits_check_alert():
+    """Verifica saldo e retorna alerta se necessário"""
+    try:
+        alert = credits_alert.check_balance_and_alert()
+        
+        # Registrar alerta se houver
+        if alert['alert']:
+            credits_alert.log_alert(alert)
+            credits_alert.create_notification(alert)
+        
+        return jsonify(alert)
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/api/credits/balance", methods=["GET"])
+def api_credits_balance():
+    """Obtém saldo atual de créditos"""
+    try:
+        balance = credits_alert.get_credits_balance()
+        return jsonify({
+            "success": True,
+            **balance
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/api/credits/set-unlimited", methods=["POST"])
+def api_credits_set_unlimited():
+    """Define créditos como ilimitados"""
+    try:
+        success = credits_alert.set_unlimited_credits()
+        
+        if success:
+            log_activity("Créditos Ilimitados", "Créditos definidos como ILIMITADOS (∞)")
+            return jsonify({
+                "success": True,
+                "message": "✅ Créditos definidos como ILIMITADOS (∞)",
+                "balance": "∞"
+            })
+        else:
+            return jsonify({"success": False, "message": "Erro ao definir créditos"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/api/notifications/unread", methods=["GET"])
+def api_notifications_unread():
+    """Obtém notificações não lidas"""
+    try:
+        notifications = credits_alert.get_unread_notifications()
+        return jsonify({
+            "success": True,
+            "notifications": notifications,
+            "count": len(notifications)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/api/notifications/mark-read/<int:notification_id>", methods=["POST"])
+def api_notifications_mark_read(notification_id):
+    """Marca notificação como lida"""
+    try:
+        success = credits_alert.mark_notification_as_read(notification_id)
+        
+        if success:
+            return jsonify({"success": True, "message": "Notificação marcada como lida"})
+        else:
+            return jsonify({"success": False, "message": "Erro ao marcar notificação"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 

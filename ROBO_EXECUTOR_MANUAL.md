@@ -8,7 +8,7 @@
 
 ## 🎯 O QUE É O ROBÔ EXECUTOR INTERNO?
 
-O **Manus Operator** é um agente autônomo de IA que executa todas as funcionalidades da plataforma de forma inteligente, automática e independente, **sem uso de APIs externas**.
+O **Velyra Prime** é um agente autônomo de IA que executa todas as funcionalidades da plataforma de forma inteligente, automática e independente, **sem uso de APIs externas**.
 
 ### **Principais Características:**
 
@@ -497,7 +497,7 @@ O **Manus Marketing** opera com um sistema de créditos para controlar o uso dos
 
 ### **Ajustar Sensibilidade do Robô**
 
-Acesse "Configurações" → "Manus Operator"
+Acesse "Configurações" → "Velyra Prime"
 
 **Modo Conservador:**
 - Pausar campanhas com CTR < 1.5%
@@ -595,7 +595,7 @@ Antes de começar a usar o robô:
 
 ## 🎉 CONCLUSÃO
 
-O **Robô Executor Interno (Manus Operator)** é o cérebro da plataforma. Ele:
+O **Robô Executor Interno (Velyra Prime)** é o cérebro da plataforma. Ele:
 
 ✅ **Trabalha 24/7** sem parar  
 ✅ **Aprende continuamente** com cada campanha  

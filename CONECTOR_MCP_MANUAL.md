@@ -18,7 +18,7 @@
 
 ## 🎯 VISÃO GERAL
 
-O **Manus Operator – API Connector** é um conector MCP (Model Context Protocol) completo que permite integração total entre a plataforma Manus e o Manus Operator (seu robô autônomo de marketing).
+O **Velyra Prime – API Connector** é um conector MCP (Model Context Protocol) completo que permite integração total entre a plataforma Manus e o Velyra Prime (seu robô autônomo de marketing).
 
 ### **Recursos Principais:**
 
@@ -40,7 +40,7 @@ O **Manus Operator – API Connector** é um conector MCP (Model Context Protoco
 1. Acesse a plataforma Manus
 2. Vá em "Configurações" → "Conectores"
 3. Clique em "Importar Conector"
-4. Faça upload do arquivo `manus-operator-connector-v6.0.json`
+4. Faça upload do arquivo `velyra-prime-connector-v6.0.json`
 5. Clique em "Instalar"
 
 ### **Passo 2: Configurar Credenciais**
@@ -48,8 +48,8 @@ O **Manus Operator – API Connector** é um conector MCP (Model Context Protoco
 Após a instalação, você precisará configurar:
 
 1. **API Base URL:** `https://robo-otimizador1.onrender.com`
-2. **Client ID:** (fornecido pelo Manus Operator)
-3. **Client Secret:** (fornecido pelo Manus Operator)
+2. **Client ID:** (fornecido pelo Velyra Prime)
+3. **Client Secret:** (fornecido pelo Velyra Prime)
 4. **Redirect URI:** `https://app.manus.im/oauth/callback`
 
 ---
@@ -68,7 +68,7 @@ Para obter o Client ID e Client Secret:
 ### **Autorizar Acesso**
 
 1. Na plataforma Manus, clique em "Conectar"
-2. Você será redirecionado para o Manus Operator
+2. Você será redirecionado para o Velyra Prime
 3. Autorize o acesso
 4. Será redirecionado de volta para o Manus
 5. **Pronto!** Conexão estabelecida
@@ -174,7 +174,7 @@ Testa a conexão com a API.
 ### **2. CAMPANHAS**
 
 #### **sync_campaigns**
-Sincroniza campanhas entre Manus e Manus Operator.
+Sincroniza campanhas entre Manus e Velyra Prime.
 
 **Entrada:**
 ```json
@@ -364,7 +364,7 @@ Verifica a assinatura de um webhook recebido.
 
 ```javascript
 // Em um fluxo Manus
-const result = await manus_operator.sync_campaigns({
+const result = await velyra_prime.sync_campaigns({
   direction: "both"
 });
 
@@ -375,7 +375,7 @@ console.log(`Campanhas sincronizadas: ${result.pushed} enviadas, ${result.pulled
 
 ```javascript
 // Obter relatórios dos últimos 7 dias
-const reports = await manus_operator.get_reports({
+const reports = await velyra_prime.get_reports({
   start_date: "2024-11-02",
   end_date: "2024-11-09"
 });
@@ -389,11 +389,11 @@ reports.reports.forEach(report => {
 
 ```javascript
 // Verificar saldo antes de executar ação
-const balance = await manus_operator.get_credits_balance();
+const balance = await velyra_prime.get_credits_balance();
 
 if (balance.balance >= 100) {
   // Executar ação
-  await manus_operator.consume_credits({
+  await velyra_prime.consume_credits({
     amount: 100,
     description: "Geração de anúncio com IA"
   });
@@ -404,14 +404,14 @@ if (balance.balance >= 100) {
 
 ```javascript
 // Registrar webhook para receber notificações
-await manus_operator.register_webhook({
+await velyra_prime.register_webhook({
   event: "campaign.created",
   url: "https://app.manus.im/webhooks/operator",
   secret: "my_secret_key"
 });
 
 // Ao receber webhook, verificar assinatura
-const isValid = await manus_operator.verify_webhook({
+const isValid = await velyra_prime.verify_webhook({
   signature: request.headers['x-manus-signature'],
   payload: JSON.stringify(request.body),
   secret: "my_secret_key"
@@ -442,7 +442,7 @@ Todos os fluxos OAuth2 usam `state` para prevenir CSRF:
 
 ```javascript
 const state = generateRandomString();
-const authUrl = await manus_operator.get_authorization_url({
+const authUrl = await velyra_prime.get_authorization_url({
   state: state
 });
 
@@ -481,7 +481,7 @@ O conector **só funciona com HTTPS**. Requisições HTTP serão rejeitadas.
 **Solução:**
 ```javascript
 // Renovar token
-const newToken = await manus_operator.refresh_token({
+const newToken = await velyra_prime.refresh_token({
   refresh_token: currentRefreshToken
 });
 
@@ -494,7 +494,7 @@ const newToken = await manus_operator.refresh_token({
 
 **Solução:**
 1. Verificar se a URL está correta: `https://robo-otimizador1.onrender.com`
-2. Testar conexão: `await manus_operator.test_connection()`
+2. Testar conexão: `await velyra_prime.test_connection()`
 
 ### **Erro: "Créditos insuficientes"**
 
@@ -503,10 +503,10 @@ const newToken = await manus_operator.refresh_token({
 **Solução:**
 ```javascript
 // Verificar saldo
-const balance = await manus_operator.get_credits_balance();
+const balance = await velyra_prime.get_credits_balance();
 console.log(`Saldo atual: ${balance.balance} créditos`);
 
-// Adicionar mais créditos no painel do Manus Operator
+// Adicionar mais créditos no painel do Velyra Prime
 ```
 
 ### **Erro: "Webhook signature invalid"**
@@ -576,7 +576,7 @@ O conector registra todas as operações:
 
 ```javascript
 // Habilitar logs detalhados
-manus_operator.setLogLevel('debug');
+velyra_prime.setLogLevel('debug');
 
 // Logs incluem:
 // - Requisições HTTP
@@ -598,7 +598,7 @@ manus_operator.setLogLevel('debug');
 ### **1. Sempre Verificar Saldo**
 
 ```javascript
-const balance = await manus_operator.get_credits_balance();
+const balance = await velyra_prime.get_credits_balance();
 if (balance.balance < 100) {
   console.warn("Saldo baixo de créditos!");
 }
@@ -611,11 +611,11 @@ Em vez de polling, use webhooks:
 ```javascript
 // ❌ Não fazer (polling)
 setInterval(async () => {
-  const reports = await manus_operator.get_reports();
+  const reports = await velyra_prime.get_reports();
 }, 60000);
 
 // ✅ Fazer (webhook)
-await manus_operator.register_webhook({
+await velyra_prime.register_webhook({
   event: "report.generated",
   url: "https://app.manus.im/webhooks/reports"
 });
@@ -626,7 +626,7 @@ await manus_operator.register_webhook({
 ```javascript
 // Sincronizar campanhas a cada hora
 setInterval(async () => {
-  await manus_operator.sync_campaigns({ direction: "both" });
+  await velyra_prime.sync_campaigns({ direction: "both" });
 }, 3600000);
 ```
 
@@ -634,7 +634,7 @@ setInterval(async () => {
 
 ```javascript
 try {
-  await manus_operator.sync_campaigns({ direction: "both" });
+  await velyra_prime.sync_campaigns({ direction: "both" });
 } catch (error) {
   if (error.code === 'RATE_LIMIT') {
     // Aguardar e tentar novamente
@@ -658,7 +658,7 @@ try {
 
 ### **Contato**
 
-- **Suporte Manus Operator:** https://robo-otimizador1.onrender.com/manus/connect
+- **Suporte Velyra Prime:** https://robo-otimizador1.onrender.com/manus/connect
 - **GitHub:** https://github.com/fabiinobrega/robo-otimizador
 - **Issues:** https://github.com/fabiinobrega/robo-otimizador/issues
 
@@ -687,7 +687,7 @@ try {
 
 ## 🏆 CONCLUSÃO
 
-O **Manus Operator – API Connector (v6.0)** é um conector completo e robusto que permite integração total entre a plataforma Manus e o Manus Operator.
+O **Velyra Prime – API Connector (v6.0)** é um conector completo e robusto que permite integração total entre a plataforma Manus e o Velyra Prime.
 
 **Com ele você pode:**
 
@@ -695,7 +695,7 @@ O **Manus Operator – API Connector (v6.0)** é um conector completo e robusto 
 ✅ Obter relatórios de performance em tempo real
 ✅ Gerenciar créditos programaticamente
 ✅ Receber eventos via webhooks
-✅ Usar todas as funcionalidades do Manus Operator dentro do Manus
+✅ Usar todas as funcionalidades do Velyra Prime dentro do Manus
 
 **Desenvolvido com ❤️ por Fabiana Nobrega Pacheco Ferreira**
 

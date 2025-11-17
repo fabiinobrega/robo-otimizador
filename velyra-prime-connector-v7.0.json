@@ -1,8 +1,8 @@
 {
-  "name": "manus-operator-api-connector",
+  "name": "velyra-prime-api-connector",
   "version": "6.0.0",
-  "displayName": "Manus Operator – API Connector",
-  "description": "Conector completo para integração com o Manus Operator, permitindo sincronização de campanhas, anúncios, relatórios, gerenciamento de créditos e webhooks via OAuth2.",
+  "displayName": "Velyra Prime – API Connector",
+  "description": "Conector completo para integração com o Velyra Prime, permitindo sincronização de campanhas, anúncios, relatórios, gerenciamento de créditos e webhooks via OAuth2.",
   "author": "Fabiana Nobrega Pacheco Ferreira",
   "homepage": "https://robo-otimizador1.onrender.com",
   "repository": "https://github.com/fabiinobrega/robo-otimizador",
@@ -41,7 +41,7 @@
         "name": "api_base_url",
         "type": "string",
         "label": "API Base URL",
-        "description": "URL base da API do Manus Operator",
+        "description": "URL base da API do Velyra Prime",
         "required": true,
         "default": "https://robo-otimizador1.onrender.com",
         "placeholder": "https://robo-otimizador1.onrender.com"
@@ -50,7 +50,7 @@
         "name": "client_id",
         "type": "string",
         "label": "Client ID",
-        "description": "Client ID fornecido pelo Manus Operator",
+        "description": "Client ID fornecido pelo Velyra Prime",
         "required": true,
         "secret": false
       },
@@ -58,7 +58,7 @@
         "name": "client_secret",
         "type": "string",
         "label": "Client Secret",
-        "description": "Client Secret fornecido pelo Manus Operator",
+        "description": "Client Secret fornecido pelo Velyra Prime",
         "required": true,
         "secret": true
       },
@@ -317,7 +317,7 @@
     {
       "name": "sync_campaigns",
       "displayName": "Sincronizar Campanhas",
-      "description": "Sincroniza campanhas entre Manus e Manus Operator",
+      "description": "Sincroniza campanhas entre Manus e Velyra Prime",
       "category": "campaigns",
       "input": {
         "type": "object",

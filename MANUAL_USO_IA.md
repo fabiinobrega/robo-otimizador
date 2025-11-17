@@ -241,7 +241,7 @@ OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxx
 
 ### **Ajustar Temperatura (Criatividade)**
 
-No arquivo `services/manus_operator.py`, linha 45:
+No arquivo `services/velyra_prime.py`, linha 45:
 
 ```python
 temperature=0.7  # 0.0 = Conservador, 1.0 = Criativo
@@ -257,7 +257,7 @@ variants = generate_variants(landing_data, count=5)  # Padrão: 5
 
 ### **Ajustar Score Mínimo**
 
-No arquivo `services/manus_operator.py`, linha 120:
+No arquivo `services/velyra_prime.py`, linha 120:
 
 ```python
 min_score = 85  # Apenas variantes com score >= 85

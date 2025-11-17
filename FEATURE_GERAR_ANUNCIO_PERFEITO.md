@@ -26,7 +26,7 @@ O usuário fornece:
   - `Auto-Publish` - Publicar automaticamente
   - `Executar Sandbox` - Testar sem gastar dinheiro real
 
-### **Passo 2: Pipeline Automático do Manus Operator**
+### **Passo 2: Pipeline Automático do Velyra Prime**
 
 O sistema executa automaticamente:
 

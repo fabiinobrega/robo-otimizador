@@ -119,11 +119,11 @@ def seed_database(db_path='database.db'):
     activities = [
         ('Campanha Criada', 'Campanha Black Friday 2024 criada com sucesso'),
         ('Otimização Automática', 'Budget da campanha Google Ads aumentado em 15%'),
-        ('[Manus Operator] Monitoramento', '5 campanhas monitoradas, 0 problemas detectados'),
+        ('[Velyra Prime] Monitoramento', '5 campanhas monitoradas, 0 problemas detectados'),
         ('Upload de Mídia', 'Imagem banner_black_friday.jpg enviada'),
         ('[Automação] Campanha Pausada', 'Campanha TikTok pausada por baixo ROAS'),
         ('Teste A/B Criado', 'Teste de título criado com 3 variações'),
-        ('[Manus Operator] Otimização', 'Campanha Pinterest otimizada automaticamente'),
+        ('[Velyra Prime] Otimização', 'Campanha Pinterest otimizada automaticamente'),
         ('Relatório Gerado', 'Relatório semanal de performance gerado'),
     ]
     
@@ -188,7 +188,7 @@ def seed_database(db_path='database.db'):
     notifications = [
         {
             'title': 'Campanha Otimizada',
-            'message': 'O Manus Operator otimizou sua campanha do Google Ads',
+            'message': 'O Velyra Prime otimizou sua campanha do Google Ads',
             'type': 'success',
             'is_read': False
         },
@@ -220,7 +220,7 @@ def seed_database(db_path='database.db'):
     
     print(f"✅ {len(notifications)} notificações criadas")
     
-    # 7. Configurar status do Manus Operator
+    # 7. Configurar status do Velyra Prime
     cursor.execute("""
         INSERT INTO operator_status (status, last_check, health_data, updated_at)
         VALUES (?, ?, ?, ?)
@@ -236,7 +236,7 @@ def seed_database(db_path='database.db'):
         datetime.now().isoformat()
     ))
     
-    print(f"✅ Status do Manus Operator configurado")
+    print(f"✅ Status do Velyra Prime configurado")
     
     # 8. Adicionar chaves de API (vazias para o usuário configurar)
     api_services = ['OpenAI', 'Facebook Ads', 'Google Ads', 'TikTok Ads', 'Pinterest Ads', 'LinkedIn Ads']
