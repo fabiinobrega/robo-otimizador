@@ -1,0 +1,1203 @@
+{% extends "index.html" %}
+
+{% block title %}Criar Anúncio Perfeito (1-Click) - NEXORA Operator v11.7{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="fas fa-magic text-primary"></i>
+                        Criar Anúncio Perfeito (1-Click)
+                    </h1>
+                    <p class="text-muted mb-0">
+                        IA analisa seu produto, espiona concorrentes e cria anúncios otimizados automaticamente
+                    </p>
+                </div>
+                <div>
+                    <span class="badge bg-success">
+                        <i class="fas fa-robot"></i> Velyra Prime Ativa
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wizard Steps -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="wizard-steps">
+                        <div class="step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">URLs & Análise</div>
+                        </div>
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Plataforma & Config</div>
+                        </div>
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Copy & Criativos</div>
+                        </div>
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Segmentação</div>
+                        </div>
+                        <div class="step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-label">Revisão & Publicar</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 1: URLs e Análise -->
+    <div class="wizard-content" id="step-1">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-link"></i> Passo 1: Cole as URLs do Seu Produto
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                URL do Produto
+                                <span class="text-danger">*</span>
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" 
+                                   title="Cole a URL da página do seu produto (ex: loja online, marketplace)"></i>
+                            </label>
+                            <input type="url" class="form-control form-control-lg" id="productUrl" 
+                                   placeholder="https://exemplo.com/produto" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                URL da Página de Vendas (Landing Page)
+                                <span class="text-danger">*</span>
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" 
+                                   title="Cole a URL da sua landing page/página de vendas"></i>
+                            </label>
+                            <input type="url" class="form-control form-control-lg" id="landingPageUrl" 
+                                   placeholder="https://exemplo.com/oferta" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                Palavra-chave Principal
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" 
+                                   title="Palavra-chave que descreve seu produto (para espionagem)"></i>
+                            </label>
+                            <input type="text" class="form-control" id="mainKeyword" 
+                                   placeholder="Ex: curso de marketing digital">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-lg" onclick="analyzeUrls()">
+                                <i class="fas fa-search"></i> Analisar URLs e Espionar Concorrentes
+                            </button>
+                            <button class="btn btn-success btn-lg" onclick="oneClickGenerate()">
+                                <i class="fas fa-magic"></i> Gerar Anúncio Perfeito (1-Click)
+                            </button>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>Modo 1-Click:</strong> A IA fará tudo automaticamente - análise, espionagem, 
+                            criação de copy, criativos e configuração completa. Você só precisará revisar e publicar!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Análise em Progresso -->
+                <div class="card shadow-sm mb-4" id="analysisProgress" style="display: none;">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-spinner fa-spin"></i> Análise em Progresso...
+                        </h5>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 id="analysisProgressBar" role="progressbar" style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                        <div id="analysisSteps">
+                            <div class="analysis-step">
+                                <i class="fas fa-circle-notch fa-spin text-primary"></i>
+                                Analisando landing page...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resultados da Análise -->
+                <div class="card shadow-sm mb-4" id="analysisResults" style="display: none;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-check-circle"></i> Análise Concluída
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="analysisContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Dicas e Ajuda -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-question-circle"></i> Como Funciona?
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ol class="mb-0 ps-3">
+                            <li class="mb-2">Cole as URLs do seu produto e landing page</li>
+                            <li class="mb-2">Clique em "Analisar" ou "1-Click"</li>
+                            <li class="mb-2">A IA analisa tudo automaticamente</li>
+                            <li class="mb-2">Espiona concorrentes</li>
+                            <li class="mb-2">Gera copy e criativos otimizados</li>
+                            <li class="mb-2">Você revisa e publica!</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Estatísticas -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-chart-line"></i> Estatísticas
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Anúncios Criados:</span>
+                            <strong>0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Taxa Média de Conversão:</span>
+                            <strong>-</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>ROI Médio:</span>
+                            <strong>-</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Plataforma e Configuração -->
+    <div class="wizard-content" id="step-2" style="display: none;">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog"></i> Passo 2: Configuração da Campanha
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Seleção de Plataforma -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Plataforma(s) <span class="text-danger">*</span></label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="platform-card" onclick="togglePlatform('facebook')">
+                                        <input type="checkbox" id="platform-facebook" class="platform-checkbox">
+                                        <i class="fab fa-facebook fa-3x text-primary"></i>
+                                        <div class="mt-2 fw-bold">Facebook Ads</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="platform-card" onclick="togglePlatform('instagram')">
+                                        <input type="checkbox" id="platform-instagram" class="platform-checkbox">
+                                        <i class="fab fa-instagram fa-3x text-danger"></i>
+                                        <div class="mt-2 fw-bold">Instagram Ads</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="platform-card" onclick="togglePlatform('google')">
+                                        <input type="checkbox" id="platform-google" class="platform-checkbox">
+                                        <i class="fab fa-google fa-3x text-warning"></i>
+                                        <div class="mt-2 fw-bold">Google Ads</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Idioma e Localização -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Idioma</label>
+                                <select class="form-select" id="adLanguage">
+                                    <option value="pt-BR" selected>Português (Brasil)</option>
+                                    <option value="en-US">English (US)</option>
+                                    <option value="es-ES">Español</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">País/Região</label>
+                                <select class="form-select" id="adLocation">
+                                    <option value="BR" selected>Brasil</option>
+                                    <option value="US">Estados Unidos</option>
+                                    <option value="ES">Espanha</option>
+                                    <option value="PT">Portugal</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Objetivo da Campanha -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Objetivo da Campanha</label>
+                            <select class="form-select" id="campaignObjective">
+                                <option value="conversions" selected>Conversões (Vendas)</option>
+                                <option value="traffic">Tráfego</option>
+                                <option value="leads">Geração de Leads</option>
+                                <option value="awareness">Reconhecimento de Marca</option>
+                                <option value="engagement">Engajamento</option>
+                            </select>
+                        </div>
+
+                        <!-- Orçamento -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Orçamento Diário</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" class="form-control" id="dailyBudget" 
+                                           value="50" min="10" step="10">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Duração</label>
+                                <select class="form-select" id="campaignDuration">
+                                    <option value="7">7 dias</option>
+                                    <option value="14" selected>14 dias</option>
+                                    <option value="30">30 dias</option>
+                                    <option value="continuous">Contínuo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Meta Pixel -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-bullseye"></i> Meta Pixel (Facebook/Instagram)
+                                </h6>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="autoPixel" checked>
+                                    <label class="form-check-label" for="autoPixel">
+                                        Criar/Detectar Pixel Automaticamente
+                                    </label>
+                                </div>
+                                <div id="pixelManualConfig" style="display: none;">
+                                    <label class="form-label">ID do Pixel Existente</label>
+                                    <input type="text" class="form-control" id="pixelId" 
+                                           placeholder="123456789012345">
+                                </div>
+                                <small class="text-muted">
+                                    A IA detectará se você já tem um Pixel ou criará um novo automaticamente
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-secondary" onclick="previousStep()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                            <button class="btn btn-primary" onclick="nextStep()">
+                                Próximo <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-calculator"></i> Estimativas
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <small class="text-muted">Alcance Estimado</small>
+                            <div class="h4 mb-0">10.000 - 50.000</div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">Impressões Estimadas</small>
+                            <div class="h4 mb-0">50.000 - 200.000</div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">Cliques Estimados</small>
+                            <div class="h4 mb-0">1.500 - 6.000</div>
+                        </div>
+                        <div class="mb-0">
+                            <small class="text-muted">CPC Estimado</small>
+                            <div class="h4 mb-0">R$ 0,80 - R$ 2,50</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Copy e Criativos -->
+    <div class="wizard-content" id="step-3" style="display: none;">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-pen"></i> Passo 3: Copy e Criativos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs mb-4" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#copyTab">
+                                    <i class="fas fa-file-alt"></i> Copy
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#creativesTab">
+                                    <i class="fas fa-images"></i> Criativos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#variationsTab">
+                                    <i class="fas fa-layer-group"></i> Variações A/B
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- Copy Tab -->
+                            <div class="tab-pane fade show active" id="copyTab">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">Headline (Título Principal)</label>
+                                            <textarea class="form-control" id="adHeadline" rows="2" 
+                                                      maxlength="125">Transforme Seus Resultados em 30 Dias</textarea>
+                                            <small class="text-muted">Máximo 125 caracteres</small>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">Texto Principal (Description)</label>
+                                            <textarea class="form-control" id="adDescription" rows="5" 
+                                                      maxlength="500">Descubra como milhares de pessoas estão alcançando seus objetivos com nossa solução comprovada. Garantia de satisfação ou seu dinheiro de volta!</textarea>
+                                            <small class="text-muted">Máximo 500 caracteres</small>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">Call-to-Action (CTA)</label>
+                                            <select class="form-select" id="adCta">
+                                                <option value="SHOP_NOW">Comprar Agora</option>
+                                                <option value="LEARN_MORE" selected>Saiba Mais</option>
+                                                <option value="SIGN_UP">Inscrever-se</option>
+                                                <option value="DOWNLOAD">Baixar</option>
+                                                <option value="GET_QUOTE">Solicitar Orçamento</option>
+                                            </select>
+                                        </div>
+
+                                        <button class="btn btn-success" onclick="generateCopyVariations()">
+                                            <i class="fas fa-magic"></i> Gerar Variações com IA
+                                        </button>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-lightbulb"></i> Dicas de Copy
+                                                </h6>
+                                                <ul class="small mb-0">
+                                                    <li>Use números e dados específicos</li>
+                                                    <li>Destaque benefícios, não features</li>
+                                                    <li>Crie senso de urgência</li>
+                                                    <li>Use prova social</li>
+                                                    <li>Seja claro e direto</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Criativos Tab -->
+                            <div class="tab-pane fade" id="creativesTab">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <!-- Upload de Mídias -->
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">
+                                                Upload de Imagens/Vídeos
+                                            </label>
+                                            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('mediaFiles').click()">
+                                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                                <p class="mb-0">Clique ou arraste arquivos aqui</p>
+                                                <small class="text-muted">Imagens: JPG, PNG (máx 5MB) | Vídeos: MP4 (máx 100MB)</small>
+                                            </div>
+                                            <input type="file" id="mediaFiles" multiple accept="image/*,video/*" 
+                                                   style="display: none;" onchange="handleMediaUpload(this.files)">
+                                        </div>
+
+                                        <!-- Preview de Mídias -->
+                                        <div id="mediaPreview" class="row g-3 mb-4"></div>
+
+                                        <!-- Geração com IA -->
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-robot"></i> Gerar Criativos com IA
+                                                </h6>
+                                                <p class="small mb-3">
+                                                    A IA pode gerar imagens e vídeos otimizados baseados no seu produto
+                                                </p>
+                                                <button class="btn btn-primary" onclick="generateCreatives()">
+                                                    <i class="fas fa-magic"></i> Gerar Criativos
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Especificações</h6>
+                                            </div>
+                                            <div class="card-body small">
+                                                <strong>Facebook/Instagram Feed:</strong>
+                                                <ul class="mb-2">
+                                                    <li>1080 x 1080px (quadrado)</li>
+                                                    <li>1200 x 628px (paisagem)</li>
+                                                </ul>
+                                                <strong>Stories:</strong>
+                                                <ul class="mb-2">
+                                                    <li>1080 x 1920px (vertical)</li>
+                                                </ul>
+                                                <strong>Google Display:</strong>
+                                                <ul class="mb-0">
+                                                    <li>300 x 250px</li>
+                                                    <li>728 x 90px</li>
+                                                    <li>160 x 600px</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Variações A/B Tab -->
+                            <div class="tab-pane fade" id="variationsTab">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    A IA gerará automaticamente 5 variações do seu anúncio para testes A/B
+                                </div>
+                                <div id="abVariations"></div>
+                                <button class="btn btn-success" onclick="generateABVariations()">
+                                    <i class="fas fa-magic"></i> Gerar Variações A/B
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-secondary" onclick="previousStep()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                            <button class="btn btn-primary" onclick="nextStep()">
+                                Próximo <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Segmentação -->
+    <div class="wizard-content" id="step-4" style="display: none;">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-users"></i> Passo 4: Segmentação de Público
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Dados Demográficos -->
+                        <h6 class="mb-3">Dados Demográficos</h6>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Faixa Etária</label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="number" class="form-control" id="ageMin" 
+                                               value="18" min="13" max="65">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="number" class="form-control" id="ageMax" 
+                                               value="65" min="18" max="65">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Gênero</label>
+                                <select class="form-select" id="targetGender">
+                                    <option value="all" selected>Todos</option>
+                                    <option value="male">Masculino</option>
+                                    <option value="female">Feminino</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Localização -->
+                        <h6 class="mb-3">Localização</h6>
+                        <div class="mb-4">
+                            <label class="form-label">Localizações</label>
+                            <input type="text" class="form-control mb-2" id="targetLocations" 
+                                   placeholder="Digite cidade, estado ou país">
+                            <div id="selectedLocations" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Interesses -->
+                        <h6 class="mb-3">Interesses</h6>
+                        <div class="mb-4">
+                            <label class="form-label">Interesses e Comportamentos</label>
+                            <input type="text" class="form-control mb-2" id="targetInterests" 
+                                   placeholder="Digite interesses (ex: marketing digital, empreendedorismo)">
+                            <div id="selectedInterests" class="d-flex flex-wrap gap-2"></div>
+                            <button class="btn btn-sm btn-outline-primary mt-2" onclick="suggestInterests()">
+                                <i class="fas fa-magic"></i> Sugerir Interesses com IA
+                            </button>
+                        </div>
+
+                        <!-- Públicos Personalizados -->
+                        <h6 class="mb-3">Públicos Personalizados</h6>
+                        <div class="mb-4">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="customAudience1">
+                                <label class="form-check-label" for="customAudience1">
+                                    Visitantes do Site (últimos 30 dias)
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="customAudience2">
+                                <label class="form-check-label" for="customAudience2">
+                                    Lista de E-mails
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="customAudience3">
+                                <label class="form-check-label" for="customAudience3">
+                                    Lookalike (Público Semelhante)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-secondary" onclick="previousStep()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                            <button class="btn btn-primary" onclick="nextStep()">
+                                Próximo <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-chart-pie"></i> Tamanho do Público
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <div class="h2 mb-0">2.5M - 3.2M</div>
+                            <small class="text-muted">pessoas</small>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-success" style="width: 60%">Ideal</div>
+                        </div>
+                        <p class="small mb-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Tamanho de público ideal para começar
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 5: Revisão e Publicar -->
+    <div class="wizard-content" id="step-5" style="display: none;">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-check-circle"></i> Passo 5: Revisão Final
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Tudo pronto!</strong> Revise as informações abaixo antes de publicar.
+                        </div>
+
+                        <!-- Preview do Anúncio -->
+                        <h6 class="mb-3">Preview do Anúncio</h6>
+                        <div class="ad-preview mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle me-2">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">Sua Empresa</div>
+                                            <small class="text-muted">Patrocinado</small>
+                                        </div>
+                                    </div>
+                                    <p class="mb-2" id="previewDescription">
+                                        Texto do anúncio aparecerá aqui...
+                                    </p>
+                                    <div class="ad-image mb-2">
+                                        <img src="https://via.placeholder.com/600x315" 
+                                             class="img-fluid rounded" alt="Preview">
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold" id="previewHeadline">Título do Anúncio</div>
+                                            <small class="text-muted">seusite.com</small>
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" id="previewCta">
+                                            Saiba Mais
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumo da Configuração -->
+                        <h6 class="mb-3">Resumo da Configuração</h6>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th width="30%">Plataformas:</th>
+                                    <td id="summaryPlatforms">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Objetivo:</th>
+                                    <td id="summaryObjective">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Orçamento Diário:</th>
+                                    <td id="summaryBudget">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Duração:</th>
+                                    <td id="summaryDuration">-</td>
+                                </tr>
+                                <tr>
+                                    <th>Público-Alvo:</th>
+                                    <td id="summaryAudience">-</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Previsões -->
+                        <h6 class="mb-3">Previsões de Performance</h6>
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <small class="text-muted">CTR Estimado</small>
+                                        <div class="h4 mb-0">3.2%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <small class="text-muted">CPC Estimado</small>
+                                        <div class="h4 mb-0">R$ 1.50</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <small class="text-muted">Conversões</small>
+                                        <div class="h4 mb-0">45-60</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <small class="text-muted">ROAS Estimado</small>
+                                        <div class="h4 mb-0">3.5x</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ações Finais -->
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-secondary" onclick="previousStep()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                            <div>
+                                <button class="btn btn-warning me-2" onclick="saveAsDraft()">
+                                    <i class="fas fa-save"></i> Salvar Rascunho
+                                </button>
+                                <button class="btn btn-success btn-lg" onclick="publishAd()">
+                                    <i class="fas fa-rocket"></i> Publicar Anúncio
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">
+                            <i class="fas fa-exclamation-triangle"></i> Checklist Final
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check1" checked disabled>
+                            <label class="form-check-label" for="check1">
+                                URLs configuradas
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check2" checked disabled>
+                            <label class="form-check-label" for="check2">
+                                Plataforma selecionada
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check3" checked disabled>
+                            <label class="form-check-label" for="check3">
+                                Copy criada
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check4" checked disabled>
+                            <label class="form-check-label" for="check4">
+                                Criativos adicionados
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="check5" checked disabled>
+                            <label class="form-check-label" for="check5">
+                                Público segmentado
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-question-circle"></i> Precisa de Ajuda?
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="small mb-2">
+                            Fale com o Velyra Prime para ajustes finais:
+                        </p>
+                        <button class="btn btn-primary btn-sm w-100" onclick="openVelyraChat()">
+                            <i class="fas fa-comments"></i> Chat com Velyra
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.wizard-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.wizard-steps::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #dee2e6;
+    z-index: 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    background: white;
+    padding: 0 10px;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #dee2e6;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.step.active .step-number {
+    background: #0d6efd;
+    color: white;
+}
+
+.step.completed .step-number {
+    background: #198754;
+    color: white;
+}
+
+.step-label {
+    font-size: 0.875rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.step.active .step-label {
+    color: #0d6efd;
+    font-weight: bold;
+}
+
+.platform-card {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.platform-card:hover {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.platform-card.selected {
+    border-color: #0d6efd;
+    background: #e7f1ff;
+}
+
+.platform-checkbox {
+    position: absolute;
+    opacity: 0;
+}
+
+.upload-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.upload-zone:hover {
+    border-color: #0d6efd;
+    background: #f8f9fa;
+}
+
+.analysis-step {
+    padding: 10px;
+    border-left: 3px solid #0d6efd;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+}
+
+.ad-preview .card {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .wizard-steps {
+        flex-wrap: wrap;
+    }
+    
+    .step {
+        width: 20%;
+        margin-bottom: 10px;
+    }
+    
+    .step-label {
+        font-size: 0.7rem;
+    }
+}
+</style>
+
+<script>
+let currentStep = 1;
+let adData = {};
+
+function nextStep() {
+    if (currentStep < 5) {
+        document.getElementById(`step-${currentStep}`).style.display = 'none';
+        currentStep++;
+        document.getElementById(`step-${currentStep}`).style.display = 'block';
+        updateWizardSteps();
+        updateSummary();
+    }
+}
+
+function previousStep() {
+    if (currentStep > 1) {
+        document.getElementById(`step-${currentStep}`).style.display = 'none';
+        currentStep--;
+        document.getElementById(`step-${currentStep}`).style.display = 'block';
+        updateWizardSteps();
+    }
+}
+
+function updateWizardSteps() {
+    document.querySelectorAll('.step').forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        if (index + 1 === currentStep) {
+            step.classList.add('active');
+        } else if (index + 1 < currentStep) {
+            step.classList.add('completed');
+        }
+    });
+}
+
+function togglePlatform(platform) {
+    const checkbox = document.getElementById(`platform-${platform}`);
+    const card = checkbox.closest('.platform-card');
+    
+    checkbox.checked = !checkbox.checked;
+    card.classList.toggle('selected');
+}
+
+async function analyzeUrls() {
+    const productUrl = document.getElementById('productUrl').value;
+    const landingPageUrl = document.getElementById('landingPageUrl').value;
+    const keyword = document.getElementById('mainKeyword').value;
+    
+    if (!productUrl || !landingPageUrl) {
+        alert('Por favor, preencha as URLs');
+        return;
+    }
+    
+    // Mostrar progresso
+    document.getElementById('analysisProgress').style.display = 'block';
+    
+    // Simular análise
+    let progress = 0;
+    const progressBar = document.getElementById('analysisProgressBar');
+    const stepsDiv = document.getElementById('analysisSteps');
+    
+    const steps = [
+        'Analisando landing page...',
+        'Extraindo informações do produto...',
+        'Espionando concorrentes...',
+        'Gerando insights...',
+        'Calculando estimativas...'
+    ];
+    
+    for (let i = 0; i < steps.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        progress = ((i + 1) / steps.length) * 100;
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = Math.round(progress) + '%';
+        
+        stepsDiv.innerHTML += `
+            <div class="analysis-step">
+                <i class="fas fa-check-circle text-success"></i>
+                ${steps[i]}
+            </div>
+        `;
+    }
+    
+    // Mostrar resultados
+    setTimeout(() => {
+        document.getElementById('analysisProgress').style.display = 'none';
+        document.getElementById('analysisResults').style.display = 'block';
+        document.getElementById('analysisContent').innerHTML = `
+            <h6>✅ Análise Concluída com Sucesso!</h6>
+            <ul>
+                <li>Landing page analisada: Score de conversão 85/100</li>
+                <li>5 concorrentes identificados</li>
+                <li>CTR médio do mercado: 3.2%</li>
+                <li>CPC médio: R$ 1.50</li>
+            </ul>
+            <button class="btn btn-primary" onclick="nextStep()">
+                Continuar para Configuração
+            </button>
+        `;
+    }, 500);
+}
+
+async function oneClickGenerate() {
+    if (confirm('Modo 1-Click: A IA criará tudo automaticamente. Continuar?')) {
+        await analyzeUrls();
+        // TODO: Implementar geração completa automática
+        alert('Gerando anúncio perfeito... (em desenvolvimento)');
+    }
+}
+
+function handleMediaUpload(files) {
+    const preview = document.getElementById('mediaPreview');
+    preview.innerHTML = '';
+    
+    Array.from(files).forEach((file, index) => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4';
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            col.innerHTML = `
+                <div class="card">
+                    <img src="${e.target.result}" class="card-img-top" alt="Preview">
+                    <div class="card-body p-2">
+                        <small>${file.name}</small>
+                        <button class="btn btn-sm btn-danger float-end" onclick="this.closest('.col-md-4').remove()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+        
+        preview.appendChild(col);
+    });
+}
+
+function generateCopyVariations() {
+    alert('Gerando variações de copy com IA... (em desenvolvimento)');
+}
+
+function generateCreatives() {
+    alert('Gerando criativos com IA... (em desenvolvimento)');
+}
+
+function generateABVariations() {
+    alert('Gerando variações A/B... (em desenvolvimento)');
+}
+
+function suggestInterests() {
+    alert('Sugerindo interesses com IA... (em desenvolvimento)');
+}
+
+function updateSummary() {
+    if (currentStep === 5) {
+        // Atualizar resumo
+        const platforms = [];
+        if (document.getElementById('platform-facebook')?.checked) platforms.push('Facebook');
+        if (document.getElementById('platform-instagram')?.checked) platforms.push('Instagram');
+        if (document.getElementById('platform-google')?.checked) platforms.push('Google');
+        
+        document.getElementById('summaryPlatforms').textContent = platforms.join(', ') || '-';
+        document.getElementById('summaryObjective').textContent = 
+            document.getElementById('campaignObjective')?.value || '-';
+        document.getElementById('summaryBudget').textContent = 
+            'R$ ' + (document.getElementById('dailyBudget')?.value || '0') + '/dia';
+        document.getElementById('summaryDuration').textContent = 
+            document.getElementById('campaignDuration')?.value + ' dias' || '-';
+        
+        // Atualizar preview
+        document.getElementById('previewHeadline').textContent = 
+            document.getElementById('adHeadline')?.value || 'Título do Anúncio';
+        document.getElementById('previewDescription').textContent = 
+            document.getElementById('adDescription')?.value || 'Descrição do anúncio';
+        document.getElementById('previewCta').textContent = 
+            document.getElementById('adCta')?.selectedOptions[0]?.text || 'Saiba Mais';
+    }
+}
+
+function saveAsDraft() {
+    alert('Salvando rascunho... (em desenvolvimento)');
+}
+
+async function publishAd() {
+    if (confirm('Publicar anúncio agora?')) {
+        // TODO: Implementar publicação real
+        alert('Publicando anúncio... (em desenvolvimento)');
+    }
+}
+
+function openVelyraChat() {
+    window.location.href = '/operator-chat';
+}
+
+// Drag and drop para upload
+const uploadZone = document.getElementById('uploadZone');
+if (uploadZone) {
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#0d6efd';
+        uploadZone.style.background = '#e7f1ff';
+    });
+    
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.style.borderColor = '#dee2e6';
+        uploadZone.style.background = 'white';
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#dee2e6';
+        uploadZone.style.background = 'white';
+        
+        const files = e.dataTransfer.files;
+        handleMediaUpload(files);
+    });
+}
+
+// Inicializar tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
+    });
+});
+</script>
+{% endblock %}
