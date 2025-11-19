@@ -1390,3 +1390,51 @@ def api_notifications_mark_read(notification_id):
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+
+# ============================================
+# CAMPAIGN TESTER ENDPOINTS
+# ============================================
+
+from services.campaign_tester import CampaignTester, create_warming_tables
+
+campaign_tester = CampaignTester()
+
+@app.route('/api/campaign/test/create', methods=['POST'])
+def api_create_test_campaign():
+    """Criar campanha de teste com aquecimento"""
+    try:
+        data = request.json
+        result = campaign_tester.create_test_campaign(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/campaign/test/monitor/<int:campaign_id>', methods=['GET'])
+def api_monitor_test_campaign(campaign_id):
+    """Monitorar campanha de teste"""
+    try:
+        result = campaign_tester.monitor_campaign(campaign_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/campaign/test/status/<int:campaign_id>', methods=['GET'])
+def api_test_campaign_status(campaign_id):
+    """Status completo do aquecimento"""
+    try:
+        result = campaign_tester.get_campaign_warming_status(campaign_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/campaign/test/stop/<int:campaign_id>', methods=['POST'])
+def api_stop_test_campaign(campaign_id):
+    """Parar teste de campanha"""
+    try:
+        data = request.json
+        reason = data.get('reason', 'manual_stop')
+        result = campaign_tester.stop_test(campaign_id, reason)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
