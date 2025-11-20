@@ -1,0 +1,389 @@
+================================================================================
+NEXORA OPERATOR v11.7 - PROMPT COMPLETO E INSTRUÇÕES
+================================================================================
+
+DATA: 09 de Novembro de 2024
+VERSÃO: 11.7.0
+STATUS: Em implementação
+DESENVOLVIDO POR: Manus AI 1.5
+
+================================================================================
+OBJETIVO GERAL
+================================================================================
+
+Atualizar e organizar o sistema Velyra Prime para NEXORA Operator v11.7 com:
+- Página "Criar Anúncio Perfeito" completa
+- Transformação do robô Velyra em time comercial de ponta
+- Integração completa com Stripe, WhatsApp, Meta Pixel, Google Ads
+- Otimização de consumo de créditos
+- UX/UI premium estilo agência
+
+IMPORTANTE: Manter TODAS as implementações existentes - apenas adicionar/organizar.
+
+================================================================================
+REGRAS GLOBAIS (OBRIGATÓRIAS)
+================================================================================
+
+1. NÃO REMOVER implementações existentes - apenas adicionar/ajustar/organizar
+2. Publicação final (deploy) SÓ após 100% dos testes automáticos passarem
+3. Secrets NUNCA expostos no repositório - usar variáveis de ambiente
+4. Se credenciais externas não disponíveis: implementar mocks robustos
+5. Logs auditáveis para cada etapa, endpoints de debug e rollback/restore
+6. Gerar documentação técnica automática
+
+================================================================================
+1. PÁGINA "CRIAR ANÚNCIO PERFEITO" - REQUISITOS DETALHADOS
+================================================================================
+
+1.1) AÇÃO INICIAL AUTOMÁTICA (ao receber URL do produto)
+   - Crawling e extração: title, preço, características, benefícios, imagens
+   - Análise de conversão: hierarquia, CTA, prova social, trust signals
+   - Espionagem de concorrentes: anúncios, headlines, criativos, performance
+   - Identificação: persona(s), keywords, público-alvo ótimo
+   - Cálculo: estimativas CPC/CTR/CPA e sugestão de orçamento
+   - Retornar: sumário de pesquisa com evidências e logs
+
+1.2) SELEÇÃO DE PLATAFORMA E IDIOMA (UI)
+   - Selector visual: [Facebook Ads / Google Ads / Ambos]
+   - Campo idioma: PT-BR / EN / ES (tradução automática)
+   - Localização: país / estado / cidade / raio
+   - Modo Rápido (1-Click): cria tudo automaticamente
+
+1.3) ESTRUTURA E CAMPOS (page-by-page / cards)
+   Campaign level:
+   - Objetivo, nome, categorias especiais
+   - Tipo de compra, CBO on/off
+   - Orçamento diário/vitalício, schedule
+   
+   Ad Set / Group:
+   - Nome, orçamento, schedule
+   - Público: localização, idade, gênero, interesses, behaviors
+   - Custom/lookalike audiences
+   - Posicionamentos (automáticos/manuais)
+   - Otimização de evento
+   
+   Ad / Anúncio:
+   - Nome, identidade (FB Page / IG)
+   - Formato: single image, carousel, video
+   - Mídias, texto principal, título, descrição
+   - CTA, URL final, parâmetros UTM
+   - Upload/geração de criativos
+   - Preview e drag-and-drop
+   - A/B variants
+
+1.4) PIXEL META AUTOMÁTICO (IA)
+   - Detectar Pixel existente e reutilizar
+   - Se não houver: gerar script Pixel_[Empresa]_[Data]
+   - Se credenciais disponíveis: criar via Meta API
+   - Se não: gerar script e instruções para instalação manual
+   - Eventos padrão: PageView, ViewContent, AddToCart, Lead, Purchase
+   - Gerar e testar eventos
+   - Mostrar relatório no dashboard
+
+1.5) GERAÇÃO E OTIMIZAÇÃO DE CRIATIVOS
+   - Buscar imagens/vídeos de alta conversão
+   - Gerar via IA interna
+   - Produzir múltiplas variações A/B
+   - Classificar por score (0-100)
+   - Sugerir Top 3
+   - Editor visual: corte, legendas, texto sobre imagem
+   - Preview por posicionamento
+   - Salvar vencedores em Top Performers
+
+1.6) AUTOMAÇÃO DE KEYWORDS (Google)
+   - Gerar lista de keywords e negativas
+   - Correspondências, estimativas de volume e CPC
+   - Sugerir lances e estratégias
+   - Maximize Conversions / CPA / ROAS / Manual CPC
+
+1.7) IA DE COPYWRITING E VARIAÇÕES
+   - Gerar títulos, descrições, CTAs
+   - Adaptar por idioma, público e plataforma
+   - Versões múltiplas para testes
+   - Histórico de versões
+   - Edição manual
+   - Priorizar por tag (Alta/Média/Baixa)
+
+1.8) RELATÓRIOS, PREVISÕES E RECOMENDAÇÕES
+   Antes da publicação:
+   - Prever CTR, CPC, CPA e conversões
+   
+   Após publicação:
+   - Painel em tempo real: impressões, cliques, conversões, ROI
+   - Análise por público/país/idioma
+   - IA sugere ajustes automáticos
+   - Exportar: PDF/Excel/CSV
+   - Envio por e-mail/WhatsApp
+
+1.9) DEPLOY, TESTES E SEGURANÇA
+   - Testes obrigatórios: pixel firing, preview, validação
+   - Testes automatizados (unit/integration)
+   - Deploy final somente quando tudo verde
+   - Logs auditáveis e backups automáticos
+
+1.10) CRÉDITOS, STRIPE E ECONOMIA DE TOKENS
+   - Controle consumo por operação
+   - Compra de créditos via Stripe
+   - Plans e recarga automática
+   - Modo híbrido: priorizar execução local (NEXORA/Velyra)
+   - Usar API Manus oficial apenas quando necessário
+   - Dashboard de uso e recomendações
+
+1.11) DOCUMENTAÇÃO TÉCNICA GERADA AUTOMATICAMENTE
+   - Arquitetura/diagramas
+   - Endpoints
+   - schema.sql completo
+   - .env.example
+   - PLAYBOOK_DEPLOY.md
+   - Instruções para trocar mocks por reais
+
+1.12) UX/UI E PASSOS GUIADOS
+   - Tema premium: azul metálico + branco
+   - Tipografia moderna, microinterações
+   - Responsivo mobile-first
+   - Wizard passo-a-passo
+   - Dicas contextuais, toasts, progressbars
+   - Barra superior: Link do Produto + Link da Página de Vendas
+   - Comportamento: ao colar links e clicar Analisar, IA executa pipeline
+   - Botão "Gerar Anúncio Perfeito (1-Click)"
+   - Publica só após aprovação do usuário
+
+================================================================================
+2. VELYRA - TIME COMERCIAL COMPLETO
+================================================================================
+
+2.1) FUNÇÕES DO TIME COMERCIAL
+   - SDR (pré-vendedor)
+   - Closer (fechador)
+   - Follow-up automático
+   - Supervisor
+   - COP (Chief of Operations)
+   - Geração de scripts de vendas
+   - Qualificação de leads
+   - Objeções completas
+   - Abordagem ativa
+   - Conversão orientada
+   - Captação de dados
+   - Mensagens: WhatsApp, DM, inbox
+   - Análise de intenção do lead
+   - Sugestões de oferta
+
+2.2) COMPORTAMENTO DO ROBÔ VELYRA
+   Ao gerar anúncio via 1-Click:
+   - Preparar scripts de abordagem (WhatsApp, e-mail)
+   - Criar sequência de follow-ups automáticos
+   - Priorizar leads qualificados
+   - Sincronizar com CRM interno
+   - Otimizar orçamento com Auto-Pilot
+   - Aprender com resultados
+   - Ajustar criativos/copy/públicos
+
+================================================================================
+3. VELYRA - COPYWRITER PROFISSIONAL
+================================================================================
+
+Gerar:
+- Copy completa para anúncios
+- Copy para landing page
+- Headlines, subtítulos, CTAs
+- Promessas
+- Roteiros de vídeo
+- Storytelling, estrutura de VSL
+- Páginas inteiras: captura, vendas, obrigado, checkout
+- Copy para e-mails
+- Copy persuasiva para funil
+- Copy para remarketing
+- Copy de urgência e escassez
+- Copy para carrossel, reels, stories, TikTok
+- Copy emocional / racional
+- Copy baseada em níveis de consciência C0-C5
+
+================================================================================
+4. VELYRA - GESTOR DE TRÁFEGO PAGO COMPLETO
+================================================================================
+
+4.1) CRIAR CAMPANHAS PARA:
+   - Meta Ads (Facebook/Instagram)
+   - Google Ads
+   - YouTube Ads
+   - TikTok Ads
+
+4.2) ENTREGAR:
+   - Objetivo da campanha
+   - Segmentação detalhada
+   - Públicos (frio, quente, tíbio)
+   - Criativos
+   - Variantes A/B
+   - Orçamentação inteligente
+   - Estratégias baseadas em algoritmo
+   - Estratégias de otimização
+   - Remarketing por comportamento
+   - Campanhas orientadas por funil
+
+4.3) GERAR DOCUMENTOS:
+   - Plano de mídia
+   - Estrutura de campanha
+   - Criativos sugeridos
+   - Análises por avatar
+   - Análises de concorrência
+
+================================================================================
+5. VELYRA - CRIADOR DE CRIATIVOS
+================================================================================
+
+Incluir:
+- Roteiros UGC
+- Storyboards
+- Vídeos em etapas
+- Chamada de atenção
+- Roteiro raiz, autoridade, emoção
+- Ângulos de vídeo
+- Ângulos diferentes para o mesmo produto
+- 10-50 ideias de criativos por pedido
+- Prompts para imagens e vídeos
+
+================================================================================
+6. VELYRA - CRIADOR DE FUNIS COMPLETOS
+================================================================================
+
+Criar funis com:
+- Topo (C0-C2), Meio (C3-C4), Fundo (C5)
+- Jornada completa
+- Copy de cada etapa
+- Criativos de cada etapa
+- Mensagens automáticas
+- E-mails de nutrição
+- Automação (se X acontecer, faça Y)
+- Segmentação por comportamento
+
+================================================================================
+7. VELYRA - GERADOR DE ESTRATÉGIAS DE VENDAS
+================================================================================
+
+Entregar:
+- Ofertas completas
+- Técnica AIDA, PAS, Questão > Solução
+- Promessas fortes
+- Benefícios e diferenciais
+- Big Idea
+- Proposta de valor
+- Scripts prontos
+- Estratégias de lançamento
+- Estratégias perpétuas
+- Estratégias de remarketing avançado
+
+================================================================================
+8. VELYRA - ANÁLISE DE AVATAR
+================================================================================
+
+Gerar automaticamente:
+- Persona
+- Dores, desejos, crenças
+- Barreiras
+- Linguagem
+- Perfil psicológico
+- Jornada de compra
+
+================================================================================
+9. INTEGRAÇÕES
+================================================================================
+
+9.1) STRIPE
+   - Checkout para créditos
+   - Histórico e UX financeiro
+   - Plans e recarga automática
+
+9.2) WHATSAPP
+   - Botão direcionamento opcional
+   - Geração de mensagem
+   - Logs de clique/lead
+
+9.3) META & GOOGLE
+   - Mocks quando sem credenciais
+   - Integração real via env vars quando entregues
+
+9.4) MANUS API
+   - Usar apenas quando aumentar qualidade
+   - Quando créditos permitirem
+   - Priorizar execução local
+
+9.5) CONECTOR MCP
+   - Manter actions já implementadas
+   - Integrar fluxo de sincronização
+
+================================================================================
+10. TESTES, QA E CRITÉRIOS DE ACEITAÇÃO
+================================================================================
+
+Checklist (deve passar TODOS):
+✓ Todos os campos Meta & Google visíveis e editáveis
+✓ Pixel criado/testado ou instruções claras entregues
+✓ Landing page (URL) analisada e usada como destino
+✓ Previsões exibidas antes da publicação
+✓ Suite de testes automatizados verde
+✓ Documentação técnica gerada e commitada
+✓ Modo 1-Click funcional
+✓ Modo assistente (guiado) disponível
+✓ Mocks robustos presentes
+✓ Plug-and-play para credenciais reais
+✓ Logs e auditoria disponíveis
+✓ Interface responsiva
+✓ Design premium aplicado
+
+================================================================================
+11. ORGANIZAÇÃO DO CÓDIGO E DEPLOY
+================================================================================
+
+Refatorar estrutura:
+- frontend/
+- backend/
+- services/
+- tests/
+- docs/
+
+Documentar services:
+- manus_adapter.py
+- openai_adapter.py
+- google_ads_service.py
+- facebook_ads_service.py
+- stripe_service.py
+- whatsapp_service.py
+
+schema.sql completo:
+- campaigns, activity_logs, media_files
+- api_credentials, ad_templates
+- custom_reports, custom_audiences
+- notifications, subscriptions
+
+Arquivos necessários:
+- requirements.txt
+- Procfile
+- runtime.txt
+- .env.example
+
+Gerar:
+- robo-otimizador-completo.zip
+- PLAYBOOK_DEPLOY.md
+- Commitar em branch main
+
+================================================================================
+12. UX / DESIGN
+================================================================================
+
+Estética baseada em agências premiadas (Awwwards, Dribbble):
+- Clean, hierarquia clara
+- Cards, wizard, animações 0.3s
+- Tema azul metálico/branco
+- Versão mobile responsiva
+- Sem perder funcionalidades
+- Reorganização, não ocultação
+
+================================================================================
+13. MENSAGEM FINAL ESPERADA
+================================================================================
+
+"✅ NEXORA Operator v11.7 ativado e organizado. Todas as funcionalidades existentes preservadas. Página 'Criar Anúncio Perfeito' implementada com os requisitos especificados. Todos os testes automáticos passaram. Pronto para revisão e deploy final."
+
+================================================================================
+FIM DO DOCUMENTO
+================================================================================
