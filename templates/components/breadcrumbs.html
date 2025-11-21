@@ -1,0 +1,105 @@
+<!-- Breadcrumbs Component - NEXORA Operator v11.7 -->
+<nav aria-label="breadcrumb" class="nexora-breadcrumb-container">
+    <ol class="nexora-breadcrumb">
+        <li class="nexora-breadcrumb-item">
+            <a href="/">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
+            </a>
+        </li>
+        {% if breadcrumbs %}
+            {% for crumb in breadcrumbs %}
+                {% if loop.last %}
+                    <li class="nexora-breadcrumb-item active" aria-current="page">
+                        {% if crumb.icon %}<i class="{{ crumb.icon }}"></i>{% endif %}
+                        <span>{{ crumb.title }}</span>
+                    </li>
+                {% else %}
+                    <li class="nexora-breadcrumb-item">
+                        <a href="{{ crumb.url }}">
+                            {% if crumb.icon %}<i class="{{ crumb.icon }}"></i>{% endif %}
+                            <span>{{ crumb.title }}</span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </ol>
+</nav>
+
+<style>
+.nexora-breadcrumb-container {
+    background-color: var(--nexora-white);
+    padding: var(--nexora-spacing-4) var(--nexora-spacing-6);
+    margin-bottom: var(--nexora-spacing-6);
+    border-radius: var(--nexora-radius-lg);
+    box-shadow: var(--nexora-shadow-sm);
+}
+
+.nexora-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--nexora-spacing-2);
+}
+
+.nexora-breadcrumb-item {
+    display: flex;
+    align-items: center;
+    font-size: var(--nexora-text-sm);
+    color: var(--nexora-gray-600);
+}
+
+.nexora-breadcrumb-item a {
+    display: flex;
+    align-items: center;
+    gap: var(--nexora-spacing-2);
+    color: var(--nexora-gray-600);
+    text-decoration: none;
+    transition: color var(--nexora-transition-fast);
+}
+
+.nexora-breadcrumb-item a:hover {
+    color: var(--nexora-primary);
+}
+
+.nexora-breadcrumb-item.active {
+    color: var(--nexora-gray-900);
+    font-weight: 600;
+}
+
+.nexora-breadcrumb-item.active span {
+    display: flex;
+    align-items: center;
+    gap: var(--nexora-spacing-2);
+}
+
+.nexora-breadcrumb-item + .nexora-breadcrumb-item::before {
+    content: '/';
+    margin: 0 var(--nexora-spacing-2);
+    color: var(--nexora-gray-400);
+    font-weight: 400;
+}
+
+.nexora-breadcrumb-item i {
+    font-size: 0.875em;
+}
+
+@media (max-width: 768px) {
+    .nexora-breadcrumb-container {
+        padding: var(--nexora-spacing-3) var(--nexora-spacing-4);
+    }
+    
+    .nexora-breadcrumb-item span {
+        display: none;
+    }
+    
+    .nexora-breadcrumb-item.active span,
+    .nexora-breadcrumb-item:first-child span {
+        display: inline;
+    }
+}
+</style>

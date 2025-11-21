@@ -1,0 +1,228 @@
+<!-- Toast Notifications Component - NEXORA Operator v11.7 -->
+
+<div class="nexora-toast-container" id="toastContainer"></div>
+
+<style>
+.nexora-toast-container {
+    position: fixed;
+    top: var(--nexora-spacing-6);
+    right: var(--nexora-spacing-6);
+    z-index: var(--nexora-z-tooltip);
+    display: flex;
+    flex-direction: column;
+    gap: var(--nexora-spacing-3);
+    max-width: 400px;
+}
+
+.nexora-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--nexora-spacing-3);
+    padding: var(--nexora-spacing-4);
+    background-color: var(--nexora-white);
+    border-radius: var(--nexora-radius-lg);
+    box-shadow: var(--nexora-shadow-xl);
+    border-left: 4px solid;
+    animation: nexora-toast-slide-in 0.3s ease-out;
+    min-width: 300px;
+}
+
+.nexora-toast.nexora-toast-success {
+    border-color: var(--nexora-success);
+}
+
+.nexora-toast.nexora-toast-error {
+    border-color: var(--nexora-danger);
+}
+
+.nexora-toast.nexora-toast-warning {
+    border-color: var(--nexora-warning);
+}
+
+.nexora-toast.nexora-toast-info {
+    border-color: var(--nexora-info);
+}
+
+.nexora-toast-icon {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.875rem;
+}
+
+.nexora-toast-success .nexora-toast-icon {
+    background-color: #d1fae5;
+    color: var(--nexora-success);
+}
+
+.nexora-toast-error .nexora-toast-icon {
+    background-color: #fee2e2;
+    color: var(--nexora-danger);
+}
+
+.nexora-toast-warning .nexora-toast-icon {
+    background-color: #fef3c7;
+    color: var(--nexora-warning);
+}
+
+.nexora-toast-info .nexora-toast-icon {
+    background-color: #cffafe;
+    color: var(--nexora-info);
+}
+
+.nexora-toast-content {
+    flex: 1;
+}
+
+.nexora-toast-title {
+    font-size: var(--nexora-text-sm);
+    font-weight: 600;
+    color: var(--nexora-gray-900);
+    margin: 0 0 var(--nexora-spacing-1) 0;
+}
+
+.nexora-toast-message {
+    font-size: var(--nexora-text-sm);
+    color: var(--nexora-gray-600);
+    margin: 0;
+}
+
+.nexora-toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--nexora-gray-400);
+    cursor: pointer;
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all var(--nexora-transition-fast);
+}
+
+.nexora-toast-close:hover {
+    background-color: var(--nexora-gray-100);
+    color: var(--nexora-gray-600);
+}
+
+.nexora-toast.nexora-toast-removing {
+    animation: nexora-toast-slide-out 0.3s ease-out forwards;
+}
+
+@keyframes nexora-toast-slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes nexora-toast-slide-out {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .nexora-toast-container {
+        top: var(--nexora-spacing-4);
+        right: var(--nexora-spacing-4);
+        left: var(--nexora-spacing-4);
+        max-width: none;
+    }
+    
+    .nexora-toast {
+        min-width: auto;
+    }
+}
+</style>
+
+<script>
+/**
+ * Show toast notification
+ * @param {string} type - 'success', 'error', 'warning', or 'info'
+ * @param {string} title - Toast title
+ * @param {string} message - Toast message
+ * @param {number} duration - Duration in ms (0 = no auto-close)
+ */
+function showToast(type, title, message, duration = 5000) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `nexora-toast nexora-toast-${type}`;
+    
+    // Icon based on type
+    const icons = {
+        success: 'fas fa-check',
+        error: 'fas fa-times',
+        warning: 'fas fa-exclamation',
+        info: 'fas fa-info'
+    };
+    
+    toast.innerHTML = `
+        <div class="nexora-toast-icon">
+            <i class="${icons[type] || icons.info}"></i>
+        </div>
+        <div class="nexora-toast-content">
+            <p class="nexora-toast-title">${title}</p>
+            ${message ? `<p class="nexora-toast-message">${message}</p>` : ''}
+        </div>
+        <button class="nexora-toast-close" onclick="closeToast(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Auto-close
+    if (duration > 0) {
+        setTimeout(() => {
+            closeToast(toast.querySelector('.nexora-toast-close'));
+        }, duration);
+    }
+}
+
+function closeToast(button) {
+    const toast = button.closest('.nexora-toast');
+    if (!toast) return;
+    
+    toast.classList.add('nexora-toast-removing');
+    setTimeout(() => {
+        toast.remove();
+    }, 300);
+}
+
+// Convenience functions
+function showSuccess(title, message, duration) {
+    showToast('success', title, message, duration);
+}
+
+function showError(title, message, duration) {
+    showToast('error', title, message, duration);
+}
+
+function showWarning(title, message, duration) {
+    showToast('warning', title, message, duration);
+}
+
+function showInfo(title, message, duration) {
+    showToast('info', title, message, duration);
+}
+</script>
