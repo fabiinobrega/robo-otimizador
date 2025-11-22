@@ -1,0 +1,290 @@
+/**
+ * NEXORA Operator v11.7 - Form Validation
+ * Sistema completo de validação de formulários
+ */
+
+class NexoraFormValidator {
+    constructor(formId) {
+        this.form = document.getElementById(formId);
+        if (!this.form) return;
+        
+        this.init();
+    }
+    
+    init() {
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        this.form.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('blur', () => this.validateField(field));
+            field.addEventListener('input', () => this.clearError(field));
+        });
+    }
+    
+    handleSubmit(e) {
+        e.preventDefault();
+        
+        if (this.validateForm()) {
+            showLoading('Processando...');
+            this.form.submit();
+        } else {
+            showError('Erro de Validação', 'Por favor, corrija os campos destacados');
+        }
+    }
+    
+    validateForm() {
+        let isValid = true;
+        const fields = this.form.querySelectorAll('[required], [data-validate]');
+        
+        fields.forEach(field => {
+            if (!this.validateField(field)) {
+                isValid = false;
+            }
+        });
+        
+        return isValid;
+    }
+    
+    validateField(field) {
+        const value = field.value.trim();
+        const type = field.type;
+        const validationType = field.dataset.validate;
+        
+        // Required validation
+        if (field.hasAttribute('required') && !value) {
+            this.showError(field, 'Este campo é obrigatório');
+            return false;
+        }
+        
+        // Email validation
+        if (type === 'email' || validationType === 'email') {
+            if (value && !this.isValidEmail(value)) {
+                this.showError(field, 'Email inválido');
+                return false;
+            }
+        }
+        
+        // URL validation
+        if (type === 'url' || validationType === 'url') {
+            if (value && !this.isValidURL(value)) {
+                this.showError(field, 'URL inválida');
+                return false;
+            }
+        }
+        
+        // Number validation
+        if (type === 'number' || validationType === 'number') {
+            if (value && isNaN(value)) {
+                this.showError(field, 'Deve ser um número válido');
+                return false;
+            }
+            
+            // Min/Max validation
+            const min = field.getAttribute('min');
+            const max = field.getAttribute('max');
+            
+            if (min && parseFloat(value) < parseFloat(min)) {
+                this.showError(field, `Valor mínimo: ${min}`);
+                return false;
+            }
+            
+            if (max && parseFloat(value) > parseFloat(max)) {
+                this.showError(field, `Valor máximo: ${max}`);
+                return false;
+            }
+        }
+        
+        // Phone validation
+        if (validationType === 'phone') {
+            if (value && !this.isValidPhone(value)) {
+                this.showError(field, 'Telefone inválido');
+                return false;
+            }
+        }
+        
+        // CPF validation
+        if (validationType === 'cpf') {
+            if (value && !this.isValidCPF(value)) {
+                this.showError(field, 'CPF inválido');
+                return false;
+            }
+        }
+        
+        // CNPJ validation
+        if (validationType === 'cnpj') {
+            if (value && !this.isValidCNPJ(value)) {
+                this.showError(field, 'CNPJ inválido');
+                return false;
+            }
+        }
+        
+        // Min length validation
+        const minLength = field.getAttribute('minlength');
+        if (minLength && value.length < parseInt(minLength)) {
+            this.showError(field, `Mínimo de ${minLength} caracteres`);
+            return false;
+        }
+        
+        // Max length validation
+        const maxLength = field.getAttribute('maxlength');
+        if (maxLength && value.length > parseInt(maxLength)) {
+            this.showError(field, `Máximo de ${maxLength} caracteres`);
+            return false;
+        }
+        
+        // Pattern validation
+        const pattern = field.getAttribute('pattern');
+        if (pattern && value) {
+            const regex = new RegExp(pattern);
+            if (!regex.test(value)) {
+                this.showError(field, field.dataset.patternMessage || 'Formato inválido');
+                return false;
+            }
+        }
+        
+        this.clearError(field);
+        return true;
+    }
+    
+    showError(field, message) {
+        field.classList.add('is-invalid');
+        field.classList.remove('is-valid');
+        
+        let errorDiv = field.nextElementSibling;
+        if (!errorDiv || !errorDiv.classList.contains('invalid-feedback')) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'invalid-feedback';
+            field.parentNode.insertBefore(errorDiv, field.nextSibling);
+        }
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+    
+    clearError(field) {
+        field.classList.remove('is-invalid');
+        if (field.value.trim()) {
+            field.classList.add('is-valid');
+        }
+        
+        const errorDiv = field.nextElementSibling;
+        if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+            errorDiv.style.display = 'none';
+        }
+    }
+    
+    // Validation helpers
+    isValidEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+    
+    isValidURL(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+    
+    isValidPhone(phone) {
+        const cleaned = phone.replace(/\D/g, '');
+        return cleaned.length >= 10 && cleaned.length <= 11;
+    }
+    
+    isValidCPF(cpf) {
+        cpf = cpf.replace(/\D/g, '');
+        if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+        
+        let sum = 0;
+        for (let i = 0; i < 9; i++) {
+            sum += parseInt(cpf.charAt(i)) * (10 - i);
+        }
+        let digit = 11 - (sum % 11);
+        if (digit >= 10) digit = 0;
+        if (digit !== parseInt(cpf.charAt(9))) return false;
+        
+        sum = 0;
+        for (let i = 0; i < 10; i++) {
+            sum += parseInt(cpf.charAt(i)) * (11 - i);
+        }
+        digit = 11 - (sum % 11);
+        if (digit >= 10) digit = 0;
+        return digit === parseInt(cpf.charAt(10));
+    }
+    
+    isValidCNPJ(cnpj) {
+        cnpj = cnpj.replace(/\D/g, '');
+        if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
+        
+        let length = cnpj.length - 2;
+        let numbers = cnpj.substring(0, length);
+        const digits = cnpj.substring(length);
+        let sum = 0;
+        let pos = length - 7;
+        
+        for (let i = length; i >= 1; i--) {
+            sum += numbers.charAt(length - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        
+        let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+        if (result != digits.charAt(0)) return false;
+        
+        length = length + 1;
+        numbers = cnpj.substring(0, length);
+        sum = 0;
+        pos = length - 7;
+        
+        for (let i = length; i >= 1; i--) {
+            sum += numbers.charAt(length - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        
+        result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+        return result == digits.charAt(1);
+    }
+}
+
+// Auto-initialize forms with data-validate-form attribute
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-validate-form]').forEach(form => {
+        new NexoraFormValidator(form.id);
+    });
+});
+
+// Input masks
+function applyMask(input, mask) {
+    input.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        let maskedValue = '';
+        let valueIndex = 0;
+        
+        for (let i = 0; i < mask.length && valueIndex < value.length; i++) {
+            if (mask[i] === '9') {
+                maskedValue += value[valueIndex++];
+            } else {
+                maskedValue += mask[i];
+            }
+        }
+        
+        e.target.value = maskedValue;
+    });
+}
+
+// Apply common masks
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-mask="phone"]').forEach(input => {
+        applyMask(input, '(99) 99999-9999');
+    });
+    
+    document.querySelectorAll('[data-mask="cpf"]').forEach(input => {
+        applyMask(input, '999.999.999-99');
+    });
+    
+    document.querySelectorAll('[data-mask="cnpj"]').forEach(input => {
+        applyMask(input, '99.999.999/9999-99');
+    });
+    
+    document.querySelectorAll('[data-mask="cep"]').forEach(input => {
+        applyMask(input, '99999-999');
+    });
+});
