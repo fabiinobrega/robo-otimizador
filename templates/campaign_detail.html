@@ -1,0 +1,92 @@
+{% extends "index.html" %}
+{% block title %}Detalhes da Campanha - NEXORA Operator{% endblock %}
+{% block content %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="nexora-page-title">
+                <i class="fas fa-bullhorn me-3"></i>
+                <span id="campaignName">Carregando...</span>
+            </h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="nexora-btn nexora-btn-secondary me-2" onclick="editCampaign()">
+                <i class="fas fa-edit me-2"></i>Editar
+            </button>
+            <button class="nexora-btn nexora-btn-primary" onclick="duplicateCampaign()">
+                <i class="fas fa-copy me-2"></i>Duplicar
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Impressões</h6>
+                <h2 id="impressions">0</h2>
+                <small class="text-success"><i class="fas fa-arrow-up"></i> +12%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Cliques</h6>
+                <h2 id="clicks">0</h2>
+                <small class="text-success"><i class="fas fa-arrow-up"></i> +8%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">CTR</h6>
+                <h2 id="ctr">0%</h2>
+                <small class="text-danger"><i class="fas fa-arrow-down"></i> -2%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Gasto</h6>
+                <h2 id="spend">R$ 0</h2>
+                <small class="text-muted">de R$ 1.000</small>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-4">Performance ao Longo do Tempo</h5>
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-3">Status da Campanha</h5>
+                <div class="mb-3">
+                    <span class="badge bg-success">Ativa</span>
+                </div>
+                <p class="text-muted mb-2">Plataforma: <strong>Facebook</strong></p>
+                <p class="text-muted mb-2">Orçamento Diário: <strong>R$ 100</strong></p>
+                <p class="text-muted mb-2">Início: <strong>01/11/2024</strong></p>
+                <p class="text-muted">Término: <strong>30/11/2024</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+async function loadCampaignDetail() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const campaignId = urlParams.get('id');
+    if (!campaignId) return;
+    try {
+        const response = await fetch(`/api/campaigns/${campaignId}`);
+        const data = await response.json();
+        document.getElementById('campaignName').textContent = data.name;
+        document.getElementById('impressions').textContent = data.impressions.toLocaleString();
+        document.getElementById('clicks').textContent = data.clicks.toLocaleString();
+        document.getElementById('ctr').textContent = data.ctr + '%';
+        document.getElementById('spend').textContent = 'R$ ' + data.spend.toLocaleString();
+    } catch (error) {
+        showError('Erro', 'Falha ao carregar detalhes da campanha');
+    }
+}
+loadCampaignDetail();
+</script>
+{% endblock %}

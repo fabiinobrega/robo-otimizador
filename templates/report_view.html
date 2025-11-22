@@ -1,0 +1,86 @@
+{% extends "index.html" %}
+{% block title %}Visualizar Relatório - NEXORA Operator{% endblock %}
+{% block content %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="nexora-page-title">
+                <i class="fas fa-file-alt me-3"></i>
+                <span id="reportTitle">Relatório de Performance</span>
+            </h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="nexora-btn nexora-btn-secondary me-2" onclick="exportPDF()">
+                <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+            </button>
+            <button class="nexora-btn nexora-btn-primary" onclick="exportExcel()">
+                <i class="fas fa-file-excel me-2"></i>Exportar Excel
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-4">Resumo Executivo</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <h6 class="text-muted">Total Investido</h6>
+                        <h3 class="text-primary">R$ 5.420</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted">ROAS</h6>
+                        <h3 class="text-success">3.2x</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted">Conversões</h6>
+                        <h3>142</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted">CPA</h6>
+                        <h3>R$ 38,17</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-4">Performance por Plataforma</h5>
+                <canvas id="platformChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-4">Conversões por Dia</h5>
+                <canvas id="conversionsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="nexora-card">
+                <h5 class="mb-4">Campanhas com Melhor Performance</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Campanha</th>
+                                <th>Impressões</th>
+                                <th>Cliques</th>
+                                <th>CTR</th>
+                                <th>Conversões</th>
+                                <th>ROAS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topCampaigns">
+                            <tr><td colspan="6" class="text-center">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

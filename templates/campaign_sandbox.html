@@ -1,0 +1,73 @@
+{% extends "index.html" %}
+{% block title %}Sandbox de Campanha - NEXORA Operator{% endblock %}
+{% block content %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="nexora-page-title">
+                <i class="fas fa-flask me-3"></i>
+                Sandbox de Campanha
+            </h1>
+            <p class="text-muted">Teste suas campanhas antes de publicar</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-4">Preview do Anúncio</h5>
+                <div class="ad-preview-container">
+                    <div class="ad-preview-facebook">
+                        <div class="ad-header">
+                            <img src="https://via.placeholder.com/40" class="rounded-circle me-2">
+                            <div>
+                                <strong>Sua Empresa</strong>
+                                <div class="text-muted small">Patrocinado</div>
+                            </div>
+                        </div>
+                        <div class="ad-body mt-3">
+                            <p id="adCopy">Seu texto do anúncio aparecerá aqui...</p>
+                            <img src="https://via.placeholder.com/600x400" class="img-fluid rounded">
+                        </div>
+                        <div class="ad-footer mt-3">
+                            <button class="btn btn-primary btn-sm">Saiba Mais</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-4">Configurações de Teste</h5>
+                <div class="mb-3">
+                    <label class="form-label">Plataforma</label>
+                    <select class="form-select" id="platform">
+                        <option>Facebook</option>
+                        <option>Instagram</option>
+                        <option>Google Ads</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Formato</label>
+                    <select class="form-select" id="format">
+                        <option>Feed</option>
+                        <option>Stories</option>
+                        <option>Carrossel</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Dispositivo</label>
+                    <select class="form-select" id="device">
+                        <option>Desktop</option>
+                        <option>Mobile</option>
+                        <option>Tablet</option>
+                    </select>
+                </div>
+                <button class="nexora-btn nexora-btn-primary w-100" onclick="runTest()">
+                    <i class="fas fa-play me-2"></i>Executar Teste
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

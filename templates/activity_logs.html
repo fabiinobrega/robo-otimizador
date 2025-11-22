@@ -1,0 +1,120 @@
+{% extends "index.html" %}
+{% block title %}Logs de Atividade - NEXORA Operator{% endblock %}
+{% block content %}
+{% include 'components/breadcrumbs.html' %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="nexora-page-title">
+                <i class="fas fa-clipboard-list me-3"></i>
+                Logs de Atividade
+            </h1>
+            <p class="text-muted">Monitore todas as ações e eventos do sistema em tempo real</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar logs..." id="searchLogs">
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" id="filterType">
+                <option value="">Todos os tipos</option>
+                <option value="info">Info</option>
+                <option value="warning">Aviso</option>
+                <option value="error">Erro</option>
+                <option value="success">Sucesso</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" id="filterModule">
+                <option value="">Todos os módulos</option>
+                <option value="campaign">Campanhas</option>
+                <option value="ad">Anúncios</option>
+                <option value="velyra">Velyra Prime</option>
+                <option value="system">Sistema</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="date" class="form-control" id="filterDate">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" onclick="refreshLogs()">
+                <i class="fas fa-sync-alt me-2"></i>Atualizar
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="nexora-card">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="5%">Tipo</th>
+                                <th width="15%">Data/Hora</th>
+                                <th width="15%">Módulo</th>
+                                <th width="15%">Usuário/Ação</th>
+                                <th width="40%">Descrição</th>
+                                <th width="10%">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody">
+                            <tr><td colspan="6" class="text-center py-5">
+                                <div class="nexora-spinner-large mx-auto mb-3"></div>
+                                <p class="text-muted">Carregando logs...</p>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center" id="logsPagination"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+async function loadLogs(page = 1) {
+    try {
+        const response = await fetch(`/api/logs?page=${page}`);
+        const data = await response.json();
+        renderLogs(data.logs);
+        renderPagination(data.total_pages, page);
+    } catch (error) {
+        showError('Erro', 'Falha ao carregar logs');
+    }
+}
+function renderLogs(logs) {
+    const tbody = document.getElementById('logsTableBody');
+    if (!logs || logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Nenhum log encontrado</td></tr>';
+        return;
+    }
+    tbody.innerHTML = logs.map(log => `
+        <tr>
+            <td><span class="badge bg-${getLogColor(log.type)}">${log.type}</span></td>
+            <td>${formatDate(log.timestamp)}</td>
+            <td>${log.module}</td>
+            <td>${log.user || 'Sistema'}</td>
+            <td>${log.description}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(${log.id})">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+function getLogColor(type) {
+    const colors = { info: 'info', warning: 'warning', error: 'danger', success: 'success' };
+    return colors[type] || 'secondary';
+}
+function formatDate(timestamp) {
+    return new Date(timestamp).toLocaleString('pt-BR');
+}
+function refreshLogs() {
+    loadLogs(1);
+}
+loadLogs();
+</script>
+{% endblock %}
