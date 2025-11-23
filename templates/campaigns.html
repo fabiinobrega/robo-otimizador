@@ -1,33 +1,505 @@
 {% extends "index.html" %}
 
-{% block title %}Minhas Campanhas - Manus Marketing{% endblock %}
+{% block title %}Minhas Campanhas - NEXORA Operator v11.7{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-list"></i> Minhas Campanhas</h1>
-    </div>
-    
-    
-<div class="card">
-    <div class="card-body p-0">
-        <table class="table mb-0">
-            <thead>
-                <tr><th>Campanha</th><th>Status</th><th>Ações</th></tr>
-            </thead>
-            <tbody id="campaignsList">
-                <tr><td colspan="3" class="text-center">Carregando...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<script>
-fetch('/api/campaigns').then(r=>r.json()).then(d=>{
-    document.getElementById('campaignsList').innerHTML = d.campaigns ? 
-        d.campaigns.map(c=>`<tr><td>${c.name}</td><td>${c.status}</td><td><a href="/campaigns/${c.id}">Ver</a></td></tr>`).join('') :
-        '<tr><td colspan="3" class="text-center">Nenhuma campanha</td></tr>';
-});
-</script>
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Campanhas</li>
+    </ol>
+</nav>
 
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 mb-2"><i class="fas fa-bullhorn"></i> Minhas Campanhas</h1>
+            <p class="text-muted mb-0">Gerencie todas as suas campanhas de marketing</p>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="/create_campaign" class="btn btn-primary me-2">
+                <i class="fas fa-plus"></i> Nova Campanha
+            </a>
+            <a href="/create_perfect_ad_v2" class="btn btn-outline-primary">
+                <i class="fas fa-magic"></i> Criar Anúncio Perfeito
+            </a>
+        </div>
+    </div>
+    
+    <!-- Filtros e Busca -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Buscar</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Nome da campanha...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Status</label>
+                    <select class="form-select" id="filterStatus">
+                        <option value="">Todos</option>
+                        <option value="active">Ativas</option>
+                        <option value="paused">Pausadas</option>
+                        <option value="completed">Concluídas</option>
+                        <option value="draft">Rascunhos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Plataforma</label>
+                    <select class="form-select" id="filterPlatform">
+                        <option value="">Todas</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="google">Google</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="tiktok">TikTok</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Ordenar por</label>
+                    <select class="form-select" id="sortBy">
+                        <option value="date_desc">Mais recentes</option>
+                        <option value="date_asc">Mais antigas</option>
+                        <option value="name_asc">Nome (A-Z)</option>
+                        <option value="name_desc">Nome (Z-A)</option>
+                        <option value="performance">Performance</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                        <i class="fas fa-redo"></i> Limpar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Total de Campanhas</p>
+                            <h3 class="mb-0" id="totalCampaigns">-</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="fas fa-bullhorn fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Ativas</p>
+                            <h3 class="mb-0 text-success" id="activeCampaigns">-</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="fas fa-play-circle fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Pausadas</p>
+                            <h3 class="mb-0 text-warning" id="pausedCampaigns">-</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="fas fa-pause-circle fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Investimento Total</p>
+                            <h3 class="mb-0" id="totalSpend">-</h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tabela de Campanhas -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Lista de Campanhas</h5>
+                <span class="badge bg-secondary" id="resultsCount">0 campanhas</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Campanha</th>
+                            <th>Plataforma</th>
+                            <th>Status</th>
+                            <th class="text-end">Impressões</th>
+                            <th class="text-end">Cliques</th>
+                            <th class="text-end">CTR</th>
+                            <th class="text-end">Investido</th>
+                            <th class="text-end">ROAS</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="campaignsList">
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Carregando...</span>
+                                </div>
+                                <p class="text-muted mt-2 mb-0">Carregando campanhas...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    Mostrando <span id="showingFrom">0</span> a <span id="showingTo">0</span> de <span id="showingTotal">0</span> campanhas
+                </div>
+                <nav aria-label="Navegação de páginas">
+                    <ul class="pagination pagination-sm mb-0" id="pagination">
+                        <!-- Pagination will be inserted here -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(30, 58, 138, 0.05);
+    transform: translateX(2px);
+}
+
+.badge-platform {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+</style>
+
+<script>
+let allCampaigns = [];
+let filteredCampaigns = [];
+let currentPage = 1;
+const itemsPerPage = 10;
+
+// Load campaigns
+async function loadCampaigns() {
+    try {
+        const response = await fetch('/api/campaigns');
+        const data = await response.json();
+        allCampaigns = data.campaigns || [];
+        applyFilters();
+        updateStats();
+    } catch (error) {
+        console.error('Error loading campaigns:', error);
+        document.getElementById('campaignsList').innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <p class="text-danger mb-0">Erro ao carregar campanhas</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Apply filters
+function applyFilters() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const platformFilter = document.getElementById('filterPlatform').value;
+    const sortBy = document.getElementById('sortBy').value;
+    
+    filteredCampaigns = allCampaigns.filter(campaign => {
+        const matchesSearch = !searchTerm || campaign.name.toLowerCase().includes(searchTerm);
+        const matchesStatus = !statusFilter || campaign.status === statusFilter;
+        const matchesPlatform = !platformFilter || campaign.platform === platformFilter;
+        return matchesSearch && matchesStatus && matchesPlatform;
+    });
+    
+    // Sort
+    filteredCampaigns.sort((a, b) => {
+        switch(sortBy) {
+            case 'date_desc': return new Date(b.created_at) - new Date(a.created_at);
+            case 'date_asc': return new Date(a.created_at) - new Date(b.created_at);
+            case 'name_asc': return a.name.localeCompare(b.name);
+            case 'name_desc': return b.name.localeCompare(a.name);
+            case 'performance': return (b.roas || 0) - (a.roas || 0);
+            default: return 0;
+        }
+    });
+    
+    currentPage = 1;
+    renderCampaigns();
+    renderPagination();
+}
+
+// Render campaigns
+function renderCampaigns() {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageCampaigns = filteredCampaigns.slice(start, end);
+    
+    document.getElementById('resultsCount').textContent = `${filteredCampaigns.length} campanhas`;
+    document.getElementById('showingFrom').textContent = filteredCampaigns.length > 0 ? start + 1 : 0;
+    document.getElementById('showingTo').textContent = Math.min(end, filteredCampaigns.length);
+    document.getElementById('showingTotal').textContent = filteredCampaigns.length;
+    
+    if (pageCampaigns.length === 0) {
+        document.getElementById('campaignsList').innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">Nenhuma campanha encontrada</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    document.getElementById('campaignsList').innerHTML = pageCampaigns.map(campaign => `
+        <tr>
+            <td>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-bullhorn text-primary me-2"></i>
+                    <div>
+                        <strong>${campaign.name}</strong>
+                        <br><small class="text-muted">${formatDate(campaign.created_at)}</small>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <span class="badge badge-platform bg-${getPlatformColor(campaign.platform)}">
+                    <i class="fab fa-${campaign.platform}"></i> ${campaign.platform}
+                </span>
+            </td>
+            <td>
+                <span class="badge bg-${getStatusColor(campaign.status)}">
+                    ${getStatusText(campaign.status)}
+                </span>
+            </td>
+            <td class="text-end">${formatNumber(campaign.impressions || 0)}</td>
+            <td class="text-end">${formatNumber(campaign.clicks || 0)}</td>
+            <td class="text-end">${formatPercent(campaign.ctr || 0)}</td>
+            <td class="text-end">R$ ${formatMoney(campaign.spend || 0)}</td>
+            <td class="text-end">
+                <strong class="text-${campaign.roas >= 3 ? 'success' : campaign.roas >= 2 ? 'warning' : 'danger'}">
+                    ${(campaign.roas || 0).toFixed(2)}x
+                </strong>
+            </td>
+            <td class="text-center">
+                <div class="btn-group btn-group-sm" role="group">
+                    <a href="/campaign/${campaign.id}" class="btn btn-outline-primary action-btn" title="Ver detalhes">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <button class="btn btn-outline-secondary action-btn" onclick="editCampaign(${campaign.id})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger action-btn" onclick="deleteCampaign(${campaign.id})" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Render pagination
+function renderPagination() {
+    const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
+    const pagination = document.getElementById('pagination');
+    
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    // Previous
+    html += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+    `;
+    
+    // Pages
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            html += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+                </li>
+            `;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+            html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+        }
+    }
+    
+    // Next
+    html += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+    `;
+    
+    pagination.innerHTML = html;
+}
+
+// Change page
+function changePage(page) {
+    const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderCampaigns();
+    renderPagination();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Update stats
+function updateStats() {
+    const total = allCampaigns.length;
+    const active = allCampaigns.filter(c => c.status === 'active').length;
+    const paused = allCampaigns.filter(c => c.status === 'paused').length;
+    const totalSpend = allCampaigns.reduce((sum, c) => sum + (c.spend || 0), 0);
+    
+    document.getElementById('totalCampaigns').textContent = total;
+    document.getElementById('activeCampaigns').textContent = active;
+    document.getElementById('pausedCampaigns').textContent = paused;
+    document.getElementById('totalSpend').textContent = `R$ ${formatMoney(totalSpend)}`;
+}
+
+// Reset filters
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterPlatform').value = '';
+    document.getElementById('sortBy').value = 'date_desc';
+    applyFilters();
+}
+
+// Helper functions
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR');
+}
+
+function formatNumber(num) {
+    return num.toLocaleString('pt-BR');
+}
+
+function formatPercent(num) {
+    return (num * 100).toFixed(2) + '%';
+}
+
+function formatMoney(num) {
+    return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function getPlatformColor(platform) {
+    const colors = {
+        facebook: 'primary',
+        google: 'danger',
+        instagram: 'warning',
+        tiktok: 'dark'
+    };
+    return colors[platform] || 'secondary';
+}
+
+function getStatusColor(status) {
+    const colors = {
+        active: 'success',
+        paused: 'warning',
+        completed: 'info',
+        draft: 'secondary'
+    };
+    return colors[status] || 'secondary';
+}
+
+function getStatusText(status) {
+    const texts = {
+        active: 'Ativa',
+        paused: 'Pausada',
+        completed: 'Concluída',
+        draft: 'Rascunho'
+    };
+    return texts[status] || status;
+}
+
+function editCampaign(id) {
+    window.location.href = `/campaign/${id}/edit`;
+}
+
+async function deleteCampaign(id) {
+    if (!confirm('Tem certeza que deseja excluir esta campanha?')) return;
+    
+    try {
+        const response = await fetch(`/api/campaign/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            allCampaigns = allCampaigns.filter(c => c.id !== id);
+            applyFilters();
+            updateStats();
+            showToast('Campanha excluída com sucesso', 'success');
+        } else {
+            showToast('Erro ao excluir campanha', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting campaign:', error);
+        showToast('Erro ao excluir campanha', 'error');
+    }
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('filterStatus').addEventListener('change', applyFilters);
+document.getElementById('filterPlatform').addEventListener('change', applyFilters);
+document.getElementById('sortBy').addEventListener('change', applyFilters);
+
+// Initialize
+loadCampaigns();
+</script>
 {% endblock %}

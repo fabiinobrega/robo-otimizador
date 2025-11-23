@@ -1,20 +1,581 @@
 {% extends "index.html" %}
 
-{% block title %}Biblioteca de Mídia - Manus Marketing{% endblock %}
+{% block title %}Biblioteca de Mídia - NEXORA Operator v11.7{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Biblioteca de Mídia</li>
+    </ol>
+</nav>
+
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-photo-video"></i> Biblioteca de Mídia</h1>
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 mb-2"><i class="fas fa-photo-video"></i> Biblioteca de Mídia</h1>
+            <p class="text-muted mb-0">Gerencie imagens, vídeos e arquivos para suas campanhas</p>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <button class="btn btn-primary" onclick="openUploadModal()">
+                <i class="fas fa-cloud-upload-alt"></i> Upload de Arquivos
+            </button>
+        </div>
     </div>
     
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Total de Arquivos</p>
+                            <h3 class="mb-0" id="totalFiles">0</h3>
+                        </div>
+                        <i class="fas fa-file fa-2x text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Imagens</p>
+                            <h3 class="mb-0" id="totalImages">0</h3>
+                        </div>
+                        <i class="fas fa-image fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Vídeos</p>
+                            <h3 class="mb-0" id="totalVideos">0</h3>
+                        </div>
+                        <i class="fas fa-video fa-2x text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Espaço Usado</p>
+                            <h3 class="mb-0" id="storageUsed">0 MB</h3>
+                        </div>
+                        <i class="fas fa-hdd fa-2x text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-<div class="card">
-    <div class="card-body">
-        <input type="file" class="form-control mb-3" multiple>
-        <button class="btn btn-primary">Upload</button>
+    <!-- Filtros e Busca -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Buscar</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Nome do arquivo...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Tipo</label>
+                    <select class="form-select" id="filterType">
+                        <option value="">Todos</option>
+                        <option value="image">Imagens</option>
+                        <option value="video">Vídeos</option>
+                        <option value="document">Documentos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Pasta</label>
+                    <select class="form-select" id="filterFolder">
+                        <option value="">Todas</option>
+                        <option value="campaigns">Campanhas</option>
+                        <option value="ads">Anúncios</option>
+                        <option value="landing-pages">Landing Pages</option>
+                        <option value="social">Redes Sociais</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Visualização</label>
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-outline-secondary active" id="viewGrid" onclick="setView('grid')">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="viewList" onclick="setView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                        <i class="fas fa-redo"></i> Limpar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Media Grid -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-folder-open"></i> Arquivos</h5>
+                <span class="badge bg-secondary" id="resultsCount">0 arquivos</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="mediaGrid" class="row g-3">
+                <!-- Loading -->
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="text-muted mt-2 mb-0">Carregando arquivos...</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-cloud-upload-alt"></i> Upload de Arquivos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Drag & Drop Area -->
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt fa-4x text-primary mb-3"></i>
+                    <h5>Arraste arquivos aqui</h5>
+                    <p class="text-muted">ou clique para selecionar</p>
+                    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                    <button class="btn btn-primary mt-3" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i> Selecionar Arquivos
+                    </button>
+                </div>
+                
+                <!-- Upload Progress -->
+                <div id="uploadProgress" style="display: none;">
+                    <div class="list-group">
+                        <!-- Progress items will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="uploadBtn" onclick="uploadFiles()" disabled>
+                    <i class="fas fa-upload"></i> Fazer Upload
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Lightbox Modal -->
+<div class="modal fade" id="lightboxModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white" id="lightboxTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="lightboxImage" src="" class="img-fluid" style="max-height: 80vh;">
+            </div>
+            <div class="modal-footer border-0 justify-content-between">
+                <div>
+                    <button class="btn btn-outline-light btn-sm" onclick="downloadFile()">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteFile()">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
+                <div>
+                    <button class="btn btn-outline-light btn-sm" onclick="previousImage()">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <button class="btn btn-outline-light btn-sm" onclick="nextImage()">
+                        Próxima <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Upload Area */
+.upload-area {
+    border: 3px dashed var(--nexora-gray-300);
+    border-radius: var(--nexora-radius-xl);
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+    border-color: var(--nexora-primary);
+    background-color: var(--nexora-primary-light);
+    background-color: rgba(30, 58, 138, 0.05);
+}
+
+/* Media Grid */
+.media-item {
+    position: relative;
+    border-radius: var(--nexora-radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--nexora-gray-100);
+    aspect-ratio: 1;
+}
+
+.media-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--nexora-shadow-lg);
+}
+
+.media-item img,
+.media-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-item-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    padding: 1rem;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.media-item:hover .media-item-overlay {
+    opacity: 1;
+}
+
+.media-item-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.media-item:hover .media-item-actions {
+    opacity: 1;
+}
+
+.media-item-actions button {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--nexora-gray-800);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.media-item-actions button:hover {
+    background-color: white;
+    transform: scale(1.1);
+}
+
+/* List View */
+.media-list-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--nexora-gray-200);
+    transition: background-color 0.2s ease;
+}
+
+.media-list-item:hover {
+    background-color: var(--nexora-gray-50);
+}
+
+.media-list-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--nexora-radius-md);
+    margin-right: 1rem;
+}
+</style>
+
+<script>
+let allMedia = [];
+let filteredMedia = [];
+let selectedFiles = [];
+let currentView = 'grid';
+let currentImageIndex = 0;
+
+// Load media
+async function loadMedia() {
+    try {
+        // Simulated data - replace with actual API call
+        allMedia = [
+            { id: 1, name: 'campaign-banner.jpg', type: 'image', folder: 'campaigns', size: 2.5, url: '/static/uploads/sample1.jpg', created_at: '2024-01-15' },
+            { id: 2, name: 'product-video.mp4', type: 'video', folder: 'ads', size: 15.3, url: '/static/uploads/sample2.mp4', created_at: '2024-01-14' },
+            { id: 3, name: 'social-post.png', type: 'image', folder: 'social', size: 1.8, url: '/static/uploads/sample3.png', created_at: '2024-01-13' },
+        ];
+        
+        applyFilters();
+        updateStats();
+    } catch (error) {
+        console.error('Error loading media:', error);
+    }
+}
+
+// Apply filters
+function applyFilters() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const typeFilter = document.getElementById('filterType').value;
+    const folderFilter = document.getElementById('filterFolder').value;
+    
+    filteredMedia = allMedia.filter(media => {
+        const matchesSearch = !searchTerm || media.name.toLowerCase().includes(searchTerm);
+        const matchesType = !typeFilter || media.type === typeFilter;
+        const matchesFolder = !folderFilter || media.folder === folderFilter;
+        return matchesSearch && matchesType && matchesFolder;
+    });
+    
+    renderMedia();
+}
+
+// Render media
+function renderMedia() {
+    document.getElementById('resultsCount').textContent = `${filteredMedia.length} arquivos`;
+    
+    const container = document.getElementById('mediaGrid');
+    
+    if (filteredMedia.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <p class="text-muted mb-0">Nenhum arquivo encontrado</p>
+            </div>
+        `;
+        return;
+    }
+    
+    if (currentView === 'grid') {
+        container.innerHTML = filteredMedia.map((media, index) => `
+            <div class="col-md-3 col-sm-6">
+                <div class="media-item" onclick="openLightbox(${index})">
+                    ${media.type === 'image' ? 
+                        `<img src="${media.url}" alt="${media.name}">` :
+                        `<video src="${media.url}"></video>`
+                    }
+                    <div class="media-item-overlay">
+                        <small class="d-block text-truncate">${media.name}</small>
+                        <small>${formatFileSize(media.size)}</small>
+                    </div>
+                    <div class="media-item-actions">
+                        <button onclick="event.stopPropagation(); downloadMedia(${media.id})" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); deleteMedia(${media.id})" title="Excluir">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        container.innerHTML = `
+            <div class="col-12">
+                ${filteredMedia.map(media => `
+                    <div class="media-list-item">
+                        <img src="${media.url}" alt="${media.name}">
+                        <div class="flex-grow-1">
+                            <strong>${media.name}</strong>
+                            <br><small class="text-muted">${formatFileSize(media.size)} • ${formatDate(media.created_at)}</small>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="downloadMedia(${media.id})">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteMedia(${media.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+}
+
+// Update stats
+function updateStats() {
+    const images = allMedia.filter(m => m.type === 'image').length;
+    const videos = allMedia.filter(m => m.type === 'video').length;
+    const totalSize = allMedia.reduce((sum, m) => sum + m.size, 0);
+    
+    document.getElementById('totalFiles').textContent = allMedia.length;
+    document.getElementById('totalImages').textContent = images;
+    document.getElementById('totalVideos').textContent = videos;
+    document.getElementById('storageUsed').textContent = formatFileSize(totalSize);
+}
+
+// Set view
+function setView(view) {
+    currentView = view;
+    document.getElementById('viewGrid').classList.toggle('active', view === 'grid');
+    document.getElementById('viewList').classList.toggle('active', view === 'list');
+    renderMedia();
+}
+
+// Reset filters
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterType').value = '';
+    document.getElementById('filterFolder').value = '';
+    applyFilters();
+}
+
+// Upload modal
+function openUploadModal() {
+    const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+    modal.show();
+}
+
+// Drag & drop
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drag-over');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('drag-over');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    handleFiles(e.dataTransfer.files);
+});
+
+fileInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+});
+
+function handleFiles(files) {
+    selectedFiles = Array.from(files);
+    document.getElementById('uploadBtn').disabled = selectedFiles.length === 0;
+    
+    // Show preview
+    const progress = document.getElementById('uploadProgress');
+    progress.style.display = 'block';
+    progress.innerHTML = selectedFiles.map(file => `
+        <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-file me-2"></i>
+                    <strong>${file.name}</strong>
+                    <small class="text-muted ms-2">${formatFileSize(file.size / 1024 / 1024)}</small>
+                </div>
+                <span class="badge bg-secondary">Pronto</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function uploadFiles() {
+    // Simulated upload - replace with actual API call
+    showToast('Upload realizado com sucesso!', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+    loadMedia();
+}
+
+// Lightbox
+function openLightbox(index) {
+    currentImageIndex = index;
+    const media = filteredMedia[index];
+    document.getElementById('lightboxTitle').textContent = media.name;
+    document.getElementById('lightboxImage').src = media.url;
+    const modal = new bootstrap.Modal(document.getElementById('lightboxModal'));
+    modal.show();
+}
+
+function previousImage() {
+    if (currentImageIndex > 0) {
+        openLightbox(currentImageIndex - 1);
+    }
+}
+
+function nextImage() {
+    if (currentImageIndex < filteredMedia.length - 1) {
+        openLightbox(currentImageIndex + 1);
+    }
+}
+
+function downloadMedia(id) {
+    const media = allMedia.find(m => m.id === id);
+    if (media) {
+        window.open(media.url, '_blank');
+    }
+}
+
+function deleteMedia(id) {
+    if (!confirm('Tem certeza que deseja excluir este arquivo?')) return;
+    allMedia = allMedia.filter(m => m.id !== id);
+    applyFilters();
+    updateStats();
+    showToast('Arquivo excluído com sucesso', 'success');
+}
+
+// Helper functions
+function formatFileSize(mb) {
+    if (mb < 1) return (mb * 1024).toFixed(0) + ' KB';
+    return mb.toFixed(2) + ' MB';
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('pt-BR');
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('filterType').addEventListener('change', applyFilters);
+document.getElementById('filterFolder').addEventListener('change', applyFilters);
+
+// Initialize
+loadMedia();
+</script>
 {% endblock %}
