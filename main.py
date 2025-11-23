@@ -1438,3 +1438,100 @@ def api_stop_test_campaign(campaign_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+
+# ===== GLOBAL SEARCH ENDPOINT =====
+
+@app.route('/api/search', methods=['GET'])
+def api_global_search():
+    """Busca global no sistema"""
+    try:
+        query = request.args.get('q', '').strip().lower()
+        if not query:
+            return jsonify([])
+        
+        results = []
+        db = get_db()
+        
+        # Buscar campanhas
+        campaigns = db.execute(
+            "SELECT id, name, status, platform FROM campaigns WHERE LOWER(name) LIKE ? LIMIT 5",
+            (f'%{query}%',)
+        ).fetchall()
+        
+        for campaign in campaigns:
+            results.append({
+                'category': 'Campanhas',
+                'title': campaign['name'],
+                'description': f"{campaign['platform']} • {campaign['status']}",
+                'icon': 'fas fa-bullhorn',
+                'url': f'/campaign/{campaign["id"]}'
+            })
+        
+        # Buscar anúncios
+        ads = db.execute(
+            "SELECT id, name, status FROM ads WHERE LOWER(name) LIKE ? LIMIT 5",
+            (f'%{query}%',)
+        ).fetchall()
+        
+        for ad in ads:
+            results.append({
+                'category': 'Anúncios',
+                'title': ad['name'],
+                'description': f"Status: {ad['status']}",
+                'icon': 'fas fa-ad',
+                'url': f'/ad/{ad["id"]}'
+            })
+        
+        # Buscar relatórios
+        reports = db.execute(
+            "SELECT id, name, type FROM reports WHERE LOWER(name) LIKE ? LIMIT 5",
+            (f'%{query}%',)
+        ).fetchall()
+        
+        for report in reports:
+            results.append({
+                'category': 'Relatórios',
+                'title': report['name'],
+                'description': f"Tipo: {report['type']}",
+                'icon': 'fas fa-chart-line',
+                'url': f'/report/{report["id"]}'
+            })
+        
+        # Páginas do sistema (busca por palavras-chave)
+        pages = [
+            {'title': 'Dashboard', 'keywords': ['dashboard', 'inicio', 'home', 'painel'], 'icon': 'fas fa-home', 'url': '/'},
+            {'title': 'Criar Anúncio Perfeito', 'keywords': ['anuncio', 'criar', 'ia', 'ai', 'perfeito'], 'icon': 'fas fa-magic', 'url': '/create_perfect_ad_v2'},
+            {'title': 'Campanhas', 'keywords': ['campanhas', 'lista', 'gerenciar'], 'icon': 'fas fa-bullhorn', 'url': '/campaigns'},
+            {'title': 'Criar Campanha', 'keywords': ['criar', 'nova', 'campanha'], 'icon': 'fas fa-plus', 'url': '/create_campaign'},
+            {'title': 'Testar Campanha', 'keywords': ['testar', 'teste', 'aquecimento', 'warming'], 'icon': 'fas fa-flask', 'url': '/test_campaign'},
+            {'title': 'Biblioteca de Mídia', 'keywords': ['midia', 'imagens', 'videos', 'arquivos'], 'icon': 'fas fa-photo-video', 'url': '/media_library'},
+            {'title': 'Relatórios', 'keywords': ['relatorios', 'analytics', 'metricas'], 'icon': 'fas fa-chart-bar', 'url': '/reports'},
+            {'title': 'Segmentação', 'keywords': ['segmentacao', 'publico', 'audiencia'], 'icon': 'fas fa-users', 'url': '/segmentation'},
+            {'title': 'Funil de Vendas', 'keywords': ['funil', 'vendas', 'conversao'], 'icon': 'fas fa-filter', 'url': '/funnel_builder'},
+            {'title': 'DCO Builder', 'keywords': ['dco', 'dinamico', 'criativo'], 'icon': 'fas fa-layer-group', 'url': '/dco_builder'},
+            {'title': 'Landing Page Builder', 'keywords': ['landing', 'pagina', 'construtor'], 'icon': 'fas fa-file-code', 'url': '/landing_page_builder'},
+            {'title': 'Velyra Prime', 'keywords': ['velyra', 'ia', 'assistente', 'chat'], 'icon': 'fas fa-robot', 'url': '/velyra_prime'},
+            {'title': 'Integrações', 'keywords': ['integracoes', 'conectar', 'apis'], 'icon': 'fas fa-plug', 'url': '/integrations'},
+            {'title': 'Configurações', 'keywords': ['configuracoes', 'ajustes', 'settings'], 'icon': 'fas fa-cog', 'url': '/settings'},
+        ]
+        
+        for page in pages:
+            if any(keyword in query for keyword in page['keywords']):
+                results.append({
+                    'category': 'Páginas',
+                    'title': page['title'],
+                    'description': 'Navegar para esta página',
+                    'icon': page['icon'],
+                    'url': page['url']
+                })
+        
+        return jsonify(results[:15])  # Limitar a 15 resultados
+        
+    except Exception as e:
+        print(f"Search error: {e}")
+        return jsonify([])
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False)
