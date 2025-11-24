@@ -224,7 +224,7 @@ const itemsPerPage = 10;
 // Load campaigns
 async function loadCampaigns() {
     try {
-        const response = await fetch('/api/campaigns');
+        const response = await fetch('/api/campaign/list');
         const data = await response.json();
         allCampaigns = data.campaigns || [];
         applyFilters();
