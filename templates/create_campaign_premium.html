@@ -1,0 +1,458 @@
+{% extends "base_premium.html" %}
+
+{% block title %}Criar Campanha - NEXORA PRIME{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs Premium -->
+<nav class="nexora-breadcrumb" style="margin-bottom: var(--nexora-spacing-6);">
+    <div class="nexora-breadcrumb-item">
+        <a href="/"><i class="fas fa-home"></i> Dashboard</a>
+    </div>
+    <span class="nexora-breadcrumb-separator">/</span>
+    <div class="nexora-breadcrumb-item">
+        <a href="/campaigns">Campanhas</a>
+    </div>
+    <span class="nexora-breadcrumb-separator">/</span>
+    <div class="nexora-breadcrumb-item active">
+        Criar Campanha
+    </div>
+</nav>
+
+<!-- Header Section -->
+<div style="margin-bottom: var(--nexora-spacing-10);">
+    <h1 style="margin-bottom: var(--nexora-spacing-2); display: flex; align-items: center; gap: var(--nexora-spacing-3);">
+        <i class="fas fa-plus-circle" style="background: var(--nexora-gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+        Criar Nova Campanha
+    </h1>
+    <p style="color: var(--nexora-gray-600); margin: 0;">Wizard inteligente em 5 passos com auxílio da IA Velyra Prime</p>
+</div>
+
+<!-- Progress Steps Premium -->
+<div class="nexora-card" style="margin-bottom: var(--nexora-spacing-8); background: var(--nexora-gradient-primary-soft); border: 2px solid var(--nexora-primary-200);">
+    <div class="nexora-card-body">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--nexora-spacing-4);">
+            <!-- Step 1 -->
+            <div class="wizard-step active" id="step1" style="text-align: center;">
+                <div style="width: 56px; height: 56px; margin: 0 auto var(--nexora-spacing-3); background: var(--nexora-gradient-primary); border-radius: var(--nexora-radius-full); display: flex; align-items: center; justify-content: center; box-shadow: var(--nexora-shadow-primary); font-size: var(--nexora-text-2xl); font-weight: var(--nexora-font-bold); color: var(--nexora-white);">
+                    1
+                </div>
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-900); margin: 0;">Informações Básicas</p>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="wizard-step" id="step2" style="text-align: center; opacity: 0.5;">
+                <div style="width: 56px; height: 56px; margin: 0 auto var(--nexora-spacing-3); background: var(--nexora-gray-200); border-radius: var(--nexora-radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--nexora-text-2xl); font-weight: var(--nexora-font-bold); color: var(--nexora-gray-600);">
+                    2
+                </div>
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); margin: 0;">Plataforma & Objetivo</p>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="wizard-step" id="step3" style="text-align: center; opacity: 0.5;">
+                <div style="width: 56px; height: 56px; margin: 0 auto var(--nexora-spacing-3); background: var(--nexora-gray-200); border-radius: var(--nexora-radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--nexora-text-2xl); font-weight: var(--nexora-font-bold); color: var(--nexora-gray-600);">
+                    3
+                </div>
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); margin: 0;">Público-Alvo</p>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="wizard-step" id="step4" style="text-align: center; opacity: 0.5;">
+                <div style="width: 56px; height: 56px; margin: 0 auto var(--nexora-spacing-3); background: var(--nexora-gray-200); border-radius: var(--nexora-radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--nexora-text-2xl); font-weight: var(--nexora-font-bold); color: var(--nexora-gray-600);">
+                    4
+                </div>
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); margin: 0;">Orçamento & Cronograma</p>
+            </div>
+            
+            <!-- Step 5 -->
+            <div class="wizard-step" id="step5" style="text-align: center; opacity: 0.5;">
+                <div style="width: 56px; height: 56px; margin: 0 auto var(--nexora-spacing-3); background: var(--nexora-gray-200); border-radius: var(--nexora-radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--nexora-text-2xl); font-weight: var(--nexora-font-bold); color: var(--nexora-gray-600);">
+                    5
+                </div>
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); margin: 0;">Revisão & Criação</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form Container -->
+<form id="campaignForm" action="/api/campaigns/create" method="POST">
+    <!-- Step 1: Informações Básicas -->
+    <div class="step-content active" id="content-step1">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--nexora-spacing-6);">
+            <!-- Main Content -->
+            <div class="nexora-card">
+                <div class="nexora-card-header" style="background: var(--nexora-gradient-primary); color: var(--nexora-white);">
+                    <h3 class="nexora-card-title" style="color: var(--nexora-white); margin: 0;">
+                        <i class="fas fa-info-circle"></i> Passo 1: Informações Básicas
+                    </h3>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="nexora-form-group">
+                        <label class="nexora-label nexora-label-required">Nome da Campanha</label>
+                        <input type="text" class="nexora-input" id="campaignName" 
+                               placeholder="Ex: Lançamento Produto X - Black Friday 2024" required>
+                        <span class="nexora-helper-text">Escolha um nome descritivo e único para facilitar a organização</span>
+                    </div>
+                    
+                    <div class="nexora-form-group">
+                        <label class="nexora-label">Descrição</label>
+                        <textarea class="nexora-textarea" id="campaignDescription" 
+                                  placeholder="Descreva os objetivos e detalhes da campanha..." rows="4"></textarea>
+                    </div>
+                    
+                    <div class="nexora-form-group">
+                        <label class="nexora-label">Categoria</label>
+                        <select class="nexora-select" id="campaignCategory">
+                            <option value="">Selecione uma categoria</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="lead-generation">Geração de Leads</option>
+                            <option value="brand-awareness">Reconhecimento de Marca</option>
+                            <option value="app-install">Instalação de App</option>
+                            <option value="traffic">Tráfego</option>
+                            <option value="engagement">Engajamento</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="nexora-card-footer">
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button type="button" class="nexora-btn nexora-btn-primary" onclick="nextStep(2)">
+                            Próximo
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div>
+                <div class="nexora-alert nexora-alert-info" style="margin-bottom: var(--nexora-spacing-6);">
+                    <div class="nexora-alert-content">
+                        <div class="nexora-alert-title">
+                            <i class="fas fa-lightbulb"></i> Dica da IA Velyra
+                        </div>
+                        <div class="nexora-alert-description">
+                            Use nomes que identifiquem claramente o produto, período e objetivo. Isso facilita a organização e análise posterior.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nexora-card">
+                    <div class="nexora-card-header">
+                        <h3 class="nexora-card-title" style="font-size: var(--nexora-text-lg);">Exemplos de Nomes</h3>
+                    </div>
+                    <div class="nexora-card-body">
+                        <ul style="margin: 0; padding-left: var(--nexora-spacing-5); color: var(--nexora-gray-700); line-height: var(--nexora-leading-relaxed);">
+                            <li>Black Friday 2024 - Eletrônicos</li>
+                            <li>Lançamento Curso Online - Q1</li>
+                            <li>Remarketing Carrinho Abandonado</li>
+                            <li>Natal 2024 - Promoção Geral</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 2: Plataforma & Objetivo -->
+    <div class="step-content" id="content-step2" style="display: none;">
+        <div class="nexora-card">
+            <div class="nexora-card-header" style="background: var(--nexora-gradient-primary); color: var(--nexora-white);">
+                <h3 class="nexora-card-title" style="color: var(--nexora-white); margin: 0;">
+                    <i class="fas fa-bullseye"></i> Passo 2: Plataforma & Objetivo
+                </h3>
+            </div>
+            <div class="nexora-card-body">
+                <div class="nexora-form-group">
+                    <label class="nexora-label nexora-label-required">Selecione a Plataforma</label>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--nexora-spacing-4);">
+                        <!-- Facebook -->
+                        <div class="platform-card-premium" onclick="selectPlatform('facebook')" style="cursor: pointer; padding: var(--nexora-spacing-6); border: 2px solid var(--nexora-gray-200); border-radius: var(--nexora-radius-2xl); text-align: center; transition: var(--nexora-transition-base);">
+                            <input type="radio" name="platform" value="facebook" id="platform-facebook" style="display: none;">
+                            <i class="fab fa-facebook" style="font-size: 48px; color: #1877f2; margin-bottom: var(--nexora-spacing-3);"></i>
+                            <h6 style="margin-bottom: var(--nexora-spacing-1); font-weight: var(--nexora-font-semibold);">Facebook Ads</h6>
+                            <small style="color: var(--nexora-gray-600);">Maior alcance</small>
+                        </div>
+                        
+                        <!-- Instagram -->
+                        <div class="platform-card-premium" onclick="selectPlatform('instagram')" style="cursor: pointer; padding: var(--nexora-spacing-6); border: 2px solid var(--nexora-gray-200); border-radius: var(--nexora-radius-2xl); text-align: center; transition: var(--nexora-transition-base);">
+                            <input type="radio" name="platform" value="instagram" id="platform-instagram" style="display: none;">
+                            <i class="fab fa-instagram" style="font-size: 48px; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: var(--nexora-spacing-3);"></i>
+                            <h6 style="margin-bottom: var(--nexora-spacing-1); font-weight: var(--nexora-font-semibold);">Instagram Ads</h6>
+                            <small style="color: var(--nexora-gray-600);">Visual & Stories</small>
+                        </div>
+                        
+                        <!-- Google -->
+                        <div class="platform-card-premium" onclick="selectPlatform('google')" style="cursor: pointer; padding: var(--nexora-spacing-6); border: 2px solid var(--nexora-gray-200); border-radius: var(--nexora-radius-2xl); text-align: center; transition: var(--nexora-transition-base);">
+                            <input type="radio" name="platform" value="google" id="platform-google" style="display: none;">
+                            <i class="fab fa-google" style="font-size: 48px; color: #4285f4; margin-bottom: var(--nexora-spacing-3);"></i>
+                            <h6 style="margin-bottom: var(--nexora-spacing-1); font-weight: var(--nexora-font-semibold);">Google Ads</h6>
+                            <small style="color: var(--nexora-gray-600);">Busca & Display</small>
+                        </div>
+                        
+                        <!-- TikTok -->
+                        <div class="platform-card-premium" onclick="selectPlatform('tiktok')" style="cursor: pointer; padding: var(--nexora-spacing-6); border: 2px solid var(--nexora-gray-200); border-radius: var(--nexora-radius-2xl); text-align: center; transition: var(--nexora-transition-base);">
+                            <input type="radio" name="platform" value="tiktok" id="platform-tiktok" style="display: none;">
+                            <i class="fab fa-tiktok" style="font-size: 48px; color: #000000; margin-bottom: var(--nexora-spacing-3);"></i>
+                            <h6 style="margin-bottom: var(--nexora-spacing-1); font-weight: var(--nexora-font-semibold);">TikTok Ads</h6>
+                            <small style="color: var(--nexora-gray-600);">Vídeos curtos</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nexora-form-group">
+                    <label class="nexora-label nexora-label-required">Objetivo da Campanha</label>
+                    <select class="nexora-select" id="campaignObjective" required>
+                        <option value="">Selecione o objetivo principal</option>
+                        <option value="conversions">Conversões / Vendas</option>
+                        <option value="traffic">Tráfego para o Site</option>
+                        <option value="leads">Geração de Leads</option>
+                        <option value="engagement">Engajamento</option>
+                        <option value="awareness">Reconhecimento de Marca</option>
+                        <option value="app-installs">Instalações de App</option>
+                        <option value="video-views">Visualizações de Vídeo</option>
+                    </select>
+                </div>
+                
+                <div class="nexora-form-group">
+                    <label class="nexora-label">Meta de Conversão</label>
+                    <div style="display: flex; gap: var(--nexora-spacing-2);">
+                        <input type="number" class="nexora-input" id="conversionGoal" placeholder="100" style="flex: 1;">
+                        <span style="padding: var(--nexora-spacing-4); background: var(--nexora-gray-100); border-radius: var(--nexora-radius-xl); color: var(--nexora-gray-700); font-weight: var(--nexora-font-medium);">conversões/mês</span>
+                    </div>
+                </div>
+            </div>
+            <div class="nexora-card-footer">
+                <div style="display: flex; justify-content: space-between;">
+                    <button type="button" class="nexora-btn nexora-btn-ghost" onclick="prevStep(1)">
+                        <i class="fas fa-arrow-left"></i>
+                        Anterior
+                    </button>
+                    <button type="button" class="nexora-btn nexora-btn-primary" onclick="nextStep(3)">
+                        Próximo
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 3: Público-Alvo (Simplified) -->
+    <div class="step-content" id="content-step3" style="display: none;">
+        <div class="nexora-card">
+            <div class="nexora-card-header" style="background: var(--nexora-gradient-secondary); color: var(--nexora-white);">
+                <h3 class="nexora-card-title" style="color: var(--nexora-white); margin: 0;">
+                    <i class="fas fa-users"></i> Passo 3: Público-Alvo
+                </h3>
+            </div>
+            <div class="nexora-card-body">
+                <div class="nexora-alert nexora-alert-info">
+                    <div class="nexora-alert-content">
+                        <div class="nexora-alert-title">
+                            <i class="fas fa-robot"></i> IA Velyra Prime Ativada
+                        </div>
+                        <div class="nexora-alert-description">
+                            A IA irá sugerir automaticamente o público ideal baseado no objetivo da sua campanha.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nexora-form-group">
+                    <label class="nexora-label">Faixa Etária</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--nexora-spacing-4);">
+                        <input type="number" class="nexora-input" placeholder="Idade mínima" value="18">
+                        <input type="number" class="nexora-input" placeholder="Idade máxima" value="65">
+                    </div>
+                </div>
+                
+                <div class="nexora-form-group">
+                    <label class="nexora-label">Localização</label>
+                    <input type="text" class="nexora-input" placeholder="Brasil, São Paulo, Rio de Janeiro..." value="Brasil">
+                </div>
+            </div>
+            <div class="nexora-card-footer">
+                <div style="display: flex; justify-content: space-between;">
+                    <button type="button" class="nexora-btn nexora-btn-ghost" onclick="prevStep(2)">
+                        <i class="fas fa-arrow-left"></i>
+                        Anterior
+                    </button>
+                    <button type="button" class="nexora-btn nexora-btn-primary" onclick="nextStep(4)">
+                        Próximo
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 4: Orçamento & Cronograma (Simplified) -->
+    <div class="step-content" id="content-step4" style="display: none;">
+        <div class="nexora-card">
+            <div class="nexora-card-header" style="background: var(--nexora-gradient-energy); color: var(--nexora-white);">
+                <h3 class="nexora-card-title" style="color: var(--nexora-white); margin: 0;">
+                    <i class="fas fa-dollar-sign"></i> Passo 4: Orçamento & Cronograma
+                </h3>
+            </div>
+            <div class="nexora-card-body">
+                <div class="nexora-form-group">
+                    <label class="nexora-label nexora-label-required">Orçamento Diário</label>
+                    <div style="display: flex; gap: var(--nexora-spacing-2);">
+                        <span style="padding: var(--nexora-spacing-4); background: var(--nexora-gray-100); border-radius: var(--nexora-radius-xl); color: var(--nexora-gray-700); font-weight: var(--nexora-font-semibold);">R$</span>
+                        <input type="number" class="nexora-input" placeholder="100,00" style="flex: 1;">
+                    </div>
+                </div>
+                
+                <div class="nexora-form-group">
+                    <label class="nexora-label">Período da Campanha</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--nexora-spacing-4);">
+                        <input type="date" class="nexora-input">
+                        <input type="date" class="nexora-input">
+                    </div>
+                </div>
+            </div>
+            <div class="nexora-card-footer">
+                <div style="display: flex; justify-content: space-between;">
+                    <button type="button" class="nexora-btn nexora-btn-ghost" onclick="prevStep(3)">
+                        <i class="fas fa-arrow-left"></i>
+                        Anterior
+                    </button>
+                    <button type="button" class="nexora-btn nexora-btn-primary" onclick="nextStep(5)">
+                        Próximo
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 5: Revisão & Criação -->
+    <div class="step-content" id="content-step5" style="display: none;">
+        <div class="nexora-card">
+            <div class="nexora-card-header" style="background: var(--nexora-gradient-primary); color: var(--nexora-white);">
+                <h3 class="nexora-card-title" style="color: var(--nexora-white); margin: 0;">
+                    <i class="fas fa-check-circle"></i> Passo 5: Revisão & Criação
+                </h3>
+            </div>
+            <div class="nexora-card-body">
+                <div class="nexora-alert nexora-alert-success">
+                    <div class="nexora-alert-content">
+                        <div class="nexora-alert-title">
+                            <i class="fas fa-check-circle"></i> Tudo pronto!
+                        </div>
+                        <div class="nexora-alert-description">
+                            Revise as informações abaixo e clique em "Criar Campanha" para finalizar.
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="campaignSummary" style="margin-top: var(--nexora-spacing-6);">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="nexora-card-footer">
+                <div style="display: flex; justify-content: space-between;">
+                    <button type="button" class="nexora-btn nexora-btn-ghost" onclick="prevStep(4)">
+                        <i class="fas fa-arrow-left"></i>
+                        Anterior
+                    </button>
+                    <button type="submit" class="nexora-btn nexora-btn-success nexora-btn-lg">
+                        <i class="fas fa-rocket"></i>
+                        Criar Campanha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+.platform-card-premium:hover {
+    border-color: var(--nexora-primary-500) !important;
+    box-shadow: var(--nexora-shadow-primary);
+    transform: translateY(-4px);
+}
+
+.platform-card-premium.selected {
+    border-color: var(--nexora-primary-600) !important;
+    background: var(--nexora-gradient-primary-soft);
+    box-shadow: var(--nexora-shadow-primary);
+}
+</style>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// WIZARD PREMIUM - JAVASCRIPT
+// ═══════════════════════════════════════════════════════════════════
+
+let currentStep = 1;
+
+function nextStep(step) {
+    // Hide current step
+    document.getElementById(`content-step${currentStep}`).style.display = 'none';
+    document.getElementById(`step${currentStep}`).style.opacity = '0.5';
+    document.querySelector(`#step${currentStep} > div:first-child`).style.background = 'var(--nexora-gray-200)';
+    document.querySelector(`#step${currentStep} > div:first-child`).style.color = 'var(--nexora-gray-600)';
+    document.querySelector(`#step${currentStep} > div:first-child`).style.boxShadow = 'none';
+    
+    // Show next step
+    currentStep = step;
+    document.getElementById(`content-step${currentStep}`).style.display = 'block';
+    document.getElementById(`step${currentStep}`).style.opacity = '1';
+    document.querySelector(`#step${currentStep} > div:first-child`).style.background = 'var(--nexora-gradient-primary)';
+    document.querySelector(`#step${currentStep} > div:first-child`).style.color = 'var(--nexora-white)';
+    document.querySelector(`#step${currentStep} > div:first-child`).style.boxShadow = 'var(--nexora-shadow-primary)';
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep(step) {
+    nextStep(step);
+}
+
+function selectPlatform(platform) {
+    // Remove selected class from all
+    document.querySelectorAll('.platform-card-premium').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked
+    document.getElementById(`platform-${platform}`).parentElement.classList.add('selected');
+    document.getElementById(`platform-${platform}`).checked = true;
+}
+
+// Form submission
+document.getElementById('campaignForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('campaignName').value,
+        description: document.getElementById('campaignDescription').value,
+        category: document.getElementById('campaignCategory').value,
+        platform: document.querySelector('input[name="platform"]:checked')?.value,
+        objective: document.getElementById('campaignObjective').value,
+        conversionGoal: document.getElementById('conversionGoal').value
+    };
+    
+    try {
+        const response = await fetch('/api/campaigns/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show success message
+            alert('Campanha criada com sucesso!');
+            window.location.href = '/campaigns';
+        } else {
+            alert('Erro ao criar campanha: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao criar campanha');
+    }
+});
+</script>
+{% endblock %}

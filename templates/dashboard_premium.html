@@ -1,0 +1,539 @@
+{% extends "base_premium.html" %}
+
+{% block title %}Dashboard - NEXORA PRIME{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs Premium -->
+<nav class="nexora-breadcrumb" style="margin-bottom: var(--nexora-spacing-6);">
+    <div class="nexora-breadcrumb-item active">
+        <i class="fas fa-home" style="margin-right: var(--nexora-spacing-1);"></i>
+        Dashboard
+    </div>
+</nav>
+
+<!-- Header Section -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--nexora-spacing-8); flex-wrap: wrap; gap: var(--nexora-spacing-4);">
+    <div>
+        <h1 style="margin-bottom: var(--nexora-spacing-2); display: flex; align-items: center; gap: var(--nexora-spacing-3);">
+            <i class="fas fa-chart-line" style="background: var(--nexora-gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+            Dashboard
+        </h1>
+        <p style="color: var(--nexora-gray-600); margin: 0;">Visão geral completa das suas campanhas e performance</p>
+    </div>
+    
+    <div style="display: flex; gap: var(--nexora-spacing-3); flex-wrap: wrap;">
+        <!-- Filtros de Período -->
+        <div style="display: flex; gap: var(--nexora-spacing-2); background: var(--nexora-white); padding: var(--nexora-spacing-1); border-radius: var(--nexora-radius-xl); box-shadow: var(--nexora-shadow-sm);">
+            <button class="nexora-btn nexora-btn-ghost nexora-btn-sm" id="filterToday" onclick="filterDashboard('today')">Hoje</button>
+            <button class="nexora-btn nexora-btn-ghost nexora-btn-sm" id="filterWeek" onclick="filterDashboard('week')">7 dias</button>
+            <button class="nexora-btn nexora-btn-primary nexora-btn-sm" id="filterMonth" onclick="filterDashboard('month')">30 dias</button>
+        </div>
+        
+        <a href="/create-campaign" class="nexora-btn nexora-btn-primary">
+            <i class="fas fa-plus"></i>
+            Nova Campanha
+        </a>
+    </div>
+</div>
+
+<!-- Cards de Métricas Premium -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--nexora-spacing-6); margin-bottom: var(--nexora-spacing-10);">
+    <!-- Card 1: Campanhas Ativas -->
+    <div class="nexora-card" style="background: var(--nexora-gradient-primary-soft); border: 2px solid var(--nexora-primary-200);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); text-transform: uppercase; letter-spacing: var(--nexora-tracking-wider); margin-bottom: var(--nexora-spacing-2);">
+                    Campanhas Ativas
+                </p>
+                <h2 style="font-size: var(--nexora-text-4xl); font-weight: var(--nexora-font-extrabold); color: var(--nexora-gray-900); margin-bottom: var(--nexora-spacing-3);" id="activeCampaigns">
+                    <div class="nexora-skeleton" style="width: 80px; height: 40px;"></div>
+                </h2>
+                <div style="display: flex; align-items: center; gap: var(--nexora-spacing-2);">
+                    <span class="nexora-badge nexora-badge-success nexora-badge-dot">
+                        <i class="fas fa-arrow-up"></i> +12%
+                    </span>
+                    <span style="font-size: var(--nexora-text-xs); color: var(--nexora-gray-600);">vs mês anterior</span>
+                </div>
+            </div>
+            <div style="width: 64px; height: 64px; background: var(--nexora-gradient-primary); border-radius: var(--nexora-radius-2xl); display: flex; align-items: center; justify-content: center; box-shadow: var(--nexora-shadow-primary);">
+                <i class="fas fa-bullhorn" style="font-size: 28px; color: var(--nexora-white);"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 2: Total de Cliques -->
+    <div class="nexora-card" style="background: var(--nexora-gradient-energy-soft); border: 2px solid var(--nexora-cyan-200);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); text-transform: uppercase; letter-spacing: var(--nexora-tracking-wider); margin-bottom: var(--nexora-spacing-2);">
+                    Total de Cliques
+                </p>
+                <h2 style="font-size: var(--nexora-text-4xl); font-weight: var(--nexora-font-extrabold); color: var(--nexora-gray-900); margin-bottom: var(--nexora-spacing-3);" id="totalClicks">
+                    <div class="nexora-skeleton" style="width: 100px; height: 40px;"></div>
+                </h2>
+                <div style="display: flex; align-items: center; gap: var(--nexora-spacing-2);">
+                    <span class="nexora-badge nexora-badge-success nexora-badge-dot">
+                        <i class="fas fa-arrow-up"></i> +8%
+                    </span>
+                    <span style="font-size: var(--nexora-text-xs); color: var(--nexora-gray-600);">vs mês anterior</span>
+                </div>
+            </div>
+            <div style="width: 64px; height: 64px; background: var(--nexora-gradient-energy); border-radius: var(--nexora-radius-2xl); display: flex; align-items: center; justify-content: center; box-shadow: var(--nexora-shadow-success);">
+                <i class="fas fa-mouse-pointer" style="font-size: 28px; color: var(--nexora-white);"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 3: Conversões -->
+    <div class="nexora-card" style="background: var(--nexora-gradient-secondary-soft); border: 2px solid var(--nexora-secondary-200);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); text-transform: uppercase; letter-spacing: var(--nexora-tracking-wider); margin-bottom: var(--nexora-spacing-2);">
+                    Conversões
+                </p>
+                <h2 style="font-size: var(--nexora-text-4xl); font-weight: var(--nexora-font-extrabold); color: var(--nexora-gray-900); margin-bottom: var(--nexora-spacing-3);" id="totalConversions">
+                    <div class="nexora-skeleton" style="width: 80px; height: 40px;"></div>
+                </h2>
+                <div style="display: flex; align-items: center; gap: var(--nexora-spacing-2);">
+                    <span class="nexora-badge nexora-badge-success nexora-badge-dot">
+                        <i class="fas fa-arrow-up"></i> +15%
+                    </span>
+                    <span style="font-size: var(--nexora-text-xs); color: var(--nexora-gray-600);">vs mês anterior</span>
+                </div>
+            </div>
+            <div style="width: 64px; height: 64px; background: var(--nexora-gradient-secondary); border-radius: var(--nexora-radius-2xl); display: flex; align-items: center; justify-content: center; box-shadow: var(--nexora-shadow-secondary);">
+                <i class="fas fa-shopping-cart" style="font-size: 28px; color: var(--nexora-white);"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 4: ROAS Médio -->
+    <div class="nexora-card" style="background: linear-gradient(135deg, #fef3c715 0%, #fcd34d15 100%); border: 2px solid var(--nexora-warning-light);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <p style="font-size: var(--nexora-text-sm); font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-600); text-transform: uppercase; letter-spacing: var(--nexora-tracking-wider); margin-bottom: var(--nexora-spacing-2);">
+                    ROAS Médio
+                </p>
+                <h2 style="font-size: var(--nexora-text-4xl); font-weight: var(--nexora-font-extrabold); color: var(--nexora-gray-900); margin-bottom: var(--nexora-spacing-3);" id="avgRoas">
+                    <div class="nexora-skeleton" style="width: 90px; height: 40px;"></div>
+                </h2>
+                <div style="display: flex; align-items: center; gap: var(--nexora-spacing-2);">
+                    <span class="nexora-badge nexora-badge-success nexora-badge-dot">
+                        <i class="fas fa-arrow-up"></i> +22%
+                    </span>
+                    <span style="font-size: var(--nexora-text-xs); color: var(--nexora-gray-600);">vs mês anterior</span>
+                </div>
+            </div>
+            <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: var(--nexora-radius-2xl); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.3);">
+                <i class="fas fa-chart-pie" style="font-size: 28px; color: var(--nexora-white);"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos Premium -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--nexora-spacing-6); margin-bottom: var(--nexora-spacing-10);">
+    <!-- Gráfico de Performance -->
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <div>
+                <h3 class="nexora-card-title">
+                    <i class="fas fa-chart-area" style="color: var(--nexora-primary-600); margin-right: var(--nexora-spacing-2);"></i>
+                    Performance ao Longo do Tempo
+                </h3>
+                <p class="nexora-card-subtitle">Análise detalhada dos últimos 30 dias</p>
+            </div>
+        </div>
+        <div class="nexora-card-body">
+            <canvas id="performanceChart" style="max-height: 300px;"></canvas>
+        </div>
+    </div>
+    
+    <!-- Gráfico de Plataformas -->
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <div>
+                <h3 class="nexora-card-title">
+                    <i class="fas fa-chart-pie" style="color: var(--nexora-secondary-600); margin-right: var(--nexora-spacing-2);"></i>
+                    Campanhas por Plataforma
+                </h3>
+                <p class="nexora-card-subtitle">Distribuição atual</p>
+            </div>
+        </div>
+        <div class="nexora-card-body">
+            <canvas id="platformChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Campanhas Recentes e Atividades -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--nexora-spacing-6); margin-bottom: var(--nexora-spacing-10);">
+    <!-- Campanhas Recentes -->
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <div>
+                <h3 class="nexora-card-title">
+                    <i class="fas fa-list" style="color: var(--nexora-primary-600); margin-right: var(--nexora-spacing-2);"></i>
+                    Campanhas Recentes
+                </h3>
+                <p class="nexora-card-subtitle">Últimas 5 campanhas criadas</p>
+            </div>
+            <a href="/campaigns" class="nexora-btn nexora-btn-outlined nexora-btn-sm">Ver Todas</a>
+        </div>
+        <div class="nexora-card-body" style="padding: 0;">
+            <div class="nexora-table-container" style="box-shadow: none; border-radius: 0;">
+                <table class="nexora-table">
+                    <thead>
+                        <tr>
+                            <th>Campanha</th>
+                            <th>Plataforma</th>
+                            <th>Status</th>
+                            <th>Impressões</th>
+                            <th>Cliques</th>
+                            <th>ROAS</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentCampaigns">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: var(--nexora-spacing-8);">
+                                <div class="nexora-spinner"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Atividades Recentes -->
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <div>
+                <h3 class="nexora-card-title">
+                    <i class="fas fa-history" style="color: var(--nexora-secondary-600); margin-right: var(--nexora-spacing-2);"></i>
+                    Atividades Recentes
+                </h3>
+                <p class="nexora-card-subtitle">Últimas 10 ações</p>
+            </div>
+        </div>
+        <div class="nexora-card-body" style="max-height: 400px; overflow-y: auto;">
+            <div id="activityLogs">
+                <div style="text-align: center; padding: var(--nexora-spacing-8);">
+                    <div class="nexora-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ações Rápidas Premium -->
+<div class="nexora-card" style="background: var(--nexora-gradient-primary-soft); border: 2px solid var(--nexora-primary-200);">
+    <div class="nexora-card-header">
+        <div>
+            <h3 class="nexora-card-title">
+                <i class="fas fa-bolt" style="color: var(--nexora-warning); margin-right: var(--nexora-spacing-2);"></i>
+                Ações Rápidas
+            </h3>
+            <p class="nexora-card-subtitle">Acesso rápido às principais funcionalidades</p>
+        </div>
+    </div>
+    <div class="nexora-card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--nexora-spacing-4);">
+            <a href="/create-campaign" class="nexora-btn nexora-btn-primary nexora-btn-lg" style="text-decoration: none;">
+                <i class="fas fa-plus-circle"></i>
+                Criar Campanha com IA
+            </a>
+            <a href="/campaign-sandbox" class="nexora-btn nexora-btn-secondary nexora-btn-lg" style="text-decoration: none;">
+                <i class="fas fa-vial"></i>
+                Testar no Sandbox
+            </a>
+            <a href="/competitor-spy" class="nexora-btn nexora-btn-outlined nexora-btn-lg" style="text-decoration: none; border-color: var(--nexora-warning); color: var(--nexora-warning);">
+                <i class="fas fa-user-secret"></i>
+                Espionar Concorrentes
+            </a>
+            <a href="/operator-chat" class="nexora-btn nexora-btn-success nexora-btn-lg" style="text-decoration: none;">
+                <i class="fas fa-robot"></i>
+                Chat com Velyra Prime
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DASHBOARD PREMIUM - JAVASCRIPT
+// ═══════════════════════════════════════════════════════════════════
+
+// Carregar métricas do dashboard
+async function loadDashboardMetrics() {
+    try {
+        const response = await fetch('/api/dashboard/metrics');
+        const data = await response.json();
+        
+        if (data.success) {
+            // Animar números com contagem
+            animateNumber('activeCampaigns', 0, data.active_campaigns || 0, 1000);
+            animateNumber('totalCliques', 0, data.total_clicks || 0, 1000, true);
+            animateNumber('totalConversions', 0, data.total_conversions || 0, 1000);
+            
+            // ROAS com formatação especial
+            const roasElement = document.getElementById('avgRoas');
+            roasElement.innerHTML = '';
+            animateNumber('avgRoas', 0, parseFloat(data.avg_roas || 0), 1000, false, 'x');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar métricas:', error);
+        showErrorState();
+    }
+}
+
+// Função para animar números (efeito de contagem)
+function animateNumber(elementId, start, end, duration, useLocale = false, suffix = '') {
+    const element = document.getElementById(elementId);
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+            current = end;
+            clearInterval(timer);
+        }
+        
+        let displayValue = Math.floor(current);
+        if (useLocale) {
+            displayValue = displayValue.toLocaleString('pt-BR');
+        } else if (suffix === 'x') {
+            displayValue = current.toFixed(2);
+        }
+        
+        element.textContent = displayValue + suffix;
+    }, 16);
+}
+
+// Carregar campanhas recentes
+async function loadRecentCampaigns() {
+    try {
+        const response = await fetch('/api/campaigns?limit=5');
+        const data = await response.json();
+        
+        const tbody = document.getElementById('recentCampaigns');
+        if (data.campaigns && data.campaigns.length > 0) {
+            tbody.innerHTML = data.campaigns.map(campaign => {
+                const statusClass = campaign.status === 'Active' ? 'success' : 'warning';
+                const statusText = campaign.status === 'Active' ? 'Ativa' : 'Pausada';
+                
+                return `
+                    <tr>
+                        <td><strong>${campaign.name}</strong></td>
+                        <td><span class="nexora-badge nexora-badge-gray">${campaign.platform}</span></td>
+                        <td><span class="nexora-badge nexora-badge-${statusClass} nexora-badge-dot">${statusText}</span></td>
+                        <td>${(campaign.impressions || 0).toLocaleString('pt-BR')}</td>
+                        <td>${(campaign.clicks || 0).toLocaleString('pt-BR')}</td>
+                        <td><strong>${(campaign.roas || 0).toFixed(2)}x</strong></td>
+                        <td>
+                            <a href="/campaigns/${campaign.id}" class="nexora-btn nexora-btn-ghost nexora-btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: var(--nexora-spacing-8); color: var(--nexora-gray-500);">
+                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: var(--nexora-spacing-4); opacity: 0.3;"></i>
+                        <p>Nenhuma campanha encontrada</p>
+                    </td>
+                </tr>
+            `;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar campanhas:', error);
+    }
+}
+
+// Carregar logs de atividade
+async function loadActivityLogs() {
+    try {
+        const response = await fetch('/api/activity-logs?limit=10');
+        const data = await response.json();
+        
+        const container = document.getElementById('activityLogs');
+        if (data.logs && data.logs.length > 0) {
+            container.innerHTML = data.logs.map(log => {
+                const timeAgo = formatTimeAgo(new Date(log.timestamp));
+                const iconClass = getActivityIcon(log.action);
+                const colorClass = getActivityColor(log.action);
+                
+                return `
+                    <div style="margin-bottom: var(--nexora-spacing-4); padding-bottom: var(--nexora-spacing-4); border-bottom: 1px solid var(--nexora-gray-200);">
+                        <div style="display: flex; gap: var(--nexora-spacing-3);">
+                            <div style="width: 40px; height: 40px; background: ${colorClass}; border-radius: var(--nexora-radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="${iconClass}" style="color: var(--nexora-white);"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <p style="font-weight: var(--nexora-font-semibold); color: var(--nexora-gray-900); margin-bottom: var(--nexora-spacing-1);">
+                                    ${log.action}
+                                </p>
+                                <p style="font-size: var(--nexora-text-sm); color: var(--nexora-gray-600); margin-bottom: var(--nexora-spacing-1);">
+                                    ${log.description}
+                                </p>
+                                <p style="font-size: var(--nexora-text-xs); color: var(--nexora-gray-500);">
+                                    <i class="fas fa-clock"></i> ${timeAgo}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            container.innerHTML = `
+                <div style="text-align: center; padding: var(--nexora-spacing-8); color: var(--nexora-gray-500);">
+                    <i class="fas fa-history" style="font-size: 48px; margin-bottom: var(--nexora-spacing-4); opacity: 0.3;"></i>
+                    <p>Nenhuma atividade recente</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar atividades:', error);
+    }
+}
+
+// Funções auxiliares
+function formatTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    if (seconds < 60) return 'Agora mesmo';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} min atrás`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h atrás`;
+    return `${Math.floor(seconds / 86400)}d atrás`;
+}
+
+function getActivityIcon(action) {
+    const icons = {
+        'create': 'fas fa-plus',
+        'update': 'fas fa-edit',
+        'delete': 'fas fa-trash',
+        'publish': 'fas fa-rocket',
+        'pause': 'fas fa-pause',
+        'resume': 'fas fa-play'
+    };
+    return icons[action.toLowerCase()] || 'fas fa-info-circle';
+}
+
+function getActivityColor(action) {
+    const colors = {
+        'create': 'var(--nexora-gradient-primary)',
+        'update': 'var(--nexora-gradient-secondary)',
+        'delete': 'var(--nexora-danger)',
+        'publish': 'var(--nexora-success)',
+        'pause': 'var(--nexora-warning)',
+        'resume': 'var(--nexora-info)'
+    };
+    return colors[action.toLowerCase()] || 'var(--nexora-gray-500)';
+}
+
+// Filtrar dashboard por período
+function filterDashboard(period) {
+    // Atualizar botões ativos
+    document.querySelectorAll('[id^="filter"]').forEach(btn => {
+        btn.classList.remove('nexora-btn-primary');
+        btn.classList.add('nexora-btn-ghost');
+    });
+    
+    const activeBtn = document.getElementById(`filter${period.charAt(0).toUpperCase() + period.slice(1)}`);
+    if (activeBtn) {
+        activeBtn.classList.remove('nexora-btn-ghost');
+        activeBtn.classList.add('nexora-btn-primary');
+    }
+    
+    // Recarregar dados com novo período
+    loadDashboardMetrics();
+    loadRecentCampaigns();
+}
+
+// Inicializar gráficos
+function initCharts() {
+    // Gráfico de Performance
+    const performanceCtx = document.getElementById('performanceChart');
+    if (performanceCtx) {
+        new Chart(performanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                datasets: [{
+                    label: 'Cliques',
+                    data: [12000, 19000, 15000, 25000],
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Conversões',
+                    data: [800, 1200, 950, 1500],
+                    borderColor: 'rgb(168, 85, 247)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    // Gráfico de Plataformas
+    const platformCtx = document.getElementById('platformChart');
+    if (platformCtx) {
+        new Chart(platformCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Facebook', 'Google', 'Instagram', 'TikTok'],
+                datasets: [{
+                    data: [35, 30, 20, 15],
+                    backgroundColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(168, 85, 247)',
+                        'rgb(34, 211, 238)',
+                        'rgb(74, 222, 128)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Inicializar dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardMetrics();
+    loadRecentCampaigns();
+    loadActivityLogs();
+    initCharts();
+});
+</script>
+{% endblock %}
