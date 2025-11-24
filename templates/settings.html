@@ -1,20 +1,822 @@
 {% extends "index.html" %}
 
-{% block title %}Configurações - Manus Marketing{% endblock %}
+{% block title %}Configurações - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-container {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 30px;
+    }
+
+    .settings-nav {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .settings-nav-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--nexora-text-secondary);
+    }
+
+    .settings-nav-item:hover {
+        background: rgba(var(--nexora-primary-rgb), 0.05);
+        color: var(--nexora-primary);
+    }
+
+    .settings-nav-item.active {
+        background: var(--nexora-primary);
+        color: white;
+    }
+
+    .settings-nav-icon {
+        width: 20px;
+        text-align: center;
+    }
+
+    .settings-content {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+    }
+
+    .settings-section {
+        display: none;
+    }
+
+    .settings-section.active {
+        display: block;
+    }
+
+    .settings-section-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .settings-section-subtitle {
+        color: var(--nexora-text-secondary);
+        margin-bottom: 30px;
+    }
+
+    .settings-group {
+        margin-bottom: 40px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid var(--nexora-border);
+    }
+
+    .settings-group:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .settings-group-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border: 1px solid var(--nexora-border);
+        border-radius: 8px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .setting-item:hover {
+        border-color: var(--nexora-primary);
+        background: rgba(var(--nexora-primary-rgb), 0.02);
+    }
+
+    .setting-info h6 {
+        margin: 0 0 5px 0;
+        font-weight: 600;
+    }
+
+    .setting-info p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--nexora-text-secondary);
+    }
+
+    .integration-card {
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .integration-card:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: var(--nexora-shadow-md);
+    }
+
+    .integration-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .integration-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .integration-logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        background: #f8f9fa;
+    }
+
+    .integration-status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .integration-status.connected {
+        background: rgba(var(--nexora-success-rgb), 0.1);
+        color: var(--nexora-success);
+    }
+
+    .integration-status.disconnected {
+        background: rgba(var(--nexora-text-secondary-rgb), 0.1);
+        color: var(--nexora-text-secondary);
+    }
+
+    .integration-description {
+        color: var(--nexora-text-secondary);
+        margin-bottom: 15px;
+    }
+
+    .integration-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--nexora-border);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--nexora-primary);
+        box-shadow: 0 0 0 4px rgba(var(--nexora-primary-rgb), 0.1);
+    }
+
+    .form-help {
+        font-size: 13px;
+        color: var(--nexora-text-secondary);
+        margin-top: 5px;
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 50px;
+        height: 26px;
+        background: #ccc;
+        border-radius: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active {
+        background: var(--nexora-success);
+    }
+
+    .toggle-switch::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active::after {
+        left: 27px;
+    }
+
+    .danger-zone {
+        background: rgba(var(--nexora-danger-rgb), 0.05);
+        border: 2px solid rgba(var(--nexora-danger-rgb), 0.2);
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 40px;
+    }
+
+    .danger-zone-title {
+        color: var(--nexora-danger);
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .api-key-display {
+        background: #f8f9fa;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .api-key-text {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .copy-btn {
+        padding: 6px 12px;
+        background: var(--nexora-primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+        background: var(--nexora-secondary);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-cog"></i> Configurações</h1>
-    </div>
-    
-    
-<div class="card">
-    <div class="card-body">
-        <h5>Configurações do Sistema</h5>
-        <button class="btn btn-primary">Salvar</button>
-    </div>
-</div>
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Configurações</li>
+        </ol>
+    </nav>
 
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
+            <h1 class="nexora-page-title">
+                <i class="fas fa-cog"></i>
+                Configurações
+            </h1>
+            <p class="nexora-page-subtitle">Gerencie suas preferências e integrações</p>
+        </div>
+    </div>
+
+    <div class="settings-container">
+        <!-- Navigation -->
+        <div class="settings-nav">
+            <div class="settings-nav-item active" data-section="general">
+                <i class="fas fa-sliders-h settings-nav-icon"></i>
+                <span>Geral</span>
+            </div>
+            <div class="settings-nav-item" data-section="integrations">
+                <i class="fas fa-plug settings-nav-icon"></i>
+                <span>Integrações</span>
+            </div>
+            <div class="settings-nav-item" data-section="notifications">
+                <i class="fas fa-bell settings-nav-icon"></i>
+                <span>Notificações</span>
+            </div>
+            <div class="settings-nav-item" data-section="api">
+                <i class="fas fa-code settings-nav-icon"></i>
+                <span>API</span>
+            </div>
+            <div class="settings-nav-item" data-section="billing">
+                <i class="fas fa-credit-card settings-nav-icon"></i>
+                <span>Faturamento</span>
+            </div>
+            <div class="settings-nav-item" data-section="security">
+                <i class="fas fa-shield-alt settings-nav-icon"></i>
+                <span>Segurança</span>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="settings-content">
+            <!-- General Settings -->
+            <div class="settings-section active" id="general">
+                <h2 class="settings-section-title">Configurações Gerais</h2>
+                <p class="settings-section-subtitle">Personalize sua experiência no NEXORA Operator</p>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Perfil</h3>
+                    <div class="form-group">
+                        <label class="form-label">Nome da Empresa</label>
+                        <input type="text" class="form-input" value="Minha Empresa" placeholder="Digite o nome da empresa">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email de Contato</label>
+                        <input type="email" class="form-input" value="contato@empresa.com" placeholder="email@exemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fuso Horário</label>
+                        <select class="form-input">
+                            <option>America/Sao_Paulo (GMT-3)</option>
+                            <option>America/New_York (GMT-5)</option>
+                            <option>Europe/London (GMT+0)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Preferências</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Modo Escuro</h6>
+                            <p>Ativar tema escuro para reduzir o cansaço visual</p>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Otimização Automática</h6>
+                            <p>Permitir que a IA otimize campanhas automaticamente</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Análise Preditiva</h6>
+                            <p>Receber previsões de performance baseadas em IA</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <button class="nexora-btn nexora-btn-primary">
+                    <i class="fas fa-save"></i>
+                    Salvar Alterações
+                </button>
+            </div>
+
+            <!-- Integrations -->
+            <div class="settings-section" id="integrations">
+                <h2 class="settings-section-title">Integrações</h2>
+                <p class="settings-section-subtitle">Conecte suas plataformas de marketing</p>
+
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-logo" style="background: #1877f2; color: white;">
+                                <i class="fab fa-facebook"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin: 0;">Facebook Ads</h5>
+                                <small class="text-muted">Meta Business Suite</small>
+                            </div>
+                        </div>
+                        <span class="integration-status connected">
+                            <i class="fas fa-check-circle"></i> Conectado
+                        </span>
+                    </div>
+                    <p class="integration-description">
+                        Gerencie suas campanhas do Facebook e Instagram diretamente do NEXORA Operator
+                    </p>
+                    <div class="integration-actions">
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-cog"></i> Configurar
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-sync"></i> Reconectar
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm" style="color: var(--nexora-danger); border-color: var(--nexora-danger);">
+                            <i class="fas fa-unlink"></i> Desconectar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-logo" style="background: #4285f4; color: white;">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin: 0;">Google Ads</h5>
+                                <small class="text-muted">Google Marketing Platform</small>
+                            </div>
+                        </div>
+                        <span class="integration-status connected">
+                            <i class="fas fa-check-circle"></i> Conectado
+                        </span>
+                    </div>
+                    <p class="integration-description">
+                        Sincronize suas campanhas do Google Ads e Google Analytics
+                    </p>
+                    <div class="integration-actions">
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-cog"></i> Configurar
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-sync"></i> Reconectar
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm" style="color: var(--nexora-danger); border-color: var(--nexora-danger);">
+                            <i class="fas fa-unlink"></i> Desconectar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-logo" style="background: #25d366; color: white;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin: 0;">WhatsApp Business</h5>
+                                <small class="text-muted">WhatsApp API</small>
+                            </div>
+                        </div>
+                        <span class="integration-status disconnected">
+                            <i class="fas fa-times-circle"></i> Desconectado
+                        </span>
+                    </div>
+                    <p class="integration-description">
+                        Automatize conversas e envie campanhas via WhatsApp
+                    </p>
+                    <div class="integration-actions">
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-sm">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-info-circle"></i> Saiba Mais
+                        </button>
+                    </div>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-logo" style="background: #635bff; color: white;">
+                                <i class="fab fa-stripe"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin: 0;">Stripe</h5>
+                                <small class="text-muted">Pagamentos Online</small>
+                            </div>
+                        </div>
+                        <span class="integration-status disconnected">
+                            <i class="fas fa-times-circle"></i> Desconectado
+                        </span>
+                    </div>
+                    <p class="integration-description">
+                        Rastreie conversões e receita de suas campanhas
+                    </p>
+                    <div class="integration-actions">
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-sm">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-info-circle"></i> Saiba Mais
+                        </button>
+                    </div>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-info">
+                            <div class="integration-logo" style="background: #000000; color: white;">
+                                <i class="fab fa-tiktok"></i>
+                            </div>
+                            <div>
+                                <h5 style="margin: 0;">TikTok Ads</h5>
+                                <small class="text-muted">TikTok for Business</small>
+                            </div>
+                        </div>
+                        <span class="integration-status disconnected">
+                            <i class="fas fa-times-circle"></i> Desconectado
+                        </span>
+                    </div>
+                    <p class="integration-description">
+                        Crie e gerencie campanhas no TikTok
+                    </p>
+                    <div class="integration-actions">
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-sm">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-info-circle"></i> Saiba Mais
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="settings-section" id="notifications">
+                <h2 class="settings-section-title">Notificações</h2>
+                <p class="settings-section-subtitle">Escolha como deseja ser notificado</p>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Email</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Relatórios Diários</h6>
+                            <p>Receba um resumo diário do desempenho das campanhas</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Alertas de Performance</h6>
+                            <p>Seja notificado quando uma campanha não estiver performando bem</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Novidades e Atualizações</h6>
+                            <p>Receba informações sobre novos recursos e melhorias</p>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Push</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>Notificações no Navegador</h6>
+                            <p>Receba alertas em tempo real no navegador</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <button class="nexora-btn nexora-btn-primary">
+                    <i class="fas fa-save"></i>
+                    Salvar Preferências
+                </button>
+            </div>
+
+            <!-- API -->
+            <div class="settings-section" id="api">
+                <h2 class="settings-section-title">API</h2>
+                <p class="settings-section-subtitle">Integre o NEXORA Operator com seus sistemas</p>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Chaves de API</h3>
+                    <p class="text-muted mb-3">Use estas chaves para autenticar suas requisições à API do NEXORA Operator</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">API Key (Produção)</label>
+                        <div class="api-key-display">
+                            <span class="api-key-text">nx_live_k8s9d7f6g5h4j3k2l1m0n9b8v7c6x5z4</span>
+                            <button class="copy-btn" onclick="copyToClipboard('nx_live_k8s9d7f6g5h4j3k2l1m0n9b8v7c6x5z4')">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                        <small class="form-help">Mantenha esta chave em segredo. Não compartilhe publicamente.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">API Key (Teste)</label>
+                        <div class="api-key-display">
+                            <span class="api-key-text">nx_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6</span>
+                            <button class="copy-btn" onclick="copyToClipboard('nx_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6')">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                        <small class="form-help">Use esta chave para testes e desenvolvimento.</small>
+                    </div>
+
+                    <button class="nexora-btn nexora-btn-outline">
+                        <i class="fas fa-sync"></i> Regenerar Chaves
+                    </button>
+                    <button class="nexora-btn nexora-btn-outline">
+                        <i class="fas fa-book"></i> Ver Documentação
+                    </button>
+                </div>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Webhooks</h3>
+                    <p class="text-muted mb-3">Configure webhooks para receber eventos em tempo real</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">URL do Webhook</label>
+                        <input type="url" class="form-input" placeholder="https://seu-site.com/webhook">
+                        <small class="form-help">Enviaremos eventos POST para esta URL</small>
+                    </div>
+
+                    <button class="nexora-btn nexora-btn-primary">
+                        <i class="fas fa-plus"></i> Adicionar Webhook
+                    </button>
+                </div>
+            </div>
+
+            <!-- Billing -->
+            <div class="settings-section" id="billing">
+                <h2 class="settings-section-title">Faturamento</h2>
+                <p class="settings-section-subtitle">Gerencie sua assinatura e métodos de pagamento</p>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Plano Atual</h3>
+                    <div class="nexora-card" style="background: linear-gradient(135deg, var(--nexora-primary), var(--nexora-secondary)); color: white; padding: 30px;">
+                        <h4 style="color: white; margin-bottom: 10px;">Plano Professional</h4>
+                        <h2 style="color: white; margin-bottom: 20px;">R$ 497<small style="font-size: 18px; opacity: 0.8;">/mês</small></h2>
+                        <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Campanhas ilimitadas</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> IA Velyra Prime</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Todas as integrações</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Suporte prioritário</li>
+                        </ul>
+                        <button class="nexora-btn" style="background: white; color: var(--nexora-primary);">
+                            <i class="fas fa-arrow-up"></i> Fazer Upgrade
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Método de Pagamento</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6><i class="fab fa-cc-visa"></i> Visa •••• 4242</h6>
+                            <p>Expira em 12/2025</p>
+                        </div>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </div>
+                    <button class="nexora-btn nexora-btn-outline">
+                        <i class="fas fa-plus"></i> Adicionar Método de Pagamento
+                    </button>
+                </div>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Histórico de Faturas</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>01/11/2024</td>
+                                    <td>Plano Professional - Novembro</td>
+                                    <td>R$ 497,00</td>
+                                    <td><span class="badge bg-success">Pago</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>01/10/2024</td>
+                                    <td>Plano Professional - Outubro</td>
+                                    <td>R$ 497,00</td>
+                                    <td><span class="badge bg-success">Pago</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="settings-section" id="security">
+                <h2 class="settings-section-title">Segurança</h2>
+                <p class="settings-section-subtitle">Proteja sua conta e dados</p>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Senha</h3>
+                    <div class="form-group">
+                        <label class="form-label">Senha Atual</label>
+                        <input type="password" class="form-input" placeholder="Digite sua senha atual">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nova Senha</label>
+                        <input type="password" class="form-input" placeholder="Digite sua nova senha">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Nova Senha</label>
+                        <input type="password" class="form-input" placeholder="Confirme sua nova senha">
+                    </div>
+                    <button class="nexora-btn nexora-btn-primary">
+                        <i class="fas fa-key"></i> Alterar Senha
+                    </button>
+                </div>
+
+                <div class="settings-group">
+                    <h3 class="settings-group-title">Autenticação de Dois Fatores</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>2FA via SMS</h6>
+                            <p>Adicione uma camada extra de segurança com código via SMS</p>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h6>2FA via App Autenticador</h6>
+                            <p>Use Google Authenticator ou similar</p>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <div class="danger-zone">
+                    <h4 class="danger-zone-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Zona de Perigo
+                    </h4>
+                    <p class="text-muted mb-3">Ações irreversíveis que afetam permanentemente sua conta</p>
+                    <button class="nexora-btn" style="background: var(--nexora-danger); color: white;">
+                        <i class="fas fa-trash"></i> Excluir Conta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Navigation
+    document.querySelectorAll('.settings-nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const section = this.dataset.section;
+            
+            // Update nav
+            document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+        });
+    });
+});
+
+function toggleSwitch(element) {
+    element.classList.toggle('active');
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        if (window.showToast) {
+            window.showToast('Chave copiada para a área de transferência!', 'success');
+        } else {
+            alert('Chave copiada!');
+        }
+    });
+}
+</script>
 {% endblock %}
