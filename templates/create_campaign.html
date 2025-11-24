@@ -60,7 +60,7 @@
     </div>
     
     <!-- Form Container -->
-    <form id="campaignForm">
+    <form id="campaignForm" action="/api/form/submit" method="POST" onsubmit="handleFormSubmit(event, 'campaignForm')">
         <!-- Step 1: Informações Básicas -->
         <div class="step-content active" id="content-step1">
             <div class="card shadow-sm">

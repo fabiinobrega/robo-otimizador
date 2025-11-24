@@ -457,7 +457,7 @@
 
             <!-- Chat Input -->
             <div class="chat-input-area">
-                <form id="chatForm" class="chat-input-wrapper">
+                <form id="chatForm" class="chat-input-wrapper" action="/api/form/submit" method="POST" onsubmit="handleFormSubmit(event, 'chatForm')">
                     <textarea 
                         id="chatInput" 
                         class="chat-input" 

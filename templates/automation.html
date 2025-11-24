@@ -239,15 +239,15 @@
             <p class="nexora-page-subtitle">Configure regras inteligentes para otimizar suas campanhas automaticamente</p>
         </div>
         <div class="nexora-page-actions">
-            <button class="nexora-btn nexora-btn-outline" id="viewLogsBtn">
+            <button class="nexora-btn nexora-btn-outline" id="viewLogsBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-list"></i>
                 Ver Logs
             </button>
-            <button class="nexora-btn nexora-btn-outline" id="executeAllBtn">
+            <button class="nexora-btn nexora-btn-outline" id="executeAllBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-play"></i>
                 Executar Todas
             </button>
-            <button class="nexora-btn nexora-btn-primary" id="createRuleBtn">
+            <button class="nexora-btn nexora-btn-primary" id="createRuleBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-plus"></i>
                 Nova Regra
             </button>
@@ -356,13 +356,13 @@
                         </div>
 
                         <div class="d-flex gap-2 mt-3">
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-copy"></i> Duplicar
                             </button>
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-trash"></i> Excluir
                             </button>
                         </div>
@@ -411,13 +411,13 @@
                         </div>
 
                         <div class="d-flex gap-2 mt-3">
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-copy"></i> Duplicar
                             </button>
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-trash"></i> Excluir
                             </button>
                         </div>
@@ -466,13 +466,13 @@
                         </div>
 
                         <div class="d-flex gap-2 mt-3">
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-copy"></i> Duplicar
                             </button>
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-trash"></i> Excluir
                             </button>
                         </div>
@@ -606,7 +606,7 @@
                         <p style="margin: 0; font-size: 14px; opacity: 0.9;">
                             Crie uma regra para pausar anúncios com CPC acima de R$ 5,00. Isso pode economizar até R$ 2.300/mês.
                         </p>
-                        <button class="nexora-btn nexora-btn-sm mt-3" style="background: white; color: var(--nexora-primary);">
+                        <button class="nexora-btn nexora-btn-sm mt-3" style="background: white; color: var(--nexora-primary);" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                             <i class="fas fa-plus"></i> Criar Regra
                         </button>
                     </div>
@@ -630,7 +630,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="createRuleForm">
+                <form id="createRuleForm" action="/api/form/submit" method="POST" onsubmit="handleFormSubmit(event, 'createRuleForm')">
                     <div class="mb-3">
                         <label class="form-label">Nome da Regra</label>
                         <input type="text" class="form-control" placeholder="Ex: Pausar anúncios com baixo ROI" required>
@@ -692,7 +692,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="nexora-btn nexora-btn-primary">
+                <button type="button" class="nexora-btn nexora-btn-primary" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-save"></i> Criar Regra
                 </button>
             </div>

@@ -647,7 +647,7 @@ def competitor_spy():
 
 @app.route("/dco")
 def dco():
-    return render_template("dco.html")
+    return render_template("dco_builder.html")
 
 
 @app.route("/funnel-builder")

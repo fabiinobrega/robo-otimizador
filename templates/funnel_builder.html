@@ -239,15 +239,15 @@
             <p class="nexora-page-subtitle">Crie e otimize funis de vendas de alta conversão</p>
         </div>
         <div class="nexora-page-actions">
-            <button class="nexora-btn nexora-btn-outline" id="loadTemplateBtn">
+            <button class="nexora-btn nexora-btn-outline" id="loadTemplateBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-folder-open"></i>
                 Carregar Template
             </button>
-            <button class="nexora-btn nexora-btn-outline" id="saveFunnelBtn">
+            <button class="nexora-btn nexora-btn-outline" id="saveFunnelBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-save"></i>
                 Salvar Funil
             </button>
-            <button class="nexora-btn nexora-btn-primary" id="publishFunnelBtn">
+            <button class="nexora-btn nexora-btn-primary" id="publishFunnelBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-rocket"></i>
                 Publicar Funil
             </button>
@@ -264,13 +264,13 @@
                         Canvas do Funil
                     </h5>
                     <div class="d-flex gap-2">
-                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="zoomOutBtn">
+                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="zoomOutBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                             <i class="fas fa-search-minus"></i>
                         </button>
-                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="zoomInBtn">
+                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="zoomInBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                             <i class="fas fa-search-plus"></i>
                         </button>
-                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="resetViewBtn">
+                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="resetViewBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                             <i class="fas fa-compress"></i>
                         </button>
                     </div>
@@ -278,7 +278,7 @@
                 <div class="nexora-card-body">
                     <div class="funnel-canvas" id="funnelCanvas">
                         <!-- Stages will be dynamically added here -->
-                        <button class="add-stage-btn" id="addFirstStageBtn">
+                        <button class="add-stage-btn" id="addFirstStageBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                             <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
                             Adicionar Primeira Etapa do Funil
                         </button>
@@ -426,7 +426,7 @@
                                     <strong>Funil E-commerce Completo</strong>
                                     <p class="small text-muted mb-0">7 etapas • 12.5% conversão</p>
                                 </div>
-                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                     <i class="fas fa-folder-open"></i>
                                 </button>
                             </div>
@@ -437,7 +437,7 @@
                                     <strong>Webinar de Lançamento</strong>
                                     <p class="small text-muted mb-0">5 etapas • 8.3% conversão</p>
                                 </div>
-                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                     <i class="fas fa-folder-open"></i>
                                 </button>
                             </div>
@@ -448,7 +448,7 @@
                                     <strong>Lead Magnet + Tripwire</strong>
                                     <p class="small text-muted mb-0">4 etapas • 15.7% conversão</p>
                                 </div>
-                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                     <i class="fas fa-folder-open"></i>
                                 </button>
                             </div>
@@ -469,7 +469,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="addStageForm">
+                <form id="addStageForm" action="/api/form/submit" method="POST" onsubmit="handleFormSubmit(event, 'addStageForm')">
                     <div class="mb-3">
                         <label class="form-label">Nome da Etapa</label>
                         <input type="text" class="form-control" id="stageName" placeholder="Ex: Landing Page de Captura" required>
@@ -510,7 +510,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="nexora-btn nexora-btn-primary" id="confirmAddStage">
+                <button type="button" class="nexora-btn nexora-btn-primary" id="confirmAddStage" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-plus"></i> Adicionar Etapa
                 </button>
             </div>
@@ -527,7 +527,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="editStageForm">
+                <form id="editStageForm" action="/api/form/submit" method="POST" onsubmit="handleFormSubmit(event, 'editStageForm')">
                     <input type="hidden" id="editStageId">
                     <div class="mb-3">
                         <label class="form-label">Nome da Etapa</label>
@@ -555,7 +555,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="nexora-btn nexora-btn-primary" id="confirmEditStage">
+                <button type="button" class="nexora-btn nexora-btn-primary" id="confirmEditStage" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-save"></i> Salvar Alterações
                 </button>
             </div>
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderFunnel() {
         if (funnelStages.length === 0) {
             funnelCanvas.innerHTML = `
-                <button class="add-stage-btn" id="addFirstStageBtn">
+                <button class="add-stage-btn" id="addFirstStageBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
                     Adicionar Primeira Etapa do Funil
                 </button>
@@ -667,10 +667,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                         <div class="funnel-stage-actions">
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline edit-stage-btn" data-stage-id="${stage.id}">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline edit-stage-btn" data-stage-id="${stage.id}" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline delete-stage-btn" data-stage-id="${stage.id}">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline delete-stage-btn" data-stage-id="${stage.id}" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -701,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         html += `
-            <button class="add-stage-btn" id="addAnotherStageBtn">
+            <button class="add-stage-btn" id="addAnotherStageBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
                 Adicionar Próxima Etapa
             </button>

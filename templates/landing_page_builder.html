@@ -411,32 +411,32 @@
             </h1>
         </div>
         <div class="nexora-page-actions">
-            <button class="nexora-btn nexora-btn-outline nexora-btn-sm" id="undoBtn">
+            <button class="nexora-btn nexora-btn-outline nexora-btn-sm" id="undoBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-undo"></i>
             </button>
-            <button class="nexora-btn nexora-btn-outline nexora-btn-sm" id="redoBtn">
+            <button class="nexora-btn nexora-btn-outline nexora-btn-sm" id="redoBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-redo"></i>
             </button>
             <div class="device-preview-controls">
-                <button class="device-btn active" data-device="desktop" title="Desktop">
+                <button class="device-btn active" data-device="desktop" title="Desktop" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-desktop"></i>
                 </button>
-                <button class="device-btn" data-device="tablet" title="Tablet">
+                <button class="device-btn" data-device="tablet" title="Tablet" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-tablet-alt"></i>
                 </button>
-                <button class="device-btn" data-device="mobile" title="Mobile">
+                <button class="device-btn" data-device="mobile" title="Mobile" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-mobile-alt"></i>
                 </button>
             </div>
-            <button class="nexora-btn nexora-btn-outline" id="saveBtn">
+            <button class="nexora-btn nexora-btn-outline" id="saveBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-save"></i>
                 Salvar
             </button>
-            <button class="nexora-btn nexora-btn-outline" id="previewBtn">
+            <button class="nexora-btn nexora-btn-outline" id="previewBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-eye"></i>
                 Preview
             </button>
-            <button class="nexora-btn nexora-btn-primary" id="publishBtn">
+            <button class="nexora-btn nexora-btn-primary" id="publishBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-rocket"></i>
                 Publicar
             </button>
@@ -541,7 +541,7 @@
                 </div>
             </div>
 
-            <button class="nexora-btn nexora-btn-outline w-100 mt-3" id="templatesBtn">
+            <button class="nexora-btn nexora-btn-outline w-100 mt-3" id="templatesBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                 <i class="fas fa-th-large"></i>
                 Ver Templates
             </button>
@@ -554,7 +554,7 @@
                     <i class="fas fa-magic"></i>
                     <h4>Comece a Construir</h4>
                     <p>Arraste componentes da barra lateral ou escolha um template</p>
-                    <button class="nexora-btn nexora-btn-primary mt-3" id="chooseTemplateBtn">
+                    <button class="nexora-btn nexora-btn-primary mt-3" id="chooseTemplateBtn" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                         <i class="fas fa-th-large"></i>
                         Escolher Template
                     </button>
@@ -668,7 +668,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="lp-hero">
                 <h1>Transforme Seu Negócio com Nossa Solução</h1>
                 <p>A plataforma completa para escalar suas vendas e automatizar seu marketing</p>
-                <button class="btn btn-light btn-lg">Começar Agora</button>
+                <button class="btn btn-light btn-lg" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">Começar Agora</button>
             </div>
         `,
         features: `
@@ -708,12 +708,12 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="lp-cta">
                 <h2>Pronto Para Começar?</h2>
                 <p style="color: white; opacity: 0.9; font-size: 18px;">Junte-se a mais de 10.000 empresas que já transformaram seus resultados</p>
-                <button class="btn btn-light btn-lg">Começar Gratuitamente</button>
+                <button class="btn btn-light btn-lg" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">Começar Gratuitamente</button>
             </div>
         `,
         heading: `<h2 style="padding: 20px 40px;">Seu Título Aqui</h2>`,
         text: `<p style="padding: 20px 40px;">Seu texto aqui. Clique para editar.</p>`,
-        button: `<div style="padding: 20px 40px;"><button class="btn btn-primary btn-lg">Clique Aqui</button></div>`,
+        button: `<div style="padding: 20px 40px;"><button class="btn btn-primary btn-lg" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">Clique Aqui</button></div>`,
         image: `<div style="padding: 20px 40px;"><img src="https://via.placeholder.com/800x400" style="width: 100%; border-radius: 12px;"></div>`,
         form: `
             <div style="padding: 40px; background: #f8f9fa;">
@@ -721,7 +721,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3 class="mb-4">Receba Nosso Conteúdo</h3>
                     <input type="text" class="form-control mb-3" placeholder="Seu nome">
                     <input type="email" class="form-control mb-3" placeholder="Seu email">
-                    <button class="btn btn-primary w-100">Enviar</button>
+                    <button class="btn btn-primary w-100" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">Enviar</button>
                 </div>
             </div>
         `

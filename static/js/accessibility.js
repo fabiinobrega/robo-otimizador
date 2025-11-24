@@ -243,7 +243,6 @@
     function checkContrast() {
         // Verificar contraste de texto (apenas em desenvolvimento)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            console.log('Accessibility: Contrast checking enabled in development mode');
         }
     }
 
@@ -271,7 +270,6 @@
             return;
         }
 
-        console.log('NEXORA Accessibility: Initializing...');
 
         addSkipLink();
         enhanceFocusManagement();
@@ -281,7 +279,6 @@
         checkContrast();
         validateHeadingHierarchy();
 
-        console.log('NEXORA Accessibility: Ready');
     }
 
     // Auto-initialize
