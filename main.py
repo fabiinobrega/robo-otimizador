@@ -50,6 +50,15 @@ except ImportError as e:
     print(f"Warning: Campaign automation service not available: {e}")
     campaign_automation = None
 
+# Import do serviço de geração de campanhas com IA
+try:
+    from services.ai_campaign_generator import AICampaignGenerator
+    ai_campaign_generator = AICampaignGenerator()
+except ImportError as e:
+    print(f"Warning: AI Campaign Generator not available: {e}")
+    ai_campaign_generator = None
+    campaign_automation = None
+
 # Import do serviço de auditoria UX
 try:
     from services.ux_audit_service import ux_audit
@@ -1991,6 +2000,146 @@ def api_intelligence_report():
     
     result = product_intelligence.generate_intelligence_report()
     return jsonify(result)
+
+
+# ============================================================================
+# API DE GERAÇÃO DE CAMPANHAS COM IA
+# ============================================================================
+
+@app.route("/api/ai/generate-campaign", methods=["POST"])
+def api_ai_generate_campaign():
+    """
+    Gera uma campanha completa com anúncios usando IA
+    
+    Request Body:
+    {
+        "plataforma": "meta|google|tiktok|pinterest|linkedin",
+        "objetivo": "awareness|traffic|engagement|leads|sales",
+        "publico": "descrição do público-alvo",
+        "produto": "nome do produto/serviço",
+        "voz": "casual|profissional|urgente|inspirador",
+        "quantidade_anuncios": 3
+    }
+    
+    Response:
+    {
+        "success": true,
+        "campanha": {...},
+        "anuncios": [...],
+        "metricas_estimadas": {...},
+        "recomendacoes": [...]
+    }
+    """
+    if not ai_campaign_generator:
+        return jsonify({
+            "success": False,
+            "error": "AI Campaign Generator não disponível"
+        }), 503
+    
+    try:
+        data = request.get_json()
+        
+        # Validar dados obrigatórios
+        required_fields = ["plataforma", "objetivo", "publico", "produto"]
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    "success": False,
+                    "error": f"Campo obrigatório ausente: {field}"
+                }), 400
+        
+        # Gerar campanha com IA
+        result = ai_campaign_generator.generate_campaign(data)
+        
+        return jsonify(result), 200
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Erro ao gerar campanha: {str(e)}"
+        }), 500
+
+
+@app.route("/api/ai/generate-ad-variations", methods=["POST"])
+def api_ai_generate_ad_variations():
+    """
+    Gera variações de um anúncio existente
+    
+    Request Body:
+    {
+        "base_ad": {...},
+        "quantidade": 3
+    }
+    """
+    if not ai_campaign_generator:
+        return jsonify({
+            "success": False,
+            "error": "AI Campaign Generator não disponível"
+        }), 503
+    
+    try:
+        data = request.get_json()
+        base_ad = data.get("base_ad")
+        quantidade = data.get("quantidade", 3)
+        
+        if not base_ad:
+            return jsonify({
+                "success": False,
+                "error": "base_ad é obrigatório"
+            }), 400
+        
+        variacoes = ai_campaign_generator.generate_ad_variations(base_ad, quantidade)
+        
+        return jsonify({
+            "success": True,
+            "variacoes": variacoes
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Erro ao gerar variações: {str(e)}"
+        }), 500
+
+
+# ============================================================================
+# ROTAS DE PÁGINAS ADICIONAIS
+# ============================================================================
+
+@app.route("/campaign-detail")
+def campaign_detail():
+    """Página de detalhes da campanha"""
+    return render_template("campaign_detail.html")
+
+
+@app.route("/create-perfect-ad-v2")
+def create_perfect_ad_v2():
+    """Página de criação de anúncio perfeito v2"""
+    return render_template("create_perfect_ad_v2.html")
+
+
+@app.route("/manus-connection")
+def manus_connection():
+    """Página de conexão com Manus"""
+    return render_template("manus_connection.html")
+
+
+@app.route("/not-found")
+def not_found_page():
+    """Página 404"""
+    return render_template("not_found.html"), 404
+
+
+@app.route("/report-view")
+def report_view():
+    """Página de visualização de relatório"""
+    return render_template("report_view.html")
+
+
+@app.route("/reports-dashboard")
+def reports_dashboard():
+    """Dashboard de relatórios"""
+    return render_template("reports_dashboard.html")
 
 
 if __name__ == "__main__":
