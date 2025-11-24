@@ -1,0 +1,387 @@
+openapi: 3.0.3
+info:
+  title: NEXORA PRIME API
+  description: |
+    API completa do NEXORA PRIME v11.7 - Sistema de Automação de Marketing com IA
+    
+    ## Funcionalidades
+    - Criação e gerenciamento de campanhas
+    - Geração de anúncios com IA
+    - Publicação em Meta Ads e Google Ads
+    - Análise de concorrentes
+    - Automação de campanhas
+    - Inteligência comercial (SDR + Closer)
+    - Inteligência de produtos
+    - Analytics avançado
+    - Monitoramento e alertas
+    
+    ## Autenticação
+    Atualmente o sistema não requer autenticação (acesso direto).
+    
+  version: 11.7.0
+  contact:
+    name: Suporte NEXORA
+    url: https://robo-otimizador1.onrender.com
+    email: suporte@nexora.com
+
+servers:
+  - url: https://robo-otimizador1.onrender.com
+    description: Servidor de Produção
+  - url: http://localhost:5000
+    description: Servidor Local
+
+tags:
+  - name: Campanhas
+    description: Operações de CRUD de campanhas
+  - name: IA
+    description: Geração de conteúdo com IA
+  - name: Publicação
+    description: Publicação em plataformas de anúncios
+  - name: Análise
+    description: Análise de dados e concorrentes
+  - name: Automação
+    description: Automação de campanhas
+  - name: Monitoramento
+    description: Monitoramento e métricas
+
+paths:
+  /api/campaign/create:
+    post:
+      tags:
+        - Campanhas
+      summary: Criar nova campanha
+      description: Cria uma nova campanha de marketing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignCreate'
+      responses:
+        '200':
+          description: Campanha criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  campaign_id:
+                    type: integer
+                  message:
+                    type: string
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/campaign/list:
+    get:
+      tags:
+        - Campanhas
+      summary: Listar campanhas
+      description: Retorna lista de todas as campanhas
+      responses:
+        '200':
+          description: Lista de campanhas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  campaigns:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Campaign'
+
+  /api/campaign/read/{id}:
+    get:
+      tags:
+        - Campanhas
+      summary: Ler campanha
+      description: Retorna detalhes de uma campanha específica
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalhes da campanha
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  campaign:
+                    $ref: '#/components/schemas/Campaign'
+        '404':
+          description: Campanha não encontrada
+
+  /api/campaign/update/{id}:
+    put:
+      tags:
+        - Campanhas
+      summary: Atualizar campanha
+      description: Atualiza dados de uma campanha
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignUpdate'
+      responses:
+        '200':
+          description: Campanha atualizada
+        '404':
+          description: Campanha não encontrada
+
+  /api/campaign/delete/{id}:
+    delete:
+      tags:
+        - Campanhas
+      summary: Deletar campanha
+      description: Remove uma campanha do sistema
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Campanha deletada
+        '404':
+          description: Campanha não encontrada
+
+  /api/ai/generate-campaign:
+    post:
+      tags:
+        - IA
+      summary: Gerar campanha com IA
+      description: Gera uma campanha completa usando IA (Nexora + Manus)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plataforma:
+                  type: string
+                  enum: [Meta, Google, TikTok, Pinterest, LinkedIn]
+                objetivo:
+                  type: string
+                  enum: [awareness, traffic, engagement, leads, sales]
+                publico:
+                  type: string
+                produto:
+                  type: string
+                voz:
+                  type: string
+                  enum: [profissional, casual, urgente, inspirador]
+                quantidade_anuncios:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+      responses:
+        '200':
+          description: Campanha gerada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  anuncios:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Anuncio'
+
+  /api/campaign/publish:
+    post:
+      tags:
+        - Publicação
+      summary: Publicar campanha
+      description: Publica campanha em Meta Ads e/ou Google Ads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaign_id:
+                  type: integer
+                platform:
+                  type: string
+                  enum: [Meta, Google, Both]
+      responses:
+        '200':
+          description: Campanha publicada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      meta:
+                        $ref: '#/components/schemas/PublishResult'
+                      google:
+                        $ref: '#/components/schemas/PublishResult'
+
+  /api/monitoring/dashboard:
+    get:
+      tags:
+        - Monitoramento
+      summary: Dashboard de monitoramento
+      description: Retorna métricas de performance e alertas
+      responses:
+        '200':
+          description: Dashboard de monitoramento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDashboard'
+
+components:
+  schemas:
+    CampaignCreate:
+      type: object
+      required:
+        - campaignName
+        - platform
+        - budgetAmount
+        - scheduleStart
+        - campaignObjective
+      properties:
+        campaignName:
+          type: string
+          example: "Campanha Black Friday 2024"
+        platform:
+          type: string
+          enum: [Meta, Google, TikTok, Both]
+        budgetAmount:
+          type: number
+          format: float
+          example: 1000.00
+        scheduleStart:
+          type: string
+          format: date
+          example: "2024-12-01"
+        scheduleEnd:
+          type: string
+          format: date
+          example: "2024-12-31"
+        campaignObjective:
+          type: string
+          enum: [awareness, traffic, engagement, leads, conversions]
+        productUrl:
+          type: string
+          format: uri
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        platform:
+          type: string
+        budget:
+          type: number
+        status:
+          type: string
+          enum: [Draft, Active, Paused, Completed]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CampaignUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        budget:
+          type: number
+        status:
+          type: string
+
+    Anuncio:
+      type: object
+      properties:
+        titulo:
+          type: string
+        descricao:
+          type: string
+        texto_principal:
+          type: string
+        imagem_prompt:
+          type: string
+        imagem_url:
+          type: string
+        cta:
+          type: string
+        metricas_estimadas:
+          type: object
+
+    PublishResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        campaign_id:
+          type: string
+        message:
+          type: string
+
+    MonitoringDashboard:
+      type: object
+      properties:
+        performance:
+          type: object
+        slow_endpoints:
+          type: array
+          items:
+            type: object
+        active_alerts:
+          type: array
+          items:
+            type: object
+        event_stats:
+          type: array
+          items:
+            type: object
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Dados inválidos"
