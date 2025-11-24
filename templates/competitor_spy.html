@@ -1,20 +1,536 @@
 {% extends "index.html" %}
 
-{% block title %}Espionagem - Manus Marketing{% endblock %}
+{% block title %}Competitor Spy - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .spy-search-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 40px;
+        margin-bottom: 30px;
+    }
+
+    .spy-search-input {
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 12px;
+        padding: 18px 24px;
+        font-size: 16px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .spy-search-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+    }
+
+    .competitor-card {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .competitor-card:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: var(--nexora-shadow-md);
+    }
+
+    .competitor-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--nexora-border);
+    }
+
+    .competitor-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+    }
+
+    .competitor-info h4 {
+        margin: 0 0 5px 0;
+    }
+
+    .competitor-url {
+        color: var(--nexora-text-secondary);
+        font-size: 14px;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .metric-box {
+        text-align: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+
+    .metric-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--nexora-primary);
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .metric-label {
+        font-size: 12px;
+        color: var(--nexora-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .ad-preview-card {
+        border: 1px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .ad-preview-card:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: var(--nexora-shadow-sm);
+    }
+
+    .ad-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .ad-text {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .ad-stats {
+        display: flex;
+        gap: 15px;
+        font-size: 12px;
+        color: var(--nexora-text-secondary);
+    }
+
+    .platform-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    .platform-badge.facebook {
+        background: rgba(24, 119, 242, 0.1);
+        color: #1877f2;
+    }
+
+    .platform-badge.instagram {
+        background: rgba(225, 48, 108, 0.1);
+        color: #e1306c;
+    }
+
+    .platform-badge.google {
+        background: rgba(66, 133, 244, 0.1);
+        color: #4285f4;
+    }
+
+    .insight-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+
+    .insight-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .keyword-tag {
+        display: inline-block;
+        background: var(--nexora-primary);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    .strategy-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .strategy-title {
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .timeline-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--nexora-border);
+    }
+
+    .timeline-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .timeline-date {
+        min-width: 80px;
+        font-weight: 600;
+        color: var(--nexora-primary);
+    }
+
+    .timeline-content {
+        flex: 1;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-user-secret"></i> Espionagem</h1>
-    </div>
-    
-    
-<div class="card">
-    <div class="card-body">
-        <input type="url" class="form-control mb-3" placeholder="URL do concorrente">
-        <button class="btn btn-primary">Espionar</button>
-    </div>
-</div>
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Competitor Spy</li>
+        </ol>
+    </nav>
 
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
+            <h1 class="nexora-page-title">
+                <i class="fas fa-user-secret"></i>
+                Competitor Spy
+            </h1>
+            <p class="nexora-page-subtitle">Analise estratégias e anúncios dos seus concorrentes</p>
+        </div>
+    </div>
+
+    <!-- Search Card -->
+    <div class="spy-search-card">
+        <h3 style="color: white; margin-bottom: 10px;">🔍 Espionar Concorrente</h3>
+        <p style="opacity: 0.9; margin-bottom: 20px;">Digite a URL ou nome da empresa para analisar</p>
+        <div class="d-flex gap-2">
+            <input type="text" class="spy-search-input" placeholder="Ex: www.concorrente.com ou Nome da Empresa" id="spyInput">
+            <button class="nexora-btn" style="background: white; color: var(--nexora-primary); min-width: 150px;" onclick="spyCompetitor()">
+                <i class="fas fa-search"></i> Espionar
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Competitor Analysis -->
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Análise de Concorrentes
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <!-- Competitor 1 -->
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo">🏢</div>
+                            <div class="competitor-info">
+                                <h4>Empresa Concorrente A</h4>
+                                <div class="competitor-url">www.concorrenteA.com</div>
+                                <div class="mt-2">
+                                    <span class="platform-badge facebook"><i class="fab fa-facebook"></i> Facebook</span>
+                                    <span class="platform-badge instagram"><i class="fab fa-instagram"></i> Instagram</span>
+                                    <span class="platform-badge google"><i class="fab fa-google"></i> Google</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <span class="metric-value">847K</span>
+                                <span class="metric-label">Alcance Estimado</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-value">234</span>
+                                <span class="metric-label">Anúncios Ativos</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-value">R$ 45K</span>
+                                <span class="metric-label">Gasto Estimado</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-value">4.2%</span>
+                                <span class="metric-label">CTR Médio</span>
+                            </div>
+                        </div>
+
+                        <div class="strategy-section">
+                            <div class="strategy-title">
+                                <i class="fas fa-bullseye"></i>
+                                Estratégia Principal
+                            </div>
+                            <p class="mb-3">Foco em remarketing com ofertas agressivas e urgência. Uso intensivo de vídeos curtos e depoimentos de clientes.</p>
+                            <div>
+                                <strong>Palavras-chave principais:</strong><br>
+                                <span class="keyword-tag">desconto</span>
+                                <span class="keyword-tag">frete grátis</span>
+                                <span class="keyword-tag">promoção</span>
+                                <span class="keyword-tag">oferta limitada</span>
+                            </div>
+                        </div>
+
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-eye"></i> Ver Todos os Anúncios
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-download"></i> Exportar Relatório
+                        </button>
+                    </div>
+
+                    <!-- Competitor 2 -->
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo">🎯</div>
+                            <div class="competitor-info">
+                                <h4>Empresa Concorrente B</h4>
+                                <div class="competitor-url">www.concorrenteB.com</div>
+                                <div class="mt-2">
+                                    <span class="platform-badge facebook"><i class="fab fa-facebook"></i> Facebook</span>
+                                    <span class="platform-badge google"><i class="fab fa-google"></i> Google</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <span class="metric-value">523K</span>
+                                <span class="metric-label">Alcance Estimado</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-value">156</span>
+                                <span class="metric-label">Anúncios Ativos</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-value">R$ 28K</span>
+                                <span class="metric-label">Gasto Estimado</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-value">3.8%</span>
+                                <span class="metric-label">CTR Médio</span>
+                            </div>
+                        </div>
+
+                        <div class="strategy-section">
+                            <div class="strategy-title">
+                                <i class="fas fa-bullseye"></i>
+                                Estratégia Principal
+                            </div>
+                            <p class="mb-3">Conteúdo educacional e storytelling. Foco em construção de autoridade com webinars e cases de sucesso.</p>
+                            <div>
+                                <strong>Palavras-chave principais:</strong><br>
+                                <span class="keyword-tag">aprenda</span>
+                                <span class="keyword-tag">grátis</span>
+                                <span class="keyword-tag">webinar</span>
+                                <span class="keyword-tag">resultado</span>
+                            </div>
+                        </div>
+
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-eye"></i> Ver Todos os Anúncios
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline nexora-btn-sm">
+                            <i class="fas fa-download"></i> Exportar Relatório
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Ads -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-ad"></i>
+                        Anúncios Recentes dos Concorrentes
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="ad-preview-card">
+                                <img src="https://via.placeholder.com/400x300/667eea/ffffff?text=Anúncio+1" alt="Ad" class="ad-image">
+                                <div class="ad-text">
+                                    <strong>Concorrente A</strong><br>
+                                    🔥 Última Chance! Desconto de 50% termina hoje. Não perca essa oportunidade única!
+                                </div>
+                                <div class="ad-stats">
+                                    <span><i class="fas fa-heart"></i> 2.3K</span>
+                                    <span><i class="fas fa-comment"></i> 187</span>
+                                    <span><i class="fas fa-share"></i> 94</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="ad-preview-card">
+                                <img src="https://via.placeholder.com/400x300/764ba2/ffffff?text=Anúncio+2" alt="Ad" class="ad-image">
+                                <div class="ad-text">
+                                    <strong>Concorrente B</strong><br>
+                                    📚 Webinar Gratuito: Como aumentar suas vendas em 300% usando estratégias comprovadas
+                                </div>
+                                <div class="ad-stats">
+                                    <span><i class="fas fa-heart"></i> 1.8K</span>
+                                    <span><i class="fas fa-comment"></i> 143</span>
+                                    <span><i class="fas fa-share"></i> 67</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- AI Insights -->
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-brain"></i>
+                        Insights da IA Velyra
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="insight-card">
+                        <div class="insight-icon">💡</div>
+                        <h6 style="color: white; margin-bottom: 10px;">Oportunidade Detectada</h6>
+                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                            Seus concorrentes não estão usando vídeos em formato vertical. Esta é uma grande oportunidade para Stories e Reels.
+                        </p>
+                    </div>
+
+                    <div class="insight-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="insight-icon">🎯</div>
+                        <h6 style="color: white; margin-bottom: 10px;">Público Descoberto</h6>
+                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                            Identificamos um público de 45K pessoas que interagem com seus concorrentes mas não conhecem sua marca.
+                        </p>
+                    </div>
+
+                    <div class="insight-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <div class="insight-icon">⚡</div>
+                        <h6 style="color: white; margin-bottom: 10px;">Horário Ideal</h6>
+                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                            Seus concorrentes têm mais engajamento entre 19h-22h. Considere aumentar seu investimento neste horário.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-clock"></i>
+                        Atividade Recente
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="timeline-item">
+                        <div class="timeline-date">Hoje</div>
+                        <div class="timeline-content">
+                            <strong>Concorrente A</strong> lançou 12 novos anúncios
+                            <div class="text-muted small">Foco em Black Friday</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Ontem</div>
+                        <div class="timeline-content">
+                            <strong>Concorrente B</strong> aumentou orçamento em 35%
+                            <div class="text-muted small">Campanha de remarketing</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2 dias</div>
+                        <div class="timeline-content">
+                            <strong>Concorrente A</strong> pausou 8 anúncios
+                            <div class="text-muted small">Baixa performance</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">3 dias</div>
+                        <div class="timeline-content">
+                            <strong>Novo concorrente</strong> detectado
+                            <div class="text-muted small">Empresa Concorrente C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function spyCompetitor() {
+    const input = document.getElementById('spyInput').value;
+    if (!input) {
+        if (window.showToast) {
+            window.showToast('Digite uma URL ou nome de empresa', 'warning');
+        } else {
+            alert('Digite uma URL ou nome de empresa');
+        }
+        return;
+    }
+    
+    if (window.showToast) {
+        window.showToast('Analisando concorrente... Isso pode levar alguns segundos.', 'info');
+        setTimeout(() => {
+            window.showToast('Análise concluída! Veja os resultados abaixo.', 'success');
+        }, 2000);
+    }
+}
+
+document.getElementById('spyInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        spyCompetitor();
+    }
+});
+</script>
 {% endblock %}

@@ -1,20 +1,559 @@
 {% extends "index.html" %}
 
-{% block title %}Notificações - Manus Marketing{% endblock %}
+{% block title %}Notificações - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-card {
+        background: white;
+        border-left: 4px solid var(--nexora-border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .notification-card:hover {
+        box-shadow: var(--nexora-shadow-md);
+        transform: translateX(4px);
+    }
+
+    .notification-card.unread {
+        background: rgba(var(--nexora-primary-rgb), 0.02);
+        border-left-color: var(--nexora-primary);
+    }
+
+    .notification-card.success {
+        border-left-color: var(--nexora-success);
+    }
+
+    .notification-card.warning {
+        border-left-color: var(--nexora-warning);
+    }
+
+    .notification-card.danger {
+        border-left-color: var(--nexora-danger);
+    }
+
+    .notification-card.info {
+        border-left-color: var(--nexora-info);
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        margin-right: 15px;
+    }
+
+    .notification-icon.success {
+        background: rgba(var(--nexora-success-rgb), 0.1);
+        color: var(--nexora-success);
+    }
+
+    .notification-icon.warning {
+        background: rgba(var(--nexora-warning-rgb), 0.1);
+        color: var(--nexora-warning);
+    }
+
+    .notification-icon.danger {
+        background: rgba(var(--nexora-danger-rgb), 0.1);
+        color: var(--nexora-danger);
+    }
+
+    .notification-icon.info {
+        background: rgba(var(--nexora-info-rgb), 0.1);
+        color: var(--nexora-info);
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .notification-message {
+        color: var(--nexora-text-secondary);
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .notification-time {
+        font-size: 12px;
+        color: var(--nexora-text-secondary);
+    }
+
+    .notification-badge {
+        width: 8px;
+        height: 8px;
+        background: var(--nexora-primary);
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 8px;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--nexora-border);
+        padding-bottom: 0;
+    }
+
+    .filter-tab {
+        padding: 12px 20px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--nexora-text-secondary);
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.3s ease;
+    }
+
+    .filter-tab:hover {
+        color: var(--nexora-primary);
+    }
+
+    .filter-tab.active {
+        color: var(--nexora-primary);
+        border-bottom-color: var(--nexora-primary);
+    }
+
+    .notification-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--nexora-border);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--nexora-text-secondary);
+    }
+
+    .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-bell"></i> Notificações</h1>
-    </div>
-    
-    
-<div class="card">
-    <div class="card-body">
-        <h5>Central de Notificações</h5>
-        <p>Nenhuma notificação nova</p>
-    </div>
-</div>
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Notificações</li>
+        </ol>
+    </nav>
 
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
+            <h1 class="nexora-page-title">
+                <i class="fas fa-bell"></i>
+                Notificações
+            </h1>
+            <p class="nexora-page-subtitle">Central de alertas e atualizações do sistema</p>
+        </div>
+        <div class="nexora-page-actions">
+            <button class="nexora-btn nexora-btn-outline" onclick="markAllAsRead()">
+                <i class="fas fa-check-double"></i>
+                Marcar Todas como Lidas
+            </button>
+            <button class="nexora-btn nexora-btn-outline" onclick="clearAll()">
+                <i class="fas fa-trash"></i>
+                Limpar Todas
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all">
+                            Todas <span class="badge bg-primary ms-2">12</span>
+                        </button>
+                        <button class="filter-tab" data-filter="unread">
+                            Não Lidas <span class="badge bg-danger ms-2">5</span>
+                        </button>
+                        <button class="filter-tab" data-filter="success">
+                            Sucesso <span class="badge bg-success ms-2">4</span>
+                        </button>
+                        <button class="filter-tab" data-filter="warning">
+                            Avisos <span class="badge bg-warning ms-2">3</span>
+                        </button>
+                        <button class="filter-tab" data-filter="danger">
+                            Crítico <span class="badge bg-danger ms-2">2</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="nexora-card-body" id="notificationsList">
+                    <!-- Notification 1 -->
+                    <div class="notification-card unread danger" data-type="danger">
+                        <div class="d-flex">
+                            <div class="notification-icon danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">
+                                        Orçamento Diário Excedido
+                                        <span class="notification-badge"></span>
+                                    </div>
+                                    <span class="notification-time">há 5 minutos</span>
+                                </div>
+                                <div class="notification-message">
+                                    A campanha "Black Friday 2024" excedeu o orçamento diário em 25%. Considere pausar ou ajustar o orçamento.
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-primary">
+                                        <i class="fas fa-cog"></i> Ajustar Orçamento
+                                    </button>
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                        <i class="fas fa-eye"></i> Ver Campanha
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 2 -->
+                    <div class="notification-card unread success" data-type="success">
+                        <div class="d-flex">
+                            <div class="notification-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">
+                                        Campanha Aprovada
+                                        <span class="notification-badge"></span>
+                                    </div>
+                                    <span class="notification-time">há 15 minutos</span>
+                                </div>
+                                <div class="notification-message">
+                                    Sua campanha "Produto Digital - Lançamento" foi aprovada pelo Facebook e está ativa.
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                        <i class="fas fa-chart-line"></i> Ver Performance
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 3 -->
+                    <div class="notification-card unread warning" data-type="warning">
+                        <div class="d-flex">
+                            <div class="notification-icon warning">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">
+                                        ROI Abaixo do Esperado
+                                        <span class="notification-badge"></span>
+                                    </div>
+                                    <span class="notification-time">há 1 hora</span>
+                                </div>
+                                <div class="notification-message">
+                                    O anúncio "Promoção Verão" está com ROI de 1.2x, abaixo da meta de 2.5x. A IA sugere otimizações.
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-primary">
+                                        <i class="fas fa-magic"></i> Otimizar com IA
+                                    </button>
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                        <i class="fas fa-pause"></i> Pausar Anúncio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 4 -->
+                    <div class="notification-card success" data-type="success">
+                        <div class="d-flex">
+                            <div class="notification-icon success">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">Meta Atingida!</div>
+                                    <span class="notification-time">há 2 horas</span>
+                                </div>
+                                <div class="notification-message">
+                                    Parabéns! Você atingiu a meta de 100 conversões da campanha "Curso Online".
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 5 -->
+                    <div class="notification-card unread info" data-type="info">
+                        <div class="d-flex">
+                            <div class="notification-icon info">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">
+                                        Nova Sugestão da IA
+                                        <span class="notification-badge"></span>
+                                    </div>
+                                    <span class="notification-time">há 3 horas</span>
+                                </div>
+                                <div class="notification-message">
+                                    A Velyra Prime identificou uma oportunidade de aumentar o orçamento da campanha "E-commerce" em 30% para maximizar resultados.
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-primary">
+                                        <i class="fas fa-check"></i> Aplicar Sugestão
+                                    </button>
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                        <i class="fas fa-times"></i> Ignorar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 6 -->
+                    <div class="notification-card warning" data-type="warning">
+                        <div class="d-flex">
+                            <div class="notification-icon warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">Campanha Terminando</div>
+                                    <span class="notification-time">há 5 horas</span>
+                                </div>
+                                <div class="notification-message">
+                                    A campanha "Webinar Gratuito" termina em 24 horas. Considere estender ou criar uma nova campanha.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 7 -->
+                    <div class="notification-card success" data-type="success">
+                        <div class="d-flex">
+                            <div class="notification-icon success">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">Integração Sincronizada</div>
+                                    <span class="notification-time">há 1 dia</span>
+                                </div>
+                                <div class="notification-message">
+                                    A integração com o Facebook Ads foi sincronizada com sucesso. Todas as campanhas estão atualizadas.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 8 -->
+                    <div class="notification-card unread danger" data-type="danger">
+                        <div class="d-flex">
+                            <div class="notification-icon danger">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <div class="notification-title">
+                                        Anúncio Rejeitado
+                                        <span class="notification-badge"></span>
+                                    </div>
+                                    <span class="notification-time">há 1 dia</span>
+                                </div>
+                                <div class="notification-message">
+                                    O anúncio "Oferta Especial" foi rejeitado pelo Google Ads por violar as políticas de publicidade. Revise e reenvie.
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-primary">
+                                        <i class="fas fa-edit"></i> Editar Anúncio
+                                    </button>
+                                    <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                        <i class="fas fa-info-circle"></i> Ver Motivo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Notification Settings -->
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Notificar por Email</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                            <label class="form-check-label" for="emailNotif">Ativar notificações por email</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notificar no Navegador</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="browserNotif" checked>
+                            <label class="form-check-label" for="browserNotif">Ativar notificações push</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipos de Notificação</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="notifSuccess" checked>
+                            <label class="form-check-label" for="notifSuccess">Sucesso</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="notifWarning" checked>
+                            <label class="form-check-label" for="notifWarning">Avisos</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="notifDanger" checked>
+                            <label class="form-check-label" for="notifDanger">Crítico</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="notifInfo" checked>
+                            <label class="form-check-label" for="notifInfo">Informações</label>
+                        </div>
+                    </div>
+                    <button class="nexora-btn nexora-btn-primary w-100">
+                        <i class="fas fa-save"></i> Salvar Configurações
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Resumo
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total de Notificações</span>
+                        <strong>12</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Não Lidas</span>
+                        <strong class="text-danger">5</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Hoje</span>
+                        <strong>3</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Esta Semana</span>
+                        <strong>8</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            const notifications = document.querySelectorAll('.notification-card');
+            
+            notifications.forEach(notif => {
+                if (filter === 'all') {
+                    notif.style.display = 'block';
+                } else if (filter === 'unread') {
+                    notif.style.display = notif.classList.contains('unread') ? 'block' : 'none';
+                } else {
+                    notif.style.display = notif.dataset.type === filter ? 'block' : 'none';
+                }
+            });
+        });
+    });
+
+    // Mark notification as read on click
+    document.querySelectorAll('.notification-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.closest('button')) {
+                this.classList.remove('unread');
+                const badge = this.querySelector('.notification-badge');
+                if (badge) badge.remove();
+            }
+        });
+    });
+});
+
+function markAllAsRead() {
+    document.querySelectorAll('.notification-card').forEach(card => {
+        card.classList.remove('unread');
+        const badge = card.querySelector('.notification-badge');
+        if (badge) badge.remove();
+    });
+    
+    if (window.showToast) {
+        window.showToast('Todas as notificações foram marcadas como lidas', 'success');
+    }
+}
+
+function clearAll() {
+    if (confirm('Tem certeza que deseja limpar todas as notificações?')) {
+        document.getElementById('notificationsList').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="fas fa-bell-slash"></i></div>
+                <h5>Nenhuma notificação</h5>
+                <p>Você não tem notificações no momento</p>
+            </div>
+        `;
+        
+        if (window.showToast) {
+            window.showToast('Todas as notificações foram removidas', 'success');
+        }
+    }
+}
+</script>
 {% endblock %}
