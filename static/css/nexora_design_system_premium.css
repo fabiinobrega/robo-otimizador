@@ -1,0 +1,534 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ * NEXORA PRIME v11.7 - DESIGN SYSTEM PREMIUM
+ * ═══════════════════════════════════════════════════════════════════
+ * Padrão Internacional - Nível SaaS Milionário
+ * Inspirado em: Monday, HubSpot, Notion, ClickUp, Webflow
+ * Data: 24/11/2024
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. PALETA DE CORES PREMIUM
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ─────────────────────────────────────────────────────────────
+       CORES PRIMÁRIAS - Azul Metálico Inteligente
+       ───────────────────────────────────────────────────────────── */
+    --nexora-primary-50: #eff6ff;
+    --nexora-primary-100: #dbeafe;
+    --nexora-primary-200: #bfdbfe;
+    --nexora-primary-300: #93c5fd;
+    --nexora-primary-400: #60a5fa;
+    --nexora-primary-500: #3b82f6;   /* Base */
+    --nexora-primary-600: #2563eb;   /* Hover */
+    --nexora-primary-700: #1d4ed8;   /* Active */
+    --nexora-primary-800: #1e40af;
+    --nexora-primary-900: #1e3a8a;
+    
+    /* Gradientes Primários */
+    --nexora-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --nexora-gradient-primary-soft: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    --nexora-gradient-primary-vibrant: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    
+    /* ─────────────────────────────────────────────────────────────
+       CORES SECUNDÁRIAS - Roxo Futurista
+       ───────────────────────────────────────────────────────────── */
+    --nexora-secondary-50: #faf5ff;
+    --nexora-secondary-100: #f3e8ff;
+    --nexora-secondary-200: #e9d5ff;
+    --nexora-secondary-300: #d8b4fe;
+    --nexora-secondary-400: #c084fc;
+    --nexora-secondary-500: #a855f7;   /* Base */
+    --nexora-secondary-600: #9333ea;   /* Hover */
+    --nexora-secondary-700: #7e22ce;   /* Active */
+    --nexora-secondary-800: #6b21a8;
+    --nexora-secondary-900: #581c87;
+    
+    /* Gradientes Secundários */
+    --nexora-gradient-secondary: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    --nexora-gradient-secondary-soft: linear-gradient(135deg, #a855f715 0%, #6366f115 100%);
+    
+    /* ─────────────────────────────────────────────────────────────
+       CORES MONOCROMÁTICAS - Cinza Titanium
+       ───────────────────────────────────────────────────────────── */
+    --nexora-gray-50: #fafafa;
+    --nexora-gray-100: #f5f5f5;
+    --nexora-gray-200: #e5e5e5;
+    --nexora-gray-300: #d4d4d4;
+    --nexora-gray-400: #a3a3a3;
+    --nexora-gray-500: #737373;
+    --nexora-gray-600: #525252;
+    --nexora-gray-700: #404040;
+    --nexora-gray-800: #262626;
+    --nexora-gray-900: #171717;
+    
+    /* ─────────────────────────────────────────────────────────────
+       ACIDENTES DE ENERGIA - Ciano e Verde Neon Suave
+       ───────────────────────────────────────────────────────────── */
+    --nexora-cyan-50: #ecfeff;
+    --nexora-cyan-100: #cffafe;
+    --nexora-cyan-200: #a5f3fc;
+    --nexora-cyan-300: #67e8f9;
+    --nexora-cyan-400: #22d3ee;   /* Ciano Neon */
+    --nexora-cyan-500: #06b6d4;
+    --nexora-cyan-600: #0891b2;
+    --nexora-cyan-700: #0e7490;
+    
+    --nexora-green-50: #f0fdf4;
+    --nexora-green-100: #dcfce7;
+    --nexora-green-200: #bbf7d0;
+    --nexora-green-300: #86efac;
+    --nexora-green-400: #4ade80;   /* Verde Neon Suave */
+    --nexora-green-500: #22c55e;
+    --nexora-green-600: #16a34a;
+    --nexora-green-700: #15803d;
+    
+    /* Gradientes de Energia */
+    --nexora-gradient-energy: linear-gradient(135deg, #22d3ee 0%, #4ade80 100%);
+    --nexora-gradient-energy-soft: linear-gradient(135deg, #22d3ee15 0%, #4ade8015 100%);
+    
+    /* ─────────────────────────────────────────────────────────────
+       CORES SEMÂNTICAS
+       ───────────────────────────────────────────────────────────── */
+    --nexora-success: #22c55e;
+    --nexora-success-light: #86efac;
+    --nexora-success-dark: #15803d;
+    --nexora-success-bg: #f0fdf4;
+    
+    --nexora-warning: #f59e0b;
+    --nexora-warning-light: #fcd34d;
+    --nexora-warning-dark: #d97706;
+    --nexora-warning-bg: #fffbeb;
+    
+    --nexora-danger: #ef4444;
+    --nexora-danger-light: #fca5a5;
+    --nexora-danger-dark: #dc2626;
+    --nexora-danger-bg: #fef2f2;
+    
+    --nexora-info: #06b6d4;
+    --nexora-info-light: #67e8f9;
+    --nexora-info-dark: #0891b2;
+    --nexora-info-bg: #ecfeff;
+    
+    /* ─────────────────────────────────────────────────────────────
+       CORES NEUTRAS
+       ───────────────────────────────────────────────────────────── */
+    --nexora-white: #ffffff;
+    --nexora-black: #000000;
+    --nexora-background: #fafafa;
+    --nexora-surface: #ffffff;
+    --nexora-border: #e5e5e5;
+    
+    /* ─────────────────────────────────────────────────────────────
+       MODO ESCURO (Dark Mode)
+       ───────────────────────────────────────────────────────────── */
+    --nexora-dark-bg: #0a0a0a;
+    --nexora-dark-surface: #171717;
+    --nexora-dark-surface-elevated: #262626;
+    --nexora-dark-border: #404040;
+    --nexora-dark-text: #fafafa;
+    --nexora-dark-text-secondary: #a3a3a3;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. TIPOGRAFIA PREMIUM
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ─────────────────────────────────────────────────────────────
+       FAMÍLIAS DE FONTES
+       ───────────────────────────────────────────────────────────── */
+    --nexora-font-display: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    --nexora-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --nexora-font-mono: 'Fira Code', 'SF Mono', 'Courier New', monospace;
+    
+    /* ─────────────────────────────────────────────────────────────
+       TAMANHOS DE FONTE (Scale Perfeita)
+       ───────────────────────────────────────────────────────────── */
+    --nexora-text-xs: 0.75rem;      /* 12px */
+    --nexora-text-sm: 0.875rem;     /* 14px */
+    --nexora-text-base: 1rem;       /* 16px */
+    --nexora-text-lg: 1.125rem;     /* 18px */
+    --nexora-text-xl: 1.25rem;      /* 20px */
+    --nexora-text-2xl: 1.5rem;      /* 24px */
+    --nexora-text-3xl: 1.875rem;    /* 30px */
+    --nexora-text-4xl: 2.25rem;     /* 36px */
+    --nexora-text-5xl: 3rem;        /* 48px */
+    --nexora-text-6xl: 3.75rem;     /* 60px */
+    --nexora-text-7xl: 4.5rem;      /* 72px */
+    
+    /* ─────────────────────────────────────────────────────────────
+       PESOS DE FONTE
+       ───────────────────────────────────────────────────────────── */
+    --nexora-font-thin: 100;
+    --nexora-font-extralight: 200;
+    --nexora-font-light: 300;
+    --nexora-font-normal: 400;
+    --nexora-font-medium: 500;
+    --nexora-font-semibold: 600;
+    --nexora-font-bold: 700;
+    --nexora-font-extrabold: 800;
+    --nexora-font-black: 900;
+    
+    /* ─────────────────────────────────────────────────────────────
+       LINE HEIGHT
+       ───────────────────────────────────────────────────────────── */
+    --nexora-leading-none: 1;
+    --nexora-leading-tight: 1.25;
+    --nexora-leading-snug: 1.375;
+    --nexora-leading-normal: 1.5;
+    --nexora-leading-relaxed: 1.625;
+    --nexora-leading-loose: 2;
+    
+    /* ─────────────────────────────────────────────────────────────
+       LETTER SPACING
+       ───────────────────────────────────────────────────────────── */
+    --nexora-tracking-tighter: -0.05em;
+    --nexora-tracking-tight: -0.025em;
+    --nexora-tracking-normal: 0;
+    --nexora-tracking-wide: 0.025em;
+    --nexora-tracking-wider: 0.05em;
+    --nexora-tracking-widest: 0.1em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. ESPAÇAMENTOS (Spacing Scale)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --nexora-spacing-0: 0;
+    --nexora-spacing-px: 1px;
+    --nexora-spacing-0-5: 0.125rem;   /* 2px */
+    --nexora-spacing-1: 0.25rem;      /* 4px */
+    --nexora-spacing-1-5: 0.375rem;   /* 6px */
+    --nexora-spacing-2: 0.5rem;       /* 8px */
+    --nexora-spacing-2-5: 0.625rem;   /* 10px */
+    --nexora-spacing-3: 0.75rem;      /* 12px */
+    --nexora-spacing-3-5: 0.875rem;   /* 14px */
+    --nexora-spacing-4: 1rem;         /* 16px */
+    --nexora-spacing-5: 1.25rem;      /* 20px */
+    --nexora-spacing-6: 1.5rem;       /* 24px */
+    --nexora-spacing-7: 1.75rem;      /* 28px */
+    --nexora-spacing-8: 2rem;         /* 32px */
+    --nexora-spacing-9: 2.25rem;      /* 36px */
+    --nexora-spacing-10: 2.5rem;      /* 40px */
+    --nexora-spacing-11: 2.75rem;     /* 44px */
+    --nexora-spacing-12: 3rem;        /* 48px */
+    --nexora-spacing-14: 3.5rem;      /* 56px */
+    --nexora-spacing-16: 4rem;        /* 64px */
+    --nexora-spacing-20: 5rem;        /* 80px */
+    --nexora-spacing-24: 6rem;        /* 96px */
+    --nexora-spacing-28: 7rem;        /* 112px */
+    --nexora-spacing-32: 8rem;        /* 128px */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. BORDAS E ARREDONDAMENTOS
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --nexora-radius-none: 0;
+    --nexora-radius-sm: 0.25rem;      /* 4px */
+    --nexora-radius-base: 0.375rem;   /* 6px */
+    --nexora-radius-md: 0.5rem;       /* 8px */
+    --nexora-radius-lg: 0.75rem;      /* 12px */
+    --nexora-radius-xl: 1rem;         /* 16px */
+    --nexora-radius-2xl: 1.25rem;     /* 20px */
+    --nexora-radius-3xl: 1.5rem;      /* 24px */
+    --nexora-radius-4xl: 2rem;        /* 32px */
+    --nexora-radius-full: 9999px;
+    
+    /* Bordas */
+    --nexora-border-width: 1px;
+    --nexora-border-width-2: 2px;
+    --nexora-border-width-4: 4px;
+    --nexora-border-width-8: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. SOMBRAS (Shadows) - Realistas e Controladas
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* Sombras Sutis */
+    --nexora-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --nexora-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --nexora-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --nexora-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --nexora-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --nexora-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    
+    /* Sombras Coloridas */
+    --nexora-shadow-primary: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+    --nexora-shadow-secondary: 0 10px 25px -5px rgba(168, 85, 247, 0.3);
+    --nexora-shadow-success: 0 10px 25px -5px rgba(34, 197, 94, 0.3);
+    --nexora-shadow-danger: 0 10px 25px -5px rgba(239, 68, 68, 0.3);
+    
+    /* Sombras Internas */
+    --nexora-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    --nexora-shadow-inner-lg: inset 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+    
+    /* Sem Sombra */
+    --nexora-shadow-none: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. TRANSIÇÕES E ANIMAÇÕES
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* Durações */
+    --nexora-duration-75: 75ms;
+    --nexora-duration-100: 100ms;
+    --nexora-duration-150: 150ms;
+    --nexora-duration-200: 200ms;
+    --nexora-duration-300: 300ms;
+    --nexora-duration-500: 500ms;
+    --nexora-duration-700: 700ms;
+    --nexora-duration-1000: 1000ms;
+    
+    /* Timing Functions (Easing) */
+    --nexora-ease-linear: linear;
+    --nexora-ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --nexora-ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --nexora-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --nexora-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --nexora-ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+    
+    /* Transições Padrão */
+    --nexora-transition-fast: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --nexora-transition-base: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --nexora-transition-slow: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --nexora-transition-smooth: all 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. Z-INDEX (Camadas)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --nexora-z-0: 0;
+    --nexora-z-10: 10;
+    --nexora-z-20: 20;
+    --nexora-z-30: 30;
+    --nexora-z-40: 40;
+    --nexora-z-50: 50;
+    --nexora-z-dropdown: 1000;
+    --nexora-z-sticky: 1020;
+    --nexora-z-fixed: 1030;
+    --nexora-z-modal-backdrop: 1040;
+    --nexora-z-modal: 1050;
+    --nexora-z-popover: 1060;
+    --nexora-z-tooltip: 1070;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   8. BREAKPOINTS (Responsividade)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --nexora-breakpoint-sm: 640px;
+    --nexora-breakpoint-md: 768px;
+    --nexora-breakpoint-lg: 1024px;
+    --nexora-breakpoint-xl: 1280px;
+    --nexora-breakpoint-2xl: 1536px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   9. GRID SYSTEM (12 Colunas)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --nexora-container-sm: 640px;
+    --nexora-container-md: 768px;
+    --nexora-container-lg: 1024px;
+    --nexora-container-xl: 1280px;
+    --nexora-container-2xl: 1536px;
+    
+    --nexora-grid-columns: 12;
+    --nexora-grid-gap: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. RESET E BASE STYLES
+   ═══════════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--nexora-font-body);
+    font-size: var(--nexora-text-base);
+    font-weight: var(--nexora-font-normal);
+    line-height: var(--nexora-leading-normal);
+    color: var(--nexora-gray-900);
+    background-color: var(--nexora-background);
+    overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. TIPOGRAFIA BASE
+   ═══════════════════════════════════════════════════════════════════ */
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--nexora-font-display);
+    font-weight: var(--nexora-font-bold);
+    line-height: var(--nexora-leading-tight);
+    letter-spacing: var(--nexora-tracking-tight);
+    color: var(--nexora-gray-900);
+    margin-bottom: var(--nexora-spacing-4);
+}
+
+h1 {
+    font-size: var(--nexora-text-5xl);
+    font-weight: var(--nexora-font-extrabold);
+    line-height: var(--nexora-leading-none);
+    letter-spacing: var(--nexora-tracking-tighter);
+}
+
+h2 {
+    font-size: var(--nexora-text-4xl);
+    font-weight: var(--nexora-font-bold);
+}
+
+h3 {
+    font-size: var(--nexora-text-3xl);
+    font-weight: var(--nexora-font-bold);
+}
+
+h4 {
+    font-size: var(--nexora-text-2xl);
+    font-weight: var(--nexora-font-semibold);
+}
+
+h5 {
+    font-size: var(--nexora-text-xl);
+    font-weight: var(--nexora-font-semibold);
+}
+
+h6 {
+    font-size: var(--nexora-text-lg);
+    font-weight: var(--nexora-font-semibold);
+}
+
+p {
+    margin-bottom: var(--nexora-spacing-4);
+    line-height: var(--nexora-leading-relaxed);
+    color: var(--nexora-gray-700);
+}
+
+a {
+    color: var(--nexora-primary-600);
+    text-decoration: none;
+    transition: var(--nexora-transition-fast);
+    cursor: pointer;
+}
+
+a:hover {
+    color: var(--nexora-primary-700);
+}
+
+a:focus-visible {
+    outline: 2px solid var(--nexora-primary-500);
+    outline-offset: 2px;
+    border-radius: var(--nexora-radius-sm);
+}
+
+strong, b {
+    font-weight: var(--nexora-font-semibold);
+}
+
+em, i {
+    font-style: italic;
+}
+
+small {
+    font-size: var(--nexora-text-sm);
+}
+
+code {
+    font-family: var(--nexora-font-mono);
+    font-size: 0.875em;
+    padding: 0.125rem 0.375rem;
+    background-color: var(--nexora-gray-100);
+    border-radius: var(--nexora-radius-sm);
+    color: var(--nexora-gray-800);
+}
+
+pre {
+    font-family: var(--nexora-font-mono);
+    font-size: var(--nexora-text-sm);
+    padding: var(--nexora-spacing-4);
+    background-color: var(--nexora-gray-900);
+    color: var(--nexora-gray-100);
+    border-radius: var(--nexora-radius-lg);
+    overflow-x: auto;
+    margin-bottom: var(--nexora-spacing-4);
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   12. UTILITÁRIOS DE TEXTO
+   ═══════════════════════════════════════════════════════════════════ */
+
+.text-xs { font-size: var(--nexora-text-xs); }
+.text-sm { font-size: var(--nexora-text-sm); }
+.text-base { font-size: var(--nexora-text-base); }
+.text-lg { font-size: var(--nexora-text-lg); }
+.text-xl { font-size: var(--nexora-text-xl); }
+.text-2xl { font-size: var(--nexora-text-2xl); }
+.text-3xl { font-size: var(--nexora-text-3xl); }
+.text-4xl { font-size: var(--nexora-text-4xl); }
+.text-5xl { font-size: var(--nexora-text-5xl); }
+.text-6xl { font-size: var(--nexora-text-6xl); }
+.text-7xl { font-size: var(--nexora-text-7xl); }
+
+.font-thin { font-weight: var(--nexora-font-thin); }
+.font-light { font-weight: var(--nexora-font-light); }
+.font-normal { font-weight: var(--nexora-font-normal); }
+.font-medium { font-weight: var(--nexora-font-medium); }
+.font-semibold { font-weight: var(--nexora-font-semibold); }
+.font-bold { font-weight: var(--nexora-font-bold); }
+.font-extrabold { font-weight: var(--nexora-font-extrabold); }
+.font-black { font-weight: var(--nexora-font-black); }
+
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+
+.italic { font-style: italic; }
+.not-italic { font-style: normal; }
+
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+.no-underline { text-decoration: none; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   FIM DO DESIGN SYSTEM PREMIUM - PARTE 1
+   Continua em nexora_components_premium.css
+   ═══════════════════════════════════════════════════════════════════ */

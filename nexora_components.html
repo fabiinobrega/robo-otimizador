@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXORA Design System Premium - Componentes</title>
+    
+    <!-- Design System Premium -->
+    <link rel="stylesheet" href="/static/css/nexora_design_system_premium.css">
+    <link rel="stylesheet" href="/static/css/nexora_components_premium.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        .component-section {
+            margin-bottom: var(--nexora-spacing-16);
+        }
+        
+        .component-title {
+            font-size: var(--nexora-text-3xl);
+            font-weight: var(--nexora-font-bold);
+            margin-bottom: var(--nexora-spacing-8);
+            padding-bottom: var(--nexora-spacing-4);
+            border-bottom: 3px solid var(--nexora-primary-500);
+        }
+        
+        .component-demo {
+            background-color: var(--nexora-white);
+            padding: var(--nexora-spacing-8);
+            border-radius: var(--nexora-radius-2xl);
+            box-shadow: var(--nexora-shadow-md);
+            margin-bottom: var(--nexora-spacing-6);
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--nexora-spacing-6);
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--nexora-spacing-12) var(--nexora-spacing-6);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: var(--nexora-spacing-20) 0;
+            background: var(--nexora-gradient-primary-soft);
+            border-radius: var(--nexora-radius-3xl);
+            margin-bottom: var(--nexora-spacing-16);
+        }
+        
+        .hero h1 {
+            font-size: var(--nexora-text-6xl);
+            background: var(--nexora-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--nexora-spacing-4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>NEXORA Design System Premium</h1>
+            <p class="text-xl" style="color: var(--nexora-gray-700);">
+                Componentes de Nível Internacional para SaaS Milionário
+            </p>
+            <p class="text-base" style="color: var(--nexora-gray-600); margin-top: var(--nexora-spacing-2);">
+                Inspirado em Monday, HubSpot, Notion, ClickUp e Webflow
+            </p>
+        </div>
+
+        <!-- 1. BOTÕES -->
+        <section class="component-section">
+            <h2 class="component-title">1. Botões Premium</h2>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Variantes</h3>
+                <div style="display: flex; gap: var(--nexora-spacing-4); flex-wrap: wrap;">
+                    <button class="nexora-btn nexora-btn-primary">Primário</button>
+                    <button class="nexora-btn nexora-btn-secondary">Secundário</button>
+                    <button class="nexora-btn nexora-btn-outlined">Outlined</button>
+                    <button class="nexora-btn nexora-btn-ghost">Ghost</button>
+                    <button class="nexora-btn nexora-btn-success">Success</button>
+                    <button class="nexora-btn nexora-btn-danger">Danger</button>
+                </div>
+            </div>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Tamanhos</h3>
+                <div style="display: flex; gap: var(--nexora-spacing-4); align-items: center; flex-wrap: wrap;">
+                    <button class="nexora-btn nexora-btn-primary nexora-btn-sm">Pequeno</button>
+                    <button class="nexora-btn nexora-btn-primary">Normal</button>
+                    <button class="nexora-btn nexora-btn-primary nexora-btn-lg">Grande</button>
+                    <button class="nexora-btn nexora-btn-primary nexora-btn-xl">Extra Grande</button>
+                </div>
+            </div>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Estados</h3>
+                <div style="display: flex; gap: var(--nexora-spacing-4); flex-wrap: wrap;">
+                    <button class="nexora-btn nexora-btn-primary">Normal</button>
+                    <button class="nexora-btn nexora-btn-primary nexora-btn-loading">Loading</button>
+                    <button class="nexora-btn nexora-btn-primary" disabled>Desabilitado</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. CARDS -->
+        <section class="component-section">
+            <h2 class="component-title">2. Cards Premium</h2>
+            
+            <div class="component-grid">
+                <div class="nexora-card">
+                    <div class="nexora-card-header">
+                        <div>
+                            <h3 class="nexora-card-title">Card Padrão</h3>
+                            <p class="nexora-card-subtitle">Subtítulo do card</p>
+                        </div>
+                    </div>
+                    <div class="nexora-card-body">
+                        Este é um card premium com hover effect suave e sombras realistas.
+                    </div>
+                    <div class="nexora-card-footer">
+                        <button class="nexora-btn nexora-btn-ghost nexora-btn-sm">Cancelar</button>
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-sm">Confirmar</button>
+                    </div>
+                </div>
+                
+                <div class="nexora-card nexora-card-elevated">
+                    <div class="nexora-card-header">
+                        <h3 class="nexora-card-title">Card Elevado</h3>
+                    </div>
+                    <div class="nexora-card-body">
+                        Card com sombra mais pronunciada para destaque.
+                    </div>
+                </div>
+                
+                <div class="nexora-card nexora-card-gradient">
+                    <div class="nexora-card-header">
+                        <h3 class="nexora-card-title">Card Gradiente</h3>
+                    </div>
+                    <div class="nexora-card-body">
+                        Card com fundo gradiente suave.
+                    </div>
+                </div>
+                
+                <div class="nexora-card nexora-card-interactive">
+                    <div class="nexora-card-header">
+                        <h3 class="nexora-card-title">Card Interativo</h3>
+                    </div>
+                    <div class="nexora-card-body">
+                        Passe o mouse para ver o efeito interativo.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. FORMULÁRIOS -->
+        <section class="component-section">
+            <h2 class="component-title">3. Formulários Premium</h2>
+            
+            <div class="nexora-card" style="max-width: 600px;">
+                <div class="nexora-card-header">
+                    <h3 class="nexora-card-title">Exemplo de Formulário</h3>
+                </div>
+                <div class="nexora-card-body">
+                    <form>
+                        <div class="nexora-form-group">
+                            <label class="nexora-label nexora-label-required">Nome Completo</label>
+                            <input type="text" class="nexora-input" placeholder="Digite seu nome">
+                        </div>
+                        
+                        <div class="nexora-form-group">
+                            <label class="nexora-label">Email</label>
+                            <input type="email" class="nexora-input" placeholder="seu@email.com">
+                            <span class="nexora-helper-text">Nunca compartilharemos seu email.</span>
+                        </div>
+                        
+                        <div class="nexora-form-group">
+                            <label class="nexora-label">Categoria</label>
+                            <select class="nexora-select">
+                                <option>Selecione uma opção</option>
+                                <option>Opção 1</option>
+                                <option>Opção 2</option>
+                                <option>Opção 3</option>
+                            </select>
+                        </div>
+                        
+                        <div class="nexora-form-group">
+                            <label class="nexora-label">Mensagem</label>
+                            <textarea class="nexora-textarea" placeholder="Digite sua mensagem..."></textarea>
+                        </div>
+                        
+                        <div class="nexora-form-group">
+                            <label class="nexora-label">Input com Erro</label>
+                            <input type="text" class="nexora-input nexora-input-error" value="Valor inválido">
+                            <span class="nexora-error-text">Este campo contém erros.</span>
+                        </div>
+                        
+                        <div class="nexora-form-group">
+                            <label class="nexora-label">Input com Sucesso</label>
+                            <input type="text" class="nexora-input nexora-input-success" value="Valor válido">
+                        </div>
+                        
+                        <div style="display: flex; gap: var(--nexora-spacing-3);">
+                            <button type="button" class="nexora-btn nexora-btn-ghost">Cancelar</button>
+                            <button type="submit" class="nexora-btn nexora-btn-primary">Enviar Formulário</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. BADGES -->
+        <section class="component-section">
+            <h2 class="component-title">4. Badges e Tags</h2>
+            
+            <div class="component-demo">
+                <div style="display: flex; gap: var(--nexora-spacing-3); flex-wrap: wrap;">
+                    <span class="nexora-badge nexora-badge-primary">Primary</span>
+                    <span class="nexora-badge nexora-badge-secondary">Secondary</span>
+                    <span class="nexora-badge nexora-badge-success">Success</span>
+                    <span class="nexora-badge nexora-badge-warning">Warning</span>
+                    <span class="nexora-badge nexora-badge-danger">Danger</span>
+                    <span class="nexora-badge nexora-badge-info">Info</span>
+                    <span class="nexora-badge nexora-badge-gray">Gray</span>
+                </div>
+            </div>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Badges com Dot</h3>
+                <div style="display: flex; gap: var(--nexora-spacing-3); flex-wrap: wrap;">
+                    <span class="nexora-badge nexora-badge-success nexora-badge-dot">Ativo</span>
+                    <span class="nexora-badge nexora-badge-danger nexora-badge-dot">Inativo</span>
+                    <span class="nexora-badge nexora-badge-warning nexora-badge-dot">Pendente</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. ALERTAS -->
+        <section class="component-section">
+            <h2 class="component-title">5. Alertas</h2>
+            
+            <div class="nexora-alert nexora-alert-success">
+                <div class="nexora-alert-content">
+                    <div class="nexora-alert-title">Sucesso!</div>
+                    <div class="nexora-alert-description">Sua operação foi concluída com sucesso.</div>
+                </div>
+            </div>
+            
+            <div class="nexora-alert nexora-alert-warning">
+                <div class="nexora-alert-content">
+                    <div class="nexora-alert-title">Atenção</div>
+                    <div class="nexora-alert-description">Esta ação requer sua atenção.</div>
+                </div>
+            </div>
+            
+            <div class="nexora-alert nexora-alert-danger">
+                <div class="nexora-alert-content">
+                    <div class="nexora-alert-title">Erro</div>
+                    <div class="nexora-alert-description">Ocorreu um erro ao processar sua solicitação.</div>
+                </div>
+            </div>
+            
+            <div class="nexora-alert nexora-alert-info">
+                <div class="nexora-alert-content">
+                    <div class="nexora-alert-title">Informação</div>
+                    <div class="nexora-alert-description">Aqui está uma informação importante para você.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. TABELAS -->
+        <section class="component-section">
+            <h2 class="component-title">6. Tabelas Premium</h2>
+            
+            <div class="nexora-table-container">
+                <table class="nexora-table">
+                    <thead>
+                        <tr>
+                            <th>Campanha</th>
+                            <th>Status</th>
+                            <th>Impressões</th>
+                            <th>Cliques</th>
+                            <th>ROAS</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Black Friday 2024</td>
+                            <td><span class="nexora-badge nexora-badge-success nexora-badge-dot">Ativa</span></td>
+                            <td>125.430</td>
+                            <td>3.245</td>
+                            <td>4.2x</td>
+                            <td>
+                                <button class="nexora-btn nexora-btn-ghost nexora-btn-sm">Editar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Lançamento Produto X</td>
+                            <td><span class="nexora-badge nexora-badge-warning nexora-badge-dot">Pausada</span></td>
+                            <td>89.230</td>
+                            <td>1.890</td>
+                            <td>2.8x</td>
+                            <td>
+                                <button class="nexora-btn nexora-btn-ghost nexora-btn-sm">Editar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Remarketing Q4</td>
+                            <td><span class="nexora-badge nexora-badge-success nexora-badge-dot">Ativa</span></td>
+                            <td>234.120</td>
+                            <td>5.678</td>
+                            <td>5.1x</td>
+                            <td>
+                                <button class="nexora-btn nexora-btn-ghost nexora-btn-sm">Editar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 7. LOADING STATES -->
+        <section class="component-section">
+            <h2 class="component-title">7. Loading States</h2>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Spinners</h3>
+                <div style="display: flex; gap: var(--nexora-spacing-6); align-items: center;">
+                    <div class="nexora-spinner nexora-spinner-sm"></div>
+                    <div class="nexora-spinner"></div>
+                    <div class="nexora-spinner nexora-spinner-lg"></div>
+                </div>
+            </div>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Skeleton Loading</h3>
+                <div style="max-width: 400px;">
+                    <div class="nexora-skeleton nexora-skeleton-title"></div>
+                    <div class="nexora-skeleton nexora-skeleton-text"></div>
+                    <div class="nexora-skeleton nexora-skeleton-text"></div>
+                    <div class="nexora-skeleton nexora-skeleton-text" style="width: 70%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. BREADCRUMBS -->
+        <section class="component-section">
+            <h2 class="component-title">8. Breadcrumbs</h2>
+            
+            <div class="component-demo">
+                <nav class="nexora-breadcrumb">
+                    <div class="nexora-breadcrumb-item">
+                        <a href="#">Dashboard</a>
+                    </div>
+                    <span class="nexora-breadcrumb-separator">/</span>
+                    <div class="nexora-breadcrumb-item">
+                        <a href="#">Campanhas</a>
+                    </div>
+                    <span class="nexora-breadcrumb-separator">/</span>
+                    <div class="nexora-breadcrumb-item active">
+                        Black Friday 2024
+                    </div>
+                </nav>
+            </div>
+        </section>
+
+        <!-- 9. PALETA DE CORES -->
+        <section class="component-section">
+            <h2 class="component-title">9. Paleta de Cores Premium</h2>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Cores Primárias (Azul Metálico)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--nexora-spacing-2);">
+                    <div style="background: var(--nexora-primary-500); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">500</div>
+                    <div style="background: var(--nexora-primary-600); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">600</div>
+                    <div style="background: var(--nexora-primary-700); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">700</div>
+                </div>
+            </div>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Cores Secundárias (Roxo Futurista)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--nexora-spacing-2);">
+                    <div style="background: var(--nexora-secondary-500); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">500</div>
+                    <div style="background: var(--nexora-secondary-600); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">600</div>
+                    <div style="background: var(--nexora-secondary-700); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">700</div>
+                </div>
+            </div>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Acidentes de Energia (Ciano e Verde Neon)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--nexora-spacing-2);">
+                    <div style="background: var(--nexora-cyan-400); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">Ciano</div>
+                    <div style="background: var(--nexora-green-400); height: 80px; border-radius: var(--nexora-radius-lg); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">Verde</div>
+                </div>
+            </div>
+            
+            <div class="component-demo">
+                <h3 style="margin-bottom: var(--nexora-spacing-4);">Gradientes</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--nexora-spacing-4);">
+                    <div style="background: var(--nexora-gradient-primary); height: 100px; border-radius: var(--nexora-radius-xl); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">Primary</div>
+                    <div style="background: var(--nexora-gradient-secondary); height: 100px; border-radius: var(--nexora-radius-xl); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">Secondary</div>
+                    <div style="background: var(--nexora-gradient-energy); height: 100px; border-radius: var(--nexora-radius-xl); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">Energy</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding: var(--nexora-spacing-12) 0; color: var(--nexora-gray-600);">
+            <p>NEXORA PRIME v11.7 - Design System Premium</p>
+            <p style="font-size: var(--nexora-text-sm); margin-top: var(--nexora-spacing-2);">
+                Padrão Internacional - Nível SaaS Milionário
+            </p>
+        </div>
+    </div>
+</body>
+</html>
