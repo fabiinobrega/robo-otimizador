@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Guardião de Orçamento (Budget Guardian) - NEXORA PRIME
 Sistema de segurança financeira para proteção de gastos
@@ -15,6 +16,19 @@ class BudgetGuardian:
     Protege contra gastos indevidos e requer aprovação para custos
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self, db_path='database.db'):
         self.db_path = db_path
         

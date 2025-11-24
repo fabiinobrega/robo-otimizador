@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Inteligência Analítica (Data Science) - NEXORA PRIME
 Sistema avançado de análise preditiva e recomendações baseadas em dados
@@ -16,6 +17,19 @@ class AnalyticsIntelligence:
     Sistema completo de análise preditiva, detecção de anomalias e recomendações
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self, db_path='database.db'):
         self.db_path = db_path
         

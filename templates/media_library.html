@@ -159,7 +159,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="fas fa-cloud-upload-alt"></i> Upload de Arquivos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="handleButtonClick(this)"></button>
             </div>
             <div class="modal-body">
                 <!-- Drag & Drop Area -->
@@ -181,7 +181,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="handleButtonClick(this)">Fechar</button>
                 <button type="button" class="btn btn-primary" id="uploadBtn" onclick="uploadFiles()" disabled>
                     <i class="fas fa-upload"></i> Fazer Upload
                 </button>
@@ -196,7 +196,7 @@
         <div class="modal-content bg-dark">
             <div class="modal-header border-0">
                 <h5 class="modal-title text-white" id="lightboxTitle"></h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="handleButtonClick(this)"></button>
             </div>
             <div class="modal-body text-center p-0">
                 <img id="lightboxImage" src="" class="img-fluid" style="max-height: 80vh;">

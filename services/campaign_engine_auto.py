@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Motor de Campanhas Automáticas - NEXORA PRIME
 Criação de campanhas Meta e Google com 1 clique
@@ -16,6 +17,19 @@ class CampaignEngineAuto:
     Cria campanhas completas com 1 clique em Meta Ads e Google Ads
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self, db_path='database.db'):
         self.db_path = db_path
         

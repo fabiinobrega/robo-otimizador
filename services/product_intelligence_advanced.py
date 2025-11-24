@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Inteligência de Produto / E-commerce - NEXORA PRIME
 Sistema avançado de análise e otimização de produtos
@@ -16,6 +17,19 @@ class ProductIntelligenceAdvanced:
     Sistema completo de análise, otimização e recomendação de produtos
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self, db_path='database.db'):
         self.db_path = db_path
         

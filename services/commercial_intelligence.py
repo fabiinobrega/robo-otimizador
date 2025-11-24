@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Inteligência Comercial (SDR + Closer) - NEXORA PRIME
 Sistema completo de vendas com IA para captação, qualificação e fechamento
@@ -16,6 +17,19 @@ class CommercialIntelligence:
     Sistema completo de vendas com IA
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self, db_path='database.db'):
         self.db_path = db_path
         

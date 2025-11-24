@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Modo Agência Fantasma - NEXORA PRIME
 Sistema que opera como uma agência milionária completa em piloto automático
@@ -16,6 +17,19 @@ class AgencyGhostMode:
     Sistema completo que opera como agência milionária em piloto automático
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self):
         self.autopilot_enabled = False
         self.managed_accounts = []

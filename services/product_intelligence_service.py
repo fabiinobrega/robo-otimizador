@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Serviço de Inteligência de Produtos e Vendas
 Análise e recomendações baseadas em dados de produtos
@@ -14,6 +15,19 @@ import random
 class ProductIntelligenceService:
     """Serviço de inteligência para produtos e vendas"""
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self, db_path='database.db'):
         self.db_path = db_path
     

@@ -525,3 +525,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+
+<script>
+function handleButtonClick(button) {
+    // Handler genérico para botões
+    const action = button.getAttribute('data-action');
+    const target = button.getAttribute('data-target');
+    
+    if (action) {
+        console.log(`Ação: ${action}`, target);
+        // Implementar lógica específica aqui
+    }
+    
+    // Feedback visual
+    button.classList.add('loading');
+    setTimeout(() => {
+        button.classList.remove('loading');
+    }, 1000);
+}
+</script>

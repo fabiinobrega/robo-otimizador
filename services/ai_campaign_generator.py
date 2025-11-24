@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Serviço de Geração de Campanhas com IA
 Utiliza Nexora IA e Manus IA para gerar anúncios automaticamente
@@ -11,6 +12,19 @@ from datetime import datetime
 class AICampaignGenerator:
     """Gerador de campanhas com inteligência artificial"""
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self):
         self.platforms = {
             "meta": "Meta Ads (Facebook/Instagram)",

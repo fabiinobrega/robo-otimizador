@@ -500,7 +500,7 @@ function previewMedia() {
         toast.style.zIndex = '9999';
         toast.innerHTML = `
             <strong><i class="fas fa-check"></i> ${files.length} mídia(s) carregada(s)!</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" onclick="handleButtonClick(this)"></button>
         `;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);

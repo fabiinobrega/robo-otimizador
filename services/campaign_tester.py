@@ -1,3 +1,4 @@
+from functools import wraps
 """
 NEXORA Operator v11.7 - Campaign Tester Service
 Serviço de teste e aquecimento de campanhas com ajustes automáticos
@@ -14,6 +15,19 @@ class CampaignTester:
     Testador e aquecedor de campanhas com monitoramento inteligente
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self, db_path='database.db'):
         self.db_path = db_path
         self.warming_stages = [

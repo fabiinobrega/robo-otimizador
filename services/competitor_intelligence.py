@@ -1,3 +1,4 @@
+from functools import wraps
 """
 NEXORA Operator v11.7 - Competitor Intelligence Service
 Espionagem completa de concorrentes com IA
@@ -11,6 +12,19 @@ import random
 class CompetitorIntelligence:
     """Espiona concorrentes e extrai insights para anúncios"""
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self):
         self.mock_mode = True  # Usar mocks até ter credenciais reais
     

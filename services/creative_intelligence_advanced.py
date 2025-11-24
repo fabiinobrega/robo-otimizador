@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Inteligência Criativa Avançada - NEXORA PRIME
 Motor de IA multimodal para criação completa de anúncios profissionais
@@ -16,6 +17,19 @@ class CreativeIntelligenceAdvanced:
     Combina Nexora IA + Manus IA para criar campanhas de nível profissional
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self):
         self.platforms = {
             "meta": "Meta Ads (Facebook/Instagram)",

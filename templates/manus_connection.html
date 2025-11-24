@@ -345,7 +345,7 @@ function showAlert(type, message) {
     alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
     alertDiv.innerHTML = `
         ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" onclick="handleButtonClick(this)"></button>
     `;
     document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
     

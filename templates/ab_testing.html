@@ -603,7 +603,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="fas fa-flask"></i> Criar Novo Teste A/B</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="handleButtonClick(this)"></button>
             </div>
             <div class="modal-body">
                 <form id="createTestForm" action="/api/form/submit" method="POST" onsubmit="handleFormSubmit(event, 'createTestForm')">
@@ -661,7 +661,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal" onclick="handleButtonClick(this)">Cancelar</button>
                 <button type="button" class="nexora-btn nexora-btn-primary" onclick="showToast('Funcionalidade em desenvolvimento', 'info')">
                     <i class="fas fa-play"></i> Iniciar Teste
                 </button>

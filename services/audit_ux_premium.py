@@ -1,3 +1,4 @@
+from functools import wraps
 """
 Auditoria Total + UX Premium - NEXORA PRIME
 Sistema completo de auditoria de qualidade e experiência do usuário
@@ -16,6 +17,19 @@ class AuditUXPremium:
     Sistema completo de auditoria de qualidade, performance, acessibilidade e UX
     """
     
+
+def handle_errors(func):
+    """Decorador para tratamento automático de erros"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro em {func.__name__}: {str(e)}")
+            return None
+    return wrapper
+
+
     def __init__(self):
         # Páginas do sistema
         self.system_pages = [
