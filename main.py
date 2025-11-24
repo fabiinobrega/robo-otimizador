@@ -29,6 +29,41 @@ except ImportError as e:
     print(f"Warning: Manus API client not available: {e}")
     manus_api = None
 
+# Import do serviço MCP
+try:
+    from services.mcp_integration_service import mcp_service
+except ImportError as e:
+    print(f"Warning: MCP service not available: {e}")
+    mcp_service = None
+
+# Import do serviço de controle remoto
+try:
+    from services.remote_control_service import remote_control
+except ImportError as e:
+    print(f"Warning: Remote control service not available: {e}")
+    remote_control = None
+
+# Import do serviço de automação de campanhas
+try:
+    from services.campaign_automation_service import campaign_automation
+except ImportError as e:
+    print(f"Warning: Campaign automation service not available: {e}")
+    campaign_automation = None
+
+# Import do serviço de auditoria UX
+try:
+    from services.ux_audit_service import ux_audit
+except ImportError as e:
+    print(f"Warning: UX audit service not available: {e}")
+    ux_audit = None
+
+# Import do serviço de inteligência de produtos
+try:
+    from services.product_intelligence_service import product_intelligence
+except ImportError as e:
+    print(f"Warning: Product intelligence service not available: {e}")
+    product_intelligence = None
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "uma_chave_secreta_muito_segura")
 app.config["UPLOAD_FOLDER"] = "static/uploads"
@@ -1530,6 +1565,432 @@ def api_global_search():
     except Exception as e:
         print(f"Search error: {e}")
         return jsonify([])
+
+
+# ===== MCP INTEGRATION ENDPOINTS =====
+
+@app.route("/api/mcp/command", methods=["POST"])
+def api_mcp_command():
+    """Execute MCP command"""
+    if not mcp_service:
+        return jsonify({"success": False, "error": "MCP service not available"}), 503
+    
+    data = request.get_json()
+    command = data.get("command")
+    params = data.get("params", {})
+    
+    result = mcp_service.send_command(command, params)
+    return jsonify(result)
+
+
+@app.route("/api/mcp/webhook/register", methods=["POST"])
+def api_mcp_webhook_register():
+    """Register webhook"""
+    if not mcp_service:
+        return jsonify({"success": False, "error": "MCP service not available"}), 503
+    
+    data = request.get_json()
+    event = data.get("event")
+    url = data.get("url")
+    
+    result = mcp_service.register_webhook(event, url)
+    return jsonify(result)
+
+
+@app.route("/api/mcp/event", methods=["POST"])
+def api_mcp_event():
+    """Emit MCP event"""
+    if not mcp_service:
+        return jsonify({"success": False, "error": "MCP service not available"}), 503
+    
+    data = request.get_json()
+    event_type = data.get("event_type")
+    event_data = data.get("data", {})
+    
+    result = mcp_service.emit_event(event_type, event_data)
+    return jsonify(result)
+
+
+@app.route("/api/mcp/telemetry", methods=["POST"])
+def api_mcp_telemetry():
+    """Log telemetry"""
+    if not mcp_service:
+        return jsonify({"success": False, "error": "MCP service not available"}), 503
+    
+    data = request.get_json()
+    metric = data.get("metric")
+    value = data.get("value")
+    tags = data.get("tags", {})
+    
+    result = mcp_service.log_telemetry(metric, value, tags)
+    return jsonify(result)
+
+
+@app.route("/api/mcp/telemetry/<metric>", methods=["GET"])
+def api_mcp_get_telemetry(metric):
+    """Get telemetry data"""
+    if not mcp_service:
+        return jsonify({"success": False, "error": "MCP service not available"}), 503
+    
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    
+    result = mcp_service.get_telemetry(metric, start_date, end_date)
+    return jsonify(result)
+
+
+@app.route("/api/mcp/status", methods=["GET"])
+def api_mcp_status():
+    """Get MCP integration status"""
+    if not mcp_service:
+        return jsonify({"success": False, "error": "MCP service not available"}), 503
+    
+    return jsonify({
+        "success": True,
+        "mcp_enabled": mcp_service.mcp_enabled,
+        "is_connected": mcp_service.is_connected,
+        "last_sync": mcp_service.last_sync,
+        "api_base_url": mcp_service.api_base_url
+    })
+
+
+@app.route("/api/mcp/authorize", methods=["GET"])
+def api_mcp_authorize():
+    """Get MCP authorization URL"""
+    if not manus_api:
+        return jsonify({"success": False, "error": "Manus API not available"}), 503
+    
+    try:
+        auth_url = manus_api.get_authorization_url()
+        return jsonify({
+            "success": True,
+            "authorization_url": auth_url
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/mcp/token", methods=["POST"])
+def api_mcp_token():
+    """Exchange code for token or refresh token"""
+    if not manus_api:
+        return jsonify({"success": False, "error": "Manus API not available"}), 503
+    
+    data = request.get_json()
+    grant_type = data.get("grant_type")
+    
+    try:
+        if grant_type == "authorization_code":
+            code = data.get("code")
+            state = data.get("state")
+            result = manus_api.exchange_code_for_token(code, state)
+        elif grant_type == "refresh_token":
+            result = manus_api.refresh_access_token()
+        else:
+            return jsonify({"success": False, "error": "Invalid grant_type"}), 400
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/mcp/test", methods=["GET"])
+def api_mcp_test():
+    """Test MCP connection"""
+    return jsonify({
+        "success": True,
+        "message": "MCP connection is working",
+        "timestamp": datetime.now().isoformat()
+    })
+
+
+# ===== REMOTE CONTROL ENDPOINTS =====
+
+@app.route("/api/remote/session/start", methods=["POST"])
+def api_remote_session_start():
+    """Start remote control session"""
+    if not remote_control:
+        return jsonify({"success": False, "error": "Remote control not available"}), 503
+    
+    data = request.get_json()
+    controller = data.get("controller", "manus_ai")
+    
+    result = remote_control.start_session(controller)
+    return jsonify(result)
+
+
+@app.route("/api/remote/session/end", methods=["POST"])
+def api_remote_session_end():
+    """End remote control session"""
+    if not remote_control:
+        return jsonify({"success": False, "error": "Remote control not available"}), 503
+    
+    data = request.get_json()
+    session_token = data.get("session_token")
+    
+    result = remote_control.end_session(session_token)
+    return jsonify(result)
+
+
+@app.route("/api/remote/execute", methods=["POST"])
+def api_remote_execute():
+    """Execute remote action"""
+    if not remote_control:
+        return jsonify({"success": False, "error": "Remote control not available"}), 503
+    
+    data = request.get_json()
+    session_token = data.get("session_token")
+    action = data.get("action")
+    params = data.get("params", {})
+    
+    result = remote_control.execute_action(session_token, action, params)
+    return jsonify(result)
+
+
+@app.route("/api/remote/sessions", methods=["GET"])
+def api_remote_sessions():
+    """Get active sessions"""
+    if not remote_control:
+        return jsonify({"success": False, "error": "Remote control not available"}), 503
+    
+    result = remote_control.get_active_sessions()
+    return jsonify(result)
+
+
+@app.route("/api/remote/audit", methods=["GET"])
+def api_remote_audit():
+    """Get audit log"""
+    if not remote_control:
+        return jsonify({"success": False, "error": "Remote control not available"}), 503
+    
+    limit = request.args.get("limit", 100, type=int)
+    result = remote_control.get_audit_log(limit)
+    return jsonify(result)
+
+
+# ===== CAMPAIGN AUTOMATION ENDPOINTS =====
+
+@app.route("/api/automation/authorize/request", methods=["POST"])
+def api_automation_authorize_request():
+    """Request spend authorization"""
+    if not campaign_automation:
+        return jsonify({"success": False, "error": "Automation not available"}), 503
+    
+    data = request.get_json()
+    result = campaign_automation.request_spend_authorization(
+        action=data.get("action"),
+        amount=data.get("amount"),
+        campaign_id=data.get("campaign_id"),
+        notes=data.get("notes")
+    )
+    return jsonify(result)
+
+
+@app.route("/api/automation/authorize/approve/<int:auth_id>", methods=["POST"])
+def api_automation_authorize_approve(auth_id):
+    """Approve spend authorization"""
+    if not campaign_automation:
+        return jsonify({"success": False, "error": "Automation not available"}), 503
+    
+    data = request.get_json()
+    approved_by = data.get("approved_by", "user")
+    
+    result = campaign_automation.approve_spend_authorization(auth_id, approved_by)
+    return jsonify(result)
+
+
+@app.route("/api/automation/authorize/reject/<int:auth_id>", methods=["POST"])
+def api_automation_authorize_reject(auth_id):
+    """Reject spend authorization"""
+    if not campaign_automation:
+        return jsonify({"success": False, "error": "Automation not available"}), 503
+    
+    data = request.get_json()
+    rejected_by = data.get("rejected_by", "user")
+    reason = data.get("reason")
+    
+    result = campaign_automation.reject_spend_authorization(auth_id, rejected_by, reason)
+    return jsonify(result)
+
+
+@app.route("/api/automation/authorize/pending", methods=["GET"])
+def api_automation_authorize_pending():
+    """Get pending authorizations"""
+    if not campaign_automation:
+        return jsonify({"success": False, "error": "Automation not available"}), 503
+    
+    result = campaign_automation.get_pending_authorizations()
+    return jsonify(result)
+
+
+@app.route("/api/automation/optimize/<int:campaign_id>", methods=["POST"])
+def api_automation_optimize_campaign(campaign_id):
+    """Auto-optimize campaign"""
+    if not campaign_automation:
+        return jsonify({"success": False, "error": "Automation not available"}), 503
+    
+    result = campaign_automation.auto_optimize_campaign(campaign_id)
+    return jsonify(result)
+
+
+@app.route("/api/automation/optimize/all", methods=["POST"])
+def api_automation_optimize_all():
+    """Optimize all campaigns"""
+    if not campaign_automation:
+        return jsonify({"success": False, "error": "Automation not available"}), 503
+    
+    result = campaign_automation.optimize_all_campaigns()
+    return jsonify(result)
+
+
+@app.route("/api/automation/report", methods=["GET"])
+def api_automation_report():
+    """Get automation report"""
+    if not campaign_automation:
+        return jsonify({"success": False, "error": "Automation not available"}), 503
+    
+    days = request.args.get("days", 7, type=int)
+    result = campaign_automation.get_automation_report(days)
+    return jsonify(result)
+
+
+# ===== UX AUDIT ENDPOINTS =====
+
+@app.route("/api/audit/page", methods=["POST"])
+def api_audit_page():
+    """Audit single page"""
+    if not ux_audit:
+        return jsonify({"success": False, "error": "UX audit not available"}), 503
+    
+    data = request.get_json()
+    result = ux_audit.audit_page(data.get("page_name"), data.get("url"))
+    return jsonify(result)
+
+
+@app.route("/api/audit/pages", methods=["GET"])
+def api_audit_all_pages():
+    """Audit all pages"""
+    if not ux_audit:
+        return jsonify({"success": False, "error": "UX audit not available"}), 503
+    
+    result = ux_audit.audit_all_pages()
+    return jsonify(result)
+
+
+@app.route("/api/audit/flows", methods=["GET"])
+def api_audit_flows():
+    """Audit critical flows"""
+    if not ux_audit:
+        return jsonify({"success": False, "error": "UX audit not available"}), 503
+    
+    result = ux_audit.audit_critical_flows()
+    return jsonify(result)
+
+
+@app.route("/api/audit/performance", methods=["GET"])
+def api_audit_performance():
+    """Audit performance"""
+    if not ux_audit:
+        return jsonify({"success": False, "error": "UX audit not available"}), 503
+    
+    result = ux_audit.audit_performance()
+    return jsonify(result)
+
+
+@app.route("/api/audit/accessibility", methods=["GET"])
+def api_audit_accessibility():
+    """Audit accessibility"""
+    if not ux_audit:
+        return jsonify({"success": False, "error": "UX audit not available"}), 503
+    
+    result = ux_audit.audit_accessibility()
+    return jsonify(result)
+
+
+@app.route("/api/audit/full", methods=["GET"])
+def api_audit_full():
+    """Generate full audit report"""
+    if not ux_audit:
+        return jsonify({"success": False, "error": "UX audit not available"}), 503
+    
+    result = ux_audit.generate_full_audit_report()
+    
+    # Salvar relatório
+    save_result = ux_audit.save_audit_report(result)
+    result['saved'] = save_result.get('success', False)
+    result['audit_id'] = save_result.get('audit_id')
+    
+    return jsonify(result)
+
+
+# ===== PRODUCT INTELLIGENCE ENDPOINTS =====
+
+@app.route("/api/intelligence/product/analyze", methods=["POST"])
+def api_intelligence_analyze_product():
+    """Analyze product"""
+    if not product_intelligence:
+        return jsonify({"success": False, "error": "Product intelligence not available"}), 503
+    
+    data = request.get_json()
+    result = product_intelligence.analyze_product(data)
+    return jsonify(result)
+
+
+@app.route("/api/intelligence/sales/analyze", methods=["GET"])
+def api_intelligence_analyze_sales():
+    """Analyze sales data"""
+    if not product_intelligence:
+        return jsonify({"success": False, "error": "Product intelligence not available"}), 503
+    
+    period_days = request.args.get("period_days", 30, type=int)
+    result = product_intelligence.analyze_sales_data(period_days)
+    return jsonify(result)
+
+
+@app.route("/api/intelligence/sales/forecast", methods=["GET"])
+def api_intelligence_forecast_sales():
+    """Forecast sales"""
+    if not product_intelligence:
+        return jsonify({"success": False, "error": "Product intelligence not available"}), 503
+    
+    days_ahead = request.args.get("days_ahead", 30, type=int)
+    result = product_intelligence.forecast_sales(days_ahead)
+    return jsonify(result)
+
+
+@app.route("/api/intelligence/products/recommend", methods=["POST"])
+def api_intelligence_recommend_products():
+    """Recommend products for campaign"""
+    if not product_intelligence:
+        return jsonify({"success": False, "error": "Product intelligence not available"}), 503
+    
+    data = request.get_json()
+    result = product_intelligence.recommend_products_for_campaign(
+        campaign_objective=data.get("objective", "conversions"),
+        budget=data.get("budget", 1000)
+    )
+    return jsonify(result)
+
+
+@app.route("/api/intelligence/competitors/analyze", methods=["POST"])
+def api_intelligence_analyze_competitors():
+    """Analyze competitor products"""
+    if not product_intelligence:
+        return jsonify({"success": False, "error": "Product intelligence not available"}), 503
+    
+    data = request.get_json()
+    result = product_intelligence.analyze_competitor_products(data.get("product_name"))
+    return jsonify(result)
+
+
+@app.route("/api/intelligence/report", methods=["GET"])
+def api_intelligence_report():
+    """Generate intelligence report"""
+    if not product_intelligence:
+        return jsonify({"success": False, "error": "Product intelligence not available"}), 503
+    
+    result = product_intelligence.generate_intelligence_report()
+    return jsonify(result)
 
 
 if __name__ == "__main__":
