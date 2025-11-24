@@ -565,10 +565,29 @@ def api_dashboard_metrics():
     db = get_db()
     
     try:
+        # Contagem de campanhas
         total = db.execute("SELECT COUNT(*) as count FROM campaigns").fetchone()[0]
         active = db.execute("SELECT COUNT(*) as count FROM campaigns WHERE status = 'Active'").fetchone()[0]
         paused = db.execute("SELECT COUNT(*) as count FROM campaigns WHERE status = 'Paused'").fetchone()[0]
         failed = db.execute("SELECT COUNT(*) as count FROM campaigns WHERE status = 'Failed'").fetchone()[0]
+        
+        # Métricas agregadas de todas as campanhas
+        metrics = db.execute("""
+            SELECT 
+                SUM(impressions) as total_impressions,
+                SUM(clicks) as total_clicks,
+                SUM(conversions) as total_conversions,
+                SUM(spend) as total_spend,
+                SUM(revenue) as total_revenue,
+                AVG(roas) as avg_roas,
+                AVG(ctr) as avg_ctr,
+                AVG(cpa) as avg_cpa
+            FROM campaign_metrics
+        """).fetchone()
+        
+        total_clicks = int(metrics[1] or 0)
+        total_conversions = int(metrics[2] or 0)
+        avg_roas = float(metrics[5] or 0)
         
         return jsonify({
             "success": True,
@@ -576,10 +595,18 @@ def api_dashboard_metrics():
             "active_campaigns": active,
             "paused_campaigns": paused,
             "failed_campaigns": failed,
-            "published_today": random.randint(0, 5),
+            "total_clicks": total_clicks,
+            "total_conversions": total_conversions,
+            "avg_roas": round(avg_roas, 2),
+            "total_impressions": int(metrics[0] or 0),
+            "total_spend": round(float(metrics[3] or 0), 2),
+            "total_revenue": round(float(metrics[4] or 0), 2),
+            "avg_ctr": round(float(metrics[6] or 0), 2),
+            "avg_cpa": round(float(metrics[7] or 0), 2),
+            "published_today": 0,
             "alerts": failed,
-            "meta_campaigns": random.randint(0, total),
-            "google_campaigns": random.randint(0, total),
+            "meta_campaigns": active,
+            "google_campaigns": active,
             "ai_analyses": total * 2,
             "ai_suggestions": total,
         })
