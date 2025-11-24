@@ -1,20 +1,412 @@
 {% extends "index.html" %}
 
-{% block title %}Segmentação - Manus Marketing{% endblock %}
+{% block title %}Segmentação Avançada - NEXORA Operator v11.7{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Segmentação</li>
+    </ol>
+</nav>
+
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-users"></i> Segmentação</h1>
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 mb-2"><i class="fas fa-users"></i> Segmentação Avançada</h1>
+            <p class="text-muted mb-0">Crie públicos personalizados com IA e dados comportamentais</p>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <button class="btn btn-primary" onclick="openCreateAudienceModal()">
+                <i class="fas fa-plus"></i> Criar Público
+            </button>
+        </div>
     </div>
     
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Públicos Criados</p>
+                            <h3 class="mb-0">24</h3>
+                        </div>
+                        <i class="fas fa-users fa-2x text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Alcance Total</p>
+                            <h3 class="mb-0">2.8M</h3>
+                        </div>
+                        <i class="fas fa-chart-line fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Públicos Ativos</p>
+                            <h3 class="mb-0 text-success">18</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Taxa de Conversão Média</p>
+                            <h3 class="mb-0 text-info">4.2%</h3>
+                        </div>
+                        <i class="fas fa-percentage fa-2x text-info opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-<div class="card">
-    <div class="card-body">
-        <h5>Segmentação Avançada</h5>
-        <button class="btn btn-primary">Criar Público</button>
+    <!-- Audience Builder -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-sliders-h"></i> Construtor de Público</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Demografia</label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small">Idade</label>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <input type="number" class="form-control" id="ageMin" value="18" min="13" max="65">
+                                    <span>até</span>
+                                    <input type="number" class="form-control" id="ageMax" value="65" min="18" max="65">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Gênero</label>
+                                <select class="form-select" id="gender">
+                                    <option value="all">Todos</option>
+                                    <option value="male">Masculino</option>
+                                    <option value="female">Feminino</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Localização</label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small">País</label>
+                                <select class="form-select" id="country">
+                                    <option value="BR">Brasil</option>
+                                    <option value="US">Estados Unidos</option>
+                                    <option value="PT">Portugal</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Estados/Regiões</label>
+                                <select class="form-select" id="regions" multiple size="3">
+                                    <option value="SP">São Paulo</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="PR">Paraná</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Interesses</label>
+                        <div class="interests-tags mb-2">
+                            <span class="badge bg-primary me-1 mb-1">Tecnologia <i class="fas fa-times ms-1" style="cursor: pointer;"></i></span>
+                            <span class="badge bg-primary me-1 mb-1">Moda <i class="fas fa-times ms-1" style="cursor: pointer;"></i></span>
+                            <span class="badge bg-primary me-1 mb-1">Esportes <i class="fas fa-times ms-1" style="cursor: pointer;"></i></span>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="interestInput" placeholder="Digite um interesse...">
+                            <button class="btn btn-outline-secondary" onclick="addInterest()">
+                                <i class="fas fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Comportamento</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="purchasers">
+                            <label class="form-check-label" for="purchasers">
+                                Compradores online
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="travelers">
+                            <label class="form-check-label" for="travelers">
+                                Viajantes frequentes
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="gamers">
+                            <label class="form-check-label" for="gamers">
+                                Gamers
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-robot fa-2x me-3"></i>
+                            <div>
+                                <h6 class="mb-1">Sugestão da IA</h6>
+                                <p class="mb-0 small">Baseado nos critérios selecionados, recomendamos adicionar o interesse "Fitness" para aumentar o alcance em 15%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="saveAudience()">
+                            <i class="fas fa-save"></i> Salvar Público
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="resetBuilder()">
+                            <i class="fas fa-redo"></i> Limpar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm sticky-top" style="top: 1rem;">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Estimativa de Alcance</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <h2 class="text-primary mb-0">2.5M - 3.2M</h2>
+                        <small class="text-muted">pessoas</small>
+                    </div>
+                    
+                    <canvas id="reachChart" height="200"></canvas>
+                    
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Específico</span>
+                            <span class="small">Amplo</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: 65%"></div>
+                        </div>
+                        <p class="text-muted small mt-2">Seu público está bem equilibrado</p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="text-start">
+                        <h6 class="mb-3">Distribuição Demográfica</h6>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>18-24 anos</span>
+                                <strong>25%</strong>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" style="width: 25%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>25-34 anos</span>
+                                <strong>35%</strong>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" style="width: 35%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>35-44 anos</span>
+                                <strong>22%</strong>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" style="width: 22%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>45+ anos</span>
+                                <strong>18%</strong>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" style="width: 18%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Saved Audiences -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-folder-open"></i> Públicos Salvos</h5>
+                <div class="input-group" style="max-width: 300px;">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Buscar públicos...">
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Alcance Estimado</th>
+                            <th>Critérios</th>
+                            <th>Criado em</th>
+                            <th>Status</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Jovens Profissionais Tech</strong></td>
+                            <td>1.2M - 1.5M</td>
+                            <td><span class="badge bg-secondary">18-35 anos</span> <span class="badge bg-secondary">Tecnologia</span></td>
+                            <td>15/11/2024</td>
+                            <td><span class="badge bg-success">Ativo</span></td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" title="Duplicar">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mães 30-45</strong></td>
+                            <td>850K - 1.1M</td>
+                            <td><span class="badge bg-secondary">30-45 anos</span> <span class="badge bg-secondary">Feminino</span></td>
+                            <td>12/11/2024</td>
+                            <td><span class="badge bg-success">Ativo</span></td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" title="Duplicar">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fitness Enthusiasts</strong></td>
+                            <td>2.1M - 2.8M</td>
+                            <td><span class="badge bg-secondary">18-55 anos</span> <span class="badge bg-secondary">Fitness</span></td>
+                            <td>10/11/2024</td>
+                            <td><span class="badge bg-warning">Pausado</span></td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" title="Duplicar">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Initialize reach chart
+const ctx = document.getElementById('reachChart').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Masculino', 'Feminino'],
+        datasets: [{
+            data: [48, 52],
+            backgroundColor: ['#3b82f6', '#ec4899']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Add interest
+function addInterest() {
+    const input = document.getElementById('interestInput');
+    if (input.value.trim()) {
+        showToast('Interesse adicionado: ' + input.value, 'success');
+        input.value = '';
+    }
+}
+
+// Save audience
+function saveAudience() {
+    showToast('Público salvo com sucesso!', 'success');
+}
+
+// Reset builder
+function resetBuilder() {
+    if (confirm('Tem certeza que deseja limpar todos os critérios?')) {
+        document.getElementById('ageMin').value = 18;
+        document.getElementById('ageMax').value = 65;
+        document.getElementById('gender').value = 'all';
+        showToast('Critérios limpos', 'info');
+    }
+}
+
+// Open create audience modal
+function openCreateAudienceModal() {
+    showToast('Abrindo criador de público...', 'info');
+}
+</script>
 {% endblock %}
