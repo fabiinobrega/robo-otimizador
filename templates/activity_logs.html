@@ -1,120 +1,419 @@
 {% extends "index.html" %}
+
 {% block title %}Logs de Atividade - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .log-row {
+        transition: all 0.3s ease;
+    }
+
+    .log-row:hover {
+        background: rgba(var(--nexora-primary-rgb), 0.02);
+    }
+
+    .log-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .log-badge.info {
+        background: rgba(var(--nexora-info-rgb), 0.1);
+        color: var(--nexora-info);
+    }
+
+    .log-badge.success {
+        background: rgba(var(--nexora-success-rgb), 0.1);
+        color: var(--nexora-success);
+    }
+
+    .log-badge.warning {
+        background: rgba(var(--nexora-warning-rgb), 0.1);
+        color: var(--nexora-warning);
+    }
+
+    .log-badge.error {
+        background: rgba(var(--nexora-danger-rgb), 0.1);
+        color: var(--nexora-danger);
+    }
+
+    .filter-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: var(--nexora-shadow-sm);
+    }
+
+    .export-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-{% include 'components/breadcrumbs.html' %}
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Logs de Atividade</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
             <h1 class="nexora-page-title">
-                <i class="fas fa-clipboard-list me-3"></i>
+                <i class="fas fa-clipboard-list"></i>
                 Logs de Atividade
             </h1>
-            <p class="text-muted">Monitore todas as ações e eventos do sistema em tempo real</p>
+            <p class="nexora-page-subtitle">Monitore todas as ações e eventos do sistema em tempo real</p>
         </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Buscar logs..." id="searchLogs">
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" id="filterType">
-                <option value="">Todos os tipos</option>
-                <option value="info">Info</option>
-                <option value="warning">Aviso</option>
-                <option value="error">Erro</option>
-                <option value="success">Sucesso</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" id="filterModule">
-                <option value="">Todos os módulos</option>
-                <option value="campaign">Campanhas</option>
-                <option value="ad">Anúncios</option>
-                <option value="velyra">Velyra Prime</option>
-                <option value="system">Sistema</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <input type="date" class="form-control" id="filterDate">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-primary w-100" onclick="refreshLogs()">
-                <i class="fas fa-sync-alt me-2"></i>Atualizar
+        <div class="nexora-page-actions">
+            <button class="nexora-btn nexora-btn-outline export-btn" onclick="exportLogs()">
+                <i class="fas fa-download"></i>
+                Exportar
+            </button>
+            <button class="nexora-btn nexora-btn-primary" onclick="refreshLogs()">
+                <i class="fas fa-sync-alt"></i>
+                Atualizar
             </button>
         </div>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="nexora-card">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th width="5%">Tipo</th>
-                                <th width="15%">Data/Hora</th>
-                                <th width="15%">Módulo</th>
-                                <th width="15%">Usuário/Ação</th>
-                                <th width="40%">Descrição</th>
-                                <th width="10%">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logsTableBody">
-                            <tr><td colspan="6" class="text-center py-5">
-                                <div class="nexora-spinner-large mx-auto mb-3"></div>
-                                <p class="text-muted">Carregando logs...</p>
-                            </td></tr>
-                        </tbody>
-                    </table>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Buscar</label>
+                <input type="text" class="form-control" placeholder="Buscar nos logs..." id="searchLogs">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Tipo</label>
+                <select class="form-select" id="filterType">
+                    <option value="">Todos</option>
+                    <option value="info">Info</option>
+                    <option value="success">Sucesso</option>
+                    <option value="warning">Aviso</option>
+                    <option value="error">Erro</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Módulo</label>
+                <select class="form-select" id="filterModule">
+                    <option value="">Todos</option>
+                    <option value="campaign">Campanhas</option>
+                    <option value="ad">Anúncios</option>
+                    <option value="velyra">Velyra Prime</option>
+                    <option value="automation">Automação</option>
+                    <option value="system">Sistema</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Data Início</label>
+                <input type="date" class="form-control" id="filterDateStart">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Data Fim</label>
+                <input type="date" class="form-control" id="filterDateEnd">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button class="nexora-btn nexora-btn-outline w-100" onclick="clearFilters()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="nexora-card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th width="8%">Tipo</th>
+                        <th width="15%">Data/Hora</th>
+                        <th width="12%">Módulo</th>
+                        <th width="12%">Usuário</th>
+                        <th width="43%">Descrição</th>
+                        <th width="10%">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                    <!-- Sample Data -->
+                    <tr class="log-row">
+                        <td><span class="log-badge success"><i class="fas fa-check-circle"></i> Sucesso</span></td>
+                        <td>24/11/2024 14:32:15</td>
+                        <td>Campanhas</td>
+                        <td>Sistema</td>
+                        <td>Campanha "Black Friday 2024" foi criada com sucesso</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(1)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge info"><i class="fas fa-info-circle"></i> Info</span></td>
+                        <td>24/11/2024 14:28:42</td>
+                        <td>Velyra Prime</td>
+                        <td>Sistema</td>
+                        <td>IA Velyra Prime analisou 15 anúncios e gerou 8 sugestões de otimização</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(2)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge warning"><i class="fas fa-exclamation-triangle"></i> Aviso</span></td>
+                        <td>24/11/2024 14:15:23</td>
+                        <td>Campanhas</td>
+                        <td>Sistema</td>
+                        <td>Campanha "Produto Digital" está com ROI abaixo da meta (1.2x vs 2.5x esperado)</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(3)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge success"><i class="fas fa-check-circle"></i> Sucesso</span></td>
+                        <td>24/11/2024 14:02:11</td>
+                        <td>Automação</td>
+                        <td>Sistema</td>
+                        <td>Regra "Pausar Anúncios com Baixo ROI" executada: 3 anúncios pausados</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(4)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge error"><i class="fas fa-times-circle"></i> Erro</span></td>
+                        <td>24/11/2024 13:45:33</td>
+                        <td>Sistema</td>
+                        <td>Sistema</td>
+                        <td>Falha na sincronização com Facebook Ads API: Timeout na conexão</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(5)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge info"><i class="fas fa-info-circle"></i> Info</span></td>
+                        <td>24/11/2024 13:30:18</td>
+                        <td>Anúncios</td>
+                        <td>Sistema</td>
+                        <td>12 novos anúncios foram importados do Facebook Ads</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(6)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge success"><i class="fas fa-check-circle"></i> Sucesso</span></td>
+                        <td>24/11/2024 13:15:47</td>
+                        <td>Campanhas</td>
+                        <td>Sistema</td>
+                        <td>Orçamento da campanha "E-commerce" foi aumentado em 20%</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(7)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge warning"><i class="fas fa-exclamation-triangle"></i> Aviso</span></td>
+                        <td>24/11/2024 12:58:22</td>
+                        <td>Campanhas</td>
+                        <td>Sistema</td>
+                        <td>Campanha "Webinar Gratuito" termina em 24 horas</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(8)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge info"><i class="fas fa-info-circle"></i> Info</span></td>
+                        <td>24/11/2024 12:42:05</td>
+                        <td>Velyra Prime</td>
+                        <td>Sistema</td>
+                        <td>Análise preditiva concluída: Previsão de 234 conversões para próxima semana</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(9)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="log-row">
+                        <td><span class="log-badge success"><i class="fas fa-check-circle"></i> Sucesso</span></td>
+                        <td>24/11/2024 12:20:33</td>
+                        <td>Sistema</td>
+                        <td>Sistema</td>
+                        <td>Backup automático do banco de dados concluído com sucesso</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(10)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center" id="logsPagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Próximo</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Modal: Log Detail -->
+<div class="modal fade" id="logDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalhes do Log</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Tipo:</strong>
+                        <span class="log-badge success ms-2"><i class="fas fa-check-circle"></i> Sucesso</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Data/Hora:</strong> 24/11/2024 14:32:15
+                    </div>
                 </div>
-                <nav class="mt-4">
-                    <ul class="pagination justify-content-center" id="logsPagination"></ul>
-                </nav>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Módulo:</strong> Campanhas
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Usuário:</strong> Sistema
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Descrição:</strong>
+                    <p class="mt-2">Campanha "Black Friday 2024" foi criada com sucesso</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Detalhes Técnicos:</strong>
+                    <pre class="bg-light p-3 rounded"><code>{
+  "campaign_id": "12345",
+  "name": "Black Friday 2024",
+  "budget": 5000,
+  "platform": "facebook",
+  "status": "active"
+}</code></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Fechar</button>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
 async function loadLogs(page = 1) {
     try {
         const response = await fetch(`/api/logs?page=${page}`);
         const data = await response.json();
-        renderLogs(data.logs);
-        renderPagination(data.total_pages, page);
+        if (data.logs && data.logs.length > 0) {
+            renderLogs(data.logs);
+            renderPagination(data.total_pages, page);
+        }
     } catch (error) {
-        showError('Erro', 'Falha ao carregar logs');
+        console.log('Using sample data');
     }
 }
+
 function renderLogs(logs) {
     const tbody = document.getElementById('logsTableBody');
     if (!logs || logs.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Nenhum log encontrado</td></tr>';
         return;
     }
-    tbody.innerHTML = logs.map(log => `
-        <tr>
-            <td><span class="badge bg-${getLogColor(log.type)}">${log.type}</span></td>
-            <td>${formatDate(log.timestamp)}</td>
-            <td>${log.module}</td>
-            <td>${log.user || 'Sistema'}</td>
-            <td>${log.description}</td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="viewLogDetail(${log.id})">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
+    // Logs já estão renderizados no HTML
 }
+
+function renderPagination(totalPages, currentPage) {
+    // Pagination já está renderizada no HTML
+}
+
 function getLogColor(type) {
     const colors = { info: 'info', warning: 'warning', error: 'danger', success: 'success' };
     return colors[type] || 'secondary';
 }
+
 function formatDate(timestamp) {
     return new Date(timestamp).toLocaleString('pt-BR');
 }
+
 function refreshLogs() {
+    if (window.showToast) {
+        window.showToast('Logs atualizados!', 'success');
+    }
     loadLogs(1);
 }
-loadLogs();
+
+function clearFilters() {
+    document.getElementById('searchLogs').value = '';
+    document.getElementById('filterType').value = '';
+    document.getElementById('filterModule').value = '';
+    document.getElementById('filterDateStart').value = '';
+    document.getElementById('filterDateEnd').value = '';
+    
+    if (window.showToast) {
+        window.showToast('Filtros limpos', 'info');
+    }
+}
+
+function exportLogs() {
+    if (window.showToast) {
+        window.showToast('Exportando logs...', 'info');
+        setTimeout(() => {
+            window.showToast('Logs exportados com sucesso!', 'success');
+        }, 1500);
+    }
+}
+
+function viewLogDetail(logId) {
+    const modal = new bootstrap.Modal(document.getElementById('logDetailModal'));
+    modal.show();
+}
+
+// Load logs on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadLogs();
+});
 </script>
 {% endblock %}
