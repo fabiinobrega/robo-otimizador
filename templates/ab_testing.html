@@ -1,296 +1,684 @@
 {% extends "index.html" %}
 
-{% block title %}A/B Testing{% endblock %}
+{% block title %}A/B Testing - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .test-card {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .test-card:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: var(--nexora-shadow-md);
+    }
+
+    .test-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .test-status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .test-status-badge.running {
+        background: rgba(var(--nexora-success-rgb), 0.1);
+        color: var(--nexora-success);
+    }
+
+    .test-status-badge.completed {
+        background: rgba(var(--nexora-info-rgb), 0.1);
+        color: var(--nexora-info);
+    }
+
+    .test-status-badge.draft {
+        background: rgba(var(--nexora-text-secondary-rgb), 0.1);
+        color: var(--nexora-text-secondary);
+    }
+
+    .variant-comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .variant-card {
+        background: #f8f9fa;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .variant-card.winner {
+        border-color: var(--nexora-success);
+        background: rgba(var(--nexora-success-rgb), 0.05);
+    }
+
+    .variant-card.winner::before {
+        content: '👑 Vencedor';
+        position: absolute;
+        top: -12px;
+        right: 20px;
+        background: var(--nexora-success);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .variant-label {
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .variant-preview {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-weight: 600;
+        color: var(--nexora-text-primary);
+    }
+
+    .variant-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .variant-metric {
+        text-align: center;
+    }
+
+    .variant-metric-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--nexora-primary);
+        display: block;
+    }
+
+    .variant-metric-label {
+        font-size: 12px;
+        color: var(--nexora-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .progress-bar-custom {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--nexora-primary), var(--nexora-secondary));
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+
+    .confidence-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .confidence-indicator.high {
+        background: rgba(var(--nexora-success-rgb), 0.1);
+        color: var(--nexora-success);
+    }
+
+    .confidence-indicator.medium {
+        background: rgba(var(--nexora-warning-rgb), 0.1);
+        color: var(--nexora-warning);
+    }
+
+    .confidence-indicator.low {
+        background: rgba(var(--nexora-danger-rgb), 0.1);
+        color: var(--nexora-danger);
+    }
+
+    .suggestion-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .suggestion-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--nexora-shadow-lg);
+    }
+
+    .suggestion-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .test-timeline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--nexora-border);
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--nexora-text-secondary);
+    }
+
+    .test-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">A/B Testing</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
+            <h1 class="nexora-page-title">
+                <i class="fas fa-flask"></i>
+                A/B Testing
+            </h1>
+            <p class="nexora-page-subtitle">Teste variações e descubra o que converte melhor</p>
+        </div>
+        <div class="nexora-page-actions">
+            <button class="nexora-btn nexora-btn-outline" id="viewHistoryBtn">
+                <i class="fas fa-history"></i>
+                Histórico
+            </button>
+            <button class="nexora-btn nexora-btn-primary" id="createTestBtn">
+                <i class="fas fa-plus"></i>
+                Criar Novo Teste
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-primary-rgb), 0.1); color: var(--nexora-primary);">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">8</div>
+                    <div class="nexora-stat-label">Testes Ativos</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-success-rgb), 0.1); color: var(--nexora-success);">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">24</div>
+                    <div class="nexora-stat-label">Testes Concluídos</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-warning-rgb), 0.1); color: var(--nexora-warning);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">+34%</div>
+                    <div class="nexora-stat-label">Melhoria Média</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-info-rgb), 0.1); color: var(--nexora-info);">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">95%</div>
+                    <div class="nexora-stat-label">Confiança Média</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2><i class="fas fa-flask text-primary"></i> A/B Testing</h2>
-                    <p class="text-muted">Teste variações e descubra o que converte melhor</p>
+        <div class="col-lg-8">
+            <!-- Active Tests -->
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-play-circle"></i>
+                        Testes em Andamento
+                    </h5>
                 </div>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTestModal">
-                    <i class="fas fa-plus"></i> Criar Novo Teste
-                </button>
-            </div>
-        </div>
-    </div>
+                <div class="nexora-card-body">
+                    <!-- Test 1 -->
+                    <div class="test-card">
+                        <div class="test-header">
+                            <div>
+                                <h5 style="margin: 0 0 5px 0;">Headline da Landing Page</h5>
+                                <p class="text-muted mb-0">Campanha: Black Friday 2024</p>
+                            </div>
+                            <span class="test-status-badge running">
+                                <i class="fas fa-circle"></i> Em andamento
+                            </span>
+                        </div>
 
-    <!-- Sugestões de Testes -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Sugestões de Testes</h5>
-                </div>
-                <div class="card-body">
-                    <div id="testSuggestions" class="row">
-                        <!-- Carregado via JS -->
+                        <div class="variant-comparison">
+                            <div class="variant-card">
+                                <div class="variant-label">
+                                    <span style="background: var(--nexora-primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;">A</span>
+                                    Controle
+                                </div>
+                                <div class="variant-preview">
+                                    "Economize até 70% na Black Friday"
+                                </div>
+                                <div class="variant-metrics">
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">2,847</span>
+                                        <span class="variant-metric-label">Visitantes</span>
+                                    </div>
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">8.2%</span>
+                                        <span class="variant-metric-label">Conversão</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="variant-card winner">
+                                <div class="variant-label">
+                                    <span style="background: var(--nexora-success); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;">B</span>
+                                    Variação
+                                </div>
+                                <div class="variant-preview">
+                                    "Black Friday: Descontos de até 70% + Frete Grátis"
+                                </div>
+                                <div class="variant-metrics">
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">2,931</span>
+                                        <span class="variant-metric-label">Visitantes</span>
+                                    </div>
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">11.4%</span>
+                                        <span class="variant-metric-label">Conversão</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="test-timeline">
+                            <div class="timeline-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Iniciado: 15/11/2024</span>
+                            </div>
+                            <div class="timeline-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Duração: 9 dias</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="confidence-indicator high">
+                                    <i class="fas fa-check-circle"></i>
+                                    98% de confiança
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="test-actions">
+                            <button class="nexora-btn nexora-btn-success">
+                                <i class="fas fa-trophy"></i> Declarar Vencedor
+                            </button>
+                            <button class="nexora-btn nexora-btn-outline">
+                                <i class="fas fa-pause"></i> Pausar Teste
+                            </button>
+                            <button class="nexora-btn nexora-btn-outline">
+                                <i class="fas fa-chart-bar"></i> Ver Detalhes
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Testes Ativos -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-play-circle"></i> Testes em Andamento</h5>
-                </div>
-                <div class="card-body">
-                    <div id="activeTests">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> Nenhum teste ativo no momento. Crie seu primeiro teste!
+                    <!-- Test 2 -->
+                    <div class="test-card">
+                        <div class="test-header">
+                            <div>
+                                <h5 style="margin: 0 0 5px 0;">CTA Button Color</h5>
+                                <p class="text-muted mb-0">Campanha: Produto Digital</p>
+                            </div>
+                            <span class="test-status-badge running">
+                                <i class="fas fa-circle"></i> Em andamento
+                            </span>
+                        </div>
+
+                        <div class="variant-comparison">
+                            <div class="variant-card">
+                                <div class="variant-label">
+                                    <span style="background: var(--nexora-primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;">A</span>
+                                    Azul
+                                </div>
+                                <div class="variant-preview">
+                                    <button class="btn btn-primary btn-lg">Comprar Agora</button>
+                                </div>
+                                <div class="variant-metrics">
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">1,523</span>
+                                        <span class="variant-metric-label">Visitantes</span>
+                                    </div>
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">5.8%</span>
+                                        <span class="variant-metric-label">Conversão</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="variant-card">
+                                <div class="variant-label">
+                                    <span style="background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;">B</span>
+                                    Laranja
+                                </div>
+                                <div class="variant-preview">
+                                    <button class="btn btn-lg" style="background: #f59e0b; color: white;">Comprar Agora</button>
+                                </div>
+                                <div class="variant-metrics">
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">1,487</span>
+                                        <span class="variant-metric-label">Visitantes</span>
+                                    </div>
+                                    <div class="variant-metric">
+                                        <span class="variant-metric-value">6.1%</span>
+                                        <span class="variant-metric-label">Conversão</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="test-timeline">
+                            <div class="timeline-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Iniciado: 20/11/2024</span>
+                            </div>
+                            <div class="timeline-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Duração: 4 dias</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="confidence-indicator medium">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    67% de confiança
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="test-actions">
+                            <button class="nexora-btn nexora-btn-outline">
+                                <i class="fas fa-pause"></i> Pausar Teste
+                            </button>
+                            <button class="nexora-btn nexora-btn-outline">
+                                <i class="fas fa-chart-bar"></i> Ver Detalhes
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Biblioteca de Variações Vencedoras -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-trophy"></i> Biblioteca de Variações Vencedoras</h5>
+            <!-- Completed Tests -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-check-circle"></i>
+                        Testes Concluídos Recentemente
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <div id="winningLibrary" class="row">
-                        <!-- Carregado via JS -->
+                <div class="nexora-card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Teste</th>
+                                    <th>Vencedor</th>
+                                    <th>Melhoria</th>
+                                    <th>Confiança</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Email Subject Line</strong></td>
+                                    <td><span class="badge bg-success">Variação B</span></td>
+                                    <td><span class="text-success"><i class="fas fa-arrow-up"></i> +42%</span></td>
+                                    <td>96%</td>
+                                    <td>10/11/2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Pricing Page Layout</strong></td>
+                                    <td><span class="badge bg-success">Variação A</span></td>
+                                    <td><span class="text-success"><i class="fas fa-arrow-up"></i> +28%</span></td>
+                                    <td>91%</td>
+                                    <td>05/11/2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ad Copy Variation</strong></td>
+                                    <td><span class="badge bg-warning">Inconclusivo</span></td>
+                                    <td><span class="text-muted">+3%</span></td>
+                                    <td>54%</td>
+                                    <td>01/11/2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- AI Suggestions -->
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-brain"></i>
+                        Sugestões da IA Velyra
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="suggestion-card">
+                        <div class="suggestion-icon">💡</div>
+                        <h6 style="color: white; margin-bottom: 10px;">Teste Headline com Urgência</h6>
+                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                            Headlines com senso de urgência aumentam conversão em 23% em média
+                        </p>
+                    </div>
+
+                    <div class="suggestion-card">
+                        <div class="suggestion-icon">🎯</div>
+                        <h6 style="color: white; margin-bottom: 10px;">Teste Imagem do Produto</h6>
+                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                            Imagens com pessoas usando o produto convertem 31% melhor
+                        </p>
+                    </div>
+
+                    <div class="suggestion-card">
+                        <div class="suggestion-icon">📧</div>
+                        <h6 style="color: white; margin-bottom: 10px;">Teste Horário de Envio</h6>
+                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                            Emails enviados às 10h têm 18% mais abertura que outros horários
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Best Practices -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-book"></i>
+                        Melhores Práticas
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <ul style="padding-left: 20px; margin: 0;">
+                        <li style="margin-bottom: 12px;">Teste apenas uma variável por vez</li>
+                        <li style="margin-bottom: 12px;">Aguarde significância estatística (>95%)</li>
+                        <li style="margin-bottom: 12px;">Teste com amostra mínima de 1000 visitantes</li>
+                        <li style="margin-bottom: 12px;">Execute testes por pelo menos 7 dias</li>
+                        <li style="margin-bottom: 12px;">Documente e aplique os aprendizados</li>
+                        <li style="margin-bottom: 0;">Teste continuamente para melhorar</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal: Criar Teste -->
+<!-- Modal: Create Test -->
 <div class="modal fade" id="createTestModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header">
                 <h5 class="modal-title"><i class="fas fa-flask"></i> Criar Novo Teste A/B</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="createTestForm">
                     <div class="mb-3">
                         <label class="form-label">Nome do Teste</label>
-                        <input type="text" class="form-control" id="testName" required>
+                        <input type="text" class="form-control" placeholder="Ex: Headline da Landing Page" required>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label">Tipo de Teste</label>
-                        <select class="form-select" id="testType" required>
+                        <select class="form-select" required>
                             <option value="">Selecione...</option>
-                            <option value="headline">Teste de Título</option>
-                            <option value="description">Teste de Descrição</option>
-                            <option value="cta">Teste de CTA</option>
-                            <option value="image">Teste de Imagem</option>
-                            <option value="audience">Teste de Público</option>
+                            <option>Headline</option>
+                            <option>CTA Button</option>
+                            <option>Imagem</option>
+                            <option>Cor</option>
+                            <option>Layout</option>
+                            <option>Copy</option>
+                            <option>Preço</option>
                         </select>
                     </div>
-
                     <div class="mb-3">
-                        <label class="form-label">Campanha (opcional)</label>
-                        <select class="form-select" id="testCampaign">
-                            <option value="">Teste independente</option>
+                        <label class="form-label">Campanha</label>
+                        <select class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option>Black Friday 2024</option>
+                            <option>Produto Digital</option>
+                            <option>Lançamento Curso</option>
                         </select>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Conteúdo Original</label>
-                        <textarea class="form-control" id="originalContent" rows="3" placeholder="Digite o conteúdo original que será testado"></textarea>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Variação A (Controle)</label>
+                                <textarea class="form-control" rows="3" placeholder="Conteúdo da variação A" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Variação B</label>
+                                <textarea class="form-control" rows="3" placeholder="Conteúdo da variação B" required></textarea>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> O sistema criará automaticamente 3-4 variações para teste baseadas no tipo selecionado.
+                    <div class="mb-3">
+                        <label class="form-label">Métrica de Sucesso</label>
+                        <select class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option>Taxa de Conversão</option>
+                            <option>Taxa de Cliques (CTR)</option>
+                            <option>Taxa de Abertura</option>
+                            <option>Tempo na Página</option>
+                            <option>Receita por Visitante</option>
+                        </select>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="createTest()">
-                    <i class="fas fa-check"></i> Criar Teste
+                <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="nexora-btn nexora-btn-primary">
+                    <i class="fas fa-play"></i> Iniciar Teste
                 </button>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    loadTestSuggestions();
-    loadWinningLibrary();
-    loadCampaigns();
+    const createTestModal = new bootstrap.Modal(document.getElementById('createTestModal'));
+
+    document.getElementById('createTestBtn').addEventListener('click', () => {
+        createTestModal.show();
+    });
 });
-
-async function loadTestSuggestions() {
-    try {
-        const response = await fetch('/api/ab-test/suggestions');
-        const data = await response.json();
-        
-        if (data.success && data.suggestions) {
-            const container = document.getElementById('testSuggestions');
-            container.innerHTML = data.suggestions.map(suggestion => `
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100 border-${suggestion.priority === 'high' ? 'danger' : 'warning'}">
-                        <div class="card-body">
-                            <h6 class="card-title">
-                                <i class="fas fa-${getIconForType(suggestion.type)}"></i> 
-                                ${suggestion.title}
-                            </h6>
-                            <p class="card-text small">${suggestion.description}</p>
-                            <span class="badge bg-${suggestion.priority === 'high' ? 'danger' : 'warning'}">
-                                Impacto: ${suggestion.estimated_impact}
-                            </span>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-sm btn-outline-primary w-100" onclick="startTestFromSuggestion('${suggestion.type}')">
-                                <i class="fas fa-play"></i> Iniciar Teste
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Erro ao carregar sugestões:', error);
-    }
-}
-
-async function loadWinningLibrary() {
-    try {
-        const response = await fetch('/api/ab-test/library');
-        const data = await response.json();
-        
-        if (data.success && data.library) {
-            const container = document.getElementById('winningLibrary');
-            container.innerHTML = data.library.map(item => `
-                <div class="col-md-6 mb-3">
-                    <div class="card border-success">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <span class="badge bg-success mb-2">${item.type}</span>
-                                    <h6 class="card-title">${item.content}</h6>
-                                </div>
-                                <i class="fas fa-trophy text-warning fa-2x"></i>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-6">
-                                    <small class="text-muted">CTR/CVR Médio</small>
-                                    <p class="mb-0 fw-bold">${item.avg_ctr || item.avg_cvr}%</p>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted">Testes Vencidos</small>
-                                    <p class="mb-0 fw-bold">${item.tests_won}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-sm btn-outline-success w-100" onclick="useWinningVariation('${item.content}')">
-                                <i class="fas fa-copy"></i> Usar Esta Variação
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Erro ao carregar biblioteca:', error);
-    }
-}
-
-async function loadCampaigns() {
-    try {
-        const response = await fetch('/api/campaign/list?limit=100');
-        const data = await response.json();
-        
-        if (data.success && data.campaigns) {
-            const select = document.getElementById('testCampaign');
-            data.campaigns.forEach(campaign => {
-                const option = document.createElement('option');
-                option.value = campaign.id;
-                option.textContent = campaign.name;
-                select.appendChild(option);
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao carregar campanhas:', error);
-    }
-}
-
-async function createTest() {
-    const testName = document.getElementById('testName').value;
-    const testType = document.getElementById('testType').value;
-    const campaignId = document.getElementById('testCampaign').value || null;
-    const originalContent = document.getElementById('originalContent').value;
-    
-    if (!testName || !testType) {
-        alert('Por favor, preencha todos os campos obrigatórios.');
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/ab-test/create', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                test_name: testName,
-                test_type: testType,
-                campaign_id: campaignId,
-                original_content: {
-                    headline: originalContent,
-                    description: originalContent,
-                    cta: originalContent
-                }
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            alert('✅ Teste A/B criado com sucesso! ' + data.variations.length + ' variações foram geradas.');
-            bootstrap.Modal.getInstance(document.getElementById('createTestModal')).hide();
-            document.getElementById('createTestForm').reset();
-            location.reload();
-        } else {
-            alert('❌ Erro ao criar teste: ' + data.message);
-        }
-    } catch (error) {
-        alert('❌ Erro de conexão: ' + error.message);
-    }
-}
-
-function getIconForType(type) {
-    const icons = {
-        'headline': 'heading',
-        'description': 'align-left',
-        'cta': 'hand-pointer',
-        'image': 'image',
-        'audience': 'users',
-        'targeting': 'bullseye',
-        'creative': 'palette',
-        'budget': 'dollar-sign'
-    };
-    return icons[type] || 'flask';
-}
-
-function startTestFromSuggestion(type) {
-    document.getElementById('testType').value = type;
-    const modal = new bootstrap.Modal(document.getElementById('createTestModal'));
-    modal.show();
-}
-
-function useWinningVariation(content) {
-    navigator.clipboard.writeText(content);
-    alert('✅ Variação copiada para a área de transferência!');
-}
 </script>
 {% endblock %}

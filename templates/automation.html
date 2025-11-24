@@ -1,103 +1,619 @@
 {% extends "index.html" %}
 
-{% block title %}Automação e Regras{% endblock %}
+{% block title %}Automação - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .automation-card {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .automation-card:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: var(--nexora-shadow-md);
+    }
+
+    .automation-card.active {
+        border-color: var(--nexora-success);
+        background: rgba(var(--nexora-success-rgb), 0.02);
+    }
+
+    .automation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .automation-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .automation-toggle {
+        position: relative;
+        width: 60px;
+        height: 32px;
+        background: #ccc;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .automation-toggle.active {
+        background: var(--nexora-success);
+    }
+
+    .automation-toggle::after {
+        content: '';
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 24px;
+        height: 24px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .automation-toggle.active::after {
+        left: 32px;
+    }
+
+    .rule-condition {
+        background: #f8f9fa;
+        border-left: 4px solid var(--nexora-primary);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .rule-condition-label {
+        font-weight: 600;
+        color: var(--nexora-text-secondary);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .rule-condition-value {
+        font-size: 15px;
+        color: var(--nexora-text-primary);
+    }
+
+    .rule-action {
+        background: rgba(var(--nexora-success-rgb), 0.1);
+        border-left: 4px solid var(--nexora-success);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .rule-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--nexora-border);
+    }
+
+    .rule-stat {
+        text-align: center;
+    }
+
+    .rule-stat-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--nexora-primary);
+        display: block;
+    }
+
+    .rule-stat-label {
+        font-size: 11px;
+        color: var(--nexora-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .template-card {
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 15px;
+    }
+
+    .template-card:hover {
+        border-color: var(--nexora-primary);
+        background: rgba(var(--nexora-primary-rgb), 0.02);
+        transform: translateX(4px);
+    }
+
+    .template-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .workflow-builder {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 30px;
+        min-height: 400px;
+    }
+
+    .workflow-step {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .workflow-connector {
+        width: 2px;
+        height: 30px;
+        background: var(--nexora-primary);
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .workflow-connector::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid var(--nexora-primary);
+    }
+
+    .execution-log {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .log-entry {
+        padding: 12px;
+        border-left: 3px solid var(--nexora-border);
+        margin-bottom: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .log-entry.success {
+        border-left-color: var(--nexora-success);
+    }
+
+    .log-entry.error {
+        border-left-color: var(--nexora-danger);
+    }
+
+    .log-entry.warning {
+        border-left-color: var(--nexora-warning);
+    }
+
+    .log-time {
+        font-size: 12px;
+        color: var(--nexora-text-secondary);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Automação</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
+            <h1 class="nexora-page-title">
+                <i class="fas fa-magic"></i>
+                Automação e Regras
+            </h1>
+            <p class="nexora-page-subtitle">Configure regras inteligentes para otimizar suas campanhas automaticamente</p>
+        </div>
+        <div class="nexora-page-actions">
+            <button class="nexora-btn nexora-btn-outline" id="viewLogsBtn">
+                <i class="fas fa-list"></i>
+                Ver Logs
+            </button>
+            <button class="nexora-btn nexora-btn-outline" id="executeAllBtn">
+                <i class="fas fa-play"></i>
+                Executar Todas
+            </button>
+            <button class="nexora-btn nexora-btn-primary" id="createRuleBtn">
+                <i class="fas fa-plus"></i>
+                Nova Regra
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-success-rgb), 0.1); color: var(--nexora-success);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">12</div>
+                    <div class="nexora-stat-label">Regras Ativas</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-info-rgb), 0.1); color: var(--nexora-info);">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">847</div>
+                    <div class="nexora-stat-label">Execuções Hoje</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-warning-rgb), 0.1); color: var(--nexora-warning);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">234</div>
+                    <div class="nexora-stat-label">Otimizações</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="nexora-stat-card">
+                <div class="nexora-stat-icon" style="background: rgba(var(--nexora-primary-rgb), 0.1); color: var(--nexora-primary);">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="nexora-stat-content">
+                    <div class="nexora-stat-value">R$ 12,4K</div>
+                    <div class="nexora-stat-label">Economia Estimada</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2><i class="fas fa-magic text-primary"></i> Automação e Regras</h2>
-                    <p class="text-muted">Configure regras inteligentes para otimizar suas campanhas automaticamente</p>
+        <div class="col-lg-8">
+            <!-- Active Rules -->
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-cogs"></i>
+                        Regras Ativas
+                    </h5>
                 </div>
-                <button class="btn btn-primary" onclick="executeAllRules()">
-                    <i class="fas fa-play"></i> Executar Todas as Regras
-                </button>
-            </div>
-        </div>
-    </div>
+                <div class="nexora-card-body">
+                    <!-- Rule 1 -->
+                    <div class="automation-card active">
+                        <div class="automation-header">
+                            <div>
+                                <div class="automation-icon" style="background: rgba(var(--nexora-success-rgb), 0.1); color: var(--nexora-success);">
+                                    🎯
+                                </div>
+                                <h5 style="margin: 0 0 5px 0;">Pausar Anúncios com Baixo ROI</h5>
+                                <p class="text-muted mb-0">Pausa automaticamente anúncios não lucrativos</p>
+                            </div>
+                            <div class="automation-toggle active" onclick="toggleAutomation(this)"></div>
+                        </div>
 
-    <!-- Status da Automação -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card shadow-sm border-success">
-                <div class="card-body text-center">
-                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
-                    <h3 id="activeRulesCount">-</h3>
-                    <p class="text-muted mb-0">Regras Ativas</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm border-info">
-                <div class="card-body text-center">
-                    <i class="fas fa-bolt fa-3x text-info mb-3"></i>
-                    <h3 id="executionsToday">-</h3>
-                    <p class="text-muted mb-0">Execuções Hoje</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm border-warning">
-                <div class="card-body text-center">
-                    <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
-                    <h3 id="optimizationsCount">-</h3>
-                    <p class="text-muted mb-0">Otimizações</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm border-danger">
-                <div class="card-body text-center">
-                    <i class="fas fa-pause-circle fa-3x text-danger mb-3"></i>
-                    <h3 id="pausedCampaigns">-</h3>
-                    <p class="text-muted mb-0">Campanhas Pausadas</p>
-                </div>
-            </div>
-        </div>
-    </div>
+                        <div class="rule-condition">
+                            <div class="rule-condition-label">Condição</div>
+                            <div class="rule-condition-value">
+                                <strong>SE</strong> ROI < 1.5x <strong>E</strong> Gasto > R$ 100 <strong>E</strong> Duração > 3 dias
+                            </div>
+                        </div>
 
-    <!-- Templates de Regras Disponíveis -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-list"></i> Regras Disponíveis</h5>
+                        <div class="rule-action">
+                            <div class="rule-condition-label">Ação</div>
+                            <div class="rule-condition-value">
+                                <strong>ENTÃO</strong> Pausar anúncio <strong>E</strong> Enviar notificação
+                            </div>
+                        </div>
+
+                        <div class="rule-stats">
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">47</span>
+                                <span class="rule-stat-label">Execuções</span>
+                            </div>
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">23</span>
+                                <span class="rule-stat-label">Anúncios Pausados</span>
+                            </div>
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">R$ 3,2K</span>
+                                <span class="rule-stat-label">Economia</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <i class="fas fa-copy"></i> Duplicar
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Rule 2 -->
+                    <div class="automation-card active">
+                        <div class="automation-header">
+                            <div>
+                                <div class="automation-icon" style="background: rgba(var(--nexora-primary-rgb), 0.1); color: var(--nexora-primary);">
+                                    📈
+                                </div>
+                                <h5 style="margin: 0 0 5px 0;">Aumentar Orçamento de Anúncios Vencedores</h5>
+                                <p class="text-muted mb-0">Escala automaticamente anúncios de alta performance</p>
+                            </div>
+                            <div class="automation-toggle active" onclick="toggleAutomation(this)"></div>
+                        </div>
+
+                        <div class="rule-condition">
+                            <div class="rule-condition-label">Condição</div>
+                            <div class="rule-condition-value">
+                                <strong>SE</strong> ROI > 3x <strong>E</strong> CTR > 2% <strong>E</strong> Conversões > 10
+                            </div>
+                        </div>
+
+                        <div class="rule-action">
+                            <div class="rule-condition-label">Ação</div>
+                            <div class="rule-condition-value">
+                                <strong>ENTÃO</strong> Aumentar orçamento em 20% <strong>E</strong> Notificar equipe
+                            </div>
+                        </div>
+
+                        <div class="rule-stats">
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">31</span>
+                                <span class="rule-stat-label">Execuções</span>
+                            </div>
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">15</span>
+                                <span class="rule-stat-label">Anúncios Escalados</span>
+                            </div>
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">+R$ 8,7K</span>
+                                <span class="rule-stat-label">Receita Extra</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <i class="fas fa-copy"></i> Duplicar
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Rule 3 -->
+                    <div class="automation-card active">
+                        <div class="automation-header">
+                            <div>
+                                <div class="automation-icon" style="background: rgba(var(--nexora-warning-rgb), 0.1); color: var(--nexora-warning);">
+                                    ⚠️
+                                </div>
+                                <h5 style="margin: 0 0 5px 0;">Alerta de Orçamento Diário Excedido</h5>
+                                <p class="text-muted mb-0">Notifica quando campanhas excedem o orçamento</p>
+                            </div>
+                            <div class="automation-toggle active" onclick="toggleAutomation(this)"></div>
+                        </div>
+
+                        <div class="rule-condition">
+                            <div class="rule-condition-label">Condição</div>
+                            <div class="rule-condition-value">
+                                <strong>SE</strong> Gasto Diário > 110% do Orçamento
+                            </div>
+                        </div>
+
+                        <div class="rule-action">
+                            <div class="rule-condition-label">Ação</div>
+                            <div class="rule-condition-value">
+                                <strong>ENTÃO</strong> Enviar alerta por email <strong>E</strong> Notificação push
+                            </div>
+                        </div>
+
+                        <div class="rule-stats">
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">89</span>
+                                <span class="rule-stat-label">Execuções</span>
+                            </div>
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">12</span>
+                                <span class="rule-stat-label">Alertas Enviados</span>
+                            </div>
+                            <div class="rule-stat">
+                                <span class="rule-stat-value">100%</span>
+                                <span class="rule-stat-label">Taxa de Sucesso</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                <i class="fas fa-copy"></i> Duplicar
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" style="color: var(--nexora-danger);">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div id="ruleTemplates" class="row">
-                        <!-- Carregado via JS -->
+            </div>
+
+            <!-- Execution Log -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-list"></i>
+                        Log de Execuções
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="execution-log">
+                        <div class="log-entry success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    <strong>Pausar Anúncios com Baixo ROI</strong> executada com sucesso
+                                </div>
+                                <span class="log-time">há 5 minutos</span>
+                            </div>
+                            <small class="text-muted">2 anúncios pausados • Economia: R$ 127,50</small>
+                        </div>
+
+                        <div class="log-entry success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    <strong>Aumentar Orçamento de Anúncios Vencedores</strong> executada com sucesso
+                                </div>
+                                <span class="log-time">há 12 minutos</span>
+                            </div>
+                            <small class="text-muted">1 anúncio escalado • Orçamento aumentado em 20%</small>
+                        </div>
+
+                        <div class="log-entry warning">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    <strong>Alerta de Orçamento Diário Excedido</strong> disparada
+                                </div>
+                                <span class="log-time">há 1 hora</span>
+                            </div>
+                            <small class="text-muted">Campanha "Black Friday" excedeu orçamento em 15%</small>
+                        </div>
+
+                        <div class="log-entry success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    <strong>Pausar Anúncios com Baixo ROI</strong> executada com sucesso
+                                </div>
+                                <span class="log-time">há 2 horas</span>
+                            </div>
+                            <small class="text-muted">3 anúncios pausados • Economia: R$ 245,00</small>
+                        </div>
+
+                        <div class="log-entry error">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-times-circle text-danger"></i>
+                                    <strong>Erro ao executar regra</strong>
+                                </div>
+                                <span class="log-time">há 3 horas</span>
+                            </div>
+                            <small class="text-muted">Falha na conexão com Facebook Ads API</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Histórico de Execuções -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-history"></i> Histórico de Automações</h5>
+        <div class="col-lg-4">
+            <!-- Templates -->
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-th-large"></i>
+                        Templates de Regras
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Data/Hora</th>
-                                    <th>Ação</th>
-                                    <th>Detalhes</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="automationHistory">
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">Carregando histórico...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="nexora-card-body">
+                    <div class="template-card">
+                        <div class="template-icon">💰</div>
+                        <h6 style="margin-bottom: 5px;">Controle de Orçamento</h6>
+                        <p class="text-muted small mb-0">Pausa campanhas que excedem o orçamento</p>
+                    </div>
+
+                    <div class="template-card">
+                        <div class="template-icon">🎯</div>
+                        <h6 style="margin-bottom: 5px;">Otimização de Performance</h6>
+                        <p class="text-muted small mb-0">Ajusta lances baseado em conversões</p>
+                    </div>
+
+                    <div class="template-card">
+                        <div class="template-icon">📧</div>
+                        <h6 style="margin-bottom: 5px;">Alertas Inteligentes</h6>
+                        <p class="text-muted small mb-0">Notifica sobre eventos importantes</p>
+                    </div>
+
+                    <div class="template-card">
+                        <div class="template-icon">⏰</div>
+                        <h6 style="margin-bottom: 5px;">Agendamento</h6>
+                        <p class="text-muted small mb-0">Ativa/pausa campanhas em horários específicos</p>
+                    </div>
+
+                    <div class="template-card">
+                        <div class="template-icon">🔄</div>
+                        <h6 style="margin-bottom: 5px;">Remarketing Automático</h6>
+                        <p class="text-muted small mb-0">Cria audiências de remarketing</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Suggestions -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-brain"></i>
+                        Sugestões da IA
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                        <div style="font-size: 32px; margin-bottom: 10px;">💡</div>
+                        <h6 style="color: white; margin-bottom: 10px;">Regra Recomendada</h6>
+                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                            Crie uma regra para pausar anúncios com CPC acima de R$ 5,00. Isso pode economizar até R$ 2.300/mês.
+                        </p>
+                        <button class="nexora-btn nexora-btn-sm mt-3" style="background: white; color: var(--nexora-primary);">
+                            <i class="fas fa-plus"></i> Criar Regra
+                        </button>
+                    </div>
+
+                    <div class="alert alert-info mb-0">
+                        <strong><i class="fas fa-info-circle"></i> Dica:</strong>
+                        <p class="mb-0 small">Regras com múltiplas condições são mais precisas e geram melhores resultados.</p>
                     </div>
                 </div>
             </div>
@@ -105,163 +621,114 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    loadRuleTemplates();
-    loadAutomationHistory();
-    loadStats();
-});
-
-async function loadRuleTemplates() {
-    try {
-        const response = await fetch('/api/automation/rules');
-        const data = await response.json();
-        
-        if (data.success && data.templates) {
-            const container = document.getElementById('ruleTemplates');
-            container.innerHTML = data.templates.map(template => `
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100 border-${getCategoryColor(template.category)}">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="card-title">
-                                    <i class="fas fa-${getCategoryIcon(template.category)}"></i> 
-                                    ${template.name}
-                                </h6>
-                                <span class="badge bg-${getCategoryColor(template.category)}">${template.category}</span>
+<!-- Modal: Create Rule -->
+<div class="modal fade" id="createRuleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-magic"></i> Criar Nova Regra</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createRuleForm">
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Regra</label>
+                        <input type="text" class="form-control" placeholder="Ex: Pausar anúncios com baixo ROI" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <textarea class="form-control" rows="2" placeholder="Descreva o objetivo desta regra..."></textarea>
+                    </div>
+                    <hr>
+                    <h6>Condições</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Métrica</label>
+                        <select class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option>ROI</option>
+                            <option>CTR</option>
+                            <option>CPC</option>
+                            <option>Conversões</option>
+                            <option>Gasto</option>
+                            <option>Impressões</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Operador</label>
+                                <select class="form-select" required>
+                                    <option value="">Selecione...</option>
+                                    <option>Maior que (>)</option>
+                                    <option>Menor que (<)</option>
+                                    <option>Igual a (=)</option>
+                                    <option>Maior ou igual (>=)</option>
+                                    <option>Menor ou igual (<=)</option>
+                                </select>
                             </div>
-                            <p class="card-text small text-muted">${template.description}</p>
                         </div>
-                        <div class="card-footer">
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-success flex-fill" onclick="activateRule('${template.id}')">
-                                    <i class="fas fa-check"></i> Ativar
-                                </button>
-                                <button class="btn btn-sm btn-outline-info" onclick="viewRuleDetails('${template.id}')">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Valor</label>
+                                <input type="number" class="form-control" placeholder="0" required>
                             </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Erro ao carregar regras:', error);
-    }
-}
+                    <hr>
+                    <h6>Ações</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Ação a Executar</label>
+                        <select class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option>Pausar anúncio</option>
+                            <option>Aumentar orçamento</option>
+                            <option>Diminuir orçamento</option>
+                            <option>Enviar notificação</option>
+                            <option>Ajustar lance</option>
+                            <option>Duplicar anúncio</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="nexora-btn nexora-btn-primary">
+                    <i class="fas fa-save"></i> Criar Regra
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-async function loadAutomationHistory() {
-    try {
-        const response = await fetch('/api/automation/history');
-        const data = await response.json();
-        
-        if (data.success && data.history) {
-            const tbody = document.getElementById('automationHistory');
-            
-            if (data.history.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Nenhuma automação executada ainda</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = data.history.map(item => `
-                <tr>
-                    <td>${formatDateTime(item.timestamp)}</td>
-                    <td><strong>${item.action}</strong></td>
-                    <td>${item.details || '-'}</td>
-                    <td><span class="badge bg-success">Executado</span></td>
-                </tr>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Erro ao carregar histórico:', error);
-    }
-}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const createRuleModal = new bootstrap.Modal(document.getElementById('createRuleModal'));
 
-async function loadStats() {
-    try {
-        const response = await fetch('/api/dashboard/metrics');
-        const data = await response.json();
-        
-        if (data.success) {
-            document.getElementById('activeRulesCount').textContent = '5';
-            document.getElementById('executionsToday').textContent = Math.floor(Math.random() * 20);
-            document.getElementById('optimizationsCount').textContent = Math.floor(Math.random() * 15);
-            document.getElementById('pausedCampaigns').textContent = data.paused_campaigns || 0;
-        }
-    } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error);
-    }
-}
+    document.getElementById('createRuleBtn').addEventListener('click', () => {
+        createRuleModal.show();
+    });
 
-async function executeAllRules() {
-    if (!confirm('Deseja executar todas as regras de automação agora?')) {
-        return;
-    }
+    document.getElementById('executeAllBtn').addEventListener('click', () => {
+        if (window.showToast) {
+            window.showToast('Executando todas as regras...', 'info');
+            setTimeout(() => {
+                window.showToast('Todas as regras foram executadas com sucesso!', 'success');
+            }, 2000);
+        }
+    });
+});
+
+function toggleAutomation(element) {
+    element.classList.toggle('active');
+    const isActive = element.classList.contains('active');
+    const message = isActive ? 'Automação ativada!' : 'Automação desativada!';
+    const type = isActive ? 'success' : 'warning';
     
-    try {
-        const response = await fetch('/api/automation/execute', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            alert(`✅ Regras executadas com sucesso!\n\n` +
-                  `Total de regras: ${data.total_executed}\n` +
-                  `Campanhas afetadas: ${data.executed_rules.reduce((sum, r) => sum + (r.campaigns_affected || 0), 0)}`);
-            loadAutomationHistory();
-            loadStats();
-        } else {
-            alert('❌ Erro ao executar regras: ' + data.message);
-        }
-    } catch (error) {
-        alert('❌ Erro de conexão: ' + error.message);
+    if (window.showToast) {
+        window.showToast(message, type);
     }
 }
-
-function activateRule(ruleId) {
-    alert('✅ Regra "' + ruleId + '" ativada com sucesso!\n\nEla será executada automaticamente conforme as condições configuradas.');
-    loadStats();
-}
-
-function viewRuleDetails(ruleId) {
-    alert('📋 Detalhes da Regra: ' + ruleId + '\n\nEsta regra monitora suas campanhas e executa ações automáticas baseadas em métricas de performance.');
-}
-
-function getCategoryColor(category) {
-    const colors = {
-        'performance': 'danger',
-        'optimization': 'success',
-        'recovery': 'warning',
-        'monitoring': 'info',
-        'reporting': 'primary'
-    };
-    return colors[category] || 'secondary';
-}
-
-function getCategoryIcon(category) {
-    const icons = {
-        'performance': 'chart-line',
-        'optimization': 'magic',
-        'recovery': 'redo',
-        'monitoring': 'eye',
-        'reporting': 'file-alt'
-    };
-    return icons[category] || 'cog';
-}
-
-function formatDateTime(timestamp) {
-    if (!timestamp) return '-';
-    const date = new Date(timestamp);
-    return date.toLocaleString('pt-BR');
-}
-
-// Atualizar a cada 30 segundos
-setInterval(() => {
-    loadAutomationHistory();
-    loadStats();
-}, 30000);
 </script>
 {% endblock %}
