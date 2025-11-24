@@ -1,21 +1,658 @@
 {% extends "index.html" %}
 
-{% block title %}Criar Campanha - Manus Marketing{% endblock %}
+{% block title %}Criar Campanha - NEXORA Operator v11.7{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/campaigns">Campanhas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Criar Campanha</li>
+    </ol>
+</nav>
+
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-plus-circle"></i> Criar Campanha</h1>
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 mb-2"><i class="fas fa-plus-circle"></i> Criar Nova Campanha</h1>
+            <p class="text-muted mb-0">Wizard inteligente em 5 passos com auxílio da IA</p>
+        </div>
     </div>
     
-    
-<div class="card">
-    <div class="card-body">
-        <h5>Wizard de Criação de Campanha</h5>
-        <p>Crie campanhas completas em 5 passos com auxílio da IA</p>
-        <a href="/create-campaign" class="btn btn-primary">Iniciar Wizard</a>
+    <!-- Progress Steps -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <div class="step-indicator" id="step1">
+                        <div class="step-number active">1</div>
+                        <div class="step-label">Informações Básicas</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="step-indicator" id="step2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Plataforma & Objetivo</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="step-indicator" id="step3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Público-Alvo</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="step-indicator" id="step4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Orçamento & Cronograma</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="step-indicator" id="step5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Revisão & Criação</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <!-- Form Container -->
+    <form id="campaignForm">
+        <!-- Step 1: Informações Básicas -->
+        <div class="step-content active" id="content-step1">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Passo 1: Informações Básicas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-4">
+                                <label class="form-label">Nome da Campanha <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-lg" id="campaignName" 
+                                       placeholder="Ex: Lançamento Produto X - Black Friday 2024" required>
+                                <div class="form-text">Escolha um nome descritivo e único</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Descrição</label>
+                                <textarea class="form-control" id="campaignDescription" rows="4" 
+                                          placeholder="Descreva os objetivos e detalhes da campanha..."></textarea>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Categoria</label>
+                                <select class="form-select" id="campaignCategory">
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="ecommerce">E-commerce</option>
+                                    <option value="lead-generation">Geração de Leads</option>
+                                    <option value="brand-awareness">Reconhecimento de Marca</option>
+                                    <option value="app-install">Instalação de App</option>
+                                    <option value="traffic">Tráfego</option>
+                                    <option value="engagement">Engajamento</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-lightbulb"></i> Dica da IA</h6>
+                                <p class="small mb-0">Use nomes que identifiquem claramente o produto, período e objetivo. Isso facilita a organização e análise posterior.</p>
+                            </div>
+                            
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Exemplos de Nomes</h6>
+                                    <ul class="small mb-0">
+                                        <li>Black Friday 2024 - Eletrônicos</li>
+                                        <li>Lançamento Curso Online - Q1</li>
+                                        <li>Remarketing Carrinho Abandonado</li>
+                                        <li>Natal 2024 - Promoção Geral</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+                            Próximo <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 2: Plataforma & Objetivo -->
+        <div class="step-content" id="content-step2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bullseye"></i> Passo 2: Plataforma & Objetivo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label">Selecione a Plataforma <span class="text-danger">*</span></label>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="platform-card" onclick="selectPlatform('facebook')">
+                                    <input type="radio" name="platform" value="facebook" id="platform-facebook" class="d-none">
+                                    <i class="fab fa-facebook fa-3x text-primary"></i>
+                                    <h6 class="mt-2">Facebook Ads</h6>
+                                    <small class="text-muted">Maior alcance</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="platform-card" onclick="selectPlatform('instagram')">
+                                    <input type="radio" name="platform" value="instagram" id="platform-instagram" class="d-none">
+                                    <i class="fab fa-instagram fa-3x text-danger"></i>
+                                    <h6 class="mt-2">Instagram Ads</h6>
+                                    <small class="text-muted">Visual & Stories</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="platform-card" onclick="selectPlatform('google')">
+                                    <input type="radio" name="platform" value="google" id="platform-google" class="d-none">
+                                    <i class="fab fa-google fa-3x text-warning"></i>
+                                    <h6 class="mt-2">Google Ads</h6>
+                                    <small class="text-muted">Busca & Display</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="platform-card" onclick="selectPlatform('tiktok')">
+                                    <input type="radio" name="platform" value="tiktok" id="platform-tiktok" class="d-none">
+                                    <i class="fab fa-tiktok fa-3x text-dark"></i>
+                                    <h6 class="mt-2">TikTok Ads</h6>
+                                    <small class="text-muted">Vídeos curtos</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Objetivo da Campanha <span class="text-danger">*</span></label>
+                        <select class="form-select form-select-lg" id="campaignObjective" required>
+                            <option value="">Selecione o objetivo principal</option>
+                            <option value="conversions">Conversões / Vendas</option>
+                            <option value="traffic">Tráfego para o Site</option>
+                            <option value="leads">Geração de Leads</option>
+                            <option value="engagement">Engajamento</option>
+                            <option value="awareness">Reconhecimento de Marca</option>
+                            <option value="app-installs">Instalações de App</option>
+                            <option value="video-views">Visualizações de Vídeo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Meta de Conversão</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="conversionGoal" placeholder="100">
+                            <span class="input-group-text">conversões/mês</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep(1)">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(3)">
+                            Próximo <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 3: Público-Alvo -->
+        <div class="step-content" id="content-step3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-users"></i> Passo 3: Público-Alvo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Faixa Etária</label>
+                            <div class="row g-2">
+                                <div class="col">
+                                    <input type="number" class="form-control" id="ageMin" placeholder="18" min="13" max="65">
+                                    <small class="text-muted">Idade mínima</small>
+                                </div>
+                                <div class="col-auto d-flex align-items-center">até</div>
+                                <div class="col">
+                                    <input type="number" class="form-control" id="ageMax" placeholder="65" min="18" max="65">
+                                    <small class="text-muted">Idade máxima</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Gênero</label>
+                            <select class="form-select" id="gender">
+                                <option value="all">Todos</option>
+                                <option value="male">Masculino</option>
+                                <option value="female">Feminino</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Localização</label>
+                        <select class="form-select" id="location" multiple size="5">
+                            <option value="BR">Brasil (Todo o país)</option>
+                            <option value="BR-SP">São Paulo</option>
+                            <option value="BR-RJ">Rio de Janeiro</option>
+                            <option value="BR-MG">Minas Gerais</option>
+                            <option value="BR-RS">Rio Grande do Sul</option>
+                        </select>
+                        <small class="text-muted">Segure Ctrl para selecionar múltiplos</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Interesses</label>
+                        <input type="text" class="form-control" id="interests" 
+                               placeholder="Ex: Tecnologia, Moda, Esportes...">
+                        <small class="text-muted">Separe por vírgulas</small>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-chart-line"></i> Tamanho Estimado do Público</h6>
+                        <p class="mb-0">Aproximadamente <strong>2.5M - 3.2M</strong> pessoas</p>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(4)">
+                            Próximo <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 4: Orçamento & Cronograma -->
+        <div class="step-content" id="content-step4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Passo 4: Orçamento & Cronograma</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Orçamento Diário <span class="text-danger">*</span></label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">R$</span>
+                                <input type="number" class="form-control" id="dailyBudget" 
+                                       placeholder="100.00" step="0.01" required>
+                            </div>
+                            <small class="text-muted">Mínimo recomendado: R$ 50,00</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Orçamento Total (Opcional)</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">R$</span>
+                                <input type="number" class="form-control" id="totalBudget" 
+                                       placeholder="3000.00" step="0.01">
+                            </div>
+                            <small class="text-muted">Deixe vazio para campanha contínua</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Data de Início <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="startDate" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Data de Término</label>
+                            <input type="date" class="form-control" id="endDate">
+                            <small class="text-muted">Deixe vazio para campanha contínua</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Estratégia de Lance</label>
+                        <select class="form-select" id="biddingStrategy">
+                            <option value="lowest-cost">Custo Mais Baixo (Recomendado)</option>
+                            <option value="target-cost">Custo Alvo</option>
+                            <option value="cost-cap">Limite de Custo</option>
+                            <option value="bid-cap">Limite de Lance</option>
+                        </select>
+                    </div>
+                    
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6><i class="fas fa-calculator"></i> Estimativa de Resultados</h6>
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <h4 class="text-primary">~45K</h4>
+                                    <small class="text-muted">Impressões/dia</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="text-success">~900</h4>
+                                    <small class="text-muted">Cliques/dia</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="text-warning">~45</h4>
+                                    <small class="text-muted">Conversões/dia</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="text-info">R$ 2,22</h4>
+                                    <small class="text-muted">CPC estimado</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep(3)">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(5)">
+                            Próximo <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 5: Revisão & Criação -->
+        <div class="step-content" id="content-step5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle"></i> Passo 5: Revisão & Criação</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Revise os Dados da Campanha</h6>
+                        <p class="mb-0">Confira todas as informações antes de criar a campanha</p>
+                    </div>
+                    
+                    <div id="reviewSummary">
+                        <!-- Summary will be generated here -->
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="termsAccept" required>
+                        <label class="form-check-label" for="termsAccept">
+                            Confirmo que revisei todas as informações e aceito os <a href="#">termos de uso</a>
+                        </label>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep(4)">
+                            <i class="fas fa-arrow-left"></i> Anterior
+                        </button>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-rocket"></i> Criar Campanha
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
-</div>
+<style>
+/* Step Indicator */
+.step-indicator {
+    text-align: center;
+    position: relative;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--nexora-gray-300);
+    color: var(--nexora-gray-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin: 0 auto 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.step-number.active {
+    background-color: var(--nexora-primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+}
+
+.step-number.completed {
+    background-color: var(--nexora-success);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.875rem;
+    color: var(--nexora-gray-600);
+    font-weight: 500;
+}
+
+/* Step Content */
+.step-content {
+    display: none;
+}
+
+.step-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Platform Cards */
+.platform-card {
+    border: 2px solid var(--nexora-gray-300);
+    border-radius: var(--nexora-radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.platform-card:hover {
+    border-color: var(--nexora-primary);
+    box-shadow: var(--nexora-shadow-md);
+    transform: translateY(-4px);
+}
+
+.platform-card.selected {
+    border-color: var(--nexora-primary);
+    background-color: rgba(30, 58, 138, 0.05);
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
+}
+</style>
+
+<script>
+let currentStep = 1;
+let selectedPlatform = '';
+
+// Navigation
+function nextStep(step) {
+    if (!validateStep(currentStep)) return;
+    
+    // Update step indicators
+    document.querySelector(`#step${currentStep} .step-number`).classList.remove('active');
+    document.querySelector(`#step${currentStep} .step-number`).classList.add('completed');
+    document.querySelector(`#step${step} .step-number`).classList.add('active');
+    
+    // Update content
+    document.querySelector(`#content-step${currentStep}`).classList.remove('active');
+    document.querySelector(`#content-step${step}`).classList.add('active');
+    
+    currentStep = step;
+    
+    if (step === 5) {
+        generateReviewSummary();
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep(step) {
+    // Update step indicators
+    document.querySelector(`#step${currentStep} .step-number`).classList.remove('active');
+    document.querySelector(`#step${step} .step-number`).classList.remove('completed');
+    document.querySelector(`#step${step} .step-number`).classList.add('active');
+    
+    // Update content
+    document.querySelector(`#content-step${currentStep}`).classList.remove('active');
+    document.querySelector(`#content-step${step}`).classList.add('active');
+    
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Platform selection
+function selectPlatform(platform) {
+    selectedPlatform = platform;
+    document.querySelectorAll('.platform-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    event.currentTarget.classList.add('selected');
+    document.getElementById(`platform-${platform}`).checked = true;
+}
+
+// Validation
+function validateStep(step) {
+    switch(step) {
+        case 1:
+            const name = document.getElementById('campaignName').value;
+            if (!name.trim()) {
+                alert('Por favor, preencha o nome da campanha');
+                return false;
+            }
+            break;
+        case 2:
+            if (!selectedPlatform) {
+                alert('Por favor, selecione uma plataforma');
+                return false;
+            }
+            const objective = document.getElementById('campaignObjective').value;
+            if (!objective) {
+                alert('Por favor, selecione um objetivo');
+                return false;
+            }
+            break;
+        case 4:
+            const budget = document.getElementById('dailyBudget').value;
+            const startDate = document.getElementById('startDate').value;
+            if (!budget || !startDate) {
+                alert('Por favor, preencha o orçamento e data de início');
+                return false;
+            }
+            break;
+    }
+    return true;
+}
+
+// Generate review summary
+function generateReviewSummary() {
+    const summary = `
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Informações Básicas</h6>
+                        <p><strong>Nome:</strong> ${document.getElementById('campaignName').value}</p>
+                        <p><strong>Categoria:</strong> ${document.getElementById('campaignCategory').value || 'Não especificada'}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Plataforma & Objetivo</h6>
+                        <p><strong>Plataforma:</strong> ${selectedPlatform}</p>
+                        <p><strong>Objetivo:</strong> ${document.getElementById('campaignObjective').value}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Público-Alvo</h6>
+                        <p><strong>Idade:</strong> ${document.getElementById('ageMin').value || '18'} - ${document.getElementById('ageMax').value || '65'} anos</p>
+                        <p><strong>Gênero:</strong> ${document.getElementById('gender').value}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Orçamento</h6>
+                        <p><strong>Diário:</strong> R$ ${document.getElementById('dailyBudget').value}</p>
+                        <p><strong>Período:</strong> ${document.getElementById('startDate').value} - ${document.getElementById('endDate').value || 'Contínuo'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.getElementById('reviewSummary').innerHTML = summary;
+}
+
+// Form submission
+document.getElementById('campaignForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!document.getElementById('termsAccept').checked) {
+        alert('Por favor, aceite os termos de uso');
+        return;
+    }
+    
+    const formData = {
+        name: document.getElementById('campaignName').value,
+        description: document.getElementById('campaignDescription').value,
+        category: document.getElementById('campaignCategory').value,
+        platform: selectedPlatform,
+        objective: document.getElementById('campaignObjective').value,
+        dailyBudget: document.getElementById('dailyBudget').value,
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+    };
+    
+    try {
+        const response = await fetch('/api/campaign/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Campanha criada com sucesso!', 'success');
+            setTimeout(() => {
+                window.location.href = '/campaigns';
+            }, 1500);
+        } else {
+            showToast('Erro ao criar campanha', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Erro ao criar campanha', 'error');
+    }
+});
+
+// Set minimum date to today
+document.getElementById('startDate').min = new Date().toISOString().split('T')[0];
+</script>
 {% endblock %}

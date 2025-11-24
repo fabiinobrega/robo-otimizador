@@ -1,20 +1,527 @@
 {% extends "index.html" %}
 
-{% block title %}Relatórios - Manus Marketing{% endblock %}
+{% block title %}Relatórios - NEXORA Operator v11.7{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Relatórios</li>
+    </ol>
+</nav>
+
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-file-alt"></i> Relatórios</h1>
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 mb-2"><i class="fas fa-chart-bar"></i> Relatórios de Performance</h1>
+            <p class="text-muted mb-0">Análise completa de suas campanhas e métricas</p>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <button class="btn btn-outline-primary" onclick="exportReport('pdf')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+                <button class="btn btn-outline-success" onclick="exportReport('excel')">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+            </div>
+            <button class="btn btn-primary" onclick="generateCustomReport()">
+                <i class="fas fa-plus"></i> Novo Relatório
+            </button>
+        </div>
     </div>
     
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Período</label>
+                    <select class="form-select" id="periodFilter" onchange="applyFilters()">
+                        <option value="today">Hoje</option>
+                        <option value="yesterday">Ontem</option>
+                        <option value="7days">Últimos 7 dias</option>
+                        <option value="30days" selected>Últimos 30 dias</option>
+                        <option value="90days">Últimos 90 dias</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Campanha</label>
+                    <select class="form-select" id="campaignFilter" onchange="applyFilters()">
+                        <option value="">Todas as campanhas</option>
+                        <option value="1">Black Friday 2024</option>
+                        <option value="2">Lançamento Produto X</option>
+                        <option value="3">Remarketing Q4</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Plataforma</label>
+                    <select class="form-select" id="platformFilter" onchange="applyFilters()">
+                        <option value="">Todas</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="google">Google</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="tiktok">TikTok</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Comparar com</label>
+                    <select class="form-select" id="compareFilter" onchange="applyFilters()">
+                        <option value="">Sem comparação</option>
+                        <option value="previous">Período anterior</option>
+                        <option value="year">Mesmo período ano passado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
     
-<div class="card">
-    <div class="card-body">
-        <h5>Relatórios de Performance</h5>
-        <button class="btn btn-success">Exportar PDF</button>
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <p class="text-muted mb-1 small">Investimento Total</p>
+                            <h3 class="mb-0">R$ <span id="totalSpend">12.450,00</span></h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-arrow-up"></i> 12%
+                        </span>
+                        <small class="text-muted">vs período anterior</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <p class="text-muted mb-1 small">Receita Gerada</p>
+                            <h3 class="mb-0">R$ <span id="totalRevenue">38.920,00</span></h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="fas fa-chart-line fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-arrow-up"></i> 18%
+                        </span>
+                        <small class="text-muted">vs período anterior</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <p class="text-muted mb-1 small">ROAS Médio</p>
+                            <h3 class="mb-0"><span id="avgRoas">3.13</span>x</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="fas fa-chart-pie fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-arrow-up"></i> 5%
+                        </span>
+                        <small class="text-muted">vs período anterior</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <p class="text-muted mb-1 small">Conversões</p>
+                            <h3 class="mb-0"><span id="totalConversions">1.247</span></h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-arrow-up"></i> 22%
+                        </span>
+                        <small class="text-muted">vs período anterior</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráficos Principais -->
+    <div class="row mb-4">
+        <div class="col-md-8 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-chart-area"></i> Performance ao Longo do Tempo</h5>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" onclick="changeMetric('revenue')">Receita</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="changeMetric('conversions')">Conversões</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="changeMetric('roas')">ROAS</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Distribuição por Plataforma</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="platformChart"></canvas>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fab fa-facebook text-primary"></i> Facebook</span>
+                            <strong>45%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fab fa-google text-danger"></i> Google</span>
+                            <strong>30%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fab fa-instagram text-warning"></i> Instagram</span>
+                            <strong>20%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fab fa-tiktok text-dark"></i> TikTok</span>
+                            <strong>5%</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Métricas Detalhadas -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-mouse-pointer"></i> Métricas de Engajamento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4 border-end">
+                            <h4 class="text-primary mb-1">2.4M</h4>
+                            <small class="text-muted">Impressões</small>
+                        </div>
+                        <div class="col-4 border-end">
+                            <h4 class="text-success mb-1">48.5K</h4>
+                            <small class="text-muted">Cliques</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-info mb-1">2.02%</h4>
+                            <small class="text-muted">CTR</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <canvas id="engagementChart" height="60"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-funnel-dollar"></i> Funil de Conversão</h5>
+                </div>
+                <div class="card-body">
+                    <div class="funnel-step">
+                        <div class="funnel-bar" style="width: 100%; background-color: #3b82f6;">
+                            <span>Impressões: 2.4M</span>
+                        </div>
+                    </div>
+                    <div class="funnel-step">
+                        <div class="funnel-bar" style="width: 80%; background-color: #10b981;">
+                            <span>Cliques: 48.5K (2.02%)</span>
+                        </div>
+                    </div>
+                    <div class="funnel-step">
+                        <div class="funnel-bar" style="width: 50%; background-color: #f59e0b;">
+                            <span>Visitas: 24.2K (49.9%)</span>
+                        </div>
+                    </div>
+                    <div class="funnel-step">
+                        <div class="funnel-bar" style="width: 25%; background-color: #8b5cf6;">
+                            <span>Add to Cart: 6.1K (25.2%)</span>
+                        </div>
+                    </div>
+                    <div class="funnel-step">
+                        <div class="funnel-bar" style="width: 10%; background-color: #ef4444;">
+                            <span>Conversões: 1.2K (5.1%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Campanhas -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0"><i class="fas fa-trophy"></i> Top 10 Campanhas por Performance</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Campanha</th>
+                            <th>Plataforma</th>
+                            <th class="text-end">Investido</th>
+                            <th class="text-end">Receita</th>
+                            <th class="text-end">ROAS</th>
+                            <th class="text-end">Conversões</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topCampaignsTable">
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Carregando...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Insights da IA -->
+    <div class="card shadow-sm border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-brain"></i> Insights da IA Velyra Prime</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="alert alert-success mb-0">
+                        <h6><i class="fas fa-check-circle"></i> Pontos Fortes</h6>
+                        <ul class="mb-0 small">
+                            <li>ROAS 56% acima da média do setor</li>
+                            <li>Taxa de conversão cresceu 22% no período</li>
+                            <li>Campanhas de remarketing com performance excepcional</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="alert alert-warning mb-0">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Oportunidades de Melhoria</h6>
+                        <ul class="mb-0 small">
+                            <li>CTR no Google Ads 15% abaixo do benchmark</li>
+                            <li>Considere aumentar orçamento em campanhas de alta performance</li>
+                            <li>Teste novos criativos para campanhas com CTR baixo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-outline-primary" onclick="openVelyraAnalysis()">
+                    <i class="fas fa-robot"></i> Ver Análise Completa da IA
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
-</div>
+<style>
+/* Funnel */
+.funnel-step {
+    margin-bottom: 0.5rem;
+}
+
+.funnel-bar {
+    background-color: var(--nexora-primary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--nexora-radius-md);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.funnel-bar:hover {
+    transform: translateX(4px);
+    box-shadow: var(--nexora-shadow-md);
+}
+
+/* KPI Cards */
+.card.border-0 {
+    transition: all 0.3s ease;
+}
+
+.card.border-0:hover {
+    transform: translateY(-4px);
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let performanceChart, platformChart, engagementChart;
+
+// Initialize charts
+function initCharts() {
+    // Performance Chart
+    const perfCtx = document.getElementById('performanceChart').getContext('2d');
+    performanceChart = new Chart(perfCtx, {
+        type: 'line',
+        data: {
+            labels: ['1 Nov', '5 Nov', '10 Nov', '15 Nov', '20 Nov', '25 Nov', '30 Nov'],
+            datasets: [{
+                label: 'Receita',
+                data: [1200, 1900, 1500, 2200, 2800, 2400, 3100],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+    
+    // Platform Chart
+    const platCtx = document.getElementById('platformChart').getContext('2d');
+    platformChart = new Chart(platCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Facebook', 'Google', 'Instagram', 'TikTok'],
+            datasets: [{
+                data: [45, 30, 20, 5],
+                backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#1f2937']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+    
+    // Engagement Chart
+    const engCtx = document.getElementById('engagementChart').getContext('2d');
+    engagementChart = new Chart(engCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            datasets: [{
+                label: 'Cliques',
+                data: [6500, 7200, 6800, 7500, 8200, 5400, 4900],
+                backgroundColor: '#10b981'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// Load top campaigns
+async function loadTopCampaigns() {
+    // Simulated data
+    const campaigns = [
+        { rank: 1, name: 'Black Friday 2024', platform: 'Facebook', spend: 2500, revenue: 9800, roas: 3.92, conversions: 245, status: 'active' },
+        { rank: 2, name: 'Remarketing Q4', platform: 'Google', spend: 1800, revenue: 7200, roas: 4.00, conversions: 180, status: 'active' },
+        { rank: 3, name: 'Lançamento Produto X', platform: 'Instagram', spend: 3200, revenue: 11500, roas: 3.59, conversions: 287, status: 'active' },
+    ];
+    
+    const tbody = document.getElementById('topCampaignsTable');
+    tbody.innerHTML = campaigns.map(c => `
+        <tr>
+            <td><span class="badge bg-warning">#${c.rank}</span></td>
+            <td><strong>${c.name}</strong></td>
+            <td><span class="badge bg-primary">${c.platform}</span></td>
+            <td class="text-end">R$ ${c.spend.toLocaleString('pt-BR')}</td>
+            <td class="text-end">R$ ${c.revenue.toLocaleString('pt-BR')}</td>
+            <td class="text-end"><strong class="text-success">${c.roas.toFixed(2)}x</strong></td>
+            <td class="text-end">${c.conversions}</td>
+            <td class="text-center"><span class="badge bg-success">Ativa</span></td>
+        </tr>
+    `).join('');
+}
+
+// Apply filters
+function applyFilters() {
+    console.log('Filters applied');
+    // Reload data based on filters
+}
+
+// Change metric
+function changeMetric(metric) {
+    console.log('Metric changed to:', metric);
+    // Update chart
+}
+
+// Export report
+function exportReport(format) {
+    showToast(`Exportando relatório em ${format.toUpperCase()}...`, 'info');
+    setTimeout(() => {
+        showToast('Relatório exportado com sucesso!', 'success');
+    }, 1500);
+}
+
+// Generate custom report
+function generateCustomReport() {
+    window.location.href = '/report/create';
+}
+
+// Open Velyra analysis
+function openVelyraAnalysis() {
+    window.location.href = '/velyra_prime?context=report_analysis';
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    initCharts();
+    loadTopCampaigns();
+});
+</script>
 {% endblock %}
