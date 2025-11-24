@@ -1,0 +1,284 @@
+
+═══════════════════════════════════════════════════════════════════════════════
+  NEXORA PRIME - RELATÓRIO DE VARREDURA COMPLETA (DEEP SCAN)
+═══════════════════════════════════════════════════════════════════════════════
+
+Data: 24/11/2025 14:21:18
+
+═══════════════════════════════════════════════════════════════════════════════
+  RESUMO EXECUTIVO
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ Arquivos HTML escaneados: 37
+✅ Arquivos JavaScript escaneados: 6
+✅ Serviços Python escaneados: 45
+✅ Rotas Flask definidas: 124
+✅ Endpoints de API: 88
+
+⚠️ Issues HTML encontrados: 32
+⚠️ Issues JavaScript encontrados: 2
+
+═══════════════════════════════════════════════════════════════════════════════
+  ISSUES CRÍTICOS IDENTIFICADOS
+═══════════════════════════════════════════════════════════════════════════════
+
+HTML:
+⚠️ ab_testing.html: 15 botões sem ação
+⚠️ ab_testing.html: 1 formulários sem action
+⚠️ activity_logs.html: 15 botões sem ação
+⚠️ ad_editor.html: 4 botões sem ação
+⚠️ automation.html: 16 botões sem ação
+⚠️ automation.html: 1 formulários sem action
+⚠️ campaign_detail.html: 2 botões sem ação
+⚠️ campaign_sandbox.html: 2 botões sem ação
+⚠️ campaigns.html: 3 botões sem ação
+⚠️ competitor_spy.html: 5 botões sem ação
+⚠️ create_campaign.html: 9 botões sem ação
+⚠️ create_campaign.html: 1 formulários sem action
+⚠️ create_perfect_ad_v2.html: 19 botões sem ação
+⚠️ dashboard.html: 3 botões sem ação
+⚠️ dco_builder.html: 19 botões sem ação
+⚠️ funnel_builder.html: 20 botões sem ação
+⚠️ funnel_builder.html: 2 formulários sem action
+⚠️ generate_perfect_ad.html: 9 botões sem ação
+⚠️ index.html: 2 botões sem ação
+⚠️ landing_page_builder.html: 19 botões sem ação
+
+JAVASCRIPT:
+⚠️ accessibility.js: 3 console.log() encontrados
+⚠️ ai-campaign-generator.js: 1 fetch sem .catch()
+
+═══════════════════════════════════════════════════════════════════════════════
+  ROTAS FLASK (124 total)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. /
+2. /ab-testing
+3. /activity-logs
+4. /ad-editor
+5. /affiliates
+6. /all-features
+7. /api/ab-test/analyze/<int:test_id>
+8. /api/ab-test/create
+9. /api/ab-test/library
+10. /api/ab-test/suggestions
+11. /api/activity-logs
+12. /api/ad/generate-copy
+13. /api/ad/publish
+14. /api/ad/simulate
+15. /api/ai/generate-ad-variations
+16. /api/ai/generate-campaign
+17. /api/analyze-landing-page
+18. /api/audit/accessibility
+19. /api/audit/flows
+20. /api/audit/full
+21. /api/audit/page
+22. /api/audit/pages
+23. /api/audit/performance
+24. /api/automation/authorize/approve/<int:auth_id>
+25. /api/automation/authorize/pending
+26. /api/automation/authorize/reject/<int:auth_id>
+27. /api/automation/authorize/request
+28. /api/automation/execute
+29. /api/automation/history
+30. /api/automation/optimize/<int:campaign_id>
+31. /api/automation/optimize/all
+32. /api/automation/report
+33. /api/automation/rules
+34. /api/campaign/create
+35. /api/campaign/delete/<int:campaign_id>
+36. /api/campaign/list
+37. /api/campaign/publish
+38. /api/campaign/read/<int:campaign_id>
+39. /api/campaign/test/create
+40. /api/campaign/test/monitor/<int:campaign_id>
+41. /api/campaign/test/status/<int:campaign_id>
+42. /api/campaign/test/stop/<int:campaign_id>
+43. /api/campaign/update/<int:campaign_id>
+44. /api/competitor-spy
+45. /api/credits/balance
+46. /api/credits/check-alert
+47. /api/credits/set-unlimited
+48. /api/dashboard/metrics
+49. /api/dco/generate
+50. /api/dco/generate-copy
+51. /api/dco/generate-segmentation
+52. /api/generate-image
+53. /api/intelligence/competitors/analyze
+54. /api/intelligence/product/analyze
+55. /api/intelligence/products/recommend
+56. /api/intelligence/report
+57. /api/intelligence/sales/analyze
+58. /api/intelligence/sales/forecast
+59. /api/landing/analyze
+60. /api/manus/credits/balance
+61. /api/manus/credits/consume
+62. /api/manus/reports
+63. /api/manus/status
+64. /api/manus/sync/ads
+65. /api/manus/sync/campaigns
+66. /api/manus/test
+67. /api/manus/webhooks/register
+68. /api/mcp/authorize
+69. /api/mcp/command
+70. /api/mcp/event
+71. /api/mcp/status
+72. /api/mcp/telemetry
+73. /api/mcp/telemetry/<metric>
+74. /api/mcp/test
+75. /api/mcp/token
+76. /api/mcp/webhook/register
+77. /api/media/upload
+78. /api/notifications
+79. /api/notifications/<int:notification_id>/read
+80. /api/notifications/mark-read/<int:notification_id>
+81. /api/notifications/unread
+82. /api/operator/chat
+83. /api/operator/monitor
+84. /api/operator/optimize
+85. /api/operator/recommendations/<int:campaign_id>
+86. /api/operator/status
+87. /api/remote/audit
+88. /api/remote/execute
+89. /api/remote/session/end
+90. /api/remote/session/start
+91. /api/remote/sessions
+92. /api/reports/generate
+93. /api/reports/list
+94. /api/search
+95. /automation
+96. /campaign-detail
+97. /campaign-sandbox
+98. /campaigns
+99. /competitor-spy
+100. /create-campaign
+101. /create-perfect-ad-v2
+102. /dashboard
+103. /dco
+104. /dco-builder
+105. /developer-api
+106. /funnel-builder
+107. /generate-perfect-ad
+108. /health
+109. /landing-page-builder
+110. /manus-connection
+111. /manus/connect
+112. /manus/oauth/authorize
+113. /media-library
+114. /not-found
+115. /notifications
+116. /oauth/callback
+117. /operator-chat
+118. /report-view
+119. /reports
+120. /reports-dashboard
+121. /segmentation
+122. /settings
+123. /subscriptions
+124. /webhooks/manus
+
+═══════════════════════════════════════════════════════════════════════════════
+  ENDPOINTS DE API (88 total)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. /api/ab-test/analyze/<int:test_id>
+2. /api/ab-test/create
+3. /api/ab-test/library
+4. /api/ab-test/suggestions
+5. /api/activity-logs
+6. /api/ad/generate-copy
+7. /api/ad/publish
+8. /api/ad/simulate
+9. /api/ai/generate-ad-variations
+10. /api/ai/generate-campaign
+11. /api/analyze-landing-page
+12. /api/audit/accessibility
+13. /api/audit/flows
+14. /api/audit/full
+15. /api/audit/page
+16. /api/audit/pages
+17. /api/audit/performance
+18. /api/automation/authorize/approve/<int:auth_id>
+19. /api/automation/authorize/pending
+20. /api/automation/authorize/reject/<int:auth_id>
+21. /api/automation/authorize/request
+22. /api/automation/execute
+23. /api/automation/history
+24. /api/automation/optimize/<int:campaign_id>
+25. /api/automation/optimize/all
+26. /api/automation/report
+27. /api/automation/rules
+28. /api/campaign/create
+29. /api/campaign/delete/<int:campaign_id>
+30. /api/campaign/list
+31. /api/campaign/publish
+32. /api/campaign/read/<int:campaign_id>
+33. /api/campaign/test/create
+34. /api/campaign/test/monitor/<int:campaign_id>
+35. /api/campaign/test/status/<int:campaign_id>
+36. /api/campaign/test/stop/<int:campaign_id>
+37. /api/campaign/update/<int:campaign_id>
+38. /api/competitor-spy
+39. /api/credits/balance
+40. /api/credits/check-alert
+41. /api/credits/set-unlimited
+42. /api/dashboard/metrics
+43. /api/dco/generate
+44. /api/dco/generate-copy
+45. /api/dco/generate-segmentation
+46. /api/generate-image
+47. /api/intelligence/competitors/analyze
+48. /api/intelligence/product/analyze
+49. /api/intelligence/products/recommend
+50. /api/intelligence/report
+51. /api/intelligence/sales/analyze
+52. /api/intelligence/sales/forecast
+53. /api/landing/analyze
+54. /api/manus/credits/balance
+55. /api/manus/credits/consume
+56. /api/manus/reports
+57. /api/manus/status
+58. /api/manus/sync/ads
+59. /api/manus/sync/campaigns
+60. /api/manus/test
+61. /api/manus/webhooks/register
+62. /api/mcp/authorize
+63. /api/mcp/command
+64. /api/mcp/event
+65. /api/mcp/status
+66. /api/mcp/telemetry
+67. /api/mcp/telemetry/<metric>
+68. /api/mcp/test
+69. /api/mcp/token
+70. /api/mcp/webhook/register
+71. /api/media/upload
+72. /api/notifications
+73. /api/notifications/<int:notification_id>/read
+74. /api/notifications/mark-read/<int:notification_id>
+75. /api/notifications/unread
+76. /api/operator/chat
+77. /api/operator/monitor
+78. /api/operator/optimize
+79. /api/operator/recommendations/<int:campaign_id>
+80. /api/operator/status
+81. /api/remote/audit
+82. /api/remote/execute
+83. /api/remote/session/end
+84. /api/remote/session/start
+85. /api/remote/sessions
+86. /api/reports/generate
+87. /api/reports/list
+88. /api/search
+
+═══════════════════════════════════════════════════════════════════════════════
+  PRÓXIMOS PASSOS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Corrigir botões sem ação
+2. Adicionar actions em formulários
+3. Remover console.log() do JavaScript
+4. Adicionar tratamento de erro em fetch()
+5. Criar endpoints de API faltantes
+6. Testar todas as rotas
+
+═══════════════════════════════════════════════════════════════════════════════
