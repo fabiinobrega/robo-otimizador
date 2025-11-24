@@ -1,20 +1,830 @@
 {% extends "index.html" %}
 
-{% block title %}Funil - Manus Marketing{% endblock %}
+{% block title %}Construtor de Funis - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .funnel-canvas {
+        min-height: 600px;
+        background: linear-gradient(90deg, rgba(var(--nexora-primary-rgb), 0.03) 1px, transparent 1px),
+                    linear-gradient(rgba(var(--nexora-primary-rgb), 0.03) 1px, transparent 1px);
+        background-size: 20px 20px;
+        border-radius: 12px;
+        position: relative;
+        overflow: auto;
+    }
+
+    .funnel-stage {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 500px;
+        position: relative;
+        transition: all 0.3s ease;
+        cursor: move;
+    }
+
+    .funnel-stage:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: var(--nexora-shadow-lg);
+        transform: translateY(-2px);
+    }
+
+    .funnel-stage.selected {
+        border-color: var(--nexora-primary);
+        box-shadow: 0 0 0 4px rgba(var(--nexora-primary-rgb), 0.1);
+    }
+
+    .funnel-stage-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .funnel-stage-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-right: 12px;
+    }
+
+    .funnel-stage-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .funnel-connector {
+        width: 2px;
+        height: 30px;
+        background: linear-gradient(to bottom, var(--nexora-primary), var(--nexora-secondary));
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .funnel-connector::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid var(--nexora-secondary);
+    }
+
+    .stage-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--nexora-border);
+    }
+
+    .stage-metric {
+        text-align: center;
+    }
+
+    .stage-metric-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--nexora-primary);
+        display: block;
+    }
+
+    .stage-metric-label {
+        font-size: 12px;
+        color: var(--nexora-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stage-templates {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .stage-template-card {
+        border: 2px solid var(--nexora-border);
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .stage-template-card:hover {
+        border-color: var(--nexora-primary);
+        background: rgba(var(--nexora-primary-rgb), 0.05);
+        transform: translateY(-2px);
+    }
+
+    .stage-template-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .conversion-rate-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: rgba(var(--nexora-success-rgb), 0.1);
+        border-radius: 6px;
+        font-weight: 600;
+        color: var(--nexora-success);
+    }
+
+    .conversion-rate-indicator.low {
+        background: rgba(var(--nexora-danger-rgb), 0.1);
+        color: var(--nexora-danger);
+    }
+
+    .conversion-rate-indicator.medium {
+        background: rgba(var(--nexora-warning-rgb), 0.1);
+        color: var(--nexora-warning);
+    }
+
+    .funnel-sidebar {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .add-stage-btn {
+        width: 100%;
+        padding: 40px;
+        border: 2px dashed var(--nexora-border);
+        border-radius: 12px;
+        background: transparent;
+        color: var(--nexora-text-secondary);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 20px 0;
+    }
+
+    .add-stage-btn:hover {
+        border-color: var(--nexora-primary);
+        color: var(--nexora-primary);
+        background: rgba(var(--nexora-primary-rgb), 0.05);
+    }
+
+    .funnel-stats-card {
+        background: linear-gradient(135deg, var(--nexora-primary), var(--nexora-secondary));
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .funnel-stats-card h3 {
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .saved-funnels-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .saved-funnel-item {
+        padding: 12px;
+        border: 1px solid var(--nexora-border);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .saved-funnel-item:hover {
+        border-color: var(--nexora-primary);
+        background: rgba(var(--nexora-primary-rgb), 0.05);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-filter"></i> Funil</h1>
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Construtor de Funis</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
+            <h1 class="nexora-page-title">
+                <i class="fas fa-filter"></i>
+                Construtor de Funis
+            </h1>
+            <p class="nexora-page-subtitle">Crie e otimize funis de vendas de alta conversão</p>
+        </div>
+        <div class="nexora-page-actions">
+            <button class="nexora-btn nexora-btn-outline" id="loadTemplateBtn">
+                <i class="fas fa-folder-open"></i>
+                Carregar Template
+            </button>
+            <button class="nexora-btn nexora-btn-outline" id="saveFunnelBtn">
+                <i class="fas fa-save"></i>
+                Salvar Funil
+            </button>
+            <button class="nexora-btn nexora-btn-primary" id="publishFunnelBtn">
+                <i class="fas fa-rocket"></i>
+                Publicar Funil
+            </button>
+        </div>
     </div>
-    
-    
-<div class="card">
-    <div class="card-body">
-        <h5>Construtor de Funil</h5>
-        <button class="btn btn-primary">Criar Funil</button>
+
+    <div class="row">
+        <!-- Main Canvas -->
+        <div class="col-lg-8">
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-project-diagram"></i>
+                        Canvas do Funil
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="zoomOutBtn">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="zoomInBtn">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="nexora-btn nexora-btn-sm nexora-btn-outline" id="resetViewBtn">
+                            <i class="fas fa-compress"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="funnel-canvas" id="funnelCanvas">
+                        <!-- Stages will be dynamically added here -->
+                        <button class="add-stage-btn" id="addFirstStageBtn">
+                            <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
+                            Adicionar Primeira Etapa do Funil
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Funnel Overview Stats -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="nexora-stat-card">
+                        <div class="nexora-stat-icon" style="background: rgba(var(--nexora-primary-rgb), 0.1); color: var(--nexora-primary);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="nexora-stat-content">
+                            <div class="nexora-stat-value" id="totalVisitors">0</div>
+                            <div class="nexora-stat-label">Visitantes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="nexora-stat-card">
+                        <div class="nexora-stat-icon" style="background: rgba(var(--nexora-success-rgb), 0.1); color: var(--nexora-success);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="nexora-stat-content">
+                            <div class="nexora-stat-value" id="totalConversions">0</div>
+                            <div class="nexora-stat-label">Conversões</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="nexora-stat-card">
+                        <div class="nexora-stat-icon" style="background: rgba(var(--nexora-warning-rgb), 0.1); color: var(--nexora-warning);">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="nexora-stat-content">
+                            <div class="nexora-stat-value" id="overallConversionRate">0%</div>
+                            <div class="nexora-stat-label">Taxa de Conversão</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="nexora-stat-card">
+                        <div class="nexora-stat-icon" style="background: rgba(var(--nexora-info-rgb), 0.1); color: var(--nexora-info);">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="nexora-stat-content">
+                            <div class="nexora-stat-value" id="totalRevenue">R$ 0</div>
+                            <div class="nexora-stat-label">Receita Total</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- AI Insights -->
+            <div class="funnel-stats-card">
+                <h3><i class="fas fa-brain"></i> Insights da IA Velyra</h3>
+                <div id="aiInsights">
+                    <div class="mb-3">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Dica:</strong> Adicione uma etapa de remarketing para recuperar 30% dos visitantes que abandonaram o funil.
+                    </div>
+                    <div class="mb-3">
+                        <i class="fas fa-chart-line"></i>
+                        <strong>Oportunidade:</strong> A taxa de conversão pode aumentar 45% com um teste A/B na página de checkout.
+                    </div>
+                    <div>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Alerta:</strong> 68% dos visitantes abandonam na etapa de formulário. Considere simplificar os campos.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage Templates -->
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-layer-group"></i>
+                        Templates de Etapas
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="stage-templates">
+                        <div class="stage-template-card" data-stage-type="landing">
+                            <div class="stage-template-icon">🎯</div>
+                            <strong>Landing Page</strong>
+                            <p class="small text-muted mb-0">Captura inicial</p>
+                        </div>
+                        <div class="stage-template-card" data-stage-type="lead-magnet">
+                            <div class="stage-template-icon">🎁</div>
+                            <strong>Lead Magnet</strong>
+                            <p class="small text-muted mb-0">Oferta gratuita</p>
+                        </div>
+                        <div class="stage-template-card" data-stage-type="webinar">
+                            <div class="stage-template-icon">🎥</div>
+                            <strong>Webinar</strong>
+                            <p class="small text-muted mb-0">Apresentação</p>
+                        </div>
+                        <div class="stage-template-card" data-stage-type="sales-page">
+                            <div class="stage-template-icon">💰</div>
+                            <strong>Página de Vendas</strong>
+                            <p class="small text-muted mb-0">Oferta principal</p>
+                        </div>
+                        <div class="stage-template-card" data-stage-type="checkout">
+                            <div class="stage-template-icon">🛒</div>
+                            <strong>Checkout</strong>
+                            <p class="small text-muted mb-0">Finalização</p>
+                        </div>
+                        <div class="stage-template-card" data-stage-type="upsell">
+                            <div class="stage-template-icon">⬆️</div>
+                            <strong>Upsell</strong>
+                            <p class="small text-muted mb-0">Oferta adicional</p>
+                        </div>
+                        <div class="stage-template-card" data-stage-type="thank-you">
+                            <div class="stage-template-icon">✅</div>
+                            <strong>Obrigado</strong>
+                            <p class="small text-muted mb-0">Confirmação</p>
+                        </div>
+                        <div class="stage-template-card" data-stage-type="email">
+                            <div class="stage-template-icon">📧</div>
+                            <strong>Email</strong>
+                            <p class="small text-muted mb-0">Sequência</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Funnels -->
+            <div class="nexora-card mt-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-bookmark"></i>
+                        Funis Salvos
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="saved-funnels-list" id="savedFunnelsList">
+                        <div class="saved-funnel-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Funil E-commerce Completo</strong>
+                                    <p class="small text-muted mb-0">7 etapas • 12.5% conversão</p>
+                                </div>
+                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                    <i class="fas fa-folder-open"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="saved-funnel-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Webinar de Lançamento</strong>
+                                    <p class="small text-muted mb-0">5 etapas • 8.3% conversão</p>
+                                </div>
+                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                    <i class="fas fa-folder-open"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="saved-funnel-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Lead Magnet + Tripwire</strong>
+                                    <p class="small text-muted mb-0">4 etapas • 15.7% conversão</p>
+                                </div>
+                                <button class="nexora-btn nexora-btn-sm nexora-btn-outline">
+                                    <i class="fas fa-folder-open"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Modal: Add Stage -->
+<div class="modal fade" id="addStageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Adicionar Etapa ao Funil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStageForm">
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Etapa</label>
+                        <input type="text" class="form-control" id="stageName" placeholder="Ex: Landing Page de Captura" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Etapa</label>
+                        <select class="form-select" id="stageType" required>
+                            <option value="">Selecione...</option>
+                            <option value="landing">Landing Page</option>
+                            <option value="lead-magnet">Lead Magnet</option>
+                            <option value="webinar">Webinar</option>
+                            <option value="sales-page">Página de Vendas</option>
+                            <option value="checkout">Checkout</option>
+                            <option value="upsell">Upsell</option>
+                            <option value="thank-you">Página de Agradecimento</option>
+                            <option value="email">Sequência de Email</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <textarea class="form-control" id="stageDescription" rows="3" placeholder="Descreva o objetivo desta etapa..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tráfego Esperado</label>
+                                <input type="number" class="form-control" id="stageTraffic" value="1000" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Taxa de Conversão (%)</label>
+                                <input type="number" class="form-control" id="stageConversionRate" value="10" min="0" max="100" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="nexora-btn nexora-btn-primary" id="confirmAddStage">
+                    <i class="fas fa-plus"></i> Adicionar Etapa
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Modal: Edit Stage -->
+<div class="modal fade" id="editStageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Etapa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editStageForm">
+                    <input type="hidden" id="editStageId">
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Etapa</label>
+                        <input type="text" class="form-control" id="editStageName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <textarea class="form-control" id="editStageDescription" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tráfego</label>
+                                <input type="number" class="form-control" id="editStageTraffic" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Taxa de Conversão (%)</label>
+                                <input type="number" class="form-control" id="editStageConversionRate" min="0" max="100" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="nexora-btn nexora-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="nexora-btn nexora-btn-primary" id="confirmEditStage">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let funnelStages = [];
+    let stageIdCounter = 1;
+    let selectedStageId = null;
+
+    const funnelCanvas = document.getElementById('funnelCanvas');
+    const addFirstStageBtn = document.getElementById('addFirstStageBtn');
+    const addStageModal = new bootstrap.Modal(document.getElementById('addStageModal'));
+    const editStageModal = new bootstrap.Modal(document.getElementById('editStageModal'));
+
+    // Stage type icons and colors
+    const stageConfig = {
+        'landing': { icon: '🎯', color: '#3b82f6', name: 'Landing Page' },
+        'lead-magnet': { icon: '🎁', color: '#8b5cf6', name: 'Lead Magnet' },
+        'webinar': { icon: '🎥', color: '#ec4899', name: 'Webinar' },
+        'sales-page': { icon: '💰', color: '#10b981', name: 'Página de Vendas' },
+        'checkout': { icon: '🛒', color: '#f59e0b', name: 'Checkout' },
+        'upsell': { icon: '⬆️', color: '#06b6d4', name: 'Upsell' },
+        'thank-you': { icon: '✅', color: '#22c55e', name: 'Obrigado' },
+        'email': { icon: '📧', color: '#6366f1', name: 'Email' }
+    };
+
+    // Add first stage
+    addFirstStageBtn.addEventListener('click', () => {
+        addStageModal.show();
+    });
+
+    // Stage template cards
+    document.querySelectorAll('.stage-template-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const stageType = card.dataset.stageType;
+            document.getElementById('stageType').value = stageType;
+            document.getElementById('stageName').value = stageConfig[stageType].name;
+            addStageModal.show();
+        });
+    });
+
+    // Confirm add stage
+    document.getElementById('confirmAddStage').addEventListener('click', () => {
+        const name = document.getElementById('stageName').value;
+        const type = document.getElementById('stageType').value;
+        const description = document.getElementById('stageDescription').value;
+        const traffic = parseInt(document.getElementById('stageTraffic').value);
+        const conversionRate = parseFloat(document.getElementById('stageConversionRate').value);
+
+        if (!name || !type) {
+            showToast('Por favor, preencha todos os campos obrigatórios', 'warning');
+            return;
+        }
+
+        const stage = {
+            id: stageIdCounter++,
+            name,
+            type,
+            description,
+            traffic,
+            conversionRate,
+            conversions: Math.round(traffic * (conversionRate / 100))
+        };
+
+        funnelStages.push(stage);
+        renderFunnel();
+        updateStats();
+        addStageModal.hide();
+        document.getElementById('addStageForm').reset();
+        showToast('Etapa adicionada com sucesso!', 'success');
+    });
+
+    // Render funnel
+    function renderFunnel() {
+        if (funnelStages.length === 0) {
+            funnelCanvas.innerHTML = `
+                <button class="add-stage-btn" id="addFirstStageBtn">
+                    <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
+                    Adicionar Primeira Etapa do Funil
+                </button>
+            `;
+            document.getElementById('addFirstStageBtn').addEventListener('click', () => {
+                addStageModal.show();
+            });
+            return;
+        }
+
+        let html = '';
+        funnelStages.forEach((stage, index) => {
+            const config = stageConfig[stage.type];
+            const conversionClass = stage.conversionRate >= 15 ? '' : stage.conversionRate >= 8 ? 'medium' : 'low';
+            
+            html += `
+                <div class="funnel-stage ${selectedStageId === stage.id ? 'selected' : ''}" data-stage-id="${stage.id}">
+                    <div class="funnel-stage-header">
+                        <div class="d-flex align-items-center">
+                            <div class="funnel-stage-icon" style="background: ${config.color}20; color: ${config.color};">
+                                ${config.icon}
+                            </div>
+                            <div>
+                                <h5 class="mb-0">${stage.name}</h5>
+                                <small class="text-muted">${config.name}</small>
+                            </div>
+                        </div>
+                        <div class="funnel-stage-actions">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline edit-stage-btn" data-stage-id="${stage.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline delete-stage-btn" data-stage-id="${stage.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    ${stage.description ? `<p class="text-muted small mb-0">${stage.description}</p>` : ''}
+                    <div class="stage-metrics">
+                        <div class="stage-metric">
+                            <span class="stage-metric-value">${stage.traffic.toLocaleString('pt-BR')}</span>
+                            <span class="stage-metric-label">Visitantes</span>
+                        </div>
+                        <div class="stage-metric">
+                            <span class="stage-metric-value">${stage.conversions.toLocaleString('pt-BR')}</span>
+                            <span class="stage-metric-label">Conversões</span>
+                        </div>
+                        <div class="stage-metric">
+                            <div class="conversion-rate-indicator ${conversionClass}">
+                                <i class="fas fa-arrow-${stage.conversionRate >= 10 ? 'up' : 'down'}"></i>
+                                ${stage.conversionRate.toFixed(1)}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (index < funnelStages.length - 1) {
+                html += '<div class="funnel-connector"></div>';
+            }
+        });
+
+        html += `
+            <button class="add-stage-btn" id="addAnotherStageBtn">
+                <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
+                Adicionar Próxima Etapa
+            </button>
+        `;
+
+        funnelCanvas.innerHTML = html;
+
+        // Attach event listeners
+        document.getElementById('addAnotherStageBtn').addEventListener('click', () => {
+            addStageModal.show();
+        });
+
+        document.querySelectorAll('.edit-stage-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const stageId = parseInt(btn.dataset.stageId);
+                editStage(stageId);
+            });
+        });
+
+        document.querySelectorAll('.delete-stage-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const stageId = parseInt(btn.dataset.stageId);
+                deleteStage(stageId);
+            });
+        });
+
+        document.querySelectorAll('.funnel-stage').forEach(stage => {
+            stage.addEventListener('click', () => {
+                selectedStageId = parseInt(stage.dataset.stageId);
+                renderFunnel();
+            });
+        });
+    }
+
+    // Edit stage
+    function editStage(stageId) {
+        const stage = funnelStages.find(s => s.id === stageId);
+        if (!stage) return;
+
+        document.getElementById('editStageId').value = stage.id;
+        document.getElementById('editStageName').value = stage.name;
+        document.getElementById('editStageDescription').value = stage.description;
+        document.getElementById('editStageTraffic').value = stage.traffic;
+        document.getElementById('editStageConversionRate').value = stage.conversionRate;
+
+        editStageModal.show();
+    }
+
+    // Confirm edit stage
+    document.getElementById('confirmEditStage').addEventListener('click', () => {
+        const stageId = parseInt(document.getElementById('editStageId').value);
+        const stage = funnelStages.find(s => s.id === stageId);
+        
+        if (!stage) return;
+
+        stage.name = document.getElementById('editStageName').value;
+        stage.description = document.getElementById('editStageDescription').value;
+        stage.traffic = parseInt(document.getElementById('editStageTraffic').value);
+        stage.conversionRate = parseFloat(document.getElementById('editStageConversionRate').value);
+        stage.conversions = Math.round(stage.traffic * (stage.conversionRate / 100));
+
+        renderFunnel();
+        updateStats();
+        editStageModal.hide();
+        showToast('Etapa atualizada com sucesso!', 'success');
+    });
+
+    // Delete stage
+    function deleteStage(stageId) {
+        if (confirm('Tem certeza que deseja excluir esta etapa?')) {
+            funnelStages = funnelStages.filter(s => s.id !== stageId);
+            renderFunnel();
+            updateStats();
+            showToast('Etapa excluída com sucesso!', 'success');
+        }
+    }
+
+    // Update overall stats
+    function updateStats() {
+        const totalVisitors = funnelStages.length > 0 ? funnelStages[0].traffic : 0;
+        const totalConversions = funnelStages.length > 0 ? funnelStages[funnelStages.length - 1].conversions : 0;
+        const overallConversionRate = totalVisitors > 0 ? (totalConversions / totalVisitors * 100) : 0;
+        const totalRevenue = totalConversions * 197; // Average ticket
+
+        document.getElementById('totalVisitors').textContent = totalVisitors.toLocaleString('pt-BR');
+        document.getElementById('totalConversions').textContent = totalConversions.toLocaleString('pt-BR');
+        document.getElementById('overallConversionRate').textContent = overallConversionRate.toFixed(1) + '%';
+        document.getElementById('totalRevenue').textContent = 'R$ ' + totalRevenue.toLocaleString('pt-BR');
+    }
+
+    // Save funnel
+    document.getElementById('saveFunnelBtn').addEventListener('click', () => {
+        if (funnelStages.length === 0) {
+            showToast('Adicione pelo menos uma etapa antes de salvar', 'warning');
+            return;
+        }
+        showToast('Funil salvo com sucesso!', 'success');
+    });
+
+    // Publish funnel
+    document.getElementById('publishFunnelBtn').addEventListener('click', () => {
+        if (funnelStages.length === 0) {
+            showToast('Adicione pelo menos uma etapa antes de publicar', 'warning');
+            return;
+        }
+        showToast('Funil publicado com sucesso!', 'success');
+    });
+
+    // Toast notification helper
+    function showToast(message, type = 'info') {
+        // Assuming toast notification system is available
+        if (window.showToast) {
+            window.showToast(message, type);
+        } else {
+            alert(message);
+        }
+    }
+
+    // Initialize
+    renderFunnel();
+    updateStats();
+});
+</script>
 {% endblock %}

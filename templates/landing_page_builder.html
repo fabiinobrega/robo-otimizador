@@ -1,20 +1,955 @@
 {% extends "index.html" %}
 
-{% block title %}Landing Pages - Manus Marketing{% endblock %}
+{% block title %}Landing Page Builder - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .builder-workspace {
+        display: grid;
+        grid-template-columns: 280px 1fr 320px;
+        gap: 0;
+        height: calc(100vh - 180px);
+        background: #f8f9fa;
+    }
+
+    .builder-sidebar {
+        background: white;
+        border-right: 1px solid var(--nexora-border);
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    .builder-canvas {
+        background: #e9ecef;
+        overflow-y: auto;
+        padding: 40px 20px;
+        position: relative;
+    }
+
+    .builder-properties {
+        background: white;
+        border-left: 1px solid var(--nexora-border);
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    .canvas-frame {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        min-height: 800px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .component-category {
+        margin-bottom: 25px;
+    }
+
+    .component-category-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--nexora-text-secondary);
+        margin-bottom: 12px;
+    }
+
+    .component-item {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        cursor: grab;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .component-item:hover {
+        border-color: var(--nexora-primary);
+        background: rgba(var(--nexora-primary-rgb), 0.05);
+        transform: translateX(4px);
+    }
+
+    .component-item:active {
+        cursor: grabbing;
+    }
+
+    .component-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        background: rgba(var(--nexora-primary-rgb), 0.1);
+        color: var(--nexora-primary);
+    }
+
+    .component-info h6 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .component-info p {
+        margin: 0;
+        font-size: 11px;
+        color: var(--nexora-text-secondary);
+    }
+
+    .canvas-component {
+        position: relative;
+        margin: 0;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .canvas-component:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: 0 0 0 4px rgba(var(--nexora-primary-rgb), 0.1);
+    }
+
+    .canvas-component.selected {
+        border-color: var(--nexora-primary);
+        box-shadow: 0 0 0 4px rgba(var(--nexora-primary-rgb), 0.2);
+    }
+
+    .component-controls {
+        position: absolute;
+        top: -35px;
+        right: 0;
+        display: none;
+        gap: 5px;
+        z-index: 10;
+    }
+
+    .canvas-component:hover .component-controls,
+    .canvas-component.selected .component-controls {
+        display: flex;
+    }
+
+    .component-control-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        background: var(--nexora-primary);
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .component-control-btn:hover {
+        background: var(--nexora-secondary);
+        transform: scale(1.1);
+    }
+
+    .property-group {
+        margin-bottom: 25px;
+    }
+
+    .property-group-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--nexora-text-primary);
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--nexora-border);
+    }
+
+    .property-field {
+        margin-bottom: 15px;
+    }
+
+    .property-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--nexora-text-secondary);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .property-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--nexora-border);
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .property-input:focus {
+        outline: none;
+        border-color: var(--nexora-primary);
+        box-shadow: 0 0 0 3px rgba(var(--nexora-primary-rgb), 0.1);
+    }
+
+    .color-picker-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .color-picker-swatch {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        border: 2px solid var(--nexora-border);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .color-picker-swatch:hover {
+        transform: scale(1.1);
+        border-color: var(--nexora-primary);
+    }
+
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .template-card {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .template-card:hover {
+        border-color: var(--nexora-primary);
+        transform: translateY(-4px);
+        box-shadow: var(--nexora-shadow-lg);
+    }
+
+    .template-preview {
+        width: 100%;
+        height: 150px;
+        background: linear-gradient(135deg, var(--nexora-primary), var(--nexora-secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 48px;
+    }
+
+    .template-info {
+        padding: 15px;
+    }
+
+    .template-info h6 {
+        margin: 0 0 5px 0;
+        font-weight: 700;
+    }
+
+    .template-info p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--nexora-text-secondary);
+    }
+
+    .device-preview-controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .device-btn {
+        width: 40px;
+        height: 40px;
+        border: 2px solid var(--nexora-border);
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .device-btn:hover,
+    .device-btn.active {
+        border-color: var(--nexora-primary);
+        background: var(--nexora-primary);
+        color: white;
+    }
+
+    .canvas-frame.mobile {
+        max-width: 375px;
+    }
+
+    .canvas-frame.tablet {
+        max-width: 768px;
+    }
+
+    .empty-canvas {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 400px;
+        color: var(--nexora-text-secondary);
+        text-align: center;
+        padding: 40px;
+    }
+
+    .empty-canvas i {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+
+    /* Pre-built component styles */
+    .lp-hero {
+        padding: 80px 40px;
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .lp-hero h1 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: white;
+    }
+
+    .lp-hero p {
+        font-size: 20px;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+
+    .lp-hero .btn {
+        padding: 15px 40px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .lp-features {
+        padding: 60px 40px;
+        background: #f8f9fa;
+    }
+
+    .lp-features h2 {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .lp-feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .lp-feature-item {
+        text-align: center;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--nexora-shadow-sm);
+    }
+
+    .lp-feature-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .lp-testimonial {
+        padding: 60px 40px;
+        background: white;
+    }
+
+    .lp-testimonial-content {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .lp-testimonial-quote {
+        font-size: 24px;
+        font-style: italic;
+        margin-bottom: 20px;
+    }
+
+    .lp-cta {
+        padding: 80px 40px;
+        text-align: center;
+        background: var(--nexora-primary);
+        color: white;
+    }
+
+    .lp-cta h2 {
+        color: white;
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-pager"></i> Landing Pages</h1>
+<div class="container-fluid p-0">
+    <!-- Top Toolbar -->
+    <div class="nexora-page-header" style="border-bottom: 1px solid var(--nexora-border);">
+        <div>
+            <h1 class="nexora-page-title" style="font-size: 20px; margin: 0;">
+                <i class="fas fa-pager"></i>
+                Landing Page Builder
+            </h1>
+        </div>
+        <div class="nexora-page-actions">
+            <button class="nexora-btn nexora-btn-outline nexora-btn-sm" id="undoBtn">
+                <i class="fas fa-undo"></i>
+            </button>
+            <button class="nexora-btn nexora-btn-outline nexora-btn-sm" id="redoBtn">
+                <i class="fas fa-redo"></i>
+            </button>
+            <div class="device-preview-controls">
+                <button class="device-btn active" data-device="desktop" title="Desktop">
+                    <i class="fas fa-desktop"></i>
+                </button>
+                <button class="device-btn" data-device="tablet" title="Tablet">
+                    <i class="fas fa-tablet-alt"></i>
+                </button>
+                <button class="device-btn" data-device="mobile" title="Mobile">
+                    <i class="fas fa-mobile-alt"></i>
+                </button>
+            </div>
+            <button class="nexora-btn nexora-btn-outline" id="saveBtn">
+                <i class="fas fa-save"></i>
+                Salvar
+            </button>
+            <button class="nexora-btn nexora-btn-outline" id="previewBtn">
+                <i class="fas fa-eye"></i>
+                Preview
+            </button>
+            <button class="nexora-btn nexora-btn-primary" id="publishBtn">
+                <i class="fas fa-rocket"></i>
+                Publicar
+            </button>
+        </div>
     </div>
-    
-    
-<div class="card">
-    <div class="card-body">
-        <h5>Landing Page Builder</h5>
-        <button class="btn btn-primary">Criar Landing Page</button>
+
+    <!-- Builder Workspace -->
+    <div class="builder-workspace">
+        <!-- Left Sidebar: Components -->
+        <div class="builder-sidebar">
+            <h5 class="mb-4"><i class="fas fa-cubes"></i> Componentes</h5>
+
+            <div class="component-category">
+                <div class="component-category-title">Seções</div>
+                <div class="component-item" draggable="true" data-component="hero">
+                    <div class="component-icon">🎯</div>
+                    <div class="component-info">
+                        <h6>Hero</h6>
+                        <p>Seção principal</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="features">
+                    <div class="component-icon">⭐</div>
+                    <div class="component-info">
+                        <h6>Features</h6>
+                        <p>Grade de recursos</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="testimonial">
+                    <div class="component-icon">💬</div>
+                    <div class="component-info">
+                        <h6>Depoimento</h6>
+                        <p>Prova social</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="cta">
+                    <div class="component-icon">🚀</div>
+                    <div class="component-info">
+                        <h6>CTA</h6>
+                        <p>Call-to-action</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="pricing">
+                    <div class="component-icon">💰</div>
+                    <div class="component-info">
+                        <h6>Pricing</h6>
+                        <p>Tabela de preços</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="faq">
+                    <div class="component-icon">❓</div>
+                    <div class="component-info">
+                        <h6>FAQ</h6>
+                        <p>Perguntas frequentes</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component-category">
+                <div class="component-category-title">Elementos</div>
+                <div class="component-item" draggable="true" data-component="heading">
+                    <div class="component-icon"><i class="fas fa-heading"></i></div>
+                    <div class="component-info">
+                        <h6>Título</h6>
+                        <p>Heading text</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="text">
+                    <div class="component-icon"><i class="fas fa-paragraph"></i></div>
+                    <div class="component-info">
+                        <h6>Texto</h6>
+                        <p>Parágrafo</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="button">
+                    <div class="component-icon"><i class="fas fa-mouse-pointer"></i></div>
+                    <div class="component-info">
+                        <h6>Botão</h6>
+                        <p>Call-to-action</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="image">
+                    <div class="component-icon"><i class="fas fa-image"></i></div>
+                    <div class="component-info">
+                        <h6>Imagem</h6>
+                        <p>Foto ou ilustração</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="video">
+                    <div class="component-icon"><i class="fas fa-video"></i></div>
+                    <div class="component-info">
+                        <h6>Vídeo</h6>
+                        <p>Embed de vídeo</p>
+                    </div>
+                </div>
+                <div class="component-item" draggable="true" data-component="form">
+                    <div class="component-icon"><i class="fas fa-wpforms"></i></div>
+                    <div class="component-info">
+                        <h6>Formulário</h6>
+                        <p>Captura de leads</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nexora-btn nexora-btn-outline w-100 mt-3" id="templatesBtn">
+                <i class="fas fa-th-large"></i>
+                Ver Templates
+            </button>
+        </div>
+
+        <!-- Center: Canvas -->
+        <div class="builder-canvas" id="builderCanvas">
+            <div class="canvas-frame" id="canvasFrame">
+                <div class="empty-canvas">
+                    <i class="fas fa-magic"></i>
+                    <h4>Comece a Construir</h4>
+                    <p>Arraste componentes da barra lateral ou escolha um template</p>
+                    <button class="nexora-btn nexora-btn-primary mt-3" id="chooseTemplateBtn">
+                        <i class="fas fa-th-large"></i>
+                        Escolher Template
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar: Properties -->
+        <div class="builder-properties">
+            <h5 class="mb-4"><i class="fas fa-sliders-h"></i> Propriedades</h5>
+            
+            <div id="propertiesPanel">
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-mouse-pointer fa-3x mb-3" style="opacity: 0.3;"></i>
+                    <p>Selecione um componente para editar suas propriedades</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Modal: Templates -->
+<div class="modal fade" id="templatesModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-th-large"></i> Escolher Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="template-grid">
+                    <div class="template-card" data-template="startup">
+                        <div class="template-preview">🚀</div>
+                        <div class="template-info">
+                            <h6>Startup SaaS</h6>
+                            <p>Ideal para produtos digitais</p>
+                        </div>
+                    </div>
+                    <div class="template-card" data-template="ecommerce">
+                        <div class="template-preview">🛒</div>
+                        <div class="template-info">
+                            <h6>E-commerce</h6>
+                            <p>Venda produtos online</p>
+                        </div>
+                    </div>
+                    <div class="template-card" data-template="webinar">
+                        <div class="template-preview">🎥</div>
+                        <div class="template-info">
+                            <h6>Webinar</h6>
+                            <p>Inscrição para eventos</p>
+                        </div>
+                    </div>
+                    <div class="template-card" data-template="leadmagnet">
+                        <div class="template-preview">🎁</div>
+                        <div class="template-info">
+                            <h6>Lead Magnet</h6>
+                            <p>Captura de emails</p>
+                        </div>
+                    </div>
+                    <div class="template-card" data-template="agency">
+                        <div class="template-preview">💼</div>
+                        <div class="template-info">
+                            <h6>Agência</h6>
+                            <p>Serviços profissionais</p>
+                        </div>
+                    </div>
+                    <div class="template-card" data-template="course">
+                        <div class="template-preview">📚</div>
+                        <div class="template-info">
+                            <h6>Curso Online</h6>
+                            <p>Venda de cursos</p>
+                        </div>
+                    </div>
+                    <div class="template-card" data-template="app">
+                        <div class="template-preview">📱</div>
+                        <div class="template-info">
+                            <h6>App Mobile</h6>
+                            <p>Download de aplicativo</p>
+                        </div>
+                    </div>
+                    <div class="template-card" data-template="blank">
+                        <div class="template-preview" style="background: white; color: #ccc;">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div class="template-info">
+                            <h6>Em Branco</h6>
+                            <p>Comece do zero</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let components = [];
+    let selectedComponent = null;
+    let componentIdCounter = 1;
+
+    const canvasFrame = document.getElementById('canvasFrame');
+    const propertiesPanel = document.getElementById('propertiesPanel');
+    const templatesModal = new bootstrap.Modal(document.getElementById('templatesModal'));
+
+    // Component templates
+    const componentTemplates = {
+        hero: `
+            <div class="lp-hero">
+                <h1>Transforme Seu Negócio com Nossa Solução</h1>
+                <p>A plataforma completa para escalar suas vendas e automatizar seu marketing</p>
+                <button class="btn btn-light btn-lg">Começar Agora</button>
+            </div>
+        `,
+        features: `
+            <div class="lp-features">
+                <h2>Por Que Escolher Nossa Solução?</h2>
+                <div class="lp-feature-grid">
+                    <div class="lp-feature-item">
+                        <div class="lp-feature-icon">⚡</div>
+                        <h4>Rápido</h4>
+                        <p>Resultados em minutos, não em dias</p>
+                    </div>
+                    <div class="lp-feature-item">
+                        <div class="lp-feature-icon">🎯</div>
+                        <h4>Preciso</h4>
+                        <p>Targeting inteligente com IA</p>
+                    </div>
+                    <div class="lp-feature-item">
+                        <div class="lp-feature-icon">📈</div>
+                        <h4>Escalável</h4>
+                        <p>Cresce junto com seu negócio</p>
+                    </div>
+                </div>
+            </div>
+        `,
+        testimonial: `
+            <div class="lp-testimonial">
+                <div class="lp-testimonial-content">
+                    <div class="lp-testimonial-quote">
+                        "Esta plataforma transformou completamente nosso processo de marketing. Aumentamos nossas conversões em 300% em apenas 3 meses!"
+                    </div>
+                    <strong>João Silva</strong>
+                    <p class="text-muted">CEO, TechStartup Inc.</p>
+                </div>
+            </div>
+        `,
+        cta: `
+            <div class="lp-cta">
+                <h2>Pronto Para Começar?</h2>
+                <p style="color: white; opacity: 0.9; font-size: 18px;">Junte-se a mais de 10.000 empresas que já transformaram seus resultados</p>
+                <button class="btn btn-light btn-lg">Começar Gratuitamente</button>
+            </div>
+        `,
+        heading: `<h2 style="padding: 20px 40px;">Seu Título Aqui</h2>`,
+        text: `<p style="padding: 20px 40px;">Seu texto aqui. Clique para editar.</p>`,
+        button: `<div style="padding: 20px 40px;"><button class="btn btn-primary btn-lg">Clique Aqui</button></div>`,
+        image: `<div style="padding: 20px 40px;"><img src="https://via.placeholder.com/800x400" style="width: 100%; border-radius: 12px;"></div>`,
+        form: `
+            <div style="padding: 40px; background: #f8f9fa;">
+                <div style="max-width: 500px; margin: 0 auto;">
+                    <h3 class="mb-4">Receba Nosso Conteúdo</h3>
+                    <input type="text" class="form-control mb-3" placeholder="Seu nome">
+                    <input type="email" class="form-control mb-3" placeholder="Seu email">
+                    <button class="btn btn-primary w-100">Enviar</button>
+                </div>
+            </div>
+        `
+    };
+
+    // Drag and drop
+    document.querySelectorAll('.component-item').forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('component', item.dataset.component);
+        });
+    });
+
+    canvasFrame.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    canvasFrame.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const componentType = e.dataTransfer.getData('component');
+        addComponent(componentType);
+    });
+
+    // Add component
+    function addComponent(type) {
+        // Remove empty state if exists
+        const emptyCanvas = canvasFrame.querySelector('.empty-canvas');
+        if (emptyCanvas) {
+            emptyCanvas.remove();
+        }
+
+        const componentId = componentIdCounter++;
+        const componentHtml = componentTemplates[type] || '<div style="padding: 40px;">Componente</div>';
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = 'canvas-component';
+        wrapper.dataset.componentId = componentId;
+        wrapper.dataset.componentType = type;
+        wrapper.innerHTML = `
+            <div class="component-controls">
+                <button class="component-control-btn" onclick="moveComponentUp(${componentId})">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+                <button class="component-control-btn" onclick="moveComponentDown(${componentId})">
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+                <button class="component-control-btn" onclick="duplicateComponent(${componentId})">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <button class="component-control-btn" onclick="deleteComponent(${componentId})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            ${componentHtml}
+        `;
+
+        canvasFrame.appendChild(wrapper);
+
+        wrapper.addEventListener('click', (e) => {
+            if (!e.target.closest('.component-control-btn')) {
+                selectComponent(componentId);
+            }
+        });
+
+        components.push({ id: componentId, type, element: wrapper });
+        showToast('Componente adicionado!', 'success');
+    }
+
+    // Select component
+    function selectComponent(id) {
+        document.querySelectorAll('.canvas-component').forEach(c => c.classList.remove('selected'));
+        const component = components.find(c => c.id === id);
+        if (component) {
+            component.element.classList.add('selected');
+            selectedComponent = component;
+            showProperties(component);
+        }
+    }
+
+    // Show properties
+    function showProperties(component) {
+        propertiesPanel.innerHTML = `
+            <div class="property-group">
+                <div class="property-group-title">Componente</div>
+                <div class="property-field">
+                    <label class="property-label">Tipo</label>
+                    <input type="text" class="property-input" value="${component.type}" disabled>
+                </div>
+            </div>
+            <div class="property-group">
+                <div class="property-group-title">Espaçamento</div>
+                <div class="property-field">
+                    <label class="property-label">Padding</label>
+                    <input type="range" class="form-range" min="0" max="100" value="40">
+                </div>
+            </div>
+            <div class="property-group">
+                <div class="property-group-title">Cores</div>
+                <div class="property-field">
+                    <label class="property-label">Cor de Fundo</label>
+                    <div class="color-picker-group">
+                        <div class="color-picker-swatch" style="background: #ffffff;"></div>
+                        <div class="color-picker-swatch" style="background: #f8f9fa;"></div>
+                        <div class="color-picker-swatch" style="background: #667eea;"></div>
+                        <div class="color-picker-swatch" style="background: #764ba2;"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Component controls
+    window.moveComponentUp = function(id) {
+        const index = components.findIndex(c => c.id === id);
+        if (index > 0) {
+            const component = components[index];
+            canvasFrame.insertBefore(component.element, components[index - 1].element);
+            [components[index], components[index - 1]] = [components[index - 1], components[index]];
+        }
+    };
+
+    window.moveComponentDown = function(id) {
+        const index = components.findIndex(c => c.id === id);
+        if (index < components.length - 1) {
+            const component = components[index];
+            canvasFrame.insertBefore(components[index + 1].element, component.element);
+            [components[index], components[index + 1]] = [components[index + 1], components[index]];
+        }
+    };
+
+    window.duplicateComponent = function(id) {
+        const component = components.find(c => c.id === id);
+        if (component) {
+            addComponent(component.type);
+        }
+    };
+
+    window.deleteComponent = function(id) {
+        if (confirm('Tem certeza que deseja excluir este componente?')) {
+            const index = components.findIndex(c => c.id === id);
+            if (index !== -1) {
+                components[index].element.remove();
+                components.splice(index, 1);
+                propertiesPanel.innerHTML = `
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-mouse-pointer fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p>Selecione um componente para editar suas propriedades</p>
+                    </div>
+                `;
+                showToast('Componente excluído!', 'success');
+            }
+        }
+    };
+
+    // Device preview
+    document.querySelectorAll('.device-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            canvasFrame.classList.remove('mobile', 'tablet');
+            if (btn.dataset.device !== 'desktop') {
+                canvasFrame.classList.add(btn.dataset.device);
+            }
+        });
+    });
+
+    // Templates
+    document.getElementById('templatesBtn').addEventListener('click', () => {
+        templatesModal.show();
+    });
+
+    document.getElementById('chooseTemplateBtn').addEventListener('click', () => {
+        templatesModal.show();
+    });
+
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const template = card.dataset.template;
+            loadTemplate(template);
+            templatesModal.hide();
+        });
+    });
+
+    function loadTemplate(template) {
+        // Clear canvas
+        canvasFrame.innerHTML = '';
+        components = [];
+
+        // Load template components
+        if (template === 'startup') {
+            addComponent('hero');
+            addComponent('features');
+            addComponent('testimonial');
+            addComponent('cta');
+        } else if (template === 'blank') {
+            canvasFrame.innerHTML = `
+                <div class="empty-canvas">
+                    <i class="fas fa-magic"></i>
+                    <h4>Comece a Construir</h4>
+                    <p>Arraste componentes da barra lateral</p>
+                </div>
+            `;
+        } else {
+            addComponent('hero');
+            addComponent('features');
+            addComponent('cta');
+        }
+
+        showToast('Template carregado!', 'success');
+    }
+
+    // Actions
+    document.getElementById('saveBtn').addEventListener('click', () => {
+        showToast('Landing page salva com sucesso!', 'success');
+    });
+
+    document.getElementById('publishBtn').addEventListener('click', () => {
+        showToast('Landing page publicada com sucesso!', 'success');
+    });
+
+    // Toast helper
+    function showToast(message, type = 'info') {
+        if (window.showToast) {
+            window.showToast(message, type);
+        } else {
+            alert(message);
+        }
+    }
+});
+</script>
 {% endblock %}

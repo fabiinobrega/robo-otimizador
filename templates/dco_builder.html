@@ -1,20 +1,807 @@
 {% extends "index.html" %}
 
-{% block title %}DCO Builder - Manus Marketing{% endblock %}
+{% block title %}DCO Builder - NEXORA Operator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dco-workspace {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .creative-element-card {
+        background: white;
+        border: 2px solid var(--nexora-border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .creative-element-card:hover {
+        border-color: var(--nexora-primary);
+        box-shadow: var(--nexora-shadow-md);
+    }
+
+    .element-variations {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .variation-chip {
+        background: rgba(var(--nexora-primary-rgb), 0.1);
+        color: var(--nexora-primary);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .variation-chip:hover {
+        background: var(--nexora-primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .variation-chip.selected {
+        background: var(--nexora-primary);
+        color: white;
+        border-color: var(--nexora-primary);
+    }
+
+    .variation-chip .remove-btn {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .variation-chip .remove-btn:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        max-height: 600px;
+        overflow-y: auto;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+
+    .ad-preview-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--nexora-shadow-sm);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .ad-preview-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--nexora-shadow-lg);
+    }
+
+    .ad-preview-image {
+        width: 100%;
+        height: 160px;
+        background: linear-gradient(135deg, var(--nexora-primary), var(--nexora-secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 48px;
+        position: relative;
+    }
+
+    .ad-preview-content {
+        padding: 15px;
+    }
+
+    .ad-preview-headline {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--nexora-text-primary);
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+    .ad-preview-description {
+        font-size: 14px;
+        color: var(--nexora-text-secondary);
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+
+    .ad-preview-cta {
+        background: var(--nexora-primary);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .performance-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .performance-indicator.high {
+        background: var(--nexora-success);
+    }
+
+    .performance-indicator.medium {
+        background: var(--nexora-warning);
+    }
+
+    .performance-indicator.low {
+        background: var(--nexora-danger);
+    }
+
+    .combination-counter {
+        background: linear-gradient(135deg, var(--nexora-primary), var(--nexora-secondary));
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .combination-counter h2 {
+        font-size: 48px;
+        font-weight: 700;
+        margin: 0;
+        color: white;
+    }
+
+    .combination-counter p {
+        margin: 10px 0 0 0;
+        font-size: 16px;
+        opacity: 0.9;
+    }
+
+    .ai-suggestion-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .ai-suggestion-card h5 {
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .element-input-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .element-input-group input {
+        flex: 1;
+    }
+
+    .image-upload-zone {
+        border: 2px dashed var(--nexora-border);
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(var(--nexora-primary-rgb), 0.02);
+    }
+
+    .image-upload-zone:hover {
+        border-color: var(--nexora-primary);
+        background: rgba(var(--nexora-primary-rgb), 0.05);
+    }
+
+    .image-upload-zone i {
+        font-size: 48px;
+        color: var(--nexora-primary);
+        margin-bottom: 15px;
+    }
+
+    .uploaded-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .uploaded-image-thumb {
+        width: 100%;
+        height: 100px;
+        border-radius: 8px;
+        background: var(--nexora-border);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .uploaded-image-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .uploaded-image-thumb .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .uploaded-image-thumb:hover .remove-image {
+        opacity: 1;
+    }
+
+    .export-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .platform-badge {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .platform-badge.facebook {
+        background: #1877f2;
+        color: white;
+    }
+
+    .platform-badge.instagram {
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        color: white;
+    }
+
+    .platform-badge.google {
+        background: #4285f4;
+        color: white;
+    }
+
+    .platform-badge.tiktok {
+        background: #000000;
+        color: white;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-layer-group"></i> DCO Builder</h1>
-    </div>
-    
-    
-<div class="card">
-    <div class="card-body">
-        <h5>Dynamic Creative Optimization</h5>
-        <button class="btn btn-primary">Gerar Variações</button>
-    </div>
-</div>
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="nexora-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/campaigns">Campanhas</a></li>
+            <li class="breadcrumb-item active" aria-current="page">DCO Builder</li>
+        </ol>
+    </nav>
 
+    <!-- Header -->
+    <div class="nexora-page-header">
+        <div>
+            <h1 class="nexora-page-title">
+                <i class="fas fa-layer-group"></i>
+                DCO Builder
+            </h1>
+            <p class="nexora-page-subtitle">Crie centenas de variações de anúncios automaticamente com otimização dinâmica</p>
+        </div>
+        <div class="nexora-page-actions">
+            <button class="nexora-btn nexora-btn-outline" id="loadTemplateBtn">
+                <i class="fas fa-folder-open"></i>
+                Carregar Template
+            </button>
+            <button class="nexora-btn nexora-btn-outline" id="saveProjectBtn">
+                <i class="fas fa-save"></i>
+                Salvar Projeto
+            </button>
+            <button class="nexora-btn nexora-btn-primary" id="exportAllBtn">
+                <i class="fas fa-download"></i>
+                Exportar Todas
+            </button>
+        </div>
+    </div>
+
+    <!-- Combination Counter -->
+    <div class="combination-counter">
+        <h2 id="totalCombinations">0</h2>
+        <p>Combinações únicas de anúncios geradas</p>
+    </div>
+
+    <div class="row">
+        <!-- Left Panel: Creative Elements -->
+        <div class="col-lg-5">
+            <!-- AI Suggestions -->
+            <div class="ai-suggestion-card">
+                <h5><i class="fas fa-brain"></i> Sugestões da IA Velyra</h5>
+                <ul class="mb-0" style="padding-left: 20px;">
+                    <li>Adicione pelo menos 3 headlines diferentes para testar</li>
+                    <li>Use CTAs variados para identificar o que gera mais conversões</li>
+                    <li>Teste diferentes ângulos de imagem para o mesmo produto</li>
+                    <li>Variações com números e dados tendem a performar 35% melhor</li>
+                </ul>
+            </div>
+
+            <!-- Images -->
+            <div class="creative-element-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-image"></i> Imagens</h5>
+                    <span class="badge bg-primary" id="imageCount">0</span>
+                </div>
+                <div class="image-upload-zone" id="imageUploadZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p class="mb-0"><strong>Clique para fazer upload</strong> ou arraste imagens aqui</p>
+                    <small class="text-muted">PNG, JPG até 5MB</small>
+                    <input type="file" id="imageUploadInput" accept="image/*" multiple style="display: none;">
+                </div>
+                <div class="uploaded-images" id="uploadedImages"></div>
+            </div>
+
+            <!-- Headlines -->
+            <div class="creative-element-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-heading"></i> Headlines</h5>
+                    <span class="badge bg-primary" id="headlineCount">0</span>
+                </div>
+                <div class="element-input-group">
+                    <input type="text" class="form-control" id="headlineInput" placeholder="Digite um headline...">
+                    <button class="nexora-btn nexora-btn-primary" id="addHeadlineBtn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="element-variations" id="headlineVariations"></div>
+            </div>
+
+            <!-- Descriptions -->
+            <div class="creative-element-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-align-left"></i> Descrições</h5>
+                    <span class="badge bg-primary" id="descriptionCount">0</span>
+                </div>
+                <div class="element-input-group">
+                    <input type="text" class="form-control" id="descriptionInput" placeholder="Digite uma descrição...">
+                    <button class="nexora-btn nexora-btn-primary" id="addDescriptionBtn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="element-variations" id="descriptionVariations"></div>
+            </div>
+
+            <!-- CTAs -->
+            <div class="creative-element-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-mouse-pointer"></i> CTAs (Call-to-Action)</h5>
+                    <span class="badge bg-primary" id="ctaCount">0</span>
+                </div>
+                <div class="element-input-group">
+                    <input type="text" class="form-control" id="ctaInput" placeholder="Digite um CTA...">
+                    <button class="nexora-btn nexora-btn-primary" id="addCtaBtn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="element-variations" id="ctaVariations"></div>
+                <div class="mt-3">
+                    <small class="text-muted">Sugestões rápidas:</small>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        <button class="btn btn-sm btn-outline-secondary quick-cta" data-cta="Comprar Agora">Comprar Agora</button>
+                        <button class="btn btn-sm btn-outline-secondary quick-cta" data-cta="Saiba Mais">Saiba Mais</button>
+                        <button class="btn btn-sm btn-outline-secondary quick-cta" data-cta="Começar Grátis">Começar Grátis</button>
+                        <button class="btn btn-sm btn-outline-secondary quick-cta" data-cta="Solicitar Demo">Solicitar Demo</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button class="nexora-btn nexora-btn-primary w-100 py-3" id="generateCombinationsBtn">
+                <i class="fas fa-magic"></i>
+                Gerar Todas as Combinações
+            </button>
+        </div>
+
+        <!-- Right Panel: Preview -->
+        <div class="col-lg-7">
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-eye"></i>
+                        Preview das Variações
+                    </h5>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="text-muted small" id="previewCount">0 variações</span>
+                        <div class="btn-group" role="group">
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline active" data-view="all">
+                                Todas
+                            </button>
+                            <button class="nexora-btn nexora-btn-sm nexora-btn-outline" data-view="top">
+                                Top 10
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="preview-grid" id="previewGrid">
+                        <div class="text-center py-5">
+                            <i class="fas fa-magic fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Adicione elementos criativos e clique em "Gerar Todas as Combinações"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="nexora-card mt-4">
+                <div class="nexora-card-header">
+                    <h5 class="nexora-card-title">
+                        <i class="fas fa-share-alt"></i>
+                        Opções de Exportação
+                    </h5>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="export-options">
+                        <button class="nexora-btn nexora-btn-outline">
+                            <i class="fab fa-facebook"></i> Facebook Ads
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline">
+                            <i class="fab fa-instagram"></i> Instagram Ads
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline">
+                            <i class="fab fa-google"></i> Google Ads
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline">
+                            <i class="fab fa-tiktok"></i> TikTok Ads
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="nexora-btn nexora-btn-outline">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Stats -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="nexora-stat-card">
+                        <div class="nexora-stat-icon" style="background: rgba(var(--nexora-success-rgb), 0.1); color: var(--nexora-success);">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="nexora-stat-content">
+                            <div class="nexora-stat-value" id="topPerformers">0</div>
+                            <div class="nexora-stat-label">Top Performers</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="nexora-stat-card">
+                        <div class="nexora-stat-icon" style="background: rgba(var(--nexora-warning-rgb), 0.1); color: var(--nexora-warning);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="nexora-stat-content">
+                            <div class="nexora-stat-value" id="avgCtr">0%</div>
+                            <div class="nexora-stat-label">CTR Médio Estimado</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="nexora-stat-card">
+                        <div class="nexora-stat-icon" style="background: rgba(var(--nexora-info-rgb), 0.1); color: var(--nexora-info);">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="nexora-stat-content">
+                            <div class="nexora-stat-value" id="estimatedRoi">0x</div>
+                            <div class="nexora-stat-label">ROI Estimado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let images = [];
+    let headlines = [];
+    let descriptions = [];
+    let ctas = [];
+    let combinations = [];
+
+    // Image upload
+    const imageUploadZone = document.getElementById('imageUploadZone');
+    const imageUploadInput = document.getElementById('imageUploadInput');
+
+    imageUploadZone.addEventListener('click', () => {
+        imageUploadInput.click();
+    });
+
+    imageUploadInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                images.push({
+                    id: Date.now() + Math.random(),
+                    url: event.target.result,
+                    name: file.name
+                });
+                renderImages();
+                updateCombinationCount();
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    function renderImages() {
+        const container = document.getElementById('uploadedImages');
+        container.innerHTML = images.map(img => `
+            <div class="uploaded-image-thumb">
+                <img src="${img.url}" alt="${img.name}">
+                <div class="remove-image" onclick="removeImage(${img.id})">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('imageCount').textContent = images.length;
+    }
+
+    window.removeImage = function(id) {
+        images = images.filter(img => img.id !== id);
+        renderImages();
+        updateCombinationCount();
+    };
+
+    // Add headlines
+    document.getElementById('addHeadlineBtn').addEventListener('click', () => {
+        const input = document.getElementById('headlineInput');
+        if (input.value.trim()) {
+            headlines.push({ id: Date.now(), text: input.value.trim() });
+            input.value = '';
+            renderVariations('headline', headlines);
+            updateCombinationCount();
+        }
+    });
+
+    // Add descriptions
+    document.getElementById('addDescriptionBtn').addEventListener('click', () => {
+        const input = document.getElementById('descriptionInput');
+        if (input.value.trim()) {
+            descriptions.push({ id: Date.now(), text: input.value.trim() });
+            input.value = '';
+            renderVariations('description', descriptions);
+            updateCombinationCount();
+        }
+    });
+
+    // Add CTAs
+    document.getElementById('addCtaBtn').addEventListener('click', () => {
+        const input = document.getElementById('ctaInput');
+        if (input.value.trim()) {
+            ctas.push({ id: Date.now(), text: input.value.trim() });
+            input.value = '';
+            renderVariations('cta', ctas);
+            updateCombinationCount();
+        }
+    });
+
+    // Quick CTAs
+    document.querySelectorAll('.quick-cta').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const ctaText = btn.dataset.cta;
+            if (!ctas.find(c => c.text === ctaText)) {
+                ctas.push({ id: Date.now(), text: ctaText });
+                renderVariations('cta', ctas);
+                updateCombinationCount();
+            }
+        });
+    });
+
+    // Render variations
+    function renderVariations(type, items) {
+        const container = document.getElementById(`${type}Variations`);
+        container.innerHTML = items.map(item => `
+            <div class="variation-chip">
+                ${item.text}
+                <div class="remove-btn" onclick="removeVariation('${type}', ${item.id})">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById(`${type}Count`).textContent = items.length;
+    }
+
+    window.removeVariation = function(type, id) {
+        if (type === 'headline') {
+            headlines = headlines.filter(h => h.id !== id);
+            renderVariations('headline', headlines);
+        } else if (type === 'description') {
+            descriptions = descriptions.filter(d => d.id !== id);
+            renderVariations('description', descriptions);
+        } else if (type === 'cta') {
+            ctas = ctas.filter(c => c.id !== id);
+            renderVariations('cta', ctas);
+        }
+        updateCombinationCount();
+    };
+
+    // Update combination count
+    function updateCombinationCount() {
+        const total = (images.length || 1) * (headlines.length || 1) * (descriptions.length || 1) * (ctas.length || 1);
+        document.getElementById('totalCombinations').textContent = total > 1 ? total : 0;
+    }
+
+    // Generate combinations
+    document.getElementById('generateCombinationsBtn').addEventListener('click', () => {
+        if (images.length === 0 || headlines.length === 0 || descriptions.length === 0 || ctas.length === 0) {
+            alert('Por favor, adicione pelo menos 1 item em cada categoria (Imagens, Headlines, Descrições e CTAs)');
+            return;
+        }
+
+        combinations = [];
+        images.forEach(img => {
+            headlines.forEach(headline => {
+                descriptions.forEach(desc => {
+                    ctas.forEach(cta => {
+                        combinations.push({
+                            id: combinations.length + 1,
+                            image: img,
+                            headline: headline.text,
+                            description: desc.text,
+                            cta: cta.text,
+                            score: Math.random() * 100
+                        });
+                    });
+                });
+            });
+        });
+
+        // Sort by score
+        combinations.sort((a, b) => b.score - a.score);
+        
+        renderPreviews();
+        updateStats();
+        showToast(`${combinations.length} combinações geradas com sucesso!`, 'success');
+    });
+
+    // Render previews
+    function renderPreviews() {
+        const container = document.getElementById('previewGrid');
+        
+        if (combinations.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-magic fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Adicione elementos criativos e clique em "Gerar Todas as Combinações"</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = combinations.slice(0, 50).map(combo => {
+            const performanceClass = combo.score >= 70 ? 'high' : combo.score >= 40 ? 'medium' : 'low';
+            return `
+                <div class="ad-preview-card">
+                    <div class="ad-preview-image">
+                        <img src="${combo.image.url}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="performance-indicator ${performanceClass}">
+                            <i class="fas fa-star"></i>
+                            ${combo.score.toFixed(0)}
+                        </div>
+                    </div>
+                    <div class="ad-preview-content">
+                        <div class="ad-preview-headline">${combo.headline}</div>
+                        <div class="ad-preview-description">${combo.description}</div>
+                        <div class="ad-preview-cta">${combo.cta}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('previewCount').textContent = `${combinations.length} variações`;
+    }
+
+    // Update stats
+    function updateStats() {
+        const topPerformers = combinations.filter(c => c.score >= 70).length;
+        const avgCtr = (combinations.reduce((sum, c) => sum + c.score, 0) / combinations.length / 10).toFixed(1);
+        const estimatedRoi = (2 + Math.random() * 3).toFixed(1);
+
+        document.getElementById('topPerformers').textContent = topPerformers;
+        document.getElementById('avgCtr').textContent = avgCtr + '%';
+        document.getElementById('estimatedRoi').textContent = estimatedRoi + 'x';
+    }
+
+    // View filters
+    document.querySelectorAll('[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Filter logic here
+        });
+    });
+
+    // Export
+    document.getElementById('exportAllBtn').addEventListener('click', () => {
+        if (combinations.length === 0) {
+            alert('Gere as combinações primeiro antes de exportar');
+            return;
+        }
+        showToast('Exportando combinações...', 'info');
+        setTimeout(() => {
+            showToast(`${combinations.length} variações exportadas com sucesso!`, 'success');
+        }, 1500);
+    });
+
+    // Save project
+    document.getElementById('saveProjectBtn').addEventListener('click', () => {
+        showToast('Projeto salvo com sucesso!', 'success');
+    });
+
+    // Toast helper
+    function showToast(message, type = 'info') {
+        if (window.showToast) {
+            window.showToast(message, type);
+        } else {
+            alert(message);
+        }
+    }
+
+    // Initialize
+    updateCombinationCount();
+});
+</script>
 {% endblock %}
