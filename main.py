@@ -2,6 +2,8 @@ import os
 import sqlite3
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, request, jsonify, g
+from flask_cors import CORS
+from flask_compress import Compress
 from werkzeug.utils import secure_filename
 import json
 import random
@@ -74,7 +76,11 @@ except ImportError as e:
     product_intelligence = None
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "uma_chave_secreta_muito_segura")
+CORS(app)  # Enable CORS for all routes
+Compress(app)  # Enable gzip compression
+# Generate secure SECRET_KEY if not in environment
+import secrets
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 
 DATABASE = os.path.join(app.root_path, 'database.db')
