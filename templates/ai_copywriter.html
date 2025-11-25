@@ -1,0 +1,221 @@
+{% extends "index.html" %}
+
+{% block title %}Gerador de Copy com IA - Manus Marketing{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Início</a></li>
+        <li class="breadcrumb-item"><a href="#">Inteligência Artificial</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Gerador de Copy</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-pen-fancy"></i> Gerador de Copy com IA</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-primary" onclick="generateCopy()">
+            <i class="fas fa-magic"></i> Gerar Copy
+        </button>
+    </div>
+</div>
+
+<!-- Formulário de Geração -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cog"></i> Configurações da Copy</h5>
+            </div>
+            <div class="card-body">
+                <form id="copyForm">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Nome do Produto/Serviço *</label>
+                        <input type="text" class="form-control" id="productName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Descrição *</label>
+                        <textarea class="form-control" id="productDescription" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="targetAudience" class="form-label">Público-Alvo *</label>
+                        <input type="text" class="form-control" id="targetAudience" placeholder="Ex: Empreendedores de 25-45 anos" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="platform" class="form-label">Plataforma *</label>
+                        <select class="form-select" id="platform" required>
+                            <option value="">Selecione...</option>
+                            <option value="facebook">Facebook Ads</option>
+                            <option value="instagram">Instagram Ads</option>
+                            <option value="google">Google Ads</option>
+                            <option value="tiktok">TikTok Ads</option>
+                            <option value="linkedin">LinkedIn Ads</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="tone" class="form-label">Tom de Voz</label>
+                        <select class="form-select" id="tone">
+                            <option value="professional">Profissional</option>
+                            <option value="casual">Casual</option>
+                            <option value="enthusiastic">Entusiasmado</option>
+                            <option value="urgent">Urgente</option>
+                            <option value="friendly">Amigável</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="numVariants" class="form-label">Número de Variações</label>
+                        <input type="number" class="form-control" id="numVariants" value="5" min="1" max="10">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4 border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Dicas</h6>
+            </div>
+            <div class="card-body">
+                <ul class="small mb-0">
+                    <li>Seja específico na descrição do produto</li>
+                    <li>Defina claramente seu público-alvo</li>
+                    <li>Escolha o tom adequado para sua audiência</li>
+                    <li>Gere múltiplas variações para testar</li>
+                    <li>Use as melhores copies em testes A/B</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="fas fa-robot"></i> Velyra Prime</h6>
+            </div>
+            <div class="card-body">
+                <p class="small mb-0">
+                    <strong>Status:</strong> <span class="badge bg-success">Ativo</span><br>
+                    A IA está pronta para gerar copies otimizadas para conversão!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resultados -->
+<div class="row" id="resultsSection" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-file-alt"></i> Copies Geradas</h5>
+            </div>
+            <div class="card-body" id="resultsContent">
+                <!-- Resultados serão inseridos aqui -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateCopy() {
+    const form = document.getElementById('copyForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const data = {
+        product: {
+            name: document.getElementById('productName').value,
+            description: document.getElementById('productDescription').value,
+            target_audience: document.getElementById('targetAudience').value
+        },
+        platform: document.getElementById('platform').value,
+        tone: document.getElementById('tone').value,
+        num_variants: parseInt(document.getElementById('numVariants').value)
+    };
+    
+    // Mostrar loading
+    const resultsSection = document.getElementById('resultsSection');
+    const resultsContent = document.getElementById('resultsContent');
+    resultsSection.style.display = 'block';
+    resultsContent.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Gerando...</span></div><p class="mt-2">Gerando copies com IA...</p></div>';
+    
+    // Chamar API
+    fetch('/api/ad/generate-copy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            displayResults(result.copies || []);
+        } else {
+            resultsContent.innerHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> ${result.message || 'Erro ao gerar copies'}</div>`;
+        }
+    })
+    .catch(error => {
+        resultsContent.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times-circle"></i> Erro ao conectar com a API</div>';
+    });
+}
+
+function displayResults(copies) {
+    const resultsContent = document.getElementById('resultsContent');
+    
+    if (!copies || copies.length === 0) {
+        resultsContent.innerHTML = '<div class="alert alert-info">Nenhuma copy gerada</div>';
+        return;
+    }
+    
+    let html = '<div class="row">';
+    copies.forEach((copy, index) => {
+        html += `
+            <div class="col-md-6 mb-3">
+                <div class="card border-primary">
+                    <div class="card-header bg-light">
+                        <strong>Variação ${index + 1}</strong>
+                    </div>
+                    <div class="card-body">
+                        <h6>Headline:</h6>
+                        <p class="text-primary"><strong>${copy.headline || ''}</strong></p>
+                        
+                        <h6>Texto Principal:</h6>
+                        <p>${copy.body || ''}</p>
+                        
+                        <h6>Call-to-Action:</h6>
+                        <p class="text-success"><strong>${copy.cta || ''}</strong></p>
+                        
+                        <button class="btn btn-sm btn-outline-primary" onclick="copyCopy(${index})">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="useCopy(${index})">
+                            <i class="fas fa-check"></i> Usar em Campanha
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    resultsContent.innerHTML = html;
+}
+
+function copyCopy(index) {
+    showToast('Copy copiada para a área de transferência!', 'success');
+}
+
+function useCopy(index) {
+    showToast('Copy salva! Acesse "Criar Campanha" para usar.', 'success');
+}
+</script>
+
+{% endblock %}

@@ -2169,6 +2169,102 @@ def reports_dashboard():
     return render_template("reports_dashboard.html")
 
 
+# ===== INTELIGÊNCIA ARTIFICIAL ROUTES =====
+
+@app.route("/ai-copywriter")
+def ai_copywriter():
+    """Gerador de Copy com IA"""
+    return render_template("ai_copywriter.html")
+
+
+@app.route("/ai-image-generator")
+def ai_image_generator():
+    """Gerador de Imagens com IA"""
+    return render_template("ai_image_generator.html")
+
+
+@app.route("/ai-video-scripts")
+def ai_video_scripts():
+    """Scripts de Vídeo com IA"""
+    return render_template("ai_video_scripts.html")
+
+
+@app.route("/ai-sentiment")
+def ai_sentiment():
+    """Análise de Sentimento com IA"""
+    return render_template("ai_sentiment.html")
+
+
+@app.route("/ai-performance-prediction")
+def ai_performance_prediction():
+    """Previsão de Performance com IA"""
+    return render_template("ai_performance_prediction.html")
+
+
+# ===== PLATAFORMAS ROUTES =====
+
+@app.route("/platforms/facebook")
+def platforms_facebook():
+    """Facebook Ads"""
+    return render_template("platforms_facebook.html")
+
+
+@app.route("/platforms/google")
+def platforms_google():
+    """Google Ads"""
+    return render_template("platforms_google.html")
+
+
+@app.route("/platforms/tiktok")
+def platforms_tiktok():
+    """TikTok Ads"""
+    return render_template("platforms_tiktok.html")
+
+
+@app.route("/platforms/pinterest")
+def platforms_pinterest():
+    """Pinterest Ads"""
+    return render_template("platforms_pinterest.html")
+
+
+@app.route("/platforms/linkedin")
+def platforms_linkedin():
+    """LinkedIn Ads"""
+    return render_template("platforms_linkedin.html")
+
+
+@app.route("/platforms/multi")
+def platforms_multi():
+    """Multi-Plataforma"""
+    return render_template("platforms_multi.html")
+
+
+# ===== OTIMIZAÇÃO ROUTES =====
+
+@app.route("/optimization/auto")
+def optimization_auto():
+    """Otimização Automática"""
+    return render_template("optimization_auto.html")
+
+
+@app.route("/optimization/budget")
+def optimization_budget():
+    """Redistribuição de Budget"""
+    return render_template("optimization_budget.html")
+
+
+@app.route("/optimization/bidding")
+def optimization_bidding():
+    """Ajuste de Lances"""
+    return render_template("optimization_bidding.html")
+
+
+@app.route("/optimization/autopilot")
+def optimization_autopilot():
+    """Auto-Pilot 24/7"""
+    return render_template("optimization_autopilot.html")
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
