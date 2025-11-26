@@ -75,6 +75,22 @@ except ImportError as e:
     print(f"Warning: Product intelligence service not available: {e}")
     product_intelligence = None
 
+# Import da integração Nexora + Manus
+try:
+    from services.nexora_manus_integration import (
+        nexora_prime,
+        manus_executor,
+        performance_predictor,
+        create_complete_campaign
+    )
+    print("✅ Nexora Prime + Manus AI loaded successfully!")
+except ImportError as e:
+    print(f"Warning: Nexora + Manus integration not available: {e}")
+    nexora_prime = None
+    manus_executor = None
+    performance_predictor = None
+    create_complete_campaign = None
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 Compress(app)  # Enable gzip compression
@@ -2269,6 +2285,232 @@ def optimization_bidding():
 def optimization_autopilot():
     """Auto-Pilot 24/7"""
     return render_template("optimization_autopilot.html")
+
+
+# ===== NEXORA + MANUS AI ROUTES =====
+
+@app.route("/api/nexora/create-campaign", methods=["POST"])
+def api_nexora_create_campaign():
+    """
+    API: Criar campanha completa com Nexora Prime + Manus
+    Gera estratégia, copy, criativos e previsão automaticamente
+    """
+    if not create_complete_campaign:
+        return jsonify({
+            "success": False,
+            "error": "Nexora + Manus integration not available"
+        }), 503
+    
+    try:
+        data = request.get_json()
+        
+        product_url = data.get('product_url')
+        product_info = data.get('product_info', {})
+        platforms = data.get('platforms', ['facebook', 'google'])
+        
+        if not product_url:
+            return jsonify({
+                "success": False,
+                "error": "product_url is required"
+            }), 400
+        
+        # Criar campanha completa
+        result = create_complete_campaign(product_url, product_info, platforms)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route("/api/nexora/analyze-product", methods=["POST"])
+def api_nexora_analyze_product():
+    """
+    API: Nexora Prime analisa produto e cria estratégia
+    """
+    if not nexora_prime:
+        return jsonify({
+            "success": False,
+            "error": "Nexora Prime not available"
+        }), 503
+    
+    try:
+        data = request.get_json()
+        
+        product_url = data.get('product_url')
+        product_info = data.get('product_info', {})
+        
+        if not product_url:
+            return jsonify({
+                "success": False,
+                "error": "product_url is required"
+            }), 400
+        
+        # Analisar produto
+        analysis = nexora_prime.analyze_product_for_campaign(product_url, product_info)
+        
+        return jsonify({
+            "success": True,
+            "analysis": analysis
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route("/api/manus/generate-copy", methods=["POST"])
+def api_manus_generate_copy():
+    """
+    API: Manus gera copy otimizado (AIDA/PAS/BAB)
+    """
+    if not manus_executor:
+        return jsonify({
+            "success": False,
+            "error": "Manus Executor not available"
+        }), 503
+    
+    try:
+        data = request.get_json()
+        
+        strategy = data.get('strategy', {})
+        platform = data.get('platform', 'facebook')
+        format_type = data.get('format', 'feed')
+        
+        # Gerar copy
+        copy = manus_executor.generate_ad_copy(strategy, platform, format_type)
+        
+        return jsonify({
+            "success": True,
+            "copy": copy
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route("/api/manus/generate-creatives", methods=["POST"])
+def api_manus_generate_creatives():
+    """
+    API: Manus gera prompts para criativos
+    """
+    if not manus_executor:
+        return jsonify({
+            "success": False,
+            "error": "Manus Executor not available"
+        }), 503
+    
+    try:
+        data = request.get_json()
+        
+        strategy = data.get('strategy', {})
+        copy = data.get('copy', {})
+        
+        # Gerar prompts
+        prompts = manus_executor.generate_creative_prompts(strategy, copy)
+        
+        return jsonify({
+            "success": True,
+            "prompts": prompts
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route("/api/nexora/predict-performance", methods=["POST"])
+def api_nexora_predict_performance():
+    """
+    API: Prever performance da campanha
+    """
+    if not performance_predictor:
+        return jsonify({
+            "success": False,
+            "error": "Performance Predictor not available"
+        }), 503
+    
+    try:
+        data = request.get_json()
+        campaign_data = data.get('campaign_data', {})
+        
+        # Prever performance
+        prediction = performance_predictor.predict_campaign_performance(campaign_data)
+        
+        return jsonify({
+            "success": True,
+            "prediction": prediction
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route("/api/nexora/optimize-campaign/<int:campaign_id>", methods=["POST"])
+def api_nexora_optimize_campaign(campaign_id):
+    """
+    API: Sugerir otimizações para campanha existente
+    """
+    if not performance_predictor:
+        return jsonify({
+            "success": False,
+            "error": "Performance Predictor not available"
+        }), 503
+    
+    try:
+        # Buscar métricas da campanha
+        db = get_db()
+        campaign = db.execute(
+            "SELECT * FROM campaigns WHERE id = ?",
+            (campaign_id,)
+        ).fetchone()
+        
+        if not campaign:
+            return jsonify({
+                "success": False,
+                "error": "Campaign not found"
+            }), 404
+        
+        metrics = db.execute(
+            "SELECT * FROM campaign_metrics WHERE campaign_id = ? ORDER BY created_at DESC LIMIT 1",
+            (campaign_id,)
+        ).fetchone()
+        
+        if not metrics:
+            return jsonify({
+                "success": False,
+                "error": "No metrics found for this campaign"
+            }), 404
+        
+        # Converter para dict
+        current_metrics = dict(metrics)
+        
+        # Sugerir otimizações
+        optimizations = performance_predictor.suggest_optimizations(campaign_id, current_metrics)
+        
+        return jsonify({
+            "success": True,
+            "optimizations": optimizations
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
 if __name__ == "__main__":
