@@ -1,0 +1,471 @@
+{% extends "index.html" %}
+
+{% block title %}Relatórios & Analytics - Nexora Prime{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_premium_v2.css') }}">
+<style>
+    .reports-header {
+        background: var(--nexora-gradient-secondary);
+        color: white;
+        padding: var(--nexora-space-8);
+        border-radius: 1rem;
+        margin-bottom: var(--nexora-space-6);
+    }
+    
+    .kpi-card {
+        background: white;
+        border-radius: 1rem;
+        padding: var(--nexora-space-6);
+        box-shadow: var(--nexora-shadow-md);
+        transition: all var(--nexora-transition-base);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        background: currentColor;
+        opacity: 0.05;
+        border-radius: 50%;
+    }
+    
+    .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--nexora-shadow-xl);
+    }
+    
+    .kpi-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: var(--nexora-space-2) 0;
+    }
+    
+    .kpi-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--nexora-gray-600);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .kpi-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--nexora-space-1);
+        font-size: 0.875rem;
+        font-weight: 600;
+        padding: var(--nexora-space-1) var(--nexora-space-2);
+        border-radius: 0.25rem;
+    }
+    
+    .kpi-trend-up {
+        background-color: var(--nexora-accent-100);
+        color: var(--nexora-accent-700);
+    }
+    
+    .kpi-trend-down {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .chart-card {
+        background: white;
+        border-radius: 1rem;
+        padding: var(--nexora-space-6);
+        box-shadow: var(--nexora-shadow-md);
+    }
+    
+    .funnel-step {
+        background: white;
+        border-radius: 0.5rem;
+        padding: var(--nexora-space-4);
+        margin-bottom: var(--nexora-space-2);
+        border-left: 4px solid;
+        position: relative;
+    }
+    
+    .funnel-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: currentColor;
+        opacity: 0.1;
+        transition: width var(--nexora-transition-slow);
+    }
+    
+    .campaign-row {
+        display: flex;
+        align-items: center;
+        gap: var(--nexora-space-4);
+        padding: var(--nexora-space-4);
+        border-bottom: 1px solid var(--nexora-gray-200);
+        transition: all var(--nexora-transition-base);
+    }
+    
+    .campaign-row:hover {
+        background-color: var(--nexora-gray-50);
+    }
+    
+    .campaign-rank {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    
+    .rank-1 { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #8b6914; }
+    .rank-2 { background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%); color: #666; }
+    .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #e8a87c 100%); color: #5c3a1a; }
+    .rank-other { background: var(--nexora-gray-200); color: var(--nexora-gray-700); }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="reports-header nexora-animate-slideUp">
+    <div class="nexora-flex nexora-items-center nexora-justify-between">
+        <div>
+            <h1 style="color: white; margin: 0;">
+                <i class="fas fa-chart-bar"></i> Relatórios & Analytics
+            </h1>
+            <p style="margin: var(--nexora-space-2) 0 0; opacity: 0.9;">
+                Análise completa de performance das suas campanhas
+            </p>
+        </div>
+        <div class="nexora-flex nexora-gap-4">
+            <button class="nexora-btn nexora-btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+                <i class="fas fa-calendar"></i> Últimos 30 dias
+            </button>
+            <button class="nexora-btn nexora-btn-sm" style="background: white; color: var(--nexora-secondary-600);">
+                <i class="fas fa-download"></i> Exportar PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- KPIs Principais -->
+<div class="nexora-grid nexora-grid-cols-5 nexora-gap-4 nexora-mb-4 nexora-animate-slideUp" style="animation-delay: 0.1s;">
+    <div class="kpi-card" style="color: var(--nexora-primary-500);">
+        <div class="kpi-label">ROI</div>
+        <div class="kpi-value">294%</div>
+        <div class="kpi-trend kpi-trend-up">
+            <i class="fas fa-arrow-up"></i> +45%
+        </div>
+    </div>
+    
+    <div class="kpi-card" style="color: var(--nexora-accent-500);">
+        <div class="kpi-label">Receita</div>
+        <div class="kpi-value">R$ 116k</div>
+        <div class="kpi-trend kpi-trend-up">
+            <i class="fas fa-arrow-up"></i> +200%
+        </div>
+    </div>
+    
+    <div class="kpi-card" style="color: var(--nexora-secondary-500);">
+        <div class="kpi-label">Custo</div>
+        <div class="kpi-value">R$ 12.5k</div>
+        <div class="kpi-trend kpi-trend-up">
+            <i class="fas fa-arrow-up"></i> +5%
+        </div>
+    </div>
+    
+    <div class="kpi-card" style="color: #ff9800;">
+        <div class="kpi-label">CPA</div>
+        <div class="kpi-value">R$ 33</div>
+        <div class="kpi-trend kpi-trend-down">
+            <i class="fas fa-arrow-down"></i> -15%
+        </div>
+    </div>
+    
+    <div class="kpi-card" style="color: #e91e63;">
+        <div class="kpi-label">Taxa Conv.</div>
+        <div class="kpi-value">5.4%</div>
+        <div class="kpi-trend kpi-trend-up">
+            <i class="fas fa-arrow-up"></i> +12%
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos -->
+<div class="nexora-grid nexora-grid-cols-2 nexora-gap-4 nexora-mb-4 nexora-animate-slideUp" style="animation-delay: 0.2s;">
+    <div class="chart-card">
+        <h3 class="nexora-mb-4"><i class="fas fa-chart-line"></i> Performance ao Longo do Tempo</h3>
+        <canvas id="performanceChart" height="300"></canvas>
+    </div>
+    
+    <div class="chart-card">
+        <h3 class="nexora-mb-4"><i class="fas fa-chart-pie"></i> Performance por Plataforma</h3>
+        <canvas id="platformChart" height="300"></canvas>
+    </div>
+</div>
+
+<!-- Top Campanhas e Funil -->
+<div class="nexora-grid nexora-grid-cols-2 nexora-gap-4 nexora-mb-4 nexora-animate-slideUp" style="animation-delay: 0.3s;">
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <h3 class="nexora-card-title"><i class="fas fa-trophy"></i> Top 5 Campanhas</h3>
+        </div>
+        <div>
+            <div class="campaign-row">
+                <div class="campaign-rank rank-1">1</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600;">Black Friday 2024</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">Facebook Ads</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-accent-600);">9.8x</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">ROAS</div>
+                </div>
+            </div>
+            
+            <div class="campaign-row">
+                <div class="campaign-rank rank-2">2</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600;">Lançamento Produto X</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">Google Ads</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-accent-600);">7.2x</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">ROAS</div>
+                </div>
+            </div>
+            
+            <div class="campaign-row">
+                <div class="campaign-rank rank-3">3</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600;">Remarketing Q4</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">Instagram Ads</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-accent-600);">6.5x</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">ROAS</div>
+                </div>
+            </div>
+            
+            <div class="campaign-row">
+                <div class="campaign-rank rank-other">4</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600;">Leads B2B</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">LinkedIn Ads</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-accent-600);">5.1x</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">ROAS</div>
+                </div>
+            </div>
+            
+            <div class="campaign-row">
+                <div class="campaign-rank rank-other">5</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600;">Awareness Natal</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">TikTok Ads</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-accent-600);">4.8x</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">ROAS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <h3 class="nexora-card-title"><i class="fas fa-filter"></i> Funil de Conversão</h3>
+        </div>
+        <div>
+            <div class="funnel-step" style="border-color: var(--nexora-primary-500); color: var(--nexora-primary-500);">
+                <div class="funnel-bar" style="width: 100%; background: var(--nexora-primary-500);"></div>
+                <div style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-gray-900);">50.000</div>
+                        <div style="font-size: 0.875rem; color: var(--nexora-gray-600);">Impressões</div>
+                    </div>
+                    <div style="font-weight: 600;">100%</div>
+                </div>
+            </div>
+            
+            <div class="funnel-step" style="border-color: var(--nexora-accent-500); color: var(--nexora-accent-500);">
+                <div class="funnel-bar" style="width: 60%; background: var(--nexora-accent-500);"></div>
+                <div style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-gray-900);">30.000</div>
+                        <div style="font-size: 0.875rem; color: var(--nexora-gray-600);">Cliques</div>
+                    </div>
+                    <div style="font-weight: 600;">60%</div>
+                </div>
+            </div>
+            
+            <div class="funnel-step" style="border-color: var(--nexora-secondary-500); color: var(--nexora-secondary-500);">
+                <div class="funnel-bar" style="width: 30%; background: var(--nexora-secondary-500);"></div>
+                <div style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-gray-900);">15.000</div>
+                        <div style="font-size: 0.875rem; color: var(--nexora-gray-600);">Visualizações de Página</div>
+                    </div>
+                    <div style="font-weight: 600;">30%</div>
+                </div>
+            </div>
+            
+            <div class="funnel-step" style="border-color: #ff9800; color: #ff9800;">
+                <div class="funnel-bar" style="width: 10%; background: #ff9800;"></div>
+                <div style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-gray-900);">5.000</div>
+                        <div style="font-size: 0.875rem; color: var(--nexora-gray-600);">Add to Cart</div>
+                    </div>
+                    <div style="font-weight: 600;">10%</div>
+                </div>
+            </div>
+            
+            <div class="funnel-step" style="border-color: #e91e63; color: #e91e63;">
+                <div class="funnel-bar" style="width: 5%; background: #e91e63;"></div>
+                <div style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.25rem; color: var(--nexora-gray-900);">2.700</div>
+                        <div style="font-size: 0.875rem; color: var(--nexora-gray-600);">Conversões</div>
+                    </div>
+                    <div style="font-weight: 600;">5.4%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela Detalhada -->
+<div class="nexora-card nexora-animate-slideUp" style="animation-delay: 0.4s;">
+    <div class="nexora-card-header">
+        <h3 class="nexora-card-title"><i class="fas fa-table"></i> Todas as Campanhas</h3>
+    </div>
+    <table class="nexora-table">
+        <thead>
+            <tr>
+                <th>Campanha</th>
+                <th>Plataforma</th>
+                <th>Impressões</th>
+                <th>Cliques</th>
+                <th>CTR</th>
+                <th>Conversões</th>
+                <th>CPA</th>
+                <th>ROAS</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Black Friday 2024</strong></td>
+                <td>Facebook</td>
+                <td>125.000</td>
+                <td>6.250</td>
+                <td>5.0%</td>
+                <td>312</td>
+                <td>R$ 25</td>
+                <td><strong style="color: var(--nexora-accent-600);">9.8x</strong></td>
+                <td><span class="nexora-badge nexora-badge-success"><span class="nexora-badge-dot"></span>Ativo</span></td>
+            </tr>
+            <tr>
+                <td><strong>Lançamento Produto X</strong></td>
+                <td>Google</td>
+                <td>98.000</td>
+                <td>4.900</td>
+                <td>5.0%</td>
+                <td>245</td>
+                <td>R$ 30</td>
+                <td><strong style="color: var(--nexora-accent-600);">7.2x</strong></td>
+                <td><span class="nexora-badge nexora-badge-success"><span class="nexora-badge-dot"></span>Ativo</span></td>
+            </tr>
+            <tr>
+                <td><strong>Remarketing Q4</strong></td>
+                <td>Instagram</td>
+                <td>87.000</td>
+                <td>4.350</td>
+                <td>5.0%</td>
+                <td>218</td>
+                <td>R$ 28</td>
+                <td><strong style="color: var(--nexora-accent-600);">6.5x</strong></td>
+                <td><span class="nexora-badge nexora-badge-success"><span class="nexora-badge-dot"></span>Ativo</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico de Performance
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+new Chart(performanceCtx, {
+    type: 'line',
+    data: {
+        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+        datasets: [
+            {
+                label: 'Receita',
+                data: [25000, 45000, 75000, 116000],
+                borderColor: 'rgb(76, 175, 80)',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.4,
+                fill: true
+            },
+            {
+                label: 'Custo',
+                data: [8500, 10000, 11500, 12500],
+                borderColor: 'rgb(244, 67, 54)',
+                backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                tension: 0.4,
+                fill: true
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom' }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+
+// Gráfico de Plataformas
+const platformCtx = document.getElementById('platformChart').getContext('2d');
+new Chart(platformCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Facebook', 'Google', 'Instagram', 'TikTok', 'LinkedIn'],
+        datasets: [{
+            data: [35, 25, 20, 12, 8],
+            backgroundColor: [
+                'rgb(33, 150, 243)',
+                'rgb(244, 67, 54)',
+                'rgb(233, 30, 99)',
+                'rgb(0, 0, 0)',
+                'rgb(0, 119, 181)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+</script>
+{% endblock %}

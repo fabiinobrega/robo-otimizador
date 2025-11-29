@@ -1,0 +1,493 @@
+{% extends "index.html" %}
+
+{% block title %}Configurações - Nexora Prime{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_premium_v2.css') }}">
+<style>
+    .settings-header {
+        background: var(--nexora-gradient-primary);
+        color: white;
+        padding: var(--nexora-space-8);
+        border-radius: 1rem;
+        margin-bottom: var(--nexora-space-6);
+    }
+    
+    .settings-nav {
+        background: white;
+        border-radius: 1rem;
+        padding: var(--nexora-space-2);
+        box-shadow: var(--nexora-shadow-md);
+        margin-bottom: var(--nexora-space-4);
+    }
+    
+    .settings-nav-item {
+        display: flex;
+        align-items: center;
+        gap: var(--nexora-space-3);
+        padding: var(--nexora-space-4);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all var(--nexora-transition-base);
+        color: var(--nexora-gray-700);
+        font-weight: 600;
+    }
+    
+    .settings-nav-item:hover {
+        background: var(--nexora-gray-100);
+    }
+    
+    .settings-nav-item.active {
+        background: var(--nexora-primary-500);
+        color: white;
+    }
+    
+    .settings-section {
+        background: white;
+        border-radius: 1rem;
+        padding: var(--nexora-space-6);
+        box-shadow: var(--nexora-shadow-md);
+        margin-bottom: var(--nexora-space-4);
+    }
+    
+    .settings-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--nexora-space-4) 0;
+        border-bottom: 1px solid var(--nexora-gray-200);
+    }
+    
+    .settings-row:last-child {
+        border-bottom: none;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        width: 60px;
+        height: 30px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--nexora-gray-300);
+        transition: 0.4s;
+        border-radius: 30px;
+    }
+    
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .toggle-slider {
+        background-color: var(--nexora-primary-500);
+    }
+    
+    input:checked + .toggle-slider:before {
+        transform: translateX(30px);
+    }
+    
+    .integration-card {
+        background: white;
+        border: 2px solid var(--nexora-gray-200);
+        border-radius: 1rem;
+        padding: var(--nexora-space-6);
+        transition: all var(--nexora-transition-base);
+    }
+    
+    .integration-card:hover {
+        border-color: var(--nexora-primary-500);
+        box-shadow: var(--nexora-shadow-lg);
+    }
+    
+    .integration-status {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--nexora-space-2);
+        padding: var(--nexora-space-2) var(--nexora-space-4);
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    .integration-status.connected {
+        background: var(--nexora-accent-100);
+        color: var(--nexora-accent-700);
+    }
+    
+    .integration-status.disconnected {
+        background: var(--nexora-gray-200);
+        color: var(--nexora-gray-700);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="settings-header nexora-animate-slideUp">
+    <div class="nexora-flex nexora-items-center nexora-justify-between">
+        <div>
+            <h1 style="color: white; margin: 0;">
+                <i class="fas fa-cog"></i> Configurações
+            </h1>
+            <p style="margin: var(--nexora-space-2) 0 0; opacity: 0.9;">
+                Gerencie suas preferências e integrações
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="nexora-grid nexora-grid-cols-4 nexora-gap-4">
+    <!-- Navegação Lateral -->
+    <div class="nexora-animate-slideUp">
+        <div class="settings-nav">
+            <div class="settings-nav-item active" data-section="general">
+                <i class="fas fa-sliders-h"></i>
+                <span>Geral</span>
+            </div>
+            <div class="settings-nav-item" data-section="integrations">
+                <i class="fas fa-plug"></i>
+                <span>Integrações</span>
+            </div>
+            <div class="settings-nav-item" data-section="notifications">
+                <i class="fas fa-bell"></i>
+                <span>Notificações</span>
+            </div>
+            <div class="settings-nav-item" data-section="security">
+                <i class="fas fa-shield-alt"></i>
+                <span>Segurança</span>
+            </div>
+            <div class="settings-nav-item" data-section="billing">
+                <i class="fas fa-credit-card"></i>
+                <span>Faturamento</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Conteúdo -->
+    <div style="grid-column: span 3;">
+        <!-- Seção Geral -->
+        <div class="settings-content nexora-animate-slideUp" data-content="general" style="animation-delay: 0.1s;">
+            <div class="settings-section">
+                <h3 class="nexora-mb-4"><i class="fas fa-sliders-h"></i> Configurações Gerais</h3>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Modo Escuro</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Ativar tema escuro</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Idioma</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Idioma da interface</div>
+                    </div>
+                    <select class="nexora-input" style="width: 200px;">
+                        <option>Português (BR)</option>
+                        <option>English (US)</option>
+                        <option>Español</option>
+                    </select>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Fuso Horário</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Seu fuso horário local</div>
+                    </div>
+                    <select class="nexora-input" style="width: 200px;">
+                        <option>America/Sao_Paulo (GMT-3)</option>
+                        <option>America/New_York (GMT-5)</option>
+                        <option>Europe/London (GMT+0)</option>
+                    </select>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Moeda</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Moeda para relatórios</div>
+                    </div>
+                    <select class="nexora-input" style="width: 200px;">
+                        <option>BRL (R$)</option>
+                        <option>USD ($)</option>
+                        <option>EUR (€)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção Integrações -->
+        <div class="settings-content" data-content="integrations" style="display: none;">
+            <div class="settings-section">
+                <h3 class="nexora-mb-4"><i class="fas fa-plug"></i> Integrações</h3>
+                
+                <div class="nexora-grid nexora-grid-cols-2 nexora-gap-4">
+                    <!-- Facebook Ads -->
+                    <div class="integration-card">
+                        <div class="nexora-flex nexora-items-center nexora-gap-4 nexora-mb-4">
+                            <i class="fab fa-facebook fa-3x" style="color: #1877f2;"></i>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0;">Facebook Ads</h4>
+                                <span class="integration-status disconnected">
+                                    <i class="fas fa-circle"></i> Desconectado
+                                </span>
+                            </div>
+                        </div>
+                        <p class="nexora-text-muted" style="font-size: 0.875rem; margin-bottom: var(--nexora-space-4);">
+                            Conecte sua conta do Facebook Business para criar e gerenciar campanhas automaticamente.
+                        </p>
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-block">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                    </div>
+                    
+                    <!-- Google Ads -->
+                    <div class="integration-card">
+                        <div class="nexora-flex nexora-items-center nexora-gap-4 nexora-mb-4">
+                            <i class="fab fa-google fa-3x" style="color: #4285f4;"></i>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0;">Google Ads</h4>
+                                <span class="integration-status disconnected">
+                                    <i class="fas fa-circle"></i> Desconectado
+                                </span>
+                            </div>
+                        </div>
+                        <p class="nexora-text-muted" style="font-size: 0.875rem; margin-bottom: var(--nexora-space-4);">
+                            Conecte sua conta do Google Ads para criar campanhas de Search, Display e YouTube.
+                        </p>
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-block">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                    </div>
+                    
+                    <!-- TikTok Ads -->
+                    <div class="integration-card">
+                        <div class="nexora-flex nexora-items-center nexora-gap-4 nexora-mb-4">
+                            <i class="fab fa-tiktok fa-3x" style="color: #000;"></i>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0;">TikTok Ads</h4>
+                                <span class="integration-status disconnected">
+                                    <i class="fas fa-circle"></i> Desconectado
+                                </span>
+                            </div>
+                        </div>
+                        <p class="nexora-text-muted" style="font-size: 0.875rem; margin-bottom: var(--nexora-space-4);">
+                            Conecte sua conta do TikTok For Business para alcançar a geração Z.
+                        </p>
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-block">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                    </div>
+                    
+                    <!-- LinkedIn Ads -->
+                    <div class="integration-card">
+                        <div class="nexora-flex nexora-items-center nexora-gap-4 nexora-mb-4">
+                            <i class="fab fa-linkedin fa-3x" style="color: #0077b5;"></i>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0;">LinkedIn Ads</h4>
+                                <span class="integration-status disconnected">
+                                    <i class="fas fa-circle"></i> Desconectado
+                                </span>
+                            </div>
+                        </div>
+                        <p class="nexora-text-muted" style="font-size: 0.875rem; margin-bottom: var(--nexora-space-4);">
+                            Conecte sua conta do LinkedIn Campaign Manager para campanhas B2B.
+                        </p>
+                        <button class="nexora-btn nexora-btn-primary nexora-btn-block">
+                            <i class="fas fa-plug"></i> Conectar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção Notificações -->
+        <div class="settings-content" data-content="notifications" style="display: none;">
+            <div class="settings-section">
+                <h3 class="nexora-mb-4"><i class="fas fa-bell"></i> Notificações</h3>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Notificações por Email</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Receber atualizações por email</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Alertas de Performance</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Alertas quando campanhas precisam de atenção</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Relatórios Semanais</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Resumo semanal de performance</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Sugestões da IA</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Receber sugestões de otimização da Velyra Prime</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção Segurança -->
+        <div class="settings-content" data-content="security" style="display: none;">
+            <div class="settings-section">
+                <h3 class="nexora-mb-4"><i class="fas fa-shield-alt"></i> Segurança</h3>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Autenticação de Dois Fatores</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Adicionar camada extra de segurança</div>
+                    </div>
+                    <button class="nexora-btn nexora-btn-secondary">
+                        <i class="fas fa-lock"></i> Ativar
+                    </button>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Alterar Senha</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Atualizar sua senha de acesso</div>
+                    </div>
+                    <button class="nexora-btn nexora-btn-secondary">
+                        <i class="fas fa-key"></i> Alterar
+                    </button>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Sessões Ativas</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Gerenciar dispositivos conectados</div>
+                    </div>
+                    <button class="nexora-btn nexora-btn-secondary">
+                        <i class="fas fa-desktop"></i> Ver Sessões
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção Faturamento -->
+        <div class="settings-content" data-content="billing" style="display: none;">
+            <div class="settings-section">
+                <h3 class="nexora-mb-4"><i class="fas fa-credit-card"></i> Faturamento</h3>
+                
+                <div class="nexora-alert nexora-alert-info nexora-mb-4">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Plano Atual:</strong> Professional
+                        <br>
+                        <span class="nexora-text-muted">R$ 497/mês • Próxima cobrança em 15/01/2025</span>
+                    </div>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Método de Pagamento</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">•••• •••• •••• 4242</div>
+                    </div>
+                    <button class="nexora-btn nexora-btn-secondary">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Histórico de Faturas</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Ver todas as faturas</div>
+                    </div>
+                    <button class="nexora-btn nexora-btn-secondary">
+                        <i class="fas fa-file-invoice"></i> Ver Faturas
+                    </button>
+                </div>
+                
+                <div class="settings-row">
+                    <div>
+                        <div style="font-weight: 600;">Upgrade de Plano</div>
+                        <div class="nexora-text-muted" style="font-size: 0.875rem;">Acesse recursos avançados</div>
+                    </div>
+                    <button class="nexora-btn nexora-btn-primary">
+                        <i class="fas fa-rocket"></i> Fazer Upgrade
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botão Salvar -->
+        <div class="nexora-flex nexora-justify-end nexora-gap-4 nexora-animate-slideUp" style="animation-delay: 0.2s;">
+            <button class="nexora-btn nexora-btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button class="nexora-btn nexora-btn-primary">
+                <i class="fas fa-save"></i> Salvar Alterações
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Navegação entre seções
+document.querySelectorAll('.settings-nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        // Remover active de todos
+        document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+        // Adicionar active no clicado
+        this.classList.add('active');
+        
+        // Esconder todos os conteúdos
+        document.querySelectorAll('.settings-content').forEach(c => c.style.display = 'none');
+        // Mostrar conteúdo correspondente
+        const section = this.dataset.section;
+        document.querySelector(`[data-content="${section}"]`).style.display = 'block';
+    });
+});
+</script>
+{% endblock %}

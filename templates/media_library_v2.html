@@ -1,0 +1,415 @@
+{% extends "index.html" %}
+
+{% block title %}Biblioteca de Mídia - Nexora Prime{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_premium_v2.css') }}">
+<style>
+    .media-header {
+        background: var(--nexora-gradient-success);
+        color: white;
+        padding: var(--nexora-space-8);
+        border-radius: 1rem;
+        margin-bottom: var(--nexora-space-6);
+    }
+    
+    .upload-zone {
+        border: 3px dashed var(--nexora-gray-300);
+        border-radius: 1rem;
+        padding: var(--nexora-space-12);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--nexora-transition-base);
+        background: white;
+    }
+    
+    .upload-zone:hover {
+        border-color: var(--nexora-primary-500);
+        background: var(--nexora-primary-50);
+    }
+    
+    .upload-zone.dragover {
+        border-color: var(--nexora-primary-500);
+        background: var(--nexora-primary-100);
+    }
+    
+    .media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: var(--nexora-space-4);
+    }
+    
+    .media-item {
+        background: white;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: var(--nexora-shadow-md);
+        transition: all var(--nexora-transition-base);
+        cursor: pointer;
+    }
+    
+    .media-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--nexora-shadow-xl);
+    }
+    
+    .media-thumbnail {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: var(--nexora-gray-200);
+    }
+    
+    .media-info {
+        padding: var(--nexora-space-4);
+    }
+    
+    .media-actions {
+        display: flex;
+        gap: var(--nexora-space-2);
+        padding: var(--nexora-space-2) var(--nexora-space-4);
+        border-top: 1px solid var(--nexora-gray-200);
+    }
+    
+    .media-action-btn {
+        flex: 1;
+        padding: var(--nexora-space-2);
+        border: none;
+        background: var(--nexora-gray-100);
+        color: var(--nexora-gray-700);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all var(--nexora-transition-base);
+        font-size: 0.875rem;
+    }
+    
+    .media-action-btn:hover {
+        background: var(--nexora-primary-500);
+        color: white;
+    }
+    
+    .filter-tabs {
+        display: flex;
+        gap: var(--nexora-space-2);
+        margin-bottom: var(--nexora-space-4);
+    }
+    
+    .filter-tab {
+        padding: var(--nexora-space-3) var(--nexora-space-6);
+        border: 2px solid var(--nexora-gray-300);
+        background: white;
+        color: var(--nexora-gray-700);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all var(--nexora-transition-base);
+        font-weight: 600;
+    }
+    
+    .filter-tab:hover {
+        border-color: var(--nexora-primary-500);
+        color: var(--nexora-primary-500);
+    }
+    
+    .filter-tab.active {
+        background: var(--nexora-primary-500);
+        border-color: var(--nexora-primary-500);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="media-header nexora-animate-slideUp">
+    <div class="nexora-flex nexora-items-center nexora-justify-between">
+        <div>
+            <h1 style="color: white; margin: 0;">
+                <i class="fas fa-images"></i> Biblioteca de Mídia
+            </h1>
+            <p style="margin: var(--nexora-space-2) 0 0; opacity: 0.9;">
+                Gerencie todos os seus criativos em um só lugar
+            </p>
+        </div>
+        <div class="nexora-flex nexora-gap-4">
+            <button class="nexora-btn nexora-btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button class="nexora-btn nexora-btn-sm" style="background: white; color: var(--nexora-accent-600);" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-upload"></i> Upload
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Zone -->
+<div class="upload-zone nexora-mb-4 nexora-animate-slideUp" style="animation-delay: 0.1s;" id="uploadZone">
+    <i class="fas fa-cloud-upload-alt fa-4x nexora-text-primary nexora-mb-4"></i>
+    <h3>Arraste e solte arquivos aqui</h3>
+    <p class="nexora-text-muted">ou clique para selecionar</p>
+    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+</div>
+
+<!-- Filtros -->
+<div class="filter-tabs nexora-animate-slideUp" style="animation-delay: 0.2s;">
+    <button class="filter-tab active" data-filter="all">
+        <i class="fas fa-th"></i> Todos
+    </button>
+    <button class="filter-tab" data-filter="images">
+        <i class="fas fa-image"></i> Imagens
+    </button>
+    <button class="filter-tab" data-filter="videos">
+        <i class="fas fa-video"></i> Vídeos
+    </button>
+    <button class="filter-tab" data-filter="facebook">
+        <i class="fab fa-facebook"></i> Facebook
+    </button>
+    <button class="filter-tab" data-filter="instagram">
+        <i class="fab fa-instagram"></i> Instagram
+    </button>
+    <button class="filter-tab" data-filter="google">
+        <i class="fab fa-google"></i> Google
+    </button>
+</div>
+
+<!-- Grid de Mídia -->
+<div class="media-grid nexora-animate-slideUp" style="animation-delay: 0.3s;">
+    <!-- Item 1 -->
+    <div class="media-item" data-type="image" data-platform="facebook">
+        <img src="https://via.placeholder.com/250x200/667eea/ffffff?text=Facebook+Ad" class="media-thumbnail" alt="Facebook Ad">
+        <div class="media-info">
+            <h5 style="margin: 0 0 var(--nexora-space-2);">Facebook Ad - Black Friday</h5>
+            <div class="nexora-flex nexora-gap-2">
+                <span class="nexora-badge nexora-badge-primary">Imagem</span>
+                <span class="nexora-badge" style="background: #1877f2; color: white;">Facebook</span>
+            </div>
+            <p class="nexora-text-muted" style="font-size: 0.875rem; margin-top: var(--nexora-space-2);">
+                1080x1080 • 245 KB
+            </p>
+        </div>
+        <div class="media-actions">
+            <button class="media-action-btn" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="media-action-btn" title="Baixar">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="media-action-btn" title="Compartilhar">
+                <i class="fas fa-share"></i>
+            </button>
+            <button class="media-action-btn" title="Deletar" style="color: #dc3545;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Item 2 -->
+    <div class="media-item" data-type="image" data-platform="instagram">
+        <img src="https://via.placeholder.com/250x200/f093fb/ffffff?text=Instagram+Story" class="media-thumbnail" alt="Instagram Story">
+        <div class="media-info">
+            <h5 style="margin: 0 0 var(--nexora-space-2);">Instagram Story - Lançamento</h5>
+            <div class="nexora-flex nexora-gap-2">
+                <span class="nexora-badge nexora-badge-primary">Imagem</span>
+                <span class="nexora-badge" style="background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); color: white;">Instagram</span>
+            </div>
+            <p class="nexora-text-muted" style="font-size: 0.875rem; margin-top: var(--nexora-space-2);">
+                1080x1920 • 312 KB
+            </p>
+        </div>
+        <div class="media-actions">
+            <button class="media-action-btn" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="media-action-btn" title="Baixar">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="media-action-btn" title="Compartilhar">
+                <i class="fas fa-share"></i>
+            </button>
+            <button class="media-action-btn" title="Deletar" style="color: #dc3545;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Item 3 -->
+    <div class="media-item" data-type="image" data-platform="google">
+        <img src="https://via.placeholder.com/250x200/4285f4/ffffff?text=Google+Display" class="media-thumbnail" alt="Google Display">
+        <div class="media-info">
+            <h5 style="margin: 0 0 var(--nexora-space-2);">Google Display - Remarketing</h5>
+            <div class="nexora-flex nexora-gap-2">
+                <span class="nexora-badge nexora-badge-primary">Imagem</span>
+                <span class="nexora-badge" style="background: #4285f4; color: white;">Google</span>
+            </div>
+            <p class="nexora-text-muted" style="font-size: 0.875rem; margin-top: var(--nexora-space-2);">
+                1200x628 • 189 KB
+            </p>
+        </div>
+        <div class="media-actions">
+            <button class="media-action-btn" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="media-action-btn" title="Baixar">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="media-action-btn" title="Compartilhar">
+                <i class="fas fa-share"></i>
+            </button>
+            <button class="media-action-btn" title="Deletar" style="color: #dc3545;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Item 4 -->
+    <div class="media-item" data-type="video" data-platform="facebook">
+        <div class="media-thumbnail" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-play-circle fa-4x" style="color: white; opacity: 0.8;"></i>
+        </div>
+        <div class="media-info">
+            <h5 style="margin: 0 0 var(--nexora-space-2);">Vídeo Produto - Demonstração</h5>
+            <div class="nexora-flex nexora-gap-2">
+                <span class="nexora-badge nexora-badge-success">Vídeo</span>
+                <span class="nexora-badge" style="background: #1877f2; color: white;">Facebook</span>
+            </div>
+            <p class="nexora-text-muted" style="font-size: 0.875rem; margin-top: var(--nexora-space-2);">
+                1080x1080 • 30s • 5.2 MB
+            </p>
+        </div>
+        <div class="media-actions">
+            <button class="media-action-btn" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="media-action-btn" title="Baixar">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="media-action-btn" title="Compartilhar">
+                <i class="fas fa-share"></i>
+            </button>
+            <button class="media-action-btn" title="Deletar" style="color: #dc3545;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Item 5 -->
+    <div class="media-item" data-type="image" data-platform="instagram">
+        <img src="https://via.placeholder.com/250x200/fa709a/ffffff?text=Instagram+Feed" class="media-thumbnail" alt="Instagram Feed">
+        <div class="media-info">
+            <h5 style="margin: 0 0 var(--nexora-space-2);">Instagram Feed - Promoção</h5>
+            <div class="nexora-flex nexora-gap-2">
+                <span class="nexora-badge nexora-badge-primary">Imagem</span>
+                <span class="nexora-badge" style="background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); color: white;">Instagram</span>
+            </div>
+            <p class="nexora-text-muted" style="font-size: 0.875rem; margin-top: var(--nexora-space-2);">
+                1080x1080 • 278 KB
+            </p>
+        </div>
+        <div class="media-actions">
+            <button class="media-action-btn" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="media-action-btn" title="Baixar">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="media-action-btn" title="Compartilhar">
+                <i class="fas fa-share"></i>
+            </button>
+            <button class="media-action-btn" title="Deletar" style="color: #dc3545;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Item 6 -->
+    <div class="media-item" data-type="image" data-platform="google">
+        <img src="https://via.placeholder.com/250x200/00f2fe/ffffff?text=Google+Banner" class="media-thumbnail" alt="Google Banner">
+        <div class="media-info">
+            <h5 style="margin: 0 0 var(--nexora-space-2);">Google Banner - Awareness</h5>
+            <div class="nexora-flex nexora-gap-2">
+                <span class="nexora-badge nexora-badge-primary">Imagem</span>
+                <span class="nexora-badge" style="background: #4285f4; color: white;">Google</span>
+            </div>
+            <p class="nexora-text-muted" style="font-size: 0.875rem; margin-top: var(--nexora-space-2);">
+                728x90 • 156 KB
+            </p>
+        </div>
+        <div class="media-actions">
+            <button class="media-action-btn" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="media-action-btn" title="Baixar">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="media-action-btn" title="Compartilhar">
+                <i class="fas fa-share"></i>
+            </button>
+            <button class="media-action-btn" title="Deletar" style="color: #dc3545;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Upload Zone
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+
+uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    handleFiles(files);
+});
+
+fileInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+});
+
+function handleFiles(files) {
+    console.log('Arquivos selecionados:', files);
+    alert(`${files.length} arquivo(s) selecionado(s). Upload em desenvolvimento.`);
+}
+
+// Filtros
+document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        // Remover active de todos
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        // Adicionar active no clicado
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        filterMedia(filter);
+    });
+});
+
+function filterMedia(filter) {
+    document.querySelectorAll('.media-item').forEach(item => {
+        if (filter === 'all') {
+            item.style.display = 'block';
+        } else if (filter === 'images') {
+            item.style.display = item.dataset.type === 'image' ? 'block' : 'none';
+        } else if (filter === 'videos') {
+            item.style.display = item.dataset.type === 'video' ? 'block' : 'none';
+        } else {
+            item.style.display = item.dataset.platform === filter ? 'block' : 'none';
+        }
+    });
+}
+</script>
+{% endblock %}
