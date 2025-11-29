@@ -1,0 +1,419 @@
+{% extends "index.html" %}
+
+{% block title %}Dashboard - Nexora Prime{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_premium_v2.css') }}">
+<style>
+    .dashboard-header {
+        background: var(--nexora-gradient-primary);
+        color: white;
+        padding: var(--nexora-space-8);
+        border-radius: 1rem;
+        margin-bottom: var(--nexora-space-6);
+        box-shadow: var(--nexora-shadow-xl);
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: 1rem;
+        padding: var(--nexora-space-6);
+        box-shadow: var(--nexora-shadow-md);
+        transition: all var(--nexora-transition-base);
+        border-left: 4px solid;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: currentColor;
+        opacity: 0.05;
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--nexora-shadow-xl);
+    }
+    
+    .metric-card-primary { border-color: var(--nexora-primary-500); color: var(--nexora-primary-500); }
+    .metric-card-success { border-color: var(--nexora-accent-500); color: var(--nexora-accent-500); }
+    .metric-card-secondary { border-color: var(--nexora-secondary-500); color: var(--nexora-secondary-500); }
+    .metric-card-info { border-color: #17a2b8; color: #17a2b8; }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: var(--nexora-space-2) 0;
+        color: var(--nexora-gray-900);
+    }
+    
+    .metric-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--nexora-gray-600);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .metric-change {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--nexora-space-1);
+        font-size: 0.875rem;
+        font-weight: 600;
+        padding: var(--nexora-space-1) var(--nexora-space-2);
+        border-radius: 0.25rem;
+    }
+    
+    .metric-change-positive {
+        background-color: var(--nexora-accent-100);
+        color: var(--nexora-accent-700);
+    }
+    
+    .metric-change-negative {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 1rem;
+        padding: var(--nexora-space-6);
+        box-shadow: var(--nexora-shadow-md);
+        margin-bottom: var(--nexora-space-6);
+    }
+    
+    .activity-item {
+        display: flex;
+        gap: var(--nexora-space-4);
+        padding: var(--nexora-space-4);
+        border-bottom: 1px solid var(--nexora-gray-200);
+        transition: all var(--nexora-transition-base);
+    }
+    
+    .activity-item:hover {
+        background-color: var(--nexora-gray-50);
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    
+    .activity-icon-primary {
+        background-color: var(--nexora-primary-100);
+        color: var(--nexora-primary-600);
+    }
+    
+    .activity-icon-success {
+        background-color: var(--nexora-accent-100);
+        color: var(--nexora-accent-600);
+    }
+    
+    .quick-action-card {
+        background: white;
+        border-radius: 1rem;
+        padding: var(--nexora-space-6);
+        text-align: center;
+        box-shadow: var(--nexora-shadow-md);
+        transition: all var(--nexora-transition-base);
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .quick-action-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--nexora-shadow-xl);
+        border-color: var(--nexora-primary-500);
+    }
+    
+    .quick-action-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto var(--nexora-space-4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        background: var(--nexora-gradient-primary);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Premium -->
+<div class="dashboard-header nexora-animate-slideUp">
+    <div class="nexora-flex nexora-items-center nexora-justify-between">
+        <div>
+            <h1 style="color: white; margin: 0;">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </h1>
+            <p style="margin: var(--nexora-space-2) 0 0; opacity: 0.9;">
+                Visão geral das suas campanhas e performance
+            </p>
+        </div>
+        <div class="nexora-flex nexora-gap-4">
+            <button class="nexora-btn nexora-btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+                <i class="fas fa-calendar"></i> Últimos 30 dias
+            </button>
+            <a href="/create-campaign" class="nexora-btn nexora-btn-sm" style="background: white; color: var(--nexora-primary-600);">
+                <i class="fas fa-plus"></i> Nova Campanha
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Métricas Principais -->
+<div class="nexora-grid nexora-grid-cols-4 nexora-gap-4 nexora-mb-4 nexora-animate-slideUp" style="animation-delay: 0.1s;">
+    <div class="metric-card metric-card-primary">
+        <div class="metric-label">Campanhas Ativas</div>
+        <div class="metric-value" id="activeCampaigns">-</div>
+        <div class="metric-change metric-change-positive">
+            <i class="fas fa-arrow-up"></i> +12%
+        </div>
+    </div>
+    
+    <div class="metric-card metric-card-success">
+        <div class="metric-label">Taxa de Conversão</div>
+        <div class="metric-value" id="conversionRate">-</div>
+        <div class="metric-change metric-change-positive">
+            <i class="fas fa-arrow-up"></i> +8%
+        </div>
+    </div>
+    
+    <div class="metric-card metric-card-secondary">
+        <div class="metric-label">ROAS Médio</div>
+        <div class="metric-value" id="avgRoas">-</div>
+        <div class="metric-change metric-change-positive">
+            <i class="fas fa-arrow-up"></i> +15%
+        </div>
+    </div>
+    
+    <div class="metric-card metric-card-info">
+        <div class="metric-label">Investimento Total</div>
+        <div class="metric-value" id="totalSpend">-</div>
+        <div class="metric-change metric-change-positive">
+            <i class="fas fa-arrow-up"></i> +5%
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos -->
+<div class="nexora-grid nexora-grid-cols-2 nexora-gap-4 nexora-mb-4 nexora-animate-slideUp" style="animation-delay: 0.2s;">
+    <div class="chart-container">
+        <h3 class="nexora-mb-4"><i class="fas fa-chart-area"></i> Performance ao Longo do Tempo</h3>
+        <canvas id="performanceChart" height="250"></canvas>
+    </div>
+    
+    <div class="chart-container">
+        <h3 class="nexora-mb-4"><i class="fas fa-chart-pie"></i> Performance por Plataforma</h3>
+        <canvas id="platformChart" height="250"></canvas>
+    </div>
+</div>
+
+<!-- Top Campanhas e Atividades -->
+<div class="nexora-grid nexora-grid-cols-2 nexora-gap-4 nexora-mb-4 nexora-animate-slideUp" style="animation-delay: 0.3s;">
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <h3 class="nexora-card-title"><i class="fas fa-trophy"></i> Top 5 Campanhas</h3>
+        </div>
+        <div class="nexora-table-container">
+            <table class="nexora-table">
+                <thead>
+                    <tr>
+                        <th>Campanha</th>
+                        <th>ROAS</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="topCampaigns">
+                    <tr>
+                        <td colspan="3" class="nexora-text-center nexora-text-muted">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="nexora-card">
+        <div class="nexora-card-header">
+            <h3 class="nexora-card-title"><i class="fas fa-history"></i> Atividades Recentes</h3>
+        </div>
+        <div id="recentActivities">
+            <div class="activity-item">
+                <div class="activity-icon activity-icon-primary">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600;">Nova campanha criada</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">Campanha de Black Friday - Há 2 horas</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon activity-icon-success">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600;">Campanha otimizada</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">ROAS aumentou 15% - Há 5 horas</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon activity-icon-primary">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600;">Novos criativos adicionados</div>
+                    <div class="nexora-text-muted" style="font-size: 0.875rem;">10 imagens enviadas - Há 1 dia</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ações Rápidas -->
+<div class="nexora-card nexora-animate-slideUp" style="animation-delay: 0.4s;">
+    <div class="nexora-card-header">
+        <h3 class="nexora-card-title"><i class="fas fa-bolt"></i> Ações Rápidas</h3>
+    </div>
+    <div class="nexora-grid nexora-grid-cols-4 nexora-gap-4">
+        <div class="quick-action-card" onclick="window.location.href='/create-campaign'">
+            <div class="quick-action-icon">
+                <i class="fas fa-plus"></i>
+            </div>
+            <h5>Nova Campanha</h5>
+            <p class="nexora-text-muted" style="font-size: 0.875rem;">Criar campanha do zero</p>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='/ai-copywriter'">
+            <div class="quick-action-icon" style="background: var(--nexora-gradient-secondary);">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h5>Gerar Copy com IA</h5>
+            <p class="nexora-text-muted" style="font-size: 0.875rem;">Textos persuasivos automáticos</p>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='/media-library'">
+            <div class="quick-action-icon" style="background: var(--nexora-gradient-success);">
+                <i class="fas fa-images"></i>
+            </div>
+            <h5>Biblioteca de Mídia</h5>
+            <p class="nexora-text-muted" style="font-size: 0.875rem;">Gerenciar criativos</p>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='/reports'">
+            <div class="quick-action-icon" style="background: var(--nexora-gradient-energy);">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <h5>Ver Relatórios</h5>
+            <p class="nexora-text-muted" style="font-size: 0.875rem;">Análises detalhadas</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Carregar métricas do dashboard
+async function loadDashboardMetrics() {
+    try {
+        const response = await fetch('/api/dashboard/metrics');
+        const data = await response.json();
+        
+        document.getElementById('activeCampaigns').textContent = data.active_campaigns || '0';
+        document.getElementById('conversionRate').textContent = (data.conversion_rate || 0).toFixed(2) + '%';
+        document.getElementById('avgRoas').textContent = (data.avg_roas || 0).toFixed(2) + 'x';
+        document.getElementById('totalSpend').textContent = 'R$ ' + (data.total_spend || 0).toLocaleString('pt-BR');
+        
+        // Carregar top campanhas
+        if (data.top_campaigns && data.top_campaigns.length > 0) {
+            const tbody = document.getElementById('topCampaigns');
+            tbody.innerHTML = data.top_campaigns.map(campaign => `
+                <tr>
+                    <td>${campaign.name}</td>
+                    <td><strong>${campaign.roas.toFixed(2)}x</strong></td>
+                    <td><span class="nexora-badge nexora-badge-success"><span class="nexora-badge-dot"></span>Ativo</span></td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar métricas:', error);
+    }
+}
+
+// Gráfico de Performance
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+new Chart(performanceCtx, {
+    type: 'line',
+    data: {
+        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+        datasets: [{
+            label: 'Conversões',
+            data: [12, 19, 15, 25, 22, 30, 28],
+            borderColor: 'rgb(33, 150, 243)',
+            backgroundColor: 'rgba(33, 150, 243, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+
+// Gráfico de Plataformas
+const platformCtx = document.getElementById('platformChart').getContext('2d');
+new Chart(platformCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Facebook', 'Google', 'Instagram', 'TikTok'],
+        datasets: [{
+            data: [35, 30, 20, 15],
+            backgroundColor: [
+                'rgb(33, 150, 243)',
+                'rgb(156, 39, 176)',
+                'rgb(76, 175, 80)',
+                'rgb(255, 152, 0)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+
+// Carregar dados ao iniciar
+loadDashboardMetrics();
+</script>
+{% endblock %}
