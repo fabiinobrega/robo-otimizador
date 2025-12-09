@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de IA - NEXORA PRIME</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_premium_v3.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_ai_v4.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>🤖 Dashboard de IA</h1>
+                <p class="subtitle">Inteligência Artificial Integrada: ChatGPT + Manus</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openCreateCampaignModal()">
+                    ✨ Criar Campanha com IA
+                </button>
+            </div>
+        </header>
+
+        <!-- Status da Orquestração -->
+        <section class="orchestration-status">
+            <div class="status-card">
+                <div class="status-icon">🧠</div>
+                <div class="status-info">
+                    <h3>ChatGPT</h3>
+                    <p class="status-label" id="gpt-status">Verificando...</p>
+                    <span class="status-badge" id="gpt-badge">⏳</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-icon">⚙️</div>
+                <div class="status-info">
+                    <h3>Manus Executor</h3>
+                    <p class="status-label" id="manus-status">Verificando...</p>
+                    <span class="status-badge" id="manus-badge">⏳</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-icon">🔗</div>
+                <div class="status-info">
+                    <h3>Orquestrador</h3>
+                    <p class="status-label" id="orchestrator-status">Verificando...</p>
+                    <span class="status-badge" id="orchestrator-badge">⏳</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fluxo de Trabalho -->
+        <section class="workflow-section">
+            <h2>🔄 Fluxo de Trabalho IA</h2>
+            <div class="workflow-diagram">
+                <div class="workflow-step">
+                    <div class="step-icon">🧠</div>
+                    <h3>1. ChatGPT</h3>
+                    <p>Cria estratégia e copy</p>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="step-icon">🎯</div>
+                    <h3>2. Orchestrator</h3>
+                    <p>Estrutura e traduz</p>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="step-icon">⚙️</div>
+                    <h3>3. Manus</h3>
+                    <p>Executa e aplica</p>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="step-icon">🚀</div>
+                    <h3>4. Nexora</h3>
+                    <p>Publica e vende</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Execuções Recentes -->
+        <section class="executions-section">
+            <h2>📊 Execuções Recentes</h2>
+            <div class="executions-list" id="executions-list">
+                <p class="loading">Carregando execuções...</p>
+            </div>
+        </section>
+
+        <!-- Ações Rápidas -->
+        <section class="quick-actions">
+            <h2>⚡ Ações Rápidas</h2>
+            <div class="actions-grid">
+                <div class="action-card" onclick="createCampaignWithAI()">
+                    <div class="action-icon">🎯</div>
+                    <h3>Criar Campanha</h3>
+                    <p>Campanha completa com IA</p>
+                </div>
+                <div class="action-card" onclick="generateCopy()">
+                    <div class="action-icon">✍️</div>
+                    <h3>Gerar Copy</h3>
+                    <p>Headlines e descrições</p>
+                </div>
+                <div class="action-card" onclick="analyzePerformance()">
+                    <div class="action-icon">📈</div>
+                    <h3>Analisar Performance</h3>
+                    <p>Insights com ChatGPT</p>
+                </div>
+                <div class="action-card" onclick="optimizeCampaigns()">
+                    <div class="action-icon">🔧</div>
+                    <h3>Otimizar Campanhas</h3>
+                    <p>Recomendações inteligentes</p>
+                </div>
+                <div class="action-card" onclick="createFunnel()">
+                    <div class="action-icon">🎪</div>
+                    <h3>Criar Funil</h3>
+                    <p>Funil completo automatizado</p>
+                </div>
+                <div class="action-card" onclick="createPersona()">
+                    <div class="action-icon">👤</div>
+                    <h3>Criar Persona</h3>
+                    <p>Análise de público-alvo</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de Criação de Campanha -->
+    <div id="createCampaignModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>✨ Criar Campanha com IA</h2>
+            
+            <form id="campaignForm">
+                <div class="form-group">
+                    <label>Nome da Campanha</label>
+                    <input type="text" id="campaign-name" placeholder="Ex: Lançamento Produto X" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Produto/Serviço</label>
+                    <input type="text" id="campaign-product" placeholder="Descreva seu produto" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Objetivo</label>
+                    <select id="campaign-objective">
+                        <option value="CONVERSIONS">Conversões</option>
+                        <option value="TRAFFIC">Tráfego</option>
+                        <option value="AWARENESS">Awareness</option>
+                        <option value="LEADS">Geração de Leads</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Orçamento Diário (R$)</label>
+                    <input type="number" id="campaign-budget" placeholder="100" min="10" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Público-Alvo</label>
+                    <textarea id="campaign-audience" placeholder="Descreva seu público-alvo" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Plataformas</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="platform" value="google" checked> Google Ads</label>
+                        <label><input type="checkbox" name="platform" value="facebook"> Facebook Ads</label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">🚀 Criar com IA</button>
+                </div>
+            </form>
+            
+            <div id="creation-progress" class="progress-section" style="display: none;">
+                <h3>Criando campanha...</h3>
+                <div class="progress-steps" id="progress-steps"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar status da orquestração
+        async function checkOrchestrationStatus() {
+            try {
+                const response = await fetch('/api/orchestration/status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const status = data.status;
+                    
+                    // Atualizar status do GPT
+                    updateStatus('gpt', status.gpt_strategic_available && status.gpt_campaign_available);
+                    
+                    // Atualizar status do Manus
+                    updateStatus('manus', status.manus_executor_available);
+                    
+                    // Atualizar status do Orchestrator
+                    updateStatus('orchestrator', true);
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+            }
+        }
+        
+        function updateStatus(component, available) {
+            const statusLabel = document.getElementById(`${component}-status`);
+            const statusBadge = document.getElementById(`${component}-badge`);
+            
+            if (available) {
+                statusLabel.textContent = 'Disponível';
+                statusBadge.textContent = '✅';
+                statusBadge.className = 'status-badge status-online';
+            } else {
+                statusLabel.textContent = 'Indisponível';
+                statusBadge.textContent = '❌';
+                statusBadge.className = 'status-badge status-offline';
+            }
+        }
+        
+        // Modal
+        function openCreateCampaignModal() {
+            document.getElementById('createCampaignModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('createCampaignModal').style.display = 'none';
+            document.getElementById('creation-progress').style.display = 'none';
+            document.getElementById('campaignForm').style.display = 'block';
+        }
+        
+        // Criar campanha com IA
+        document.getElementById('campaignForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Coletar dados
+            const platforms = Array.from(document.querySelectorAll('input[name="platform"]:checked'))
+                .map(cb => cb.value);
+            
+            const campaignData = {
+                name: document.getElementById('campaign-name').value,
+                product: document.getElementById('campaign-product').value,
+                objective: document.getElementById('campaign-objective').value,
+                budget: parseFloat(document.getElementById('campaign-budget').value),
+                audience: document.getElementById('campaign-audience').value,
+                platforms: platforms
+            };
+            
+            // Mostrar progresso
+            document.getElementById('campaignForm').style.display = 'none';
+            document.getElementById('creation-progress').style.display = 'block';
+            
+            const progressSteps = document.getElementById('progress-steps');
+            progressSteps.innerHTML = '<p>⏳ Iniciando criação...</p>';
+            
+            try {
+                const response = await fetch('/api/orchestration/create-deploy-campaign', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(campaignData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    progressSteps.innerHTML = `
+                        <p>✅ Campanha criada com sucesso!</p>
+                        <p><strong>ID:</strong> ${result.campaign_id}</p>
+                        <p><strong>Execução:</strong> ${result.execution_id}</p>
+                    `;
+                    
+                    setTimeout(() => {
+                        closeModal();
+                        location.reload();
+                    }, 3000);
+                } else {
+                    progressSteps.innerHTML = `<p>❌ Erro: ${result.error}</p>`;
+                }
+            } catch (error) {
+                progressSteps.innerHTML = `<p>❌ Erro: ${error.message}</p>`;
+            }
+        });
+        
+        // Ações rápidas
+        function createCampaignWithAI() {
+            openCreateCampaignModal();
+        }
+        
+        function generateCopy() {
+            alert('Funcionalidade de geração de copy em desenvolvimento');
+        }
+        
+        function analyzePerformance() {
+            alert('Funcionalidade de análise de performance em desenvolvimento');
+        }
+        
+        function optimizeCampaigns() {
+            alert('Funcionalidade de otimização em desenvolvimento');
+        }
+        
+        function createFunnel() {
+            alert('Funcionalidade de criação de funil em desenvolvimento');
+        }
+        
+        function createPersona() {
+            alert('Funcionalidade de criação de persona em desenvolvimento');
+        }
+        
+        // Inicializar
+        checkOrchestrationStatus();
+        setInterval(checkOrchestrationStatus, 30000); // Atualizar a cada 30s
+    </script>
+</body>
+</html>

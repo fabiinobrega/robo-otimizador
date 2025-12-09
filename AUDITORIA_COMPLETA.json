@@ -1,0 +1,1910 @@
+{
+  "rotas": [
+    {
+      "path": "/api/campaign/create",
+      "function": "api_campaign_create",
+      "line": 177,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/list",
+      "function": "api_campaign_list",
+      "line": 247,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/read/<int:campaign_id>",
+      "function": "api_campaign_read",
+      "line": 282,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/update/<int:campaign_id>",
+      "function": "api_campaign_update",
+      "line": 317,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/delete/<int:campaign_id>",
+      "function": "api_campaign_delete",
+      "line": 361,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/publish",
+      "function": "api_campaign_publish",
+      "line": 381,
+      "type": "API"
+    },
+    {
+      "path": "/api/analyze-landing-page",
+      "function": "api_analyze_landing_page",
+      "line": 439,
+      "type": "API"
+    },
+    {
+      "path": "/api/competitor-spy",
+      "function": "api_competitor_spy",
+      "line": 470,
+      "type": "API"
+    },
+    {
+      "path": "/api/dco/generate-segmentation",
+      "function": "api_dco_generate_segmentation",
+      "line": 510,
+      "type": "API"
+    },
+    {
+      "path": "/api/dco/generate",
+      "function": "api_dco_generate",
+      "line": 535,
+      "type": "API"
+    },
+    {
+      "path": "/api/dco/generate-copy",
+      "function": "api_dco_generate_copy",
+      "line": 562,
+      "type": "API"
+    },
+    {
+      "path": "/api/dashboard/metrics",
+      "function": "api_dashboard_metrics",
+      "line": 595,
+      "type": "API"
+    },
+    {
+      "path": "/api/activity-logs",
+      "function": "api_activity_logs",
+      "line": 650,
+      "type": "API"
+    },
+    {
+      "path": "/",
+      "function": "index",
+      "line": 672,
+      "type": "PAGE"
+    },
+    {
+      "path": "/create-campaign",
+      "function": "create_campaign",
+      "line": 677,
+      "type": "PAGE"
+    },
+    {
+      "path": "/campaigns",
+      "function": "campaigns",
+      "line": 682,
+      "type": "PAGE"
+    },
+    {
+      "path": "/dashboard",
+      "function": "dashboard",
+      "line": 692,
+      "type": "PAGE"
+    },
+    {
+      "path": "/competitor-spy",
+      "function": "competitor_spy",
+      "line": 703,
+      "type": "PAGE"
+    },
+    {
+      "path": "/dco",
+      "function": "dco",
+      "line": 708,
+      "type": "PAGE"
+    },
+    {
+      "path": "/funnel-builder",
+      "function": "funnel_builder",
+      "line": 713,
+      "type": "PAGE"
+    },
+    {
+      "path": "/segmentation",
+      "function": "segmentation",
+      "line": 718,
+      "type": "PAGE"
+    },
+    {
+      "path": "/reports",
+      "function": "reports",
+      "line": 723,
+      "type": "PAGE"
+    },
+    {
+      "path": "/media-library",
+      "function": "media_library",
+      "line": 728,
+      "type": "PAGE"
+    },
+    {
+      "path": "/settings",
+      "function": "settings",
+      "line": 738,
+      "type": "PAGE"
+    },
+    {
+      "path": "/notifications",
+      "function": "notifications",
+      "line": 743,
+      "type": "PAGE"
+    },
+    {
+      "path": "/subscriptions",
+      "function": "subscriptions",
+      "line": 748,
+      "type": "PAGE"
+    },
+    {
+      "path": "/affiliates",
+      "function": "affiliates",
+      "line": 753,
+      "type": "PAGE"
+    },
+    {
+      "path": "/developer-api",
+      "function": "developer_api",
+      "line": 758,
+      "type": "PAGE"
+    },
+    {
+      "path": "/landing-page-builder",
+      "function": "landing_page_builder",
+      "line": 763,
+      "type": "PAGE"
+    },
+    {
+      "path": "/operator-chat",
+      "function": "operator_chat",
+      "line": 768,
+      "type": "PAGE"
+    },
+    {
+      "path": "/ab-testing",
+      "function": "ab_testing",
+      "line": 773,
+      "type": "PAGE"
+    },
+    {
+      "path": "/automation",
+      "function": "automation",
+      "line": 778,
+      "type": "PAGE"
+    },
+    {
+      "path": "/all-features",
+      "function": "all_features",
+      "line": 783,
+      "type": "PAGE"
+    },
+    {
+      "path": "/activity-logs",
+      "function": "activity_logs",
+      "line": 788,
+      "type": "PAGE"
+    },
+    {
+      "path": "/campaign-sandbox",
+      "function": "campaign_sandbox",
+      "line": 793,
+      "type": "PAGE"
+    },
+    {
+      "path": "/dco-builder",
+      "function": "dco_builder",
+      "line": 798,
+      "type": "PAGE"
+    },
+    {
+      "path": "/health",
+      "function": "health_check",
+      "line": 803,
+      "type": "PAGE"
+    },
+    {
+      "path": "/api/media/upload",
+      "function": "api_upload_media",
+      "line": 808,
+      "type": "API"
+    },
+    {
+      "path": "/api/operator/status",
+      "function": "api_operator_status",
+      "line": 859,
+      "type": "API"
+    },
+    {
+      "path": "/api/operator/monitor",
+      "function": "api_operator_monitor",
+      "line": 869,
+      "type": "API"
+    },
+    {
+      "path": "/api/operator/optimize",
+      "function": "api_operator_optimize",
+      "line": 879,
+      "type": "API"
+    },
+    {
+      "path": "/api/operator/chat",
+      "function": "api_operator_chat",
+      "line": 889,
+      "type": "API"
+    },
+    {
+      "path": "/api/operator/recommendations/<int:campaign_id>",
+      "function": "api_operator_recommendations",
+      "line": 922,
+      "type": "API"
+    },
+    {
+      "path": "/api/ab-test/create",
+      "function": "api_ab_test_create",
+      "line": 934,
+      "type": "API"
+    },
+    {
+      "path": "/api/ab-test/analyze/<int:test_id>",
+      "function": "api_ab_test_analyze",
+      "line": 980,
+      "type": "API"
+    },
+    {
+      "path": "/api/ab-test/suggestions",
+      "function": "api_ab_test_suggestions",
+      "line": 1000,
+      "type": "API"
+    },
+    {
+      "path": "/api/ab-test/library",
+      "function": "api_ab_test_library",
+      "line": 1010,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/rules",
+      "function": "api_automation_rules",
+      "line": 1022,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/execute",
+      "function": "api_automation_execute",
+      "line": 1032,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/history",
+      "function": "api_automation_history",
+      "line": 1042,
+      "type": "API"
+    },
+    {
+      "path": "/api/notifications",
+      "function": "api_notifications",
+      "line": 1054,
+      "type": "API"
+    },
+    {
+      "path": "/api/notifications/<int:notification_id>/read",
+      "function": "api_notification_read",
+      "line": 1071,
+      "type": "API"
+    },
+    {
+      "path": "/api/reports/generate",
+      "function": "api_report_generate",
+      "line": 1088,
+      "type": "API"
+    },
+    {
+      "path": "/api/reports/list",
+      "function": "api_reports_list",
+      "line": 1138,
+      "type": "API"
+    },
+    {
+      "path": "/generate-perfect-ad",
+      "function": "generate_perfect_ad",
+      "line": 1155,
+      "type": "PAGE"
+    },
+    {
+      "path": "/ad-editor",
+      "function": "ad_editor",
+      "line": 1161,
+      "type": "PAGE"
+    },
+    {
+      "path": "/api/ad/generate-copy",
+      "function": "api_ad_generate_copy",
+      "line": 1167,
+      "type": "API"
+    },
+    {
+      "path": "/api/landing/analyze",
+      "function": "api_landing_analyze",
+      "line": 1182,
+      "type": "API"
+    },
+    {
+      "path": "/api/ad/simulate",
+      "function": "api_ad_simulate",
+      "line": 1198,
+      "type": "API"
+    },
+    {
+      "path": "/api/ad/publish",
+      "function": "api_ad_publish",
+      "line": 1228,
+      "type": "API"
+    },
+    {
+      "path": "/api/generate-image",
+      "function": "api_generate_image",
+      "line": 1271,
+      "type": "API"
+    },
+    {
+      "path": "/manus/connect",
+      "function": "manus_connect",
+      "line": 1292,
+      "type": "PAGE"
+    },
+    {
+      "path": "/manus/oauth/authorize",
+      "function": "manus_oauth_authorize",
+      "line": 1301,
+      "type": "PAGE"
+    },
+    {
+      "path": "/oauth/callback",
+      "function": "oauth_callback",
+      "line": 1307,
+      "type": "PAGE"
+    },
+    {
+      "path": "/api/manus/status",
+      "function": "api_manus_status",
+      "line": 1323,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/test",
+      "function": "api_manus_test",
+      "line": 1329,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/sync/campaigns",
+      "function": "api_manus_sync_campaigns",
+      "line": 1335,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/sync/ads",
+      "function": "api_manus_sync_ads",
+      "line": 1342,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/reports",
+      "function": "api_manus_reports",
+      "line": 1349,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/credits/balance",
+      "function": "api_manus_credits_balance",
+      "line": 1361,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/credits/consume",
+      "function": "api_manus_credits_consume",
+      "line": 1367,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/webhooks/register",
+      "function": "api_manus_webhooks_register",
+      "line": 1379,
+      "type": "API"
+    },
+    {
+      "path": "/webhooks/manus",
+      "function": "webhooks_manus",
+      "line": 1391,
+      "type": "PAGE"
+    },
+    {
+      "path": "/api/credits/check-alert",
+      "function": "api_credits_check_alert",
+      "line": 1426,
+      "type": "API"
+    },
+    {
+      "path": "/api/credits/balance",
+      "function": "api_credits_balance",
+      "line": 1441,
+      "type": "API"
+    },
+    {
+      "path": "/api/credits/set-unlimited",
+      "function": "api_credits_set_unlimited",
+      "line": 1453,
+      "type": "API"
+    },
+    {
+      "path": "/api/notifications/unread",
+      "function": "api_notifications_unread",
+      "line": 1471,
+      "type": "API"
+    },
+    {
+      "path": "/api/notifications/mark-read/<int:notification_id>",
+      "function": "api_notifications_mark_read",
+      "line": 1484,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/test/create",
+      "function": "api_create_test_campaign",
+      "line": 1529,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/test/monitor/<int:campaign_id>",
+      "function": "api_monitor_test_campaign",
+      "line": 1539,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/test/status/<int:campaign_id>",
+      "function": "api_test_campaign_status",
+      "line": 1548,
+      "type": "API"
+    },
+    {
+      "path": "/api/campaign/test/stop/<int:campaign_id>",
+      "function": "api_stop_test_campaign",
+      "line": 1557,
+      "type": "API"
+    },
+    {
+      "path": "/api/search",
+      "function": "api_global_search",
+      "line": 1571,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/command",
+      "function": "api_mcp_command",
+      "line": 1664,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/webhook/register",
+      "function": "api_mcp_webhook_register",
+      "line": 1678,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/event",
+      "function": "api_mcp_event",
+      "line": 1692,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/telemetry",
+      "function": "api_mcp_telemetry",
+      "line": 1706,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/telemetry/<metric>",
+      "function": "api_mcp_get_telemetry",
+      "line": 1721,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/status",
+      "function": "api_mcp_status",
+      "line": 1734,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/authorize",
+      "function": "api_mcp_authorize",
+      "line": 1749,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/token",
+      "function": "api_mcp_token",
+      "line": 1765,
+      "type": "API"
+    },
+    {
+      "path": "/api/mcp/test",
+      "function": "api_mcp_test",
+      "line": 1789,
+      "type": "API"
+    },
+    {
+      "path": "/api/remote/session/start",
+      "function": "api_remote_session_start",
+      "line": 1801,
+      "type": "API"
+    },
+    {
+      "path": "/api/remote/session/end",
+      "function": "api_remote_session_end",
+      "line": 1814,
+      "type": "API"
+    },
+    {
+      "path": "/api/remote/execute",
+      "function": "api_remote_execute",
+      "line": 1827,
+      "type": "API"
+    },
+    {
+      "path": "/api/remote/sessions",
+      "function": "api_remote_sessions",
+      "line": 1842,
+      "type": "API"
+    },
+    {
+      "path": "/api/remote/audit",
+      "function": "api_remote_audit",
+      "line": 1852,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/authorize/request",
+      "function": "api_automation_authorize_request",
+      "line": 1865,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/authorize/approve/<int:auth_id>",
+      "function": "api_automation_authorize_approve",
+      "line": 1881,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/authorize/reject/<int:auth_id>",
+      "function": "api_automation_authorize_reject",
+      "line": 1894,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/authorize/pending",
+      "function": "api_automation_authorize_pending",
+      "line": 1908,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/optimize/<int:campaign_id>",
+      "function": "api_automation_optimize_campaign",
+      "line": 1918,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/optimize/all",
+      "function": "api_automation_optimize_all",
+      "line": 1928,
+      "type": "API"
+    },
+    {
+      "path": "/api/automation/report",
+      "function": "api_automation_report",
+      "line": 1938,
+      "type": "API"
+    },
+    {
+      "path": "/api/audit/page",
+      "function": "api_audit_page",
+      "line": 1951,
+      "type": "API"
+    },
+    {
+      "path": "/api/audit/pages",
+      "function": "api_audit_all_pages",
+      "line": 1962,
+      "type": "API"
+    },
+    {
+      "path": "/api/audit/flows",
+      "function": "api_audit_flows",
+      "line": 1972,
+      "type": "API"
+    },
+    {
+      "path": "/api/audit/performance",
+      "function": "api_audit_performance",
+      "line": 1982,
+      "type": "API"
+    },
+    {
+      "path": "/api/audit/accessibility",
+      "function": "api_audit_accessibility",
+      "line": 1992,
+      "type": "API"
+    },
+    {
+      "path": "/api/audit/full",
+      "function": "api_audit_full",
+      "line": 2002,
+      "type": "API"
+    },
+    {
+      "path": "/api/intelligence/product/analyze",
+      "function": "api_intelligence_analyze_product",
+      "line": 2020,
+      "type": "API"
+    },
+    {
+      "path": "/api/intelligence/sales/analyze",
+      "function": "api_intelligence_analyze_sales",
+      "line": 2031,
+      "type": "API"
+    },
+    {
+      "path": "/api/intelligence/sales/forecast",
+      "function": "api_intelligence_forecast_sales",
+      "line": 2042,
+      "type": "API"
+    },
+    {
+      "path": "/api/intelligence/products/recommend",
+      "function": "api_intelligence_recommend_products",
+      "line": 2053,
+      "type": "API"
+    },
+    {
+      "path": "/api/intelligence/competitors/analyze",
+      "function": "api_intelligence_analyze_competitors",
+      "line": 2067,
+      "type": "API"
+    },
+    {
+      "path": "/api/intelligence/report",
+      "function": "api_intelligence_report",
+      "line": 2078,
+      "type": "API"
+    },
+    {
+      "path": "/api/ai/generate-campaign",
+      "function": "api_ai_generate_campaign",
+      "line": 2092,
+      "type": "API"
+    },
+    {
+      "path": "/api/ai/generate-ad-variations",
+      "function": "api_ai_generate_ad_variations",
+      "line": 2146,
+      "type": "API"
+    },
+    {
+      "path": "/campaign-detail",
+      "function": "campaign_detail",
+      "line": 2192,
+      "type": "PAGE"
+    },
+    {
+      "path": "/create-perfect-ad-v2",
+      "function": "create_perfect_ad_v2",
+      "line": 2198,
+      "type": "PAGE"
+    },
+    {
+      "path": "/manus-connection",
+      "function": "manus_connection",
+      "line": 2204,
+      "type": "PAGE"
+    },
+    {
+      "path": "/not-found",
+      "function": "not_found_page",
+      "line": 2210,
+      "type": "PAGE"
+    },
+    {
+      "path": "/report-view",
+      "function": "report_view",
+      "line": 2216,
+      "type": "PAGE"
+    },
+    {
+      "path": "/reports-dashboard",
+      "function": "reports_dashboard",
+      "line": 2222,
+      "type": "PAGE"
+    },
+    {
+      "path": "/ai-copywriter",
+      "function": "ai_copywriter",
+      "line": 2230,
+      "type": "PAGE"
+    },
+    {
+      "path": "/ai-image-generator",
+      "function": "ai_image_generator",
+      "line": 2236,
+      "type": "PAGE"
+    },
+    {
+      "path": "/ai-video-scripts",
+      "function": "ai_video_scripts",
+      "line": 2242,
+      "type": "PAGE"
+    },
+    {
+      "path": "/ai-sentiment",
+      "function": "ai_sentiment",
+      "line": 2248,
+      "type": "PAGE"
+    },
+    {
+      "path": "/ai-performance-prediction",
+      "function": "ai_performance_prediction",
+      "line": 2254,
+      "type": "PAGE"
+    },
+    {
+      "path": "/platforms/facebook",
+      "function": "platforms_facebook",
+      "line": 2262,
+      "type": "PAGE"
+    },
+    {
+      "path": "/platforms/google",
+      "function": "platforms_google",
+      "line": 2268,
+      "type": "PAGE"
+    },
+    {
+      "path": "/platforms/tiktok",
+      "function": "platforms_tiktok",
+      "line": 2274,
+      "type": "PAGE"
+    },
+    {
+      "path": "/platforms/pinterest",
+      "function": "platforms_pinterest",
+      "line": 2280,
+      "type": "PAGE"
+    },
+    {
+      "path": "/platforms/linkedin",
+      "function": "platforms_linkedin",
+      "line": 2286,
+      "type": "PAGE"
+    },
+    {
+      "path": "/platforms/multi",
+      "function": "platforms_multi",
+      "line": 2292,
+      "type": "PAGE"
+    },
+    {
+      "path": "/optimization/auto",
+      "function": "optimization_auto",
+      "line": 2300,
+      "type": "PAGE"
+    },
+    {
+      "path": "/optimization/budget",
+      "function": "optimization_budget",
+      "line": 2306,
+      "type": "PAGE"
+    },
+    {
+      "path": "/optimization/bidding",
+      "function": "optimization_bidding",
+      "line": 2312,
+      "type": "PAGE"
+    },
+    {
+      "path": "/optimization/autopilot",
+      "function": "optimization_autopilot",
+      "line": 2318,
+      "type": "PAGE"
+    },
+    {
+      "path": "/api/nexora/create-campaign",
+      "function": "api_nexora_create_campaign",
+      "line": 2326,
+      "type": "API"
+    },
+    {
+      "path": "/api/nexora/analyze-product",
+      "function": "api_nexora_analyze_product",
+      "line": 2363,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/generate-copy",
+      "function": "api_manus_generate_copy",
+      "line": 2401,
+      "type": "API"
+    },
+    {
+      "path": "/api/manus/generate-creatives",
+      "function": "api_manus_generate_creatives",
+      "line": 2434,
+      "type": "API"
+    },
+    {
+      "path": "/api/nexora/predict-performance",
+      "function": "api_nexora_predict_performance",
+      "line": 2466,
+      "type": "API"
+    },
+    {
+      "path": "/api/nexora/optimize-campaign/<int:campaign_id>",
+      "function": "api_nexora_optimize_campaign",
+      "line": 2496,
+      "type": "API"
+    },
+    {
+      "path": "/api/sales/leads",
+      "function": "create_lead_api",
+      "line": 2558,
+      "type": "API"
+    },
+    {
+      "path": "/api/sales/leads/<int:lead_id>",
+      "function": "get_lead_api",
+      "line": 2572,
+      "type": "API"
+    },
+    {
+      "path": "/api/sales/funnel",
+      "function": "get_sales_funnel_api",
+      "line": 2588,
+      "type": "API"
+    },
+    {
+      "path": "/api/sales/dashboard",
+      "function": "get_sales_dashboard_api",
+      "line": 2601,
+      "type": "API"
+    },
+    {
+      "path": "/api/sales/predict/<int:lead_id>",
+      "function": "predict_conversion_api",
+      "line": 2614,
+      "type": "API"
+    },
+    {
+      "path": "/crm-sales",
+      "function": "crm_sales_page",
+      "line": 2628,
+      "type": "PAGE"
+    },
+    {
+      "path": "/api/facebook/auth",
+      "function": "facebook_auth_api",
+      "line": 2638,
+      "type": "API"
+    },
+    {
+      "path": "/api/facebook/callback",
+      "function": "facebook_callback_api",
+      "line": 2672,
+      "type": "API"
+    },
+    {
+      "path": "/api/google/auth",
+      "function": "google_auth_api",
+      "line": 2724,
+      "type": "API"
+    },
+    {
+      "path": "/api/google/callback",
+      "function": "google_callback_api",
+      "line": 2761,
+      "type": "API"
+    },
+    {
+      "path": "/api/facebook/campaigns",
+      "function": "facebook_campaigns_api",
+      "line": 2820,
+      "type": "API"
+    },
+    {
+      "path": "/api/google/campaigns",
+      "function": "google_campaigns_api",
+      "line": 2882,
+      "type": "API"
+    }
+  ],
+  "templates": [
+    {
+      "path": "templates/ab_testing.html",
+      "size": 29816,
+      "lines": 685,
+      "issues": []
+    },
+    {
+      "path": "templates/activity_logs.html",
+      "size": 16911,
+      "lines": 420,
+      "issues": []
+    },
+    {
+      "path": "templates/ad_editor.html",
+      "size": 18512,
+      "lines": 369,
+      "issues": []
+    },
+    {
+      "path": "templates/affiliates.html",
+      "size": 1001,
+      "lines": 40,
+      "issues": []
+    },
+    {
+      "path": "templates/all_features.html",
+      "size": 10284,
+      "lines": 226,
+      "issues": []
+    },
+    {
+      "path": "templates/automation.html",
+      "size": 31807,
+      "lines": 735,
+      "issues": []
+    },
+    {
+      "path": "templates/campaign_detail.html",
+      "size": 4273,
+      "lines": 112,
+      "issues": []
+    },
+    {
+      "path": "templates/campaign_sandbox.html",
+      "size": 3687,
+      "lines": 93,
+      "issues": []
+    },
+    {
+      "path": "templates/campaigns.html",
+      "size": 20056,
+      "lines": 525,
+      "issues": []
+    },
+    {
+      "path": "templates/competitor_spy.html",
+      "size": 21197,
+      "lines": 556,
+      "issues": []
+    },
+    {
+      "path": "templates/create_campaign.html",
+      "size": 31270,
+      "lines": 682,
+      "issues": []
+    },
+    {
+      "path": "templates/create_perfect_ad_v2.html",
+      "size": 56848,
+      "lines": 1223,
+      "issues": []
+    },
+    {
+      "path": "templates/dashboard.html",
+      "size": 14210,
+      "lines": 373,
+      "issues": []
+    },
+    {
+      "path": "templates/dco_builder.html",
+      "size": 30077,
+      "lines": 827,
+      "issues": []
+    },
+    {
+      "path": "templates/developer_api.html",
+      "size": 982,
+      "lines": 40,
+      "issues": []
+    },
+    {
+      "path": "templates/funnel_builder.html",
+      "size": 35656,
+      "lines": 831,
+      "issues": []
+    },
+    {
+      "path": "templates/generate_perfect_ad.html",
+      "size": 21984,
+      "lines": 541,
+      "issues": []
+    },
+    {
+      "path": "templates/index.html",
+      "size": 14629,
+      "lines": 348,
+      "issues": []
+    },
+    {
+      "path": "templates/landing_page_builder.html",
+      "size": 33076,
+      "lines": 956,
+      "issues": []
+    },
+    {
+      "path": "templates/manus_connection.html",
+      "size": 16928,
+      "lines": 356,
+      "issues": []
+    },
+    {
+      "path": "templates/media_library.html",
+      "size": 21374,
+      "lines": 582,
+      "issues": []
+    },
+    {
+      "path": "templates/not_found.html",
+      "size": 1829,
+      "lines": 52,
+      "issues": []
+    },
+    {
+      "path": "templates/notifications.html",
+      "size": 24883,
+      "lines": 560,
+      "issues": []
+    },
+    {
+      "path": "templates/operator_chat.html",
+      "size": 23967,
+      "lines": 767,
+      "issues": []
+    },
+    {
+      "path": "templates/report_view.html",
+      "size": 3787,
+      "lines": 106,
+      "issues": []
+    },
+    {
+      "path": "templates/reports_dashboard.html",
+      "size": 22422,
+      "lines": 547,
+      "issues": []
+    },
+    {
+      "path": "templates/segmentation.html",
+      "size": 20949,
+      "lines": 432,
+      "issues": []
+    },
+    {
+      "path": "templates/settings.html",
+      "size": 34966,
+      "lines": 842,
+      "issues": []
+    },
+    {
+      "path": "templates/subscriptions.html",
+      "size": 1085,
+      "lines": 40,
+      "issues": []
+    },
+    {
+      "path": "templates/dashboard_premium.html",
+      "size": 26062,
+      "lines": 540,
+      "issues": []
+    },
+    {
+      "path": "templates/create_campaign_premium.html",
+      "size": 26902,
+      "lines": 459,
+      "issues": []
+    },
+    {
+      "path": "templates/reports_premium.html",
+      "size": 29558,
+      "lines": 525,
+      "issues": []
+    },
+    {
+      "path": "templates/ai_copywriter.html",
+      "size": 9177,
+      "lines": 222,
+      "issues": []
+    },
+    {
+      "path": "templates/ai_image_generator.html",
+      "size": 2619,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/ai_video_scripts.html",
+      "size": 2613,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/ai_sentiment.html",
+      "size": 2607,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/ai_performance_prediction.html",
+      "size": 2627,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/platforms_facebook.html",
+      "size": 2586,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/platforms_google.html",
+      "size": 2562,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/platforms_tiktok.html",
+      "size": 2558,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/platforms_pinterest.html",
+      "size": 2582,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/platforms_linkedin.html",
+      "size": 2574,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/platforms_multi.html",
+      "size": 2596,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/optimization_auto.html",
+      "size": 2611,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/optimization_budget.html",
+      "size": 2648,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/optimization_bidding.html",
+      "size": 2585,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/optimization_autopilot.html",
+      "size": 2570,
+      "lines": 74,
+      "issues": []
+    },
+    {
+      "path": "templates/dashboard_v2.html",
+      "size": 14639,
+      "lines": 420,
+      "issues": []
+    },
+    {
+      "path": "templates/create_campaign_v2.html",
+      "size": 21452,
+      "lines": 557,
+      "issues": []
+    },
+    {
+      "path": "templates/reports_v2.html",
+      "size": 18066,
+      "lines": 472,
+      "issues": []
+    },
+    {
+      "path": "templates/media_library_v2.html",
+      "size": 15983,
+      "lines": 416,
+      "issues": []
+    },
+    {
+      "path": "templates/settings_v2.html",
+      "size": 20552,
+      "lines": 494,
+      "issues": []
+    },
+    {
+      "path": "templates/crm_sales.html",
+      "size": 16387,
+      "lines": 396,
+      "issues": []
+    },
+    {
+      "path": "templates/components/ai_status_indicator.html",
+      "size": 631,
+      "lines": 25,
+      "issues": []
+    },
+    {
+      "path": "templates/components/breadcrumbs.html",
+      "size": 3281,
+      "lines": 125,
+      "issues": []
+    },
+    {
+      "path": "templates/components/cards.html",
+      "size": 480,
+      "lines": 20,
+      "issues": []
+    },
+    {
+      "path": "templates/components/global_search.html",
+      "size": 10286,
+      "lines": 385,
+      "issues": []
+    },
+    {
+      "path": "templates/components/loading.html",
+      "size": 5141,
+      "lines": 206,
+      "issues": []
+    },
+    {
+      "path": "templates/components/side_nav.html",
+      "size": 13429,
+      "lines": 312,
+      "issues": []
+    },
+    {
+      "path": "templates/components/toast.html",
+      "size": 5801,
+      "lines": 248,
+      "issues": []
+    },
+    {
+      "path": "templates/components/top_nav.html",
+      "size": 480,
+      "lines": 20,
+      "issues": []
+    }
+  ],
+  "services": [
+    {
+      "path": "services/ab_testing_service.py",
+      "size": 9191,
+      "lines": 252,
+      "classes": [
+        "ABTestingService"
+      ],
+      "functions": 12
+    },
+    {
+      "path": "services/ad_copy_generator.py",
+      "size": 13274,
+      "lines": 322,
+      "classes": [
+        "AdCopyGenerator"
+      ],
+      "functions": 12
+    },
+    {
+      "path": "services/automation_service.py",
+      "size": 11125,
+      "lines": 322,
+      "classes": [
+        "AutomationService"
+      ],
+      "functions": 11
+    },
+    {
+      "path": "services/budget_calculator_service.py",
+      "size": 149,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/campaign_tester.py",
+      "size": 19791,
+      "lines": 571,
+      "classes": [
+        "CampaignTester"
+      ],
+      "functions": 11
+    },
+    {
+      "path": "services/competitor_intelligence.py",
+      "size": 11087,
+      "lines": 275,
+      "classes": [
+        "CompetitorIntelligence"
+      ],
+      "functions": 14
+    },
+    {
+      "path": "services/competitor_spy_service.py",
+      "size": 146,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/credits_alert_service.py",
+      "size": 9725,
+      "lines": 282,
+      "classes": [
+        "CreditsAlertService"
+      ],
+      "functions": 9
+    },
+    {
+      "path": "services/dco_service.py",
+      "size": 135,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/facebook_ads_service.py",
+      "size": 19642,
+      "lines": 514,
+      "classes": [
+        "FacebookAdsService"
+      ],
+      "functions": 14
+    },
+    {
+      "path": "services/funnel_builder_service.py",
+      "size": 146,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/google_ads_service.py",
+      "size": 25861,
+      "lines": 612,
+      "classes": [
+        "GoogleAdsService"
+      ],
+      "functions": 14
+    },
+    {
+      "path": "services/image_generation_service.py",
+      "size": 148,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/landing_page_analyzer.py",
+      "size": 12108,
+      "lines": 340,
+      "classes": [
+        "LandingPageAnalyzer"
+      ],
+      "functions": 17
+    },
+    {
+      "path": "services/landing_page_builder_service.py",
+      "size": 152,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/linkedin_ads_service.py",
+      "size": 144,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/manus_adapter.py",
+      "size": 137,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/manus_api_client.py",
+      "size": 19859,
+      "lines": 567,
+      "classes": [
+        "ManusAPIClient"
+      ],
+      "functions": 25
+    },
+    {
+      "path": "services/mc_bot_01.py",
+      "size": 133,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/media_management_service.py",
+      "size": 148,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/native_ai_engine.py",
+      "size": 17882,
+      "lines": 461,
+      "classes": [
+        "NativeAIEngine"
+      ],
+      "functions": 26
+    },
+    {
+      "path": "services/openai_adapter.py",
+      "size": 138,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/openai_service.py",
+      "size": 11522,
+      "lines": 405,
+      "classes": [],
+      "functions": 7
+    },
+    {
+      "path": "services/pinterest_ads_service.py",
+      "size": 145,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/reporting_service.py",
+      "size": 141,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/sandbox_service.py",
+      "size": 139,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/segmentation_service.py",
+      "size": 144,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/tiktok_ads_service.py",
+      "size": 142,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/training_pipeline.py",
+      "size": 11115,
+      "lines": 331,
+      "classes": [
+        "TrainingPipeline"
+      ],
+      "functions": 15
+    },
+    {
+      "path": "services/velyra_prime.py",
+      "size": 12817,
+      "lines": 326,
+      "classes": [
+        "VelyraPrime"
+      ],
+      "functions": 9
+    },
+    {
+      "path": "services/mcp_integration_service.py",
+      "size": 20344,
+      "lines": 592,
+      "classes": [
+        "MCPIntegrationService"
+      ],
+      "functions": 22
+    },
+    {
+      "path": "services/remote_control_service.py",
+      "size": 16413,
+      "lines": 511,
+      "classes": [
+        "RemoteControlService"
+      ],
+      "functions": 27
+    },
+    {
+      "path": "services/campaign_automation_service.py",
+      "size": 18113,
+      "lines": 536,
+      "classes": [
+        "CampaignAutomationService"
+      ],
+      "functions": 13
+    },
+    {
+      "path": "services/ux_audit_service.py",
+      "size": 16081,
+      "lines": 467,
+      "classes": [
+        "UXAuditService"
+      ],
+      "functions": 9
+    },
+    {
+      "path": "services/product_intelligence_service.py",
+      "size": 17125,
+      "lines": 479,
+      "classes": [
+        "ProductIntelligenceService"
+      ],
+      "functions": 10
+    },
+    {
+      "path": "services/ai_campaign_generator.py",
+      "size": 14122,
+      "lines": 367,
+      "classes": [
+        "AICampaignGenerator"
+      ],
+      "functions": 13
+    },
+    {
+      "path": "services/creative_intelligence_advanced.py",
+      "size": 24922,
+      "lines": 649,
+      "classes": [
+        "CreativeIntelligenceAdvanced"
+      ],
+      "functions": 32
+    },
+    {
+      "path": "services/campaign_engine_auto.py",
+      "size": 18802,
+      "lines": 480,
+      "classes": [
+        "CampaignEngineAuto"
+      ],
+      "functions": 18
+    },
+    {
+      "path": "services/budget_guardian.py",
+      "size": 18614,
+      "lines": 461,
+      "classes": [
+        "BudgetGuardian"
+      ],
+      "functions": 18
+    },
+    {
+      "path": "services/commercial_intelligence.py",
+      "size": 23692,
+      "lines": 639,
+      "classes": [
+        "CommercialIntelligence"
+      ],
+      "functions": 20
+    },
+    {
+      "path": "services/product_intelligence_advanced.py",
+      "size": 25714,
+      "lines": 683,
+      "classes": [
+        "ProductIntelligenceAdvanced"
+      ],
+      "functions": 33
+    },
+    {
+      "path": "services/analytics_intelligence.py",
+      "size": 33625,
+      "lines": 819,
+      "classes": [
+        "AnalyticsIntelligence"
+      ],
+      "functions": 26
+    },
+    {
+      "path": "services/audit_ux_premium.py",
+      "size": 22747,
+      "lines": 596,
+      "classes": [
+        "AuditUXPremium"
+      ],
+      "functions": 18
+    },
+    {
+      "path": "services/agency_ghost_mode.py",
+      "size": 26096,
+      "lines": 662,
+      "classes": [
+        "AgencyGhostMode"
+      ],
+      "functions": 16
+    },
+    {
+      "path": "services/monitoring_service.py",
+      "size": 16556,
+      "lines": 476,
+      "classes": [
+        "PerformanceMonitor",
+        "AlertSystem",
+        "AnalyticsTracker"
+      ],
+      "functions": 19
+    },
+    {
+      "path": "services/google_ads_service_old.py",
+      "size": 142,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/nexora_manus_integration.py",
+      "size": 18488,
+      "lines": 544,
+      "classes": [
+        "NexoraPrimeAI",
+        "ManusExecutorAI",
+        "CampaignPerformancePredictor"
+      ],
+      "functions": 14
+    },
+    {
+      "path": "services/sales_intelligence_service.py",
+      "size": 17833,
+      "lines": 529,
+      "classes": [
+        "SalesIntelligenceService"
+      ],
+      "functions": 12
+    },
+    {
+      "path": "services/campaign_optimizer_service.py",
+      "size": 18100,
+      "lines": 509,
+      "classes": [
+        "CampaignOptimizerService"
+      ],
+      "functions": 14
+    },
+    {
+      "path": "services/conversion_guarantee_service.py",
+      "size": 18023,
+      "lines": 465,
+      "classes": [
+        "ConversionGuaranteeService"
+      ],
+      "functions": 10
+    },
+    {
+      "path": "services/continuous_monitoring_service.py",
+      "size": 19292,
+      "lines": 539,
+      "classes": [
+        "ContinuousMonitoringService"
+      ],
+      "functions": 10
+    },
+    {
+      "path": "services/facebook_ads_service_old.py",
+      "size": 144,
+      "lines": 11,
+      "classes": [],
+      "functions": 0
+    },
+    {
+      "path": "services/intelligent_logging.py",
+      "size": 8121,
+      "lines": 264,
+      "classes": [
+        "IntelligentLogger"
+      ],
+      "functions": 11
+    },
+    {
+      "path": "services/sales_system.py",
+      "size": 18869,
+      "lines": 570,
+      "classes": [
+        "SalesSystem"
+      ],
+      "functions": 14
+    }
+  ],
+  "static_files": {
+    "css": [
+      {
+        "path": "static/css/base.css",
+        "size": 0
+      },
+      {
+        "path": "static/css/dashboard.css",
+        "size": 0
+      },
+      {
+        "path": "static/css/nexora-theme.css",
+        "size": 18226
+      },
+      {
+        "path": "static/css/ux-improvements.css",
+        "size": 8788
+      },
+      {
+        "path": "static/css/nexora_design_system_premium.css",
+        "size": 25405
+      },
+      {
+        "path": "static/css/nexora_components_premium.css",
+        "size": 24395
+      },
+      {
+        "path": "static/css/nexora_usability.css",
+        "size": 23740
+      },
+      {
+        "path": "static/css/nexora_premium_v2.css",
+        "size": 11286
+      }
+    ],
+    "js": [
+      {
+        "path": "static/js/accessibility.js",
+        "size": 9989
+      },
+      {
+        "path": "static/js/create_campaign.js",
+        "size": 0
+      },
+      {
+        "path": "static/js/dashboard.js",
+        "size": 0
+      },
+      {
+        "path": "static/js/form-validation.js",
+        "size": 8965
+      },
+      {
+        "path": "static/js/main.js",
+        "size": 0
+      },
+      {
+        "path": "static/js/ai-campaign-generator.js",
+        "size": 21993
+      },
+      {
+        "path": "static/js/ux-enhancements.js",
+        "size": 12212
+      },
+      {
+        "path": "static/js/nexora_usability.js",
+        "size": 43847
+      }
+    ],
+    "outros": [
+      {
+        "path": "static/uploads/facebook_feed_1200x628.jpg",
+        "size": 13409
+      },
+      {
+        "path": "static/uploads/instagram_post_1080x1080.jpg",
+        "size": 19972
+      },
+      {
+        "path": "static/uploads/instagram_story_1080x1920.jpg",
+        "size": 34042
+      },
+      {
+        "path": "static/uploads/google_display_300x250.jpg",
+        "size": 2636
+      },
+      {
+        "path": "static/uploads/google_display_728x90.jpg",
+        "size": 2450
+      },
+      {
+        "path": "static/uploads/tiktok_video_1080x1920.jpg",
+        "size": 34199
+      },
+      {
+        "path": "static/uploads/linkedin_post_1200x627.jpg",
+        "size": 13272
+      },
+      {
+        "path": "static/uploads/youtube_thumbnail_1280x720.jpg",
+        "size": 16065
+      },
+      {
+        "path": "static/uploads/pinterest_pin_1000x1500.jpg",
+        "size": 25313
+      },
+      {
+        "path": "static/uploads/twitter_post_1200x675.jpg",
+        "size": 14125
+      }
+    ]
+  },
+  "apis": [],
+  "problemas": [],
+  "estatisticas": {
+    "total_rotas": 157,
+    "rotas_api": 105,
+    "rotas_page": 52,
+    "total_templates": 61,
+    "templates_com_problemas": 0,
+    "total_services": 54,
+    "total_css": 8,
+    "total_js": 8
+  },
+  "integrations": {
+    "google_ads": {
+      "service_exists": false,
+      "size": 0
+    },
+    "facebook_ads": {
+      "service_exists": false,
+      "size": 0
+    },
+    "sales_system": {
+      "service_exists": true,
+      "size": 18869
+    }
+  },
+  "database": {
+    "exists": true,
+    "size": 28672
+  }
+}

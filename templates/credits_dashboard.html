@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Créditos - NEXORA PRIME</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_premium_v3.css') }}">
+    <style>
+        .credits-dashboard {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .credits-header {
+            margin-bottom: 2rem;
+        }
+        
+        .credits-header h1 {
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .credits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .credit-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .credit-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .credit-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .credit-card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .credit-icon {
+            font-size: 2rem;
+        }
+        
+        .credit-card-title h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-indicator.green {
+            background: #4caf50;
+        }
+        
+        .status-indicator.yellow {
+            background: #ff9800;
+        }
+        
+        .status-indicator.red {
+            background: #f44336;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .credit-info {
+            margin-bottom: 1rem;
+        }
+        
+        .credit-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .credit-info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .credit-info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .credit-info-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .credit-status-message {
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .credit-status-message.green {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .credit-status-message.yellow {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .credit-status-message.red {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .overall-status {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .overall-status h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.75rem;
+        }
+        
+        .overall-status p {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .widget-mini {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .widget-mini-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .widget-mini-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .widget-mini-status:last-child {
+            margin-bottom: 0;
+        }
+        
+        .widget-mini-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .widget-mini-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Widget Mini (Topo) -->
+    <div class="widget-mini" id="widget-mini">
+        <div class="widget-mini-title">Status das APIs</div>
+        <div class="widget-mini-status">
+            <div class="widget-mini-dot" id="widget-openai-dot"></div>
+            <span class="widget-mini-label">OpenAI</span>
+        </div>
+        <div class="widget-mini-status">
+            <div class="widget-mini-dot" id="widget-manus-dot"></div>
+            <span class="widget-mini-label">Manus</span>
+        </div>
+    </div>
+
+    <div class="credits-dashboard">
+        <!-- Header -->
+        <div class="credits-header">
+            <h1>💳 Painel de Créditos</h1>
+            <p>Monitoramento em tempo real das APIs</p>
+        </div>
+
+        <!-- Status Geral -->
+        <div class="overall-status" id="overall-status">
+            <h2>Carregando...</h2>
+            <p>Verificando status das APIs</p>
+        </div>
+
+        <!-- Grid de Créditos -->
+        <div class="credits-grid">
+            <!-- OpenAI Card -->
+            <div class="credit-card">
+                <div class="credit-card-header">
+                    <div class="credit-card-title">
+                        <span class="credit-icon">🤖</span>
+                        <h2>OpenAI</h2>
+                    </div>
+                    <div class="status-indicator" id="openai-indicator"></div>
+                </div>
+                <div class="credit-info" id="openai-info">
+                    <div class="loading">Carregando...</div>
+                </div>
+            </div>
+
+            <!-- Manus Card -->
+            <div class="credit-card">
+                <div class="credit-card-header">
+                    <div class="credit-card-title">
+                        <span class="credit-icon">⚙️</span>
+                        <h2>Manus</h2>
+                    </div>
+                    <div class="status-indicator" id="manus-indicator"></div>
+                </div>
+                <div class="credit-info" id="manus-info">
+                    <div class="loading">Carregando...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadCreditsStatus() {
+            try {
+                const response = await fetch('/api/credits/status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Atualizar status geral
+                    updateOverallStatus(data);
+                    
+                    // Atualizar OpenAI
+                    updateOpenAIStatus(data.openai);
+                    
+                    // Atualizar Manus
+                    updateManusStatus(data.manus);
+                    
+                    // Atualizar widget mini
+                    updateWidgetMini(data);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar status:', error);
+            }
+        }
+        
+        function updateOverallStatus(data) {
+            const overallDiv = document.getElementById('overall-status');
+            overallDiv.innerHTML = `
+                <h2>${data.overall_message}</h2>
+                <p>Última atualização: ${new Date().toLocaleTimeString()}</p>
+            `;
+            
+            // Mudar cor de fundo baseado no status
+            const colors = {
+                'green': 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                'yellow': 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                'red': 'linear-gradient(135deg, #f44336 0%, #e53935 100%)'
+            };
+            overallDiv.style.background = colors[data.overall_color] || colors['green'];
+        }
+        
+        function updateOpenAIStatus(openai) {
+            const indicator = document.getElementById('openai-indicator');
+            const infoDiv = document.getElementById('openai-info');
+            
+            indicator.className = `status-indicator ${openai.color}`;
+            
+            infoDiv.innerHTML = `
+                <div class="credit-info-row">
+                    <span class="credit-info-label">Status:</span>
+                    <span class="credit-info-value">${openai.status.toUpperCase()}</span>
+                </div>
+                <div class="credit-info-row">
+                    <span class="credit-info-label">Saldo:</span>
+                    <span class="credit-info-value">${openai.balance}</span>
+                </div>
+                <div class="credit-info-row">
+                    <span class="credit-info-label">Uso Hoje:</span>
+                    <span class="credit-info-value">${openai.usage_today || 'N/A'}</span>
+                </div>
+                <div class="credit-status-message ${openai.color}">
+                    ${openai.message}
+                </div>
+            `;
+        }
+        
+        function updateManusStatus(manus) {
+            const indicator = document.getElementById('manus-indicator');
+            const infoDiv = document.getElementById('manus-info');
+            
+            indicator.className = `status-indicator ${manus.color}`;
+            
+            infoDiv.innerHTML = `
+                <div class="credit-info-row">
+                    <span class="credit-info-label">Status:</span>
+                    <span class="credit-info-value">${manus.status.toUpperCase()}</span>
+                </div>
+                <div class="credit-info-row">
+                    <span class="credit-info-label">Créditos:</span>
+                    <span class="credit-info-value">${manus.credits}</span>
+                </div>
+                <div class="credit-info-row">
+                    <span class="credit-info-label">Uso Hoje:</span>
+                    <span class="credit-info-value">${manus.usage_today || 'N/A'}</span>
+                </div>
+                <div class="credit-status-message ${manus.color}">
+                    ${manus.message}
+                </div>
+            `;
+        }
+        
+        function updateWidgetMini(data) {
+            const openaiDot = document.getElementById('widget-openai-dot');
+            const manusDot = document.getElementById('widget-manus-dot');
+            
+            openaiDot.style.background = getColorHex(data.openai.color);
+            manusDot.style.background = getColorHex(data.manus.color);
+        }
+        
+        function getColorHex(color) {
+            const colors = {
+                'green': '#4caf50',
+                'yellow': '#ff9800',
+                'red': '#f44336',
+                'gray': '#9e9e9e'
+            };
+            return colors[color] || colors['gray'];
+        }
+        
+        // Carregar status inicial
+        loadCreditsStatus();
+        
+        // Atualizar a cada 30 segundos
+        setInterval(loadCreditsStatus, 30000);
+    </script>
+</body>
+</html>

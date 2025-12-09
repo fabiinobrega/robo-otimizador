@@ -1,4 +1,27 @@
 """
+Openai Service Service
+Wrapper class para padronização
+"""
+
+class OpenaiService:
+    """Classe wrapper para openai_service.py"""
+    
+    def __init__(self):
+        """Inicializar serviço"""
+        pass
+    
+    def get_info(self):
+        """Obter informações do serviço"""
+        return {
+            "service": "openai_service.py",
+            "class": "OpenaiService",
+            "status": "active"
+        }
+
+# Código original abaixo
+# ----------------------
+
+"""
 Serviço de Integração com OpenAI GPT-4
 Gera copy, headlines, descriptions e CTAs otimizados
 """

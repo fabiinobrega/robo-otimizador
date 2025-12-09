@@ -1,0 +1,2445 @@
+{
+  "rotas": [
+    {
+      "path": "/api/campaign/create",
+      "methods": "POST",
+      "function": "api_campaign_create",
+      "type": "API",
+      "category": "MANUS",
+      "line": 177
+    },
+    {
+      "path": "/api/campaign/list",
+      "methods": "GET",
+      "function": "api_campaign_list",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 247
+    },
+    {
+      "path": "/api/campaign/read/<int:campaign_id>",
+      "methods": "GET",
+      "function": "api_campaign_read",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 282
+    },
+    {
+      "path": "/api/campaign/update/<int:campaign_id>",
+      "methods": "PUT",
+      "function": "api_campaign_update",
+      "type": "API",
+      "category": "MANUS",
+      "line": 317
+    },
+    {
+      "path": "/api/campaign/delete/<int:campaign_id>",
+      "methods": "DELETE",
+      "function": "api_campaign_delete",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 361
+    },
+    {
+      "path": "/api/campaign/publish",
+      "methods": "POST",
+      "function": "api_campaign_publish",
+      "type": "API",
+      "category": "MANUS",
+      "line": 381
+    },
+    {
+      "path": "/api/analyze-landing-page",
+      "methods": "POST",
+      "function": "api_analyze_landing_page",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 439
+    },
+    {
+      "path": "/api/competitor-spy",
+      "methods": "POST",
+      "function": "api_competitor_spy",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 470
+    },
+    {
+      "path": "/api/dco/generate-segmentation",
+      "methods": "POST",
+      "function": "api_dco_generate_segmentation",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 510
+    },
+    {
+      "path": "/api/dco/generate",
+      "methods": "POST",
+      "function": "api_dco_generate",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 535
+    },
+    {
+      "path": "/api/dco/generate-copy",
+      "methods": "POST",
+      "function": "api_dco_generate_copy",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 562
+    },
+    {
+      "path": "/api/dashboard/metrics",
+      "methods": "GET",
+      "function": "api_dashboard_metrics",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 595
+    },
+    {
+      "path": "/api/activity-logs",
+      "methods": "GET",
+      "function": "api_activity_logs",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 650
+    },
+    {
+      "path": "/",
+      "methods": "GET",
+      "function": "index",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 672
+    },
+    {
+      "path": "/create-campaign",
+      "methods": "GET",
+      "function": "create_campaign",
+      "type": "PAGE",
+      "category": "MANUS",
+      "line": 677
+    },
+    {
+      "path": "/campaigns",
+      "methods": "GET",
+      "function": "campaigns",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 682
+    },
+    {
+      "path": "/dashboard",
+      "methods": "GET",
+      "function": "dashboard",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 692
+    },
+    {
+      "path": "/competitor-spy",
+      "methods": "GET",
+      "function": "competitor_spy",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 703
+    },
+    {
+      "path": "/dco",
+      "methods": "GET",
+      "function": "dco",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 708
+    },
+    {
+      "path": "/funnel-builder",
+      "methods": "GET",
+      "function": "funnel_builder",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 713
+    },
+    {
+      "path": "/segmentation",
+      "methods": "GET",
+      "function": "segmentation",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 718
+    },
+    {
+      "path": "/reports",
+      "methods": "GET",
+      "function": "reports",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 723
+    },
+    {
+      "path": "/media-library",
+      "methods": "GET",
+      "function": "media_library",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 728
+    },
+    {
+      "path": "/settings",
+      "methods": "GET",
+      "function": "settings",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 738
+    },
+    {
+      "path": "/notifications",
+      "methods": "GET",
+      "function": "notifications",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 743
+    },
+    {
+      "path": "/subscriptions",
+      "methods": "GET",
+      "function": "subscriptions",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 748
+    },
+    {
+      "path": "/affiliates",
+      "methods": "GET",
+      "function": "affiliates",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 753
+    },
+    {
+      "path": "/developer-api",
+      "methods": "GET",
+      "function": "developer_api",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 758
+    },
+    {
+      "path": "/landing-page-builder",
+      "methods": "GET",
+      "function": "landing_page_builder",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 763
+    },
+    {
+      "path": "/operator-chat",
+      "methods": "GET",
+      "function": "operator_chat",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 768
+    },
+    {
+      "path": "/ab-testing",
+      "methods": "GET",
+      "function": "ab_testing",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 773
+    },
+    {
+      "path": "/automation",
+      "methods": "GET",
+      "function": "automation",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 778
+    },
+    {
+      "path": "/all-features",
+      "methods": "GET",
+      "function": "all_features",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 783
+    },
+    {
+      "path": "/activity-logs",
+      "methods": "GET",
+      "function": "activity_logs",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 788
+    },
+    {
+      "path": "/campaign-sandbox",
+      "methods": "GET",
+      "function": "campaign_sandbox",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 793
+    },
+    {
+      "path": "/dco-builder",
+      "methods": "GET",
+      "function": "dco_builder",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 798
+    },
+    {
+      "path": "/health",
+      "methods": "GET",
+      "function": "health_check",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 803
+    },
+    {
+      "path": "/api/media/upload",
+      "methods": "POST",
+      "function": "api_upload_media",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 808
+    },
+    {
+      "path": "/api/operator/status",
+      "methods": "GET",
+      "function": "api_operator_status",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 859
+    },
+    {
+      "path": "/api/operator/monitor",
+      "methods": "GET",
+      "function": "api_operator_monitor",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 869
+    },
+    {
+      "path": "/api/operator/optimize",
+      "methods": "POST",
+      "function": "api_operator_optimize",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 879
+    },
+    {
+      "path": "/api/operator/chat",
+      "methods": "POST",
+      "function": "api_operator_chat",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 889
+    },
+    {
+      "path": "/api/operator/recommendations/<int:campaign_id>",
+      "methods": "GET",
+      "function": "api_operator_recommendations",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 922
+    },
+    {
+      "path": "/api/ab-test/create",
+      "methods": "POST",
+      "function": "api_ab_test_create",
+      "type": "API",
+      "category": "MANUS",
+      "line": 934
+    },
+    {
+      "path": "/api/ab-test/analyze/<int:test_id>",
+      "methods": "GET",
+      "function": "api_ab_test_analyze",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 980
+    },
+    {
+      "path": "/api/ab-test/suggestions",
+      "methods": "GET",
+      "function": "api_ab_test_suggestions",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1000
+    },
+    {
+      "path": "/api/ab-test/library",
+      "methods": "GET",
+      "function": "api_ab_test_library",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1010
+    },
+    {
+      "path": "/api/automation/rules",
+      "methods": "GET",
+      "function": "api_automation_rules",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1022
+    },
+    {
+      "path": "/api/automation/execute",
+      "methods": "POST",
+      "function": "api_automation_execute",
+      "type": "API",
+      "category": "MANUS",
+      "line": 1032
+    },
+    {
+      "path": "/api/automation/history",
+      "methods": "GET",
+      "function": "api_automation_history",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1042
+    },
+    {
+      "path": "/api/notifications",
+      "methods": "GET",
+      "function": "api_notifications",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1054
+    },
+    {
+      "path": "/api/notifications/<int:notification_id>/read",
+      "methods": "POST",
+      "function": "api_notification_read",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1071
+    },
+    {
+      "path": "/api/reports/generate",
+      "methods": "POST",
+      "function": "api_report_generate",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 1088
+    },
+    {
+      "path": "/api/reports/list",
+      "methods": "GET",
+      "function": "api_reports_list",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1138
+    },
+    {
+      "path": "/generate-perfect-ad",
+      "methods": "GET",
+      "function": "generate_perfect_ad",
+      "type": "PAGE",
+      "category": "CHATGPT",
+      "line": 1155
+    },
+    {
+      "path": "/ad-editor",
+      "methods": "GET",
+      "function": "ad_editor",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 1161
+    },
+    {
+      "path": "/api/ad/generate-copy",
+      "methods": "POST",
+      "function": "api_ad_generate_copy",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 1167
+    },
+    {
+      "path": "/api/landing/analyze",
+      "methods": "POST",
+      "function": "api_landing_analyze",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 1182
+    },
+    {
+      "path": "/api/ad/simulate",
+      "methods": "POST",
+      "function": "api_ad_simulate",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1198
+    },
+    {
+      "path": "/api/ad/publish",
+      "methods": "POST",
+      "function": "api_ad_publish",
+      "type": "API",
+      "category": "MANUS",
+      "line": 1228
+    },
+    {
+      "path": "/api/generate-image",
+      "methods": "POST",
+      "function": "api_generate_image",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 1271
+    },
+    {
+      "path": "/manus/connect",
+      "methods": "GET",
+      "function": "manus_connect",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 1292
+    },
+    {
+      "path": "/manus/oauth/authorize",
+      "methods": "GET",
+      "function": "manus_oauth_authorize",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 1301
+    },
+    {
+      "path": "/oauth/callback",
+      "methods": "GET",
+      "function": "oauth_callback",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 1307
+    },
+    {
+      "path": "/api/manus/status",
+      "methods": "GET",
+      "function": "api_manus_status",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1323
+    },
+    {
+      "path": "/api/manus/test",
+      "methods": "GET",
+      "function": "api_manus_test",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1329
+    },
+    {
+      "path": "/api/manus/sync/campaigns",
+      "methods": "'POST'",
+      "function": "api_manus_sync_campaigns",
+      "type": "API",
+      "category": "MANUS",
+      "line": 1335
+    },
+    {
+      "path": "/api/manus/sync/ads",
+      "methods": "'POST'",
+      "function": "api_manus_sync_ads",
+      "type": "API",
+      "category": "MANUS",
+      "line": 1342
+    },
+    {
+      "path": "/api/manus/reports",
+      "methods": "'GET'",
+      "function": "api_manus_reports",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1349
+    },
+    {
+      "path": "/api/manus/credits/balance",
+      "methods": "GET",
+      "function": "api_manus_credits_balance",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1361
+    },
+    {
+      "path": "/api/manus/credits/consume",
+      "methods": "'POST'",
+      "function": "api_manus_credits_consume",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1367
+    },
+    {
+      "path": "/api/manus/webhooks/register",
+      "methods": "'POST'",
+      "function": "api_manus_webhooks_register",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1379
+    },
+    {
+      "path": "/webhooks/manus",
+      "methods": "'POST'",
+      "function": "webhooks_manus",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 1391
+    },
+    {
+      "path": "/api/credits/check-alert",
+      "methods": "GET",
+      "function": "api_credits_check_alert",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1426
+    },
+    {
+      "path": "/api/credits/balance",
+      "methods": "GET",
+      "function": "api_credits_balance",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1441
+    },
+    {
+      "path": "/api/credits/set-unlimited",
+      "methods": "POST",
+      "function": "api_credits_set_unlimited",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1453
+    },
+    {
+      "path": "/api/notifications/unread",
+      "methods": "GET",
+      "function": "api_notifications_unread",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1471
+    },
+    {
+      "path": "/api/notifications/mark-read/<int:notification_id>",
+      "methods": "POST",
+      "function": "api_notifications_mark_read",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1484
+    },
+    {
+      "path": "/api/campaign/test/create",
+      "methods": "'POST'",
+      "function": "api_create_test_campaign",
+      "type": "API",
+      "category": "MANUS",
+      "line": 1529
+    },
+    {
+      "path": "/api/campaign/test/monitor/<int:campaign_id>",
+      "methods": "'GET'",
+      "function": "api_monitor_test_campaign",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1539
+    },
+    {
+      "path": "/api/campaign/test/status/<int:campaign_id>",
+      "methods": "'GET'",
+      "function": "api_test_campaign_status",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1548
+    },
+    {
+      "path": "/api/campaign/test/stop/<int:campaign_id>",
+      "methods": "'POST'",
+      "function": "api_stop_test_campaign",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1557
+    },
+    {
+      "path": "/api/search",
+      "methods": "'GET'",
+      "function": "api_global_search",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1571
+    },
+    {
+      "path": "/api/mcp/command",
+      "methods": "POST",
+      "function": "api_mcp_command",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1664
+    },
+    {
+      "path": "/api/mcp/webhook/register",
+      "methods": "POST",
+      "function": "api_mcp_webhook_register",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1678
+    },
+    {
+      "path": "/api/mcp/event",
+      "methods": "POST",
+      "function": "api_mcp_event",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1692
+    },
+    {
+      "path": "/api/mcp/telemetry",
+      "methods": "POST",
+      "function": "api_mcp_telemetry",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1706
+    },
+    {
+      "path": "/api/mcp/telemetry/<metric>",
+      "methods": "GET",
+      "function": "api_mcp_get_telemetry",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1721
+    },
+    {
+      "path": "/api/mcp/status",
+      "methods": "GET",
+      "function": "api_mcp_status",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1734
+    },
+    {
+      "path": "/api/mcp/authorize",
+      "methods": "GET",
+      "function": "api_mcp_authorize",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1749
+    },
+    {
+      "path": "/api/mcp/token",
+      "methods": "POST",
+      "function": "api_mcp_token",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1765
+    },
+    {
+      "path": "/api/mcp/test",
+      "methods": "GET",
+      "function": "api_mcp_test",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1789
+    },
+    {
+      "path": "/api/remote/session/start",
+      "methods": "POST",
+      "function": "api_remote_session_start",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1801
+    },
+    {
+      "path": "/api/remote/session/end",
+      "methods": "POST",
+      "function": "api_remote_session_end",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1814
+    },
+    {
+      "path": "/api/remote/execute",
+      "methods": "POST",
+      "function": "api_remote_execute",
+      "type": "API",
+      "category": "MANUS",
+      "line": 1827
+    },
+    {
+      "path": "/api/remote/sessions",
+      "methods": "GET",
+      "function": "api_remote_sessions",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1842
+    },
+    {
+      "path": "/api/remote/audit",
+      "methods": "GET",
+      "function": "api_remote_audit",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1852
+    },
+    {
+      "path": "/api/automation/authorize/request",
+      "methods": "POST",
+      "function": "api_automation_authorize_request",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1865
+    },
+    {
+      "path": "/api/automation/authorize/approve/<int:auth_id>",
+      "methods": "POST",
+      "function": "api_automation_authorize_approve",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1881
+    },
+    {
+      "path": "/api/automation/authorize/reject/<int:auth_id>",
+      "methods": "POST",
+      "function": "api_automation_authorize_reject",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1894
+    },
+    {
+      "path": "/api/automation/authorize/pending",
+      "methods": "GET",
+      "function": "api_automation_authorize_pending",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1908
+    },
+    {
+      "path": "/api/automation/optimize/<int:campaign_id>",
+      "methods": "POST",
+      "function": "api_automation_optimize_campaign",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1918
+    },
+    {
+      "path": "/api/automation/optimize/all",
+      "methods": "POST",
+      "function": "api_automation_optimize_all",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1928
+    },
+    {
+      "path": "/api/automation/report",
+      "methods": "GET",
+      "function": "api_automation_report",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1938
+    },
+    {
+      "path": "/api/audit/page",
+      "methods": "POST",
+      "function": "api_audit_page",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1951
+    },
+    {
+      "path": "/api/audit/pages",
+      "methods": "GET",
+      "function": "api_audit_all_pages",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1962
+    },
+    {
+      "path": "/api/audit/flows",
+      "methods": "GET",
+      "function": "api_audit_flows",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1972
+    },
+    {
+      "path": "/api/audit/performance",
+      "methods": "GET",
+      "function": "api_audit_performance",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1982
+    },
+    {
+      "path": "/api/audit/accessibility",
+      "methods": "GET",
+      "function": "api_audit_accessibility",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 1992
+    },
+    {
+      "path": "/api/audit/full",
+      "methods": "GET",
+      "function": "api_audit_full",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2002
+    },
+    {
+      "path": "/api/intelligence/product/analyze",
+      "methods": "POST",
+      "function": "api_intelligence_analyze_product",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2020
+    },
+    {
+      "path": "/api/intelligence/sales/analyze",
+      "methods": "GET",
+      "function": "api_intelligence_analyze_sales",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2031
+    },
+    {
+      "path": "/api/intelligence/sales/forecast",
+      "methods": "GET",
+      "function": "api_intelligence_forecast_sales",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2042
+    },
+    {
+      "path": "/api/intelligence/products/recommend",
+      "methods": "POST",
+      "function": "api_intelligence_recommend_products",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2053
+    },
+    {
+      "path": "/api/intelligence/competitors/analyze",
+      "methods": "POST",
+      "function": "api_intelligence_analyze_competitors",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2067
+    },
+    {
+      "path": "/api/intelligence/report",
+      "methods": "GET",
+      "function": "api_intelligence_report",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2078
+    },
+    {
+      "path": "/api/ai/generate-campaign",
+      "methods": "POST",
+      "function": "api_ai_generate_campaign",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2092
+    },
+    {
+      "path": "/api/ai/generate-ad-variations",
+      "methods": "POST",
+      "function": "api_ai_generate_ad_variations",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2146
+    },
+    {
+      "path": "/campaign-detail",
+      "methods": "GET",
+      "function": "campaign_detail",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2192
+    },
+    {
+      "path": "/create-perfect-ad-v2",
+      "methods": "GET",
+      "function": "create_perfect_ad_v2",
+      "type": "PAGE",
+      "category": "MANUS",
+      "line": 2198
+    },
+    {
+      "path": "/manus-connection",
+      "methods": "GET",
+      "function": "manus_connection",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2204
+    },
+    {
+      "path": "/not-found",
+      "methods": "GET",
+      "function": "not_found_page",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2210
+    },
+    {
+      "path": "/report-view",
+      "methods": "GET",
+      "function": "report_view",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2216
+    },
+    {
+      "path": "/reports-dashboard",
+      "methods": "GET",
+      "function": "reports_dashboard",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2222
+    },
+    {
+      "path": "/ai-copywriter",
+      "methods": "GET",
+      "function": "ai_copywriter",
+      "type": "PAGE",
+      "category": "CHATGPT",
+      "line": 2230
+    },
+    {
+      "path": "/ai-image-generator",
+      "methods": "GET",
+      "function": "ai_image_generator",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2236
+    },
+    {
+      "path": "/ai-video-scripts",
+      "methods": "GET",
+      "function": "ai_video_scripts",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2242
+    },
+    {
+      "path": "/ai-sentiment",
+      "methods": "GET",
+      "function": "ai_sentiment",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2248
+    },
+    {
+      "path": "/ai-performance-prediction",
+      "methods": "GET",
+      "function": "ai_performance_prediction",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2254
+    },
+    {
+      "path": "/platforms/facebook",
+      "methods": "GET",
+      "function": "platforms_facebook",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2262
+    },
+    {
+      "path": "/platforms/google",
+      "methods": "GET",
+      "function": "platforms_google",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2268
+    },
+    {
+      "path": "/platforms/tiktok",
+      "methods": "GET",
+      "function": "platforms_tiktok",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2274
+    },
+    {
+      "path": "/platforms/pinterest",
+      "methods": "GET",
+      "function": "platforms_pinterest",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2280
+    },
+    {
+      "path": "/platforms/linkedin",
+      "methods": "GET",
+      "function": "platforms_linkedin",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2286
+    },
+    {
+      "path": "/platforms/multi",
+      "methods": "GET",
+      "function": "platforms_multi",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2292
+    },
+    {
+      "path": "/optimization/auto",
+      "methods": "GET",
+      "function": "optimization_auto",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2300
+    },
+    {
+      "path": "/optimization/budget",
+      "methods": "GET",
+      "function": "optimization_budget",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2306
+    },
+    {
+      "path": "/optimization/bidding",
+      "methods": "GET",
+      "function": "optimization_bidding",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2312
+    },
+    {
+      "path": "/optimization/autopilot",
+      "methods": "GET",
+      "function": "optimization_autopilot",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2318
+    },
+    {
+      "path": "/api/nexora/create-campaign",
+      "methods": "POST",
+      "function": "api_nexora_create_campaign",
+      "type": "API",
+      "category": "MANUS",
+      "line": 2326
+    },
+    {
+      "path": "/api/nexora/analyze-product",
+      "methods": "POST",
+      "function": "api_nexora_analyze_product",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2363
+    },
+    {
+      "path": "/api/manus/generate-copy",
+      "methods": "POST",
+      "function": "api_manus_generate_copy",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2401
+    },
+    {
+      "path": "/api/manus/generate-creatives",
+      "methods": "POST",
+      "function": "api_manus_generate_creatives",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2434
+    },
+    {
+      "path": "/api/nexora/predict-performance",
+      "methods": "POST",
+      "function": "api_nexora_predict_performance",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2466
+    },
+    {
+      "path": "/api/nexora/optimize-campaign/<int:campaign_id>",
+      "methods": "POST",
+      "function": "api_nexora_optimize_campaign",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2496
+    },
+    {
+      "path": "/api/sales/leads",
+      "methods": "'POST'",
+      "function": "create_lead_api",
+      "type": "API",
+      "category": "MANUS",
+      "line": 2558
+    },
+    {
+      "path": "/api/sales/leads/<int:lead_id>",
+      "methods": "'GET'",
+      "function": "get_lead_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2572
+    },
+    {
+      "path": "/api/sales/funnel",
+      "methods": "'GET'",
+      "function": "get_sales_funnel_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2588
+    },
+    {
+      "path": "/api/sales/dashboard",
+      "methods": "'GET'",
+      "function": "get_sales_dashboard_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2601
+    },
+    {
+      "path": "/api/sales/predict/<int:lead_id>",
+      "methods": "'GET'",
+      "function": "predict_conversion_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2614
+    },
+    {
+      "path": "/crm-sales",
+      "methods": "GET",
+      "function": "crm_sales_page",
+      "type": "PAGE",
+      "category": "NEUTRAL",
+      "line": 2628
+    },
+    {
+      "path": "/api/facebook/auth",
+      "methods": "'POST'",
+      "function": "facebook_auth_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2638
+    },
+    {
+      "path": "/api/facebook/callback",
+      "methods": "'GET'",
+      "function": "facebook_callback_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2672
+    },
+    {
+      "path": "/api/google/auth",
+      "methods": "'POST'",
+      "function": "google_auth_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2724
+    },
+    {
+      "path": "/api/google/callback",
+      "methods": "'GET'",
+      "function": "google_callback_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2761
+    },
+    {
+      "path": "/api/facebook/campaigns",
+      "methods": "'GET'",
+      "function": "facebook_campaigns_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2820
+    },
+    {
+      "path": "/api/google/campaigns",
+      "methods": "'GET'",
+      "function": "google_campaigns_api",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2882
+    },
+    {
+      "path": "/api/ai/generate-complete-campaign",
+      "methods": "'POST'",
+      "function": "ai_generate_complete_campaign",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2941
+    },
+    {
+      "path": "/api/ai/write-ad-copy",
+      "methods": "'POST'",
+      "function": "ai_write_ad_copy",
+      "type": "API",
+      "category": "CHATGPT",
+      "line": 2958
+    },
+    {
+      "path": "/api/ai/optimize-budget",
+      "methods": "'POST'",
+      "function": "ai_optimize_budget",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 2977
+    },
+    {
+      "path": "/api/ai/create-ab-test",
+      "methods": "'POST'",
+      "function": "ai_create_ab_test",
+      "type": "API",
+      "category": "MANUS",
+      "line": 2996
+    },
+    {
+      "path": "/api/ai/optimize-funnel",
+      "methods": "'POST'",
+      "function": "ai_optimize_funnel",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 3015
+    },
+    {
+      "path": "/api/ai/integrate-conversion-data",
+      "methods": "'POST'",
+      "function": "ai_integrate_conversion_data",
+      "type": "API",
+      "category": "NEUTRAL",
+      "line": 3032
+    }
+  ],
+  "servicos": [
+    {
+      "name": "ab_testing_service.py",
+      "path": "services/ab_testing_service.py",
+      "size": 9191,
+      "lines": 252,
+      "classes": [
+        "ABTestingService"
+      ],
+      "functions_count": 12,
+      "category": "CORE"
+    },
+    {
+      "name": "ad_copy_generator.py",
+      "path": "services/ad_copy_generator.py",
+      "size": 13274,
+      "lines": 322,
+      "classes": [
+        "AdCopyGenerator"
+      ],
+      "functions_count": 12,
+      "category": "CORE"
+    },
+    {
+      "name": "automation_service.py",
+      "path": "services/automation_service.py",
+      "size": 11125,
+      "lines": 322,
+      "classes": [
+        "AutomationService"
+      ],
+      "functions_count": 11,
+      "category": "CORE"
+    },
+    {
+      "name": "budget_calculator_service.py",
+      "path": "services/budget_calculator_service.py",
+      "size": 149,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "campaign_tester.py",
+      "path": "services/campaign_tester.py",
+      "size": 19791,
+      "lines": 571,
+      "classes": [
+        "CampaignTester"
+      ],
+      "functions_count": 11,
+      "category": "CORE"
+    },
+    {
+      "name": "competitor_intelligence.py",
+      "path": "services/competitor_intelligence.py",
+      "size": 11087,
+      "lines": 275,
+      "classes": [
+        "CompetitorIntelligence"
+      ],
+      "functions_count": 14,
+      "category": "CORE"
+    },
+    {
+      "name": "competitor_spy_service.py",
+      "path": "services/competitor_spy_service.py",
+      "size": 146,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "credits_alert_service.py",
+      "path": "services/credits_alert_service.py",
+      "size": 9725,
+      "lines": 282,
+      "classes": [
+        "CreditsAlertService"
+      ],
+      "functions_count": 9,
+      "category": "CORE"
+    },
+    {
+      "name": "dco_service.py",
+      "path": "services/dco_service.py",
+      "size": 135,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "facebook_ads_service.py",
+      "path": "services/facebook_ads_service.py",
+      "size": 19642,
+      "lines": 514,
+      "classes": [
+        "FacebookAdsService"
+      ],
+      "functions_count": 14,
+      "category": "INTEGRATION"
+    },
+    {
+      "name": "funnel_builder_service.py",
+      "path": "services/funnel_builder_service.py",
+      "size": 146,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "google_ads_service.py",
+      "path": "services/google_ads_service.py",
+      "size": 25861,
+      "lines": 612,
+      "classes": [
+        "GoogleAdsService"
+      ],
+      "functions_count": 14,
+      "category": "INTEGRATION"
+    },
+    {
+      "name": "image_generation_service.py",
+      "path": "services/image_generation_service.py",
+      "size": 148,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "landing_page_analyzer.py",
+      "path": "services/landing_page_analyzer.py",
+      "size": 12108,
+      "lines": 340,
+      "classes": [
+        "LandingPageAnalyzer"
+      ],
+      "functions_count": 17,
+      "category": "CORE"
+    },
+    {
+      "name": "landing_page_builder_service.py",
+      "path": "services/landing_page_builder_service.py",
+      "size": 152,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "linkedin_ads_service.py",
+      "path": "services/linkedin_ads_service.py",
+      "size": 144,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "INTEGRATION"
+    },
+    {
+      "name": "manus_adapter.py",
+      "path": "services/manus_adapter.py",
+      "size": 137,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "MANUS"
+    },
+    {
+      "name": "manus_api_client.py",
+      "path": "services/manus_api_client.py",
+      "size": 19859,
+      "lines": 567,
+      "classes": [
+        "ManusAPIClient"
+      ],
+      "functions_count": 25,
+      "category": "MANUS"
+    },
+    {
+      "name": "mc_bot_01.py",
+      "path": "services/mc_bot_01.py",
+      "size": 133,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "media_management_service.py",
+      "path": "services/media_management_service.py",
+      "size": 148,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "native_ai_engine.py",
+      "path": "services/native_ai_engine.py",
+      "size": 17882,
+      "lines": 461,
+      "classes": [
+        "NativeAIEngine"
+      ],
+      "functions_count": 26,
+      "category": "CORE"
+    },
+    {
+      "name": "openai_adapter.py",
+      "path": "services/openai_adapter.py",
+      "size": 138,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CHATGPT"
+    },
+    {
+      "name": "openai_service.py",
+      "path": "services/openai_service.py",
+      "size": 11522,
+      "lines": 405,
+      "classes": [],
+      "functions_count": 7,
+      "category": "CHATGPT"
+    },
+    {
+      "name": "pinterest_ads_service.py",
+      "path": "services/pinterest_ads_service.py",
+      "size": 145,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "INTEGRATION"
+    },
+    {
+      "name": "reporting_service.py",
+      "path": "services/reporting_service.py",
+      "size": 141,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "sandbox_service.py",
+      "path": "services/sandbox_service.py",
+      "size": 139,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "segmentation_service.py",
+      "path": "services/segmentation_service.py",
+      "size": 144,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "CORE"
+    },
+    {
+      "name": "tiktok_ads_service.py",
+      "path": "services/tiktok_ads_service.py",
+      "size": 142,
+      "lines": 11,
+      "classes": [],
+      "functions_count": 0,
+      "category": "INTEGRATION"
+    },
+    {
+      "name": "training_pipeline.py",
+      "path": "services/training_pipeline.py",
+      "size": 11115,
+      "lines": 331,
+      "classes": [
+        "TrainingPipeline"
+      ],
+      "functions_count": 15,
+      "category": "CORE"
+    },
+    {
+      "name": "velyra_prime.py",
+      "path": "services/velyra_prime.py",
+      "size": 12817,
+      "lines": 326,
+      "classes": [
+        "VelyraPrime"
+      ],
+      "functions_count": 9,
+      "category": "CORE"
+    },
+    {
+      "name": "mcp_integration_service.py",
+      "path": "services/mcp_integration_service.py",
+      "size": 20344,
+      "lines": 592,
+      "classes": [
+        "MCPIntegrationService"
+      ],
+      "functions_count": 22,
+      "category": "CORE"
+    },
+    {
+      "name": "remote_control_service.py",
+      "path": "services/remote_control_service.py",
+      "size": 16413,
+      "lines": 511,
+      "classes": [
+        "RemoteControlService"
+      ],
+      "functions_count": 27,
+      "category": "CORE"
+    },
+    {
+      "name": "campaign_automation_service.py",
+      "path": "services/campaign_automation_service.py",
+      "size": 18113,
+      "lines": 536,
+      "classes": [
+        "CampaignAutomationService"
+      ],
+      "functions_count": 13,
+      "category": "CORE"
+    },
+    {
+      "name": "ux_audit_service.py",
+      "path": "services/ux_audit_service.py",
+      "size": 16081,
+      "lines": 467,
+      "classes": [
+        "UXAuditService"
+      ],
+      "functions_count": 9,
+      "category": "CORE"
+    },
+    {
+      "name": "product_intelligence_service.py",
+      "path": "services/product_intelligence_service.py",
+      "size": 17125,
+      "lines": 479,
+      "classes": [
+        "ProductIntelligenceService"
+      ],
+      "functions_count": 10,
+      "category": "CORE"
+    },
+    {
+      "name": "ai_campaign_generator.py",
+      "path": "services/ai_campaign_generator.py",
+      "size": 14122,
+      "lines": 367,
+      "classes": [
+        "AICampaignGenerator"
+      ],
+      "functions_count": 13,
+      "category": "CORE"
+    },
+    {
+      "name": "creative_intelligence_advanced.py",
+      "path": "services/creative_intelligence_advanced.py",
+      "size": 24922,
+      "lines": 649,
+      "classes": [
+        "CreativeIntelligenceAdvanced"
+      ],
+      "functions_count": 32,
+      "category": "CORE"
+    },
+    {
+      "name": "campaign_engine_auto.py",
+      "path": "services/campaign_engine_auto.py",
+      "size": 18802,
+      "lines": 480,
+      "classes": [
+        "CampaignEngineAuto"
+      ],
+      "functions_count": 18,
+      "category": "CORE"
+    },
+    {
+      "name": "budget_guardian.py",
+      "path": "services/budget_guardian.py",
+      "size": 18614,
+      "lines": 461,
+      "classes": [
+        "BudgetGuardian"
+      ],
+      "functions_count": 18,
+      "category": "CORE"
+    },
+    {
+      "name": "commercial_intelligence.py",
+      "path": "services/commercial_intelligence.py",
+      "size": 23692,
+      "lines": 639,
+      "classes": [
+        "CommercialIntelligence"
+      ],
+      "functions_count": 20,
+      "category": "CORE"
+    },
+    {
+      "name": "product_intelligence_advanced.py",
+      "path": "services/product_intelligence_advanced.py",
+      "size": 25714,
+      "lines": 683,
+      "classes": [
+        "ProductIntelligenceAdvanced"
+      ],
+      "functions_count": 33,
+      "category": "CORE"
+    },
+    {
+      "name": "analytics_intelligence.py",
+      "path": "services/analytics_intelligence.py",
+      "size": 33625,
+      "lines": 819,
+      "classes": [
+        "AnalyticsIntelligence"
+      ],
+      "functions_count": 26,
+      "category": "CORE"
+    },
+    {
+      "name": "audit_ux_premium.py",
+      "path": "services/audit_ux_premium.py",
+      "size": 22747,
+      "lines": 596,
+      "classes": [
+        "AuditUXPremium"
+      ],
+      "functions_count": 18,
+      "category": "CORE"
+    },
+    {
+      "name": "agency_ghost_mode.py",
+      "path": "services/agency_ghost_mode.py",
+      "size": 26096,
+      "lines": 662,
+      "classes": [
+        "AgencyGhostMode"
+      ],
+      "functions_count": 16,
+      "category": "CORE"
+    },
+    {
+      "name": "monitoring_service.py",
+      "path": "services/monitoring_service.py",
+      "size": 16556,
+      "lines": 476,
+      "classes": [
+        "PerformanceMonitor",
+        "AlertSystem",
+        "AnalyticsTracker"
+      ],
+      "functions_count": 19,
+      "category": "CORE"
+    },
+    {
+      "name": "nexora_manus_integration.py",
+      "path": "services/nexora_manus_integration.py",
+      "size": 18488,
+      "lines": 544,
+      "classes": [
+        "NexoraPrimeAI",
+        "ManusExecutorAI",
+        "CampaignPerformancePredictor"
+      ],
+      "functions_count": 14,
+      "category": "MANUS"
+    },
+    {
+      "name": "sales_intelligence_service.py",
+      "path": "services/sales_intelligence_service.py",
+      "size": 17833,
+      "lines": 529,
+      "classes": [
+        "SalesIntelligenceService"
+      ],
+      "functions_count": 12,
+      "category": "CORE"
+    },
+    {
+      "name": "campaign_optimizer_service.py",
+      "path": "services/campaign_optimizer_service.py",
+      "size": 18100,
+      "lines": 509,
+      "classes": [
+        "CampaignOptimizerService"
+      ],
+      "functions_count": 14,
+      "category": "CORE"
+    },
+    {
+      "name": "conversion_guarantee_service.py",
+      "path": "services/conversion_guarantee_service.py",
+      "size": 18023,
+      "lines": 465,
+      "classes": [
+        "ConversionGuaranteeService"
+      ],
+      "functions_count": 10,
+      "category": "CORE"
+    },
+    {
+      "name": "continuous_monitoring_service.py",
+      "path": "services/continuous_monitoring_service.py",
+      "size": 19292,
+      "lines": 539,
+      "classes": [
+        "ContinuousMonitoringService"
+      ],
+      "functions_count": 10,
+      "category": "CORE"
+    },
+    {
+      "name": "intelligent_logging.py",
+      "path": "services/intelligent_logging.py",
+      "size": 8121,
+      "lines": 264,
+      "classes": [
+        "IntelligentLogger"
+      ],
+      "functions_count": 11,
+      "category": "CORE"
+    },
+    {
+      "name": "sales_system.py",
+      "path": "services/sales_system.py",
+      "size": 18869,
+      "lines": 570,
+      "classes": [
+        "SalesSystem"
+      ],
+      "functions_count": 14,
+      "category": "CORE"
+    },
+    {
+      "name": "manus_nexora_deep_integration.py",
+      "path": "services/manus_nexora_deep_integration.py",
+      "size": 15132,
+      "lines": 436,
+      "classes": [
+        "ManusNexoraDeepIntegration"
+      ],
+      "functions_count": 14,
+      "category": "MANUS"
+    }
+  ],
+  "arquitetura": {
+    "frontend": {
+      "templates": 53,
+      "static_css": 18,
+      "static_js": 16
+    },
+    "backend": {
+      "main": "main.py",
+      "services": 53,
+      "database": "database.db"
+    },
+    "integrations": {
+      "google_ads": true,
+      "facebook_ads": true,
+      "openai": true,
+      "manus": true
+    }
+  },
+  "apis": [],
+  "pontos_chatgpt": [
+    {
+      "area": "Copywriting",
+      "description": "Geração de headlines, descrições e copy de anúncios",
+      "routes": [
+        {
+          "path": "/api/dco/generate-segmentation",
+          "methods": "POST",
+          "function": "api_dco_generate_segmentation",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 510
+        },
+        {
+          "path": "/api/dco/generate",
+          "methods": "POST",
+          "function": "api_dco_generate",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 535
+        },
+        {
+          "path": "/api/dco/generate-copy",
+          "methods": "POST",
+          "function": "api_dco_generate_copy",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 562
+        },
+        {
+          "path": "/api/reports/generate",
+          "methods": "POST",
+          "function": "api_report_generate",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 1088
+        },
+        {
+          "path": "/generate-perfect-ad",
+          "methods": "GET",
+          "function": "generate_perfect_ad",
+          "type": "PAGE",
+          "category": "CHATGPT",
+          "line": 1155
+        },
+        {
+          "path": "/api/ad/generate-copy",
+          "methods": "POST",
+          "function": "api_ad_generate_copy",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 1167
+        },
+        {
+          "path": "/api/generate-image",
+          "methods": "POST",
+          "function": "api_generate_image",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 1271
+        },
+        {
+          "path": "/api/ai/generate-campaign",
+          "methods": "POST",
+          "function": "api_ai_generate_campaign",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2092
+        },
+        {
+          "path": "/api/ai/generate-ad-variations",
+          "methods": "POST",
+          "function": "api_ai_generate_ad_variations",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2146
+        },
+        {
+          "path": "/ai-copywriter",
+          "methods": "GET",
+          "function": "ai_copywriter",
+          "type": "PAGE",
+          "category": "CHATGPT",
+          "line": 2230
+        },
+        {
+          "path": "/api/manus/generate-copy",
+          "methods": "POST",
+          "function": "api_manus_generate_copy",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2401
+        },
+        {
+          "path": "/api/manus/generate-creatives",
+          "methods": "POST",
+          "function": "api_manus_generate_creatives",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2434
+        },
+        {
+          "path": "/api/ai/generate-complete-campaign",
+          "methods": "'POST'",
+          "function": "ai_generate_complete_campaign",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2941
+        },
+        {
+          "path": "/api/ai/write-ad-copy",
+          "methods": "'POST'",
+          "function": "ai_write_ad_copy",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2958
+        }
+      ],
+      "priority": "ALTA"
+    },
+    {
+      "area": "Estratégia de Campanhas",
+      "description": "Criação de estratégias de marketing e planejamento",
+      "routes": [
+        {
+          "path": "/api/campaign/create",
+          "methods": "POST",
+          "function": "api_campaign_create",
+          "type": "API",
+          "category": "MANUS",
+          "line": 177
+        },
+        {
+          "path": "/api/campaign/list",
+          "methods": "GET",
+          "function": "api_campaign_list",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 247
+        },
+        {
+          "path": "/api/campaign/read/<int:campaign_id>",
+          "methods": "GET",
+          "function": "api_campaign_read",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 282
+        },
+        {
+          "path": "/api/campaign/update/<int:campaign_id>",
+          "methods": "PUT",
+          "function": "api_campaign_update",
+          "type": "API",
+          "category": "MANUS",
+          "line": 317
+        },
+        {
+          "path": "/api/campaign/delete/<int:campaign_id>",
+          "methods": "DELETE",
+          "function": "api_campaign_delete",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 361
+        },
+        {
+          "path": "/api/campaign/publish",
+          "methods": "POST",
+          "function": "api_campaign_publish",
+          "type": "API",
+          "category": "MANUS",
+          "line": 381
+        },
+        {
+          "path": "/api/operator/recommendations/<int:campaign_id>",
+          "methods": "GET",
+          "function": "api_operator_recommendations",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 922
+        },
+        {
+          "path": "/api/manus/sync/campaigns",
+          "methods": "'POST'",
+          "function": "api_manus_sync_campaigns",
+          "type": "API",
+          "category": "MANUS",
+          "line": 1335
+        },
+        {
+          "path": "/api/campaign/test/create",
+          "methods": "'POST'",
+          "function": "api_create_test_campaign",
+          "type": "API",
+          "category": "MANUS",
+          "line": 1529
+        },
+        {
+          "path": "/api/campaign/test/monitor/<int:campaign_id>",
+          "methods": "'GET'",
+          "function": "api_monitor_test_campaign",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1539
+        },
+        {
+          "path": "/api/campaign/test/status/<int:campaign_id>",
+          "methods": "'GET'",
+          "function": "api_test_campaign_status",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1548
+        },
+        {
+          "path": "/api/campaign/test/stop/<int:campaign_id>",
+          "methods": "'POST'",
+          "function": "api_stop_test_campaign",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1557
+        },
+        {
+          "path": "/api/automation/optimize/<int:campaign_id>",
+          "methods": "POST",
+          "function": "api_automation_optimize_campaign",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1918
+        },
+        {
+          "path": "/api/ai/generate-campaign",
+          "methods": "POST",
+          "function": "api_ai_generate_campaign",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2092
+        },
+        {
+          "path": "/api/nexora/create-campaign",
+          "methods": "POST",
+          "function": "api_nexora_create_campaign",
+          "type": "API",
+          "category": "MANUS",
+          "line": 2326
+        },
+        {
+          "path": "/api/nexora/optimize-campaign/<int:campaign_id>",
+          "methods": "POST",
+          "function": "api_nexora_optimize_campaign",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 2496
+        },
+        {
+          "path": "/api/facebook/campaigns",
+          "methods": "'GET'",
+          "function": "facebook_campaigns_api",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 2820
+        },
+        {
+          "path": "/api/google/campaigns",
+          "methods": "'GET'",
+          "function": "google_campaigns_api",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 2882
+        },
+        {
+          "path": "/api/ai/generate-complete-campaign",
+          "methods": "'POST'",
+          "function": "ai_generate_complete_campaign",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2941
+        }
+      ],
+      "priority": "ALTA"
+    },
+    {
+      "area": "Análise e Otimização",
+      "description": "Análise de performance e recomendações",
+      "routes": [
+        {
+          "path": "/api/analyze-landing-page",
+          "methods": "POST",
+          "function": "api_analyze_landing_page",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 439
+        },
+        {
+          "path": "/api/operator/optimize",
+          "methods": "POST",
+          "function": "api_operator_optimize",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 879
+        },
+        {
+          "path": "/api/ab-test/analyze/<int:test_id>",
+          "methods": "GET",
+          "function": "api_ab_test_analyze",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 980
+        },
+        {
+          "path": "/api/landing/analyze",
+          "methods": "POST",
+          "function": "api_landing_analyze",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 1182
+        },
+        {
+          "path": "/api/automation/optimize/<int:campaign_id>",
+          "methods": "POST",
+          "function": "api_automation_optimize_campaign",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1918
+        },
+        {
+          "path": "/api/automation/optimize/all",
+          "methods": "POST",
+          "function": "api_automation_optimize_all",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1928
+        },
+        {
+          "path": "/api/intelligence/product/analyze",
+          "methods": "POST",
+          "function": "api_intelligence_analyze_product",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2020
+        },
+        {
+          "path": "/api/intelligence/sales/analyze",
+          "methods": "GET",
+          "function": "api_intelligence_analyze_sales",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2031
+        },
+        {
+          "path": "/api/intelligence/competitors/analyze",
+          "methods": "POST",
+          "function": "api_intelligence_analyze_competitors",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2067
+        },
+        {
+          "path": "/api/nexora/analyze-product",
+          "methods": "POST",
+          "function": "api_nexora_analyze_product",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 2363
+        },
+        {
+          "path": "/api/nexora/optimize-campaign/<int:campaign_id>",
+          "methods": "POST",
+          "function": "api_nexora_optimize_campaign",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 2496
+        },
+        {
+          "path": "/api/ai/optimize-budget",
+          "methods": "'POST'",
+          "function": "ai_optimize_budget",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 2977
+        },
+        {
+          "path": "/api/ai/optimize-funnel",
+          "methods": "'POST'",
+          "function": "ai_optimize_funnel",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 3015
+        }
+      ],
+      "priority": "MÉDIA"
+    },
+    {
+      "area": "Persona e Segmentação",
+      "description": "Análise de público e criação de personas",
+      "routes": [
+        {
+          "path": "/api/dco/generate-segmentation",
+          "methods": "POST",
+          "function": "api_dco_generate_segmentation",
+          "type": "API",
+          "category": "CHATGPT",
+          "line": 510
+        },
+        {
+          "path": "/segmentation",
+          "methods": "GET",
+          "function": "segmentation",
+          "type": "PAGE",
+          "category": "NEUTRAL",
+          "line": 718
+        }
+      ],
+      "priority": "MÉDIA"
+    }
+  ],
+  "pontos_manus": [
+    {
+      "area": "Execução de Campanhas",
+      "description": "Aplicar campanhas no Google Ads e Facebook Ads",
+      "routes": [
+        {
+          "path": "/api/campaign/publish",
+          "methods": "POST",
+          "function": "api_campaign_publish",
+          "type": "API",
+          "category": "MANUS",
+          "line": 381
+        },
+        {
+          "path": "/api/ad/publish",
+          "methods": "POST",
+          "function": "api_ad_publish",
+          "type": "API",
+          "category": "MANUS",
+          "line": 1228
+        }
+      ],
+      "priority": "ALTA"
+    },
+    {
+      "area": "Sincronização de Dados",
+      "description": "Sincronizar dados entre Nexora e plataformas externas",
+      "routes": [
+        {
+          "path": "/api/manus/sync/campaigns",
+          "methods": "'POST'",
+          "function": "api_manus_sync_campaigns",
+          "type": "API",
+          "category": "MANUS",
+          "line": 1335
+        },
+        {
+          "path": "/api/manus/sync/ads",
+          "methods": "'POST'",
+          "function": "api_manus_sync_ads",
+          "type": "API",
+          "category": "MANUS",
+          "line": 1342
+        }
+      ],
+      "priority": "ALTA"
+    },
+    {
+      "area": "Automação",
+      "description": "Executar automações e rotinas",
+      "routes": [
+        {
+          "path": "/automation",
+          "methods": "GET",
+          "function": "automation",
+          "type": "PAGE",
+          "category": "NEUTRAL",
+          "line": 778
+        },
+        {
+          "path": "/api/automation/rules",
+          "methods": "GET",
+          "function": "api_automation_rules",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1022
+        },
+        {
+          "path": "/api/automation/execute",
+          "methods": "POST",
+          "function": "api_automation_execute",
+          "type": "API",
+          "category": "MANUS",
+          "line": 1032
+        },
+        {
+          "path": "/api/automation/history",
+          "methods": "GET",
+          "function": "api_automation_history",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1042
+        },
+        {
+          "path": "/api/automation/authorize/request",
+          "methods": "POST",
+          "function": "api_automation_authorize_request",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1865
+        },
+        {
+          "path": "/api/automation/authorize/approve/<int:auth_id>",
+          "methods": "POST",
+          "function": "api_automation_authorize_approve",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1881
+        },
+        {
+          "path": "/api/automation/authorize/reject/<int:auth_id>",
+          "methods": "POST",
+          "function": "api_automation_authorize_reject",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1894
+        },
+        {
+          "path": "/api/automation/authorize/pending",
+          "methods": "GET",
+          "function": "api_automation_authorize_pending",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1908
+        },
+        {
+          "path": "/api/automation/optimize/<int:campaign_id>",
+          "methods": "POST",
+          "function": "api_automation_optimize_campaign",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1918
+        },
+        {
+          "path": "/api/automation/optimize/all",
+          "methods": "POST",
+          "function": "api_automation_optimize_all",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1928
+        },
+        {
+          "path": "/api/automation/report",
+          "methods": "GET",
+          "function": "api_automation_report",
+          "type": "API",
+          "category": "NEUTRAL",
+          "line": 1938
+        }
+      ],
+      "priority": "MÉDIA"
+    },
+    {
+      "area": "Manipulação de Estrutura",
+      "description": "Criar/editar arquivos, APIs e banco de dados",
+      "routes": [],
+      "priority": "ALTA"
+    }
+  ]
+}

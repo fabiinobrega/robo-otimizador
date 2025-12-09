@@ -52,6 +52,17 @@ except ImportError as e:
     print(f"Warning: Campaign automation service not available: {e}")
     campaign_automation = None
 
+# Import do sistema de vendas
+try:
+    from services.sales_system import SalesSystem
+    sales_system = SalesSystem()
+except ImportError as e:
+    print(f"Warning: Sales system not available: {e}")
+    sales_system = None
+except ImportError as e:
+    print(f"Warning: Campaign automation service not available: {e}")
+    campaign_automation = None
+
 # Import do serviço de geração de campanhas com IA
 try:
     from services.ai_campaign_generator import AICampaignGenerator
@@ -1489,6 +1500,29 @@ def api_notifications_mark_read(notification_id):
 # ============================================
 
 from services.campaign_tester import CampaignTester, create_warming_tables
+import urllib.parse
+import requests
+
+# Carregar variáveis de ambiente do arquivo .env
+import os
+from pathlib import Path
+
+def load_env_file():
+    """Carregar variáveis de ambiente do arquivo .env"""
+    env_file = Path(__file__).parent / '.env'
+    if env_file.exists():
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    os.environ[key.strip()] = value.strip()
+        print("✅ Variáveis de ambiente carregadas do .env")
+    else:
+        print("⚠️ Arquivo .env não encontrado")
+
+load_env_file()
+
 
 campaign_tester = CampaignTester()
 
@@ -2516,3 +2550,919 @@ def api_nexora_optimize_campaign(campaign_id):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
+# ============================================================================
+# APIS DO SISTEMA DE VENDAS REAL
+# ============================================================================
+
+@app.route('/api/sales/leads', methods=['POST'])
+def create_lead_api():
+    """Criar novo lead no CRM"""
+    try:
+        if not sales_system:
+            return jsonify({"success": False, "error": "Sales system not available"}), 500
+        
+        data = request.get_json()
+        result = sales_system.create_lead(data)
+        
+        return jsonify({"success": True, "data": result})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/sales/leads/<int:lead_id>', methods=['GET'])
+def get_lead_api(lead_id):
+    """Obter lead por ID"""
+    try:
+        if not sales_system:
+            return jsonify({"success": False, "error": "Sales system not available"}), 500
+        
+        lead = sales_system.get_lead_by_id(lead_id)
+        
+        if not lead:
+            return jsonify({"success": False, "error": "Lead not found"}), 404
+        
+        return jsonify({"success": True, "data": lead})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/sales/funnel', methods=['GET'])
+def get_sales_funnel_api():
+    """Obter estatísticas do funil de vendas"""
+    try:
+        if not sales_system:
+            return jsonify({"success": False, "error": "Sales system not available"}), 500
+        
+        funnel = sales_system.get_sales_funnel()
+        
+        return jsonify({"success": True, "data": funnel})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/sales/dashboard', methods=['GET'])
+def get_sales_dashboard_api():
+    """Obter dados para dashboard de vendas"""
+    try:
+        if not sales_system:
+            return jsonify({"success": False, "error": "Sales system not available"}), 500
+        
+        dashboard = sales_system.get_sales_dashboard()
+        
+        return jsonify({"success": True, "data": dashboard})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/sales/predict/<int:lead_id>', methods=['GET'])
+def predict_conversion_api(lead_id):
+    """Prever probabilidade de conversão do lead"""
+    try:
+        if not sales_system:
+            return jsonify({"success": False, "error": "Sales system not available"}), 500
+        
+        prediction = sales_system.predict_conversion(lead_id)
+        
+        return jsonify({"success": True, "data": prediction})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/crm-sales')
+def crm_sales_page():
+    """Página de CRM e Sistema de Vendas"""
+    return render_template('crm_sales.html')
+
+
+# ============================================================================
+# APIS DE AUTENTICAÇÃO OAUTH2 - FACEBOOK E GOOGLE
+# ============================================================================
+
+@app.route('/api/facebook/auth', methods=['POST'])
+def facebook_auth_api():
+    """Iniciar fluxo OAuth2 do Facebook"""
+    try:
+        data = request.get_json()
+        redirect_uri = data.get('redirect_uri', request.host_url + 'api/facebook/callback')
+        
+        # Verificar se credenciais estão configuradas
+        app_id = os.getenv('FACEBOOK_APP_ID')
+        if not app_id:
+            return jsonify({
+                "success": False, 
+                "error": "Facebook App ID não configurado. Configure FACEBOOK_APP_ID nas variáveis de ambiente."
+            }), 500
+        
+        # Construir URL de autorização
+        auth_url = f"https://www.facebook.com/v18.0/dialog/oauth"
+        params = {
+            'client_id': app_id,
+            'redirect_uri': redirect_uri,
+            'scope': 'ads_management,ads_read,business_management',
+            'state': secrets.token_urlsafe(32)  # CSRF protection
+        }
+        
+        auth_url_complete = f"{auth_url}?{urllib.parse.urlencode(params)}"
+        
+        return jsonify({
+            "success": True,
+            "auth_url": auth_url_complete,
+            "state": params['state']
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/facebook/callback', methods=['GET'])
+def facebook_callback_api():
+    """Callback OAuth2 do Facebook"""
+    try:
+        code = request.args.get('code')
+        state = request.args.get('state')
+        error = request.args.get('error')
+        
+        if error:
+            return jsonify({
+                "success": False,
+                "error": f"Facebook OAuth error: {error}"
+            }), 400
+        
+        if not code:
+            return jsonify({
+                "success": False,
+                "error": "Authorization code not received"
+            }), 400
+        
+        # Trocar code por access token
+        app_id = os.getenv('FACEBOOK_APP_ID')
+        app_secret = os.getenv('FACEBOOK_APP_SECRET')
+        redirect_uri = request.host_url + 'api/facebook/callback'
+        
+        token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
+        params = {
+            'client_id': app_id,
+            'client_secret': app_secret,
+            'redirect_uri': redirect_uri,
+            'code': code
+        }
+        
+        response = requests.get(token_url, params=params)
+        token_data = response.json()
+        
+        if 'access_token' in token_data:
+            return jsonify({
+                "success": True,
+                "access_token": token_data['access_token'],
+                "token_type": token_data.get('token_type', 'bearer'),
+                "expires_in": token_data.get('expires_in')
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "error": token_data.get('error', {}).get('message', 'Unknown error')
+            }), 400
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/google/auth', methods=['POST'])
+def google_auth_api():
+    """Iniciar fluxo OAuth2 do Google Ads"""
+    try:
+        data = request.get_json()
+        redirect_uri = data.get('redirect_uri', request.host_url + 'api/google/callback')
+        
+        # Verificar se credenciais estão configuradas
+        client_id = os.getenv('GOOGLE_ADS_CLIENT_ID')
+        if not client_id:
+            return jsonify({
+                "success": False,
+                "error": "Google Client ID não configurado. Configure GOOGLE_ADS_CLIENT_ID nas variáveis de ambiente."
+            }), 500
+        
+        # Construir URL de autorização
+        auth_url = "https://accounts.google.com/o/oauth2/v2/auth"
+        params = {
+            'client_id': client_id,
+            'redirect_uri': redirect_uri,
+            'response_type': 'code',
+            'scope': 'https://www.googleapis.com/auth/adwords',
+            'access_type': 'offline',
+            'prompt': 'consent',
+            'state': secrets.token_urlsafe(32)  # CSRF protection
+        }
+        
+        auth_url_complete = f"{auth_url}?{urllib.parse.urlencode(params)}"
+        
+        return jsonify({
+            "success": True,
+            "auth_url": auth_url_complete,
+            "state": params['state']
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/google/callback', methods=['GET'])
+def google_callback_api():
+    """Callback OAuth2 do Google Ads"""
+    try:
+        code = request.args.get('code')
+        state = request.args.get('state')
+        error = request.args.get('error')
+        
+        if error:
+            return jsonify({
+                "success": False,
+                "error": f"Google OAuth error: {error}"
+            }), 400
+        
+        if not code:
+            return jsonify({
+                "success": False,
+                "error": "Authorization code not received"
+            }), 400
+        
+        # Trocar code por access token
+        client_id = os.getenv('GOOGLE_ADS_CLIENT_ID')
+        client_secret = os.getenv('GOOGLE_ADS_CLIENT_SECRET')
+        redirect_uri = request.host_url + 'api/google/callback'
+        
+        token_url = "https://oauth2.googleapis.com/token"
+        data = {
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+            'code': code,
+            'grant_type': 'authorization_code'
+        }
+        
+        response = requests.post(token_url, data=data)
+        token_data = response.json()
+        
+        if 'access_token' in token_data:
+            return jsonify({
+                "success": True,
+                "access_token": token_data['access_token'],
+                "refresh_token": token_data.get('refresh_token'),
+                "token_type": token_data.get('token_type', 'Bearer'),
+                "expires_in": token_data.get('expires_in'),
+                "scope": token_data.get('scope')
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "error": token_data.get('error_description', 'Unknown error')
+            }), 400
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ============================================================================
+# APIS DE LISTAGEM DE CAMPANHAS EXTERNAS
+# ============================================================================
+
+@app.route('/api/facebook/campaigns', methods=['GET'])
+def facebook_campaigns_api():
+    """Listar campanhas do Facebook Ads"""
+    try:
+        # Obter access token do header ou query param
+        access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not access_token:
+            access_token = request.args.get('access_token')
+        
+        if not access_token:
+            return jsonify({
+                "success": False,
+                "error": "Access token não fornecido. Use header Authorization: Bearer <token> ou query param ?access_token=<token>"
+            }), 401
+        
+        # Obter Ad Account ID
+        ad_account_id = request.args.get('ad_account_id')
+        if not ad_account_id:
+            ad_account_id = os.getenv('FACEBOOK_AD_ACCOUNT_ID')
+        
+        if not ad_account_id:
+            return jsonify({
+                "success": False,
+                "error": "Ad Account ID não fornecido. Use query param ?ad_account_id=<id> ou configure FACEBOOK_AD_ACCOUNT_ID"
+            }), 400
+        
+        # Usar o serviço completo do Facebook
+        if facebook_ads_service:
+            campaigns = facebook_ads_service.list_campaigns(ad_account_id)
+            return jsonify({
+                "success": True,
+                "ad_account_id": ad_account_id,
+                "campaigns": campaigns,
+                "count": len(campaigns)
+            })
+        else:
+            # Fallback: chamar API diretamente
+            url = f"https://graph.facebook.com/v18.0/act_{ad_account_id}/campaigns"
+            params = {
+                'access_token': access_token,
+                'fields': 'id,name,status,objective,daily_budget,lifetime_budget,created_time,updated_time'
+            }
+            
+            response = requests.get(url, params=params)
+            data = response.json()
+            
+            if 'data' in data:
+                return jsonify({
+                    "success": True,
+                    "ad_account_id": ad_account_id,
+                    "campaigns": data['data'],
+                    "count": len(data['data'])
+                })
+            else:
+                return jsonify({
+                    "success": False,
+                    "error": data.get('error', {}).get('message', 'Unknown error')
+                }), 400
+                
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/google/campaigns', methods=['GET'])
+def google_campaigns_api():
+    """Listar campanhas do Google Ads"""
+    try:
+        # Obter access token do header ou query param
+        access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not access_token:
+            access_token = request.args.get('access_token')
+        
+        if not access_token:
+            return jsonify({
+                "success": False,
+                "error": "Access token não fornecido. Use header Authorization: Bearer <token> ou query param ?access_token=<token>"
+            }), 401
+        
+        # Obter Customer ID
+        customer_id = request.args.get('customer_id')
+        if not customer_id:
+            customer_id = os.getenv('GOOGLE_ADS_CUSTOMER_ID')
+        
+        if not customer_id:
+            return jsonify({
+                "success": False,
+                "error": "Customer ID não fornecido. Use query param ?customer_id=<id> ou configure GOOGLE_ADS_CUSTOMER_ID"
+            }), 400
+        
+        # Usar o serviço completo do Google
+        if google_ads_service:
+            campaigns = google_ads_service.list_campaigns(customer_id)
+            return jsonify({
+                "success": True,
+                "customer_id": customer_id,
+                "campaigns": campaigns,
+                "count": len(campaigns)
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Google Ads service não disponível. Configure as credenciais do Google Ads."
+            }), 500
+                
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============================================================================
+# APIS DE INTEGRAÇÃO AVANÇADA MANUS + NEXORA
+# ============================================================================
+
+from services.manus_nexora_deep_integration import ManusNexoraDeepIntegration
+
+# Inicializar integração avançada
+try:
+    deep_integration = ManusNexoraDeepIntegration()
+    print("✅ Integração Avançada Manus + Nexora carregada")
+except Exception as e:
+    print(f"⚠️ Erro ao carregar Integração Avançada: {e}")
+    deep_integration = None
+
+@app.route('/api/ai/generate-complete-campaign', methods=['POST'])
+def ai_generate_complete_campaign():
+    """Gerar campanha completa com IA"""
+    try:
+        data = request.get_json()
+        
+        if not deep_integration:
+            return jsonify({
+                "success": False,
+                "error": "Integração avançada não disponível"
+            }), 500
+        
+        result = deep_integration.generate_complete_campaign(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/ai/write-ad-copy', methods=['POST'])
+def ai_write_ad_copy():
+    """Escrever copy de anúncio com IA"""
+    try:
+        data = request.get_json()
+        campaign_data = data.get('campaign_data', {})
+        platform = data.get('platform', 'google')
+        
+        if not deep_integration:
+            return jsonify({
+                "success": False,
+                "error": "Integração avançada não disponível"
+            }), 500
+        
+        result = deep_integration.write_ad_copy(campaign_data, platform)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/ai/optimize-budget', methods=['POST'])
+def ai_optimize_budget():
+    """Otimizar distribuição de orçamento com IA"""
+    try:
+        data = request.get_json()
+        campaigns = data.get('campaigns', [])
+        total_budget = data.get('total_budget', 0)
+        
+        if not deep_integration:
+            return jsonify({
+                "success": False,
+                "error": "Integração avançada não disponível"
+            }), 500
+        
+        result = deep_integration.optimize_budget_allocation(campaigns, total_budget)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/ai/create-ab-test', methods=['POST'])
+def ai_create_ab_test():
+    """Criar teste A/B automatizado"""
+    try:
+        data = request.get_json()
+        campaign_id = data.get('campaign_id')
+        variations = data.get('variations', [])
+        
+        if not deep_integration:
+            return jsonify({
+                "success": False,
+                "error": "Integração avançada não disponível"
+            }), 500
+        
+        result = deep_integration.create_ab_test(campaign_id, variations)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/ai/optimize-funnel', methods=['POST'])
+def ai_optimize_funnel():
+    """Otimizar funil de vendas com IA"""
+    try:
+        data = request.get_json()
+        
+        if not deep_integration:
+            return jsonify({
+                "success": False,
+                "error": "Integração avançada não disponível"
+            }), 500
+        
+        result = deep_integration.optimize_sales_funnel(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/ai/integrate-conversion-data', methods=['POST'])
+def ai_integrate_conversion_data():
+    """Integrar dados de conversão e retorno"""
+    try:
+        data = request.get_json()
+        campaign_id = data.get('campaign_id')
+        conversion_data = data.get('conversion_data', {})
+        
+        if not deep_integration:
+            return jsonify({
+                "success": False,
+                "error": "Integração avançada não disponível"
+            }), 500
+        
+        result = deep_integration.integrate_conversion_data(campaign_id, conversion_data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============================================================================
+# APIS DE INTEGRAÇÃO OPENAI (CHATGPT) - FUNÇÕES ESTRATÉGICAS
+# ============================================================================
+
+from services.openai_strategic_engine import OpenAIStrategicEngine
+from services.openai_campaign_creator import OpenAICampaignCreator
+from services.openai_optimization_engine import OpenAIOptimizationEngine
+
+# Inicializar motores OpenAI
+try:
+    openai_strategic = OpenAIStrategicEngine()
+    openai_campaign = OpenAICampaignCreator()
+    openai_optimization = OpenAIOptimizationEngine()
+    print("✅ Motores OpenAI (ChatGPT) carregados")
+except Exception as e:
+    print(f"⚠️ Erro ao carregar motores OpenAI: {e}")
+    openai_strategic = None
+    openai_campaign = None
+    openai_optimization = None
+
+@app.route('/api/openai/generate-campaign', methods=['POST'])
+def openai_generate_campaign():
+    """Gerar campanha completa com ChatGPT"""
+    try:
+        data = request.get_json()
+        
+        if not openai_campaign:
+            return jsonify({"success": False, "error": "OpenAI não disponível"}), 500
+        
+        platform = data.get('platform', 'google')
+        result = openai_campaign.generate_campaign_copy(data, platform)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/openai/generate-copy', methods=['POST'])
+def openai_generate_copy():
+    """Gerar copy de anúncio com ChatGPT"""
+    try:
+        data = request.get_json()
+        copy_type = data.get('type', 'headlines')
+        
+        if not openai_campaign:
+            return jsonify({"success": False, "error": "OpenAI não disponível"}), 500
+        
+        if copy_type == 'headlines':
+            result = openai_campaign.generate_headlines(data, data.get('count', 10))
+        elif copy_type == 'sales_argument':
+            result = openai_campaign.generate_sales_argument(data)
+        elif copy_type == 'storytelling':
+            result = openai_campaign.generate_storytelling(data)
+        elif copy_type == 'video_script':
+            result = openai_campaign.generate_video_script(data)
+        else:
+            result = {"success": False, "error": "Tipo de copy inválido"}
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/openai/analyze-performance', methods=['POST'])
+def openai_analyze_performance():
+    """Analisar performance com ChatGPT"""
+    try:
+        data = request.get_json()
+        analysis_type = data.get('type', 'campaign')
+        
+        if not openai_optimization:
+            return jsonify({"success": False, "error": "OpenAI não disponível"}), 500
+        
+        if analysis_type == 'campaign':
+            result = openai_optimization.evaluate_campaign(data)
+        elif analysis_type == 'trends':
+            result = openai_optimization.analyze_performance_trends(data.get('historical_data', []))
+        elif analysis_type == 'diagnosis':
+            result = openai_optimization.diagnose_low_performance(data)
+        else:
+            result = {"success": False, "error": "Tipo de análise inválido"}
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/openai/recommend-optimization', methods=['POST'])
+def openai_recommend_optimization():
+    """Recomendar otimizações com ChatGPT"""
+    try:
+        data = request.get_json()
+        recommendation_type = data.get('type', 'general')
+        
+        if not openai_optimization:
+            return jsonify({"success": False, "error": "OpenAI não disponível"}), 500
+        
+        if recommendation_type == 'general':
+            result = openai_optimization.recommend_budget_allocation(
+                data.get('campaigns', []),
+                data.get('total_budget', 0)
+            )
+        elif recommendation_type == 'scaling':
+            result = openai_optimization.suggest_scaling_strategy(data)
+        else:
+            result = {"success": False, "error": "Tipo de recomendação inválido"}
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/openai/analyze-persona', methods=['POST'])
+def openai_analyze_persona():
+    """Analisar e criar persona com ChatGPT"""
+    try:
+        data = request.get_json()
+        
+        if not openai_strategic:
+            return jsonify({"success": False, "error": "OpenAI não disponível"}), 500
+        
+        result = openai_strategic.analyze_persona(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/openai/analyze-market', methods=['POST'])
+def openai_analyze_market():
+    """Analisar mercado com ChatGPT"""
+    try:
+        data = request.get_json()
+        
+        if not openai_strategic:
+            return jsonify({"success": False, "error": "OpenAI não disponível"}), 500
+        
+        result = openai_strategic.analyze_market(
+            data.get('industry', ''),
+            data.get('location', 'Brasil')
+        )
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/openai/create-strategy', methods=['POST'])
+def openai_create_strategy():
+    """Criar estratégia de marketing com ChatGPT"""
+    try:
+        data = request.get_json()
+        strategy_type = data.get('type', 'campaign')
+        
+        if not openai_strategic:
+            return jsonify({"success": False, "error": "OpenAI não disponível"}), 500
+        
+        if strategy_type == 'campaign':
+            result = openai_strategic.create_marketing_strategy(data)
+        elif strategy_type == 'funnel':
+            result = openai_strategic.create_sales_funnel(data)
+        elif strategy_type == 'ab_test':
+            result = openai_strategic.create_ab_test_strategy(data)
+        else:
+            result = {"success": False, "error": "Tipo de estratégia inválido"}
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============================================================================
+# APIS DE INTEGRAÇÃO MANUS - FUNÇÕES DE EXECUÇÃO
+# ============================================================================
+
+from services.manus_executor_bridge import ManusExecutorBridge
+from services.nexora_automation import NexoraAutomation
+
+# Inicializar executores Manus
+try:
+    manus_executor = ManusExecutorBridge()
+    nexora_automation = NexoraAutomation()
+    print("✅ Executores Manus carregados")
+except Exception as e:
+    print(f"⚠️ Erro ao carregar executores Manus: {e}")
+    manus_executor = None
+    nexora_automation = None
+
+@app.route('/api/manus/apply-campaign', methods=['POST'])
+def manus_apply_campaign():
+    """Aplicar campanha criada pelo GPT"""
+    try:
+        data = request.get_json()
+        
+        if not manus_executor:
+            return jsonify({"success": False, "error": "Manus não disponível"}), 500
+        
+        result = manus_executor.apply_campaign(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/manus/sync-ads', methods=['POST'])
+def manus_sync_ads():
+    """Sincronizar campanha com plataformas de anúncios"""
+    try:
+        data = request.get_json()
+        campaign_id = data.get('campaign_id')
+        platform = data.get('platform', 'google')
+        
+        if not manus_executor:
+            return jsonify({"success": False, "error": "Manus não disponível"}), 500
+        
+        if platform == 'google':
+            result = manus_executor.sync_to_google_ads(campaign_id)
+        elif platform == 'facebook':
+            result = manus_executor.sync_to_facebook_ads(campaign_id)
+        else:
+            result = {"success": False, "error": "Plataforma inválida"}
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/manus/update-structure', methods=['POST'])
+def manus_update_structure():
+    """Atualizar estrutura do sistema"""
+    try:
+        data = request.get_json()
+        
+        if not manus_executor:
+            return jsonify({"success": False, "error": "Manus não disponível"}), 500
+        
+        result = manus_executor.update_system_structure(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/manus/execute-automation', methods=['POST'])
+def manus_execute_automation():
+    """Executar automação"""
+    try:
+        data = request.get_json()
+        
+        if not manus_executor:
+            return jsonify({"success": False, "error": "Manus não disponível"}), 500
+        
+        result = manus_executor.execute_automation(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/automation/create', methods=['POST'])
+def automation_create():
+    """Criar nova automação"""
+    try:
+        data = request.get_json()
+        
+        if not nexora_automation:
+            return jsonify({"success": False, "error": "Automação não disponível"}), 500
+        
+        result = nexora_automation.create_automation(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/automation/run/<int:automation_id>', methods=['POST'])
+def automation_run(automation_id):
+    """Executar automação específica"""
+    try:
+        if not nexora_automation:
+            return jsonify({"success": False, "error": "Automação não disponível"}), 500
+        
+        result = nexora_automation.run_automation(automation_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/automation/list', methods=['GET'])
+def automation_list():
+    """Listar automações"""
+    try:
+        status = request.args.get('status')
+        
+        if not nexora_automation:
+            return jsonify({"success": False, "error": "Automação não disponível"}), 500
+        
+        result = nexora_automation.get_automations(status)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============================================================================
+# APIS DE ORQUESTRAÇÃO GPT → MANUS → NEXORA
+# ============================================================================
+
+from services.orchestration_engine import AIOrchestrator
+
+# Inicializar orquestrador
+try:
+    ai_orchestrator = AIOrchestrator()
+    print("✅ Orquestrador de IA carregado")
+except Exception as e:
+    print(f"⚠️ Erro ao carregar orquestrador: {e}")
+    ai_orchestrator = None
+
+@app.route('/api/orchestration/create-deploy-campaign', methods=['POST'])
+def orchestration_create_deploy_campaign():
+    """Criar e implementar campanha completa (GPT → Manus → Nexora)"""
+    try:
+        data = request.get_json()
+        
+        if not ai_orchestrator:
+            return jsonify({"success": False, "error": "Orquestrador não disponível"}), 500
+        
+        result = ai_orchestrator.create_and_deploy_campaign(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/orchestration/optimize-scale/<int:campaign_id>', methods=['POST'])
+def orchestration_optimize_scale(campaign_id):
+    """Otimizar e escalar campanha (GPT → Manus)"""
+    try:
+        if not ai_orchestrator:
+            return jsonify({"success": False, "error": "Orquestrador não disponível"}), 500
+        
+        result = ai_orchestrator.optimize_and_scale(campaign_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/orchestration/create-funnel', methods=['POST'])
+def orchestration_create_funnel():
+    """Criar funil de vendas completo (GPT → Manus → Nexora)"""
+    try:
+        data = request.get_json()
+        
+        if not ai_orchestrator:
+            return jsonify({"success": False, "error": "Orquestrador não disponível"}), 500
+        
+        result = ai_orchestrator.create_complete_funnel(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/orchestration/status', methods=['GET'])
+def orchestration_status():
+    """Obter status da orquestração"""
+    try:
+        if not ai_orchestrator:
+            return jsonify({"success": False, "error": "Orquestrador não disponível"}), 500
+        
+        status = ai_orchestrator.get_orchestration_status()
+        return jsonify({"success": True, "status": status})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============================================================================
+# ROTA PARA DASHBOARD DE IA
+# ============================================================================
+
+@app.route('/ai-dashboard')
+def ai_dashboard():
+    """Dashboard de IA - Visualizar estratégias do GPT e execução do Manus"""
+    return render_template('ai_dashboard.html')
+
+
+# ============================================================================
+# APIS DE MONITORAMENTO DE CRÉDITOS
+# ============================================================================
+
+from services.credits_monitor_service import CreditsMonitorService
+
+# Inicializar monitor de créditos
+try:
+    credits_monitor = CreditsMonitorService()
+    print("✅ Monitor de créditos carregado")
+except Exception as e:
+    print(f"⚠️ Erro ao carregar monitor de créditos: {e}")
+    credits_monitor = None
+
+@app.route('/api/credits/status', methods=['GET'])
+def credits_status():
+    """Obter status de todos os créditos"""
+    try:
+        if not credits_monitor:
+            return jsonify({"success": False, "error": "Monitor não disponível"}), 500
+        
+        status = credits_monitor.get_all_credits_status()
+        return jsonify(status)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/credits/openai', methods=['GET'])
+def credits_openai():
+    """Obter status de créditos da OpenAI"""
+    try:
+        if not credits_monitor:
+            return jsonify({"success": False, "error": "Monitor não disponível"}), 500
+        
+        status = credits_monitor.get_openai_credits()
+        return jsonify(status)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/credits/manus', methods=['GET'])
+def credits_manus():
+    """Obter status de créditos do Manus"""
+    try:
+        if not credits_monitor:
+            return jsonify({"success": False, "error": "Monitor não disponível"}), 500
+        
+        status = credits_monitor.get_manus_credits()
+        return jsonify(status)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route('/credits-dashboard')
+def credits_dashboard_page():
+    """Painel de créditos"""
+    return render_template('credits_dashboard.html')
+

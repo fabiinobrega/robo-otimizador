@@ -1,0 +1,62 @@
+{
+  "total": 7,
+  "passed": 3,
+  "failed": 4,
+  "results": [
+    {
+      "test": "apply_campaign",
+      "status": "\u274c FAIL",
+      "details": {
+        "success": false,
+        "error": "no such table: campaigns"
+      }
+    },
+    {
+      "test": "update_system_structure",
+      "status": "\u2705 PASS",
+      "details": {
+        "success": true,
+        "updates_applied": [
+          "Configura\u00e7\u00f5es atualizadas"
+        ],
+        "count": 1,
+        "updated_at": "2025-12-03T22:24:07.269741"
+      }
+    },
+    {
+      "test": "execute_budget_optimization",
+      "status": "\u274c FAIL",
+      "details": {
+        "success": false,
+        "error": "no such table: campaigns"
+      }
+    },
+    {
+      "test": "create_automation",
+      "status": "\u2705 PASS",
+      "details": {
+        "success": true,
+        "automation_id": 1,
+        "message": "Automa\u00e7\u00e3o criada com sucesso"
+      }
+    },
+    {
+      "test": "get_automations",
+      "status": "\u2705 PASS",
+      "details": {
+        "success": true,
+        "automations": [
+          {
+            "id": 1,
+            "name": "Relat\u00f3rio Di\u00e1rio Teste",
+            "type": "daily_report",
+            "schedule": "daily",
+            "status": "active",
+            "last_run": null
+          }
+        ],
+        "count": 1
+      }
+    }
+  ]
+}

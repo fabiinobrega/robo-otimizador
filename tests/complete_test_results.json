@@ -1,0 +1,620 @@
+{
+  "summary": {
+    "passed": 133,
+    "failed": 0,
+    "total": 133,
+    "success_rate": 100.0
+  },
+  "details": {
+    "rotas": [
+      {
+        "test": "Contagem de rotas",
+        "status": "PASS",
+        "value": 186
+      }
+    ],
+    "servicos": [
+      {
+        "test": "__init__.py",
+        "status": "PASS"
+      },
+      {
+        "test": "ab_testing_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "ad_copy_generator.py",
+        "status": "PASS"
+      },
+      {
+        "test": "automation_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "budget_calculator_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "campaign_tester.py",
+        "status": "PASS"
+      },
+      {
+        "test": "competitor_intelligence.py",
+        "status": "PASS"
+      },
+      {
+        "test": "competitor_spy_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "credits_alert_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "dco_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "facebook_ads_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "funnel_builder_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "google_ads_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "image_generation_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "landing_page_analyzer.py",
+        "status": "PASS"
+      },
+      {
+        "test": "landing_page_builder_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "linkedin_ads_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "manus_adapter.py",
+        "status": "PASS"
+      },
+      {
+        "test": "manus_api_client.py",
+        "status": "PASS"
+      },
+      {
+        "test": "mc_bot_01.py",
+        "status": "PASS"
+      },
+      {
+        "test": "media_management_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "native_ai_engine.py",
+        "status": "PASS"
+      },
+      {
+        "test": "openai_adapter.py",
+        "status": "PASS"
+      },
+      {
+        "test": "openai_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "pinterest_ads_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "reporting_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "sandbox_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "segmentation_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "tiktok_ads_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "training_pipeline.py",
+        "status": "PASS"
+      },
+      {
+        "test": "velyra_prime.py",
+        "status": "PASS"
+      },
+      {
+        "test": "mcp_integration_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "remote_control_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "campaign_automation_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "ux_audit_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "product_intelligence_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "ai_campaign_generator.py",
+        "status": "PASS"
+      },
+      {
+        "test": "creative_intelligence_advanced.py",
+        "status": "PASS"
+      },
+      {
+        "test": "campaign_engine_auto.py",
+        "status": "PASS"
+      },
+      {
+        "test": "budget_guardian.py",
+        "status": "PASS"
+      },
+      {
+        "test": "commercial_intelligence.py",
+        "status": "PASS"
+      },
+      {
+        "test": "product_intelligence_advanced.py",
+        "status": "PASS"
+      },
+      {
+        "test": "analytics_intelligence.py",
+        "status": "PASS"
+      },
+      {
+        "test": "audit_ux_premium.py",
+        "status": "PASS"
+      },
+      {
+        "test": "agency_ghost_mode.py",
+        "status": "PASS"
+      },
+      {
+        "test": "monitoring_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "openai_strategic_engine.py",
+        "status": "PASS"
+      },
+      {
+        "test": "nexora_manus_integration.py",
+        "status": "PASS"
+      },
+      {
+        "test": "sales_intelligence_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "campaign_optimizer_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "conversion_guarantee_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "continuous_monitoring_service.py",
+        "status": "PASS"
+      },
+      {
+        "test": "openai_campaign_creator.py",
+        "status": "PASS"
+      },
+      {
+        "test": "intelligent_logging.py",
+        "status": "PASS"
+      },
+      {
+        "test": "sales_system.py",
+        "status": "PASS"
+      },
+      {
+        "test": "manus_nexora_deep_integration.py",
+        "status": "PASS"
+      },
+      {
+        "test": "openai_optimization_engine.py",
+        "status": "PASS"
+      },
+      {
+        "test": "manus_executor_bridge.py",
+        "status": "PASS"
+      },
+      {
+        "test": "nexora_automation.py",
+        "status": "PASS"
+      },
+      {
+        "test": "orchestration_engine.py",
+        "status": "PASS"
+      },
+      {
+        "test": "credits_monitor_service.py",
+        "status": "PASS"
+      }
+    ],
+    "funcoes": [],
+    "apis": [
+      {
+        "test": "Servi\u00e7o openai_strategic_engine",
+        "status": "PASS"
+      },
+      {
+        "test": "Servi\u00e7o openai_campaign_creator",
+        "status": "PASS"
+      },
+      {
+        "test": "Servi\u00e7o openai_optimization_engine",
+        "status": "PASS"
+      },
+      {
+        "test": "Servi\u00e7o manus_executor_bridge",
+        "status": "PASS"
+      },
+      {
+        "test": "Servi\u00e7o nexora_automation",
+        "status": "PASS"
+      },
+      {
+        "test": "Servi\u00e7o orchestration_engine",
+        "status": "PASS"
+      },
+      {
+        "test": "Servi\u00e7o credits_monitor_service",
+        "status": "PASS"
+      }
+    ],
+    "banco_dados": [
+      {
+        "test": "Conex\u00e3o com banco",
+        "status": "PASS",
+        "tables": 7
+      },
+      {
+        "test": "Tabela leads",
+        "status": "PASS",
+        "records": 1
+      },
+      {
+        "test": "Tabela sqlite_sequence",
+        "status": "PASS",
+        "records": 3
+      },
+      {
+        "test": "Tabela activities",
+        "status": "PASS",
+        "records": 0
+      },
+      {
+        "test": "Tabela opportunities",
+        "status": "PASS",
+        "records": 0
+      },
+      {
+        "test": "Tabela automated_followups",
+        "status": "PASS",
+        "records": 5
+      },
+      {
+        "test": "Tabela sqlite_stat1",
+        "status": "PASS",
+        "records": 2
+      },
+      {
+        "test": "Tabela automations",
+        "status": "PASS",
+        "records": 1
+      }
+    ],
+    "performance": [
+      {
+        "test": "Tempo de leitura de arquivo",
+        "status": "PASS",
+        "time_ms": 0.3
+      }
+    ],
+    "interface": [
+      {
+        "test": "ab_testing.html",
+        "status": "PASS",
+        "size": 29745
+      },
+      {
+        "test": "activity_logs.html",
+        "status": "PASS",
+        "size": 16866
+      },
+      {
+        "test": "ad_editor.html",
+        "status": "PASS",
+        "size": 18430
+      },
+      {
+        "test": "affiliates.html",
+        "status": "PASS",
+        "size": 994
+      },
+      {
+        "test": "all_features.html",
+        "status": "PASS",
+        "size": 10232
+      },
+      {
+        "test": "automation.html",
+        "status": "PASS",
+        "size": 31663
+      },
+      {
+        "test": "campaign_detail.html",
+        "status": "PASS",
+        "size": 4262
+      },
+      {
+        "test": "campaign_sandbox.html",
+        "status": "PASS",
+        "size": 3676
+      },
+      {
+        "test": "campaigns.html",
+        "status": "PASS",
+        "size": 20040
+      },
+      {
+        "test": "competitor_spy.html",
+        "status": "PASS",
+        "size": 21123
+      },
+      {
+        "test": "create_campaign.html",
+        "status": "PASS",
+        "size": 31164
+      },
+      {
+        "test": "create_perfect_ad_v2.html",
+        "status": "PASS",
+        "size": 56662
+      },
+      {
+        "test": "dashboard.html",
+        "status": "PASS",
+        "size": 14181
+      },
+      {
+        "test": "dco_builder.html",
+        "status": "PASS",
+        "size": 30017
+      },
+      {
+        "test": "developer_api.html",
+        "status": "PASS",
+        "size": 974
+      },
+      {
+        "test": "funnel_builder.html",
+        "status": "PASS",
+        "size": 35566
+      },
+      {
+        "test": "generate_perfect_ad.html",
+        "status": "PASS",
+        "size": 21921
+      },
+      {
+        "test": "index.html",
+        "status": "PASS",
+        "size": 14587
+      },
+      {
+        "test": "landing_page_builder.html",
+        "status": "PASS",
+        "size": 32995
+      },
+      {
+        "test": "manus_connection.html",
+        "status": "PASS",
+        "size": 16886
+      },
+      {
+        "test": "media_library.html",
+        "status": "PASS",
+        "size": 21360
+      },
+      {
+        "test": "not_found.html",
+        "status": "PASS",
+        "size": 1814
+      },
+      {
+        "test": "notifications.html",
+        "status": "PASS",
+        "size": 24806
+      },
+      {
+        "test": "operator_chat.html",
+        "status": "PASS",
+        "size": 23900
+      },
+      {
+        "test": "report_view.html",
+        "status": "PASS",
+        "size": 3775
+      },
+      {
+        "test": "reports_dashboard.html",
+        "status": "PASS",
+        "size": 22375
+      },
+      {
+        "test": "segmentation.html",
+        "status": "PASS",
+        "size": 20901
+      },
+      {
+        "test": "settings.html",
+        "status": "PASS",
+        "size": 34879
+      },
+      {
+        "test": "subscriptions.html",
+        "status": "PASS",
+        "size": 1079
+      },
+      {
+        "test": "dashboard_premium.html",
+        "status": "PASS",
+        "size": 25741
+      },
+      {
+        "test": "create_campaign_premium.html",
+        "status": "PASS",
+        "size": 26560
+      },
+      {
+        "test": "reports_premium.html",
+        "status": "PASS",
+        "size": 29262
+      },
+      {
+        "test": "ai_copywriter.html",
+        "status": "PASS",
+        "size": 9147
+      },
+      {
+        "test": "ai_image_generator.html",
+        "status": "PASS",
+        "size": 2611
+      },
+      {
+        "test": "ai_video_scripts.html",
+        "status": "PASS",
+        "size": 2600
+      },
+      {
+        "test": "ai_sentiment.html",
+        "status": "PASS",
+        "size": 2594
+      },
+      {
+        "test": "ai_performance_prediction.html",
+        "status": "PASS",
+        "size": 2615
+      },
+      {
+        "test": "platforms_facebook.html",
+        "status": "PASS",
+        "size": 2578
+      },
+      {
+        "test": "platforms_google.html",
+        "status": "PASS",
+        "size": 2554
+      },
+      {
+        "test": "platforms_tiktok.html",
+        "status": "PASS",
+        "size": 2550
+      },
+      {
+        "test": "platforms_pinterest.html",
+        "status": "PASS",
+        "size": 2574
+      },
+      {
+        "test": "platforms_linkedin.html",
+        "status": "PASS",
+        "size": 2566
+      },
+      {
+        "test": "platforms_multi.html",
+        "status": "PASS",
+        "size": 2587
+      },
+      {
+        "test": "optimization_auto.html",
+        "status": "PASS",
+        "size": 2591
+      },
+      {
+        "test": "optimization_budget.html",
+        "status": "PASS",
+        "size": 2631
+      },
+      {
+        "test": "optimization_bidding.html",
+        "status": "PASS",
+        "size": 2577
+      },
+      {
+        "test": "optimization_autopilot.html",
+        "status": "PASS",
+        "size": 2562
+      },
+      {
+        "test": "dashboard_v2.html",
+        "status": "PASS",
+        "size": 14614
+      },
+      {
+        "test": "create_campaign_v2.html",
+        "status": "PASS",
+        "size": 21388
+      },
+      {
+        "test": "reports_v2.html",
+        "status": "PASS",
+        "size": 18049
+      },
+      {
+        "test": "media_library_v2.html",
+        "status": "PASS",
+        "size": 15957
+      },
+      {
+        "test": "settings_v2.html",
+        "status": "PASS",
+        "size": 20448
+      },
+      {
+        "test": "crm_sales.html",
+        "status": "PASS",
+        "size": 16363
+      },
+      {
+        "test": "ai_dashboard.html",
+        "status": "PASS",
+        "size": 13345
+      },
+      {
+        "test": "credits_dashboard.html",
+        "status": "PASS",
+        "size": 11807
+      }
+    ]
+  }
+}

@@ -1,0 +1,472 @@
+/**
+ * NEXORA PRIME - DESIGN SYSTEM PREMIUM V3
+ * Arquitetura Visual Completa e UX Profissional
+ * 
+ * Inspirado em: HubSpot, Monday.com, Notion, Linear
+ * Foco: Conversão, Usabilidade, Performance
+ */
+
+/* ============================================================================
+   DESIGN TOKENS V3
+   ============================================================================ */
+
+:root {
+    /* Cores Primárias - Gradientes Modernos */
+    --nexora-primary: #6366f1;
+    --nexora-primary-dark: #4f46e5;
+    --nexora-primary-light: #818cf8;
+    --nexora-primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    /* Cores Secundárias */
+    --nexora-secondary: #8b5cf6;
+    --nexora-accent: #ec4899;
+    --nexora-success: #10b981;
+    --nexora-warning: #f59e0b;
+    --nexora-error: #ef4444;
+    --nexora-info: #3b82f6;
+    
+    /* Tons de Cinza - Escala Completa */
+    --nexora-gray-50: #f9fafb;
+    --nexora-gray-100: #f3f4f6;
+    --nexora-gray-200: #e5e7eb;
+    --nexora-gray-300: #d1d5db;
+    --nexora-gray-400: #9ca3af;
+    --nexora-gray-500: #6b7280;
+    --nexora-gray-600: #4b5563;
+    --nexora-gray-700: #374151;
+    --nexora-gray-800: #1f2937;
+    --nexora-gray-900: #111827;
+    
+    /* Backgrounds */
+    --nexora-bg-primary: #ffffff;
+    --nexora-bg-secondary: #f9fafb;
+    --nexora-bg-tertiary: #f3f4f6;
+    --nexora-bg-dark: #111827;
+    --nexora-bg-card: #ffffff;
+    --nexora-bg-hover: #f3f4f6;
+    
+    /* Bordas */
+    --nexora-border-color: #e5e7eb;
+    --nexora-border-radius-sm: 6px;
+    --nexora-border-radius-md: 8px;
+    --nexora-border-radius-lg: 12px;
+    --nexora-border-radius-xl: 16px;
+    --nexora-border-radius-full: 9999px;
+    
+    /* Sombras - Profundidade */
+    --nexora-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --nexora-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --nexora-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --nexora-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --nexora-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --nexora-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    
+    /* Tipografia */
+    --nexora-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --nexora-font-mono: 'Fira Code', 'Courier New', monospace;
+    
+    /* Tamanhos de Fonte */
+    --nexora-text-xs: 0.75rem;    /* 12px */
+    --nexora-text-sm: 0.875rem;   /* 14px */
+    --nexora-text-base: 1rem;     /* 16px */
+    --nexora-text-lg: 1.125rem;   /* 18px */
+    --nexora-text-xl: 1.25rem;    /* 20px */
+    --nexora-text-2xl: 1.5rem;    /* 24px */
+    --nexora-text-3xl: 1.875rem;  /* 30px */
+    --nexora-text-4xl: 2.25rem;   /* 36px */
+    
+    /* Espaçamento */
+    --nexora-space-1: 0.25rem;   /* 4px */
+    --nexora-space-2: 0.5rem;    /* 8px */
+    --nexora-space-3: 0.75rem;   /* 12px */
+    --nexora-space-4: 1rem;      /* 16px */
+    --nexora-space-5: 1.25rem;   /* 20px */
+    --nexora-space-6: 1.5rem;    /* 24px */
+    --nexora-space-8: 2rem;      /* 32px */
+    --nexora-space-10: 2.5rem;   /* 40px */
+    --nexora-space-12: 3rem;     /* 48px */
+    --nexora-space-16: 4rem;     /* 64px */
+    
+    /* Transições */
+    --nexora-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --nexora-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --nexora-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Z-index */
+    --nexora-z-dropdown: 1000;
+    --nexora-z-sticky: 1020;
+    --nexora-z-fixed: 1030;
+    --nexora-z-modal-backdrop: 1040;
+    --nexora-z-modal: 1050;
+    --nexora-z-popover: 1060;
+    --nexora-z-tooltip: 1070;
+}
+
+/* ============================================================================
+   RESET E BASE
+   ============================================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--nexora-font-sans);
+    font-size: var(--nexora-text-base);
+    line-height: 1.6;
+    color: var(--nexora-gray-900);
+    background-color: var(--nexora-bg-secondary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   LAYOUT PRINCIPAL
+   ============================================================================ */
+
+.nexora-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--nexora-space-6);
+}
+
+.nexora-grid {
+    display: grid;
+    gap: var(--nexora-space-6);
+}
+
+.nexora-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.nexora-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.nexora-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* ============================================================================
+   CARDS PREMIUM
+   ============================================================================ */
+
+.nexora-card {
+    background: var(--nexora-bg-card);
+    border-radius: var(--nexora-border-radius-lg);
+    box-shadow: var(--nexora-shadow-sm);
+    padding: var(--nexora-space-6);
+    transition: all var(--nexora-transition-base);
+    border: 1px solid var(--nexora-border-color);
+}
+
+.nexora-card:hover {
+    box-shadow: var(--nexora-shadow-md);
+    transform: translateY(-2px);
+}
+
+.nexora-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--nexora-space-4);
+    padding-bottom: var(--nexora-space-4);
+    border-bottom: 1px solid var(--nexora-border-color);
+}
+
+.nexora-card-title {
+    font-size: var(--nexora-text-xl);
+    font-weight: 600;
+    color: var(--nexora-gray-900);
+}
+
+.nexora-card-body {
+    color: var(--nexora-gray-700);
+}
+
+.nexora-card-footer {
+    margin-top: var(--nexora-space-4);
+    padding-top: var(--nexora-space-4);
+    border-top: 1px solid var(--nexora-border-color);
+}
+
+/* ============================================================================
+   BOTÕES PREMIUM
+   ============================================================================ */
+
+.nexora-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nexora-space-2);
+    padding: var(--nexora-space-3) var(--nexora-space-6);
+    font-size: var(--nexora-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    border-radius: var(--nexora-border-radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all var(--nexora-transition-base);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.nexora-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--nexora-shadow-md);
+}
+
+.nexora-btn:active {
+    transform: translateY(0);
+}
+
+.nexora-btn-primary {
+    background: var(--nexora-primary-gradient);
+    color: white;
+}
+
+.nexora-btn-secondary {
+    background: var(--nexora-gray-100);
+    color: var(--nexora-gray-900);
+}
+
+.nexora-btn-success {
+    background: var(--nexora-success);
+    color: white;
+}
+
+.nexora-btn-danger {
+    background: var(--nexora-error);
+    color: white;
+}
+
+.nexora-btn-lg {
+    padding: var(--nexora-space-4) var(--nexora-space-8);
+    font-size: var(--nexora-text-base);
+}
+
+.nexora-btn-sm {
+    padding: var(--nexora-space-2) var(--nexora-space-4);
+    font-size: var(--nexora-text-xs);
+}
+
+/* ============================================================================
+   FORMULÁRIOS PREMIUM
+   ============================================================================ */
+
+.nexora-form-group {
+    margin-bottom: var(--nexora-space-5);
+}
+
+.nexora-label {
+    display: block;
+    font-size: var(--nexora-text-sm);
+    font-weight: 500;
+    color: var(--nexora-gray-700);
+    margin-bottom: var(--nexora-space-2);
+}
+
+.nexora-input {
+    width: 100%;
+    padding: var(--nexora-space-3) var(--nexora-space-4);
+    font-size: var(--nexora-text-sm);
+    line-height: 1.5;
+    color: var(--nexora-gray-900);
+    background-color: var(--nexora-bg-primary);
+    border: 1px solid var(--nexora-border-color);
+    border-radius: var(--nexora-border-radius-md);
+    transition: all var(--nexora-transition-base);
+}
+
+.nexora-input:focus {
+    outline: none;
+    border-color: var(--nexora-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.nexora-select {
+    width: 100%;
+    padding: var(--nexora-space-3) var(--nexora-space-4);
+    font-size: var(--nexora-text-sm);
+    color: var(--nexora-gray-900);
+    background-color: var(--nexora-bg-primary);
+    border: 1px solid var(--nexora-border-color);
+    border-radius: var(--nexora-border-radius-md);
+    cursor: pointer;
+    transition: all var(--nexora-transition-base);
+}
+
+.nexora-textarea {
+    width: 100%;
+    padding: var(--nexora-space-3) var(--nexora-space-4);
+    font-size: var(--nexora-text-sm);
+    line-height: 1.5;
+    color: var(--nexora-gray-900);
+    background-color: var(--nexora-bg-primary);
+    border: 1px solid var(--nexora-border-color);
+    border-radius: var(--nexora-border-radius-md);
+    resize: vertical;
+    min-height: 100px;
+    transition: all var(--nexora-transition-base);
+}
+
+/* ============================================================================
+   BADGES E TAGS
+   ============================================================================ */
+
+.nexora-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--nexora-space-1) var(--nexora-space-3);
+    font-size: var(--nexora-text-xs);
+    font-weight: 500;
+    line-height: 1;
+    border-radius: var(--nexora-border-radius-full);
+}
+
+.nexora-badge-primary {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--nexora-primary);
+}
+
+.nexora-badge-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--nexora-success);
+}
+
+.nexora-badge-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--nexora-warning);
+}
+
+.nexora-badge-error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--nexora-error);
+}
+
+/* ============================================================================
+   DASHBOARD PREMIUM
+   ============================================================================ */
+
+.nexora-dashboard {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+    background: var(--nexora-bg-secondary);
+}
+
+.nexora-sidebar {
+    background: var(--nexora-bg-dark);
+    color: white;
+    padding: var(--nexora-space-6);
+    box-shadow: var(--nexora-shadow-lg);
+}
+
+.nexora-main-content {
+    padding: var(--nexora-space-8);
+}
+
+.nexora-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--nexora-space-6);
+    margin-bottom: var(--nexora-space-8);
+}
+
+.nexora-metric-card {
+    background: white;
+    padding: var(--nexora-space-6);
+    border-radius: var(--nexora-border-radius-lg);
+    box-shadow: var(--nexora-shadow-sm);
+}
+
+.nexora-metric-value {
+    font-size: var(--nexora-text-3xl);
+    font-weight: 700;
+    color: var(--nexora-gray-900);
+    margin-bottom: var(--nexora-space-2);
+}
+
+.nexora-metric-label {
+    font-size: var(--nexora-text-sm);
+    color: var(--nexora-gray-600);
+}
+
+/* ============================================================================
+   ANIMAÇÕES
+   ============================================================================ */
+
+@keyframes nexora-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nexora-fade-in {
+    animation: nexora-fade-in var(--nexora-transition-slow) ease-out;
+}
+
+@keyframes nexora-slide-in {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.nexora-slide-in {
+    animation: nexora-slide-in var(--nexora-transition-slow) ease-out;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+    .nexora-dashboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .nexora-sidebar {
+        display: none;
+    }
+    
+    .nexora-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .nexora-grid-2,
+    .nexora-grid-3,
+    .nexora-grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .nexora-main-content {
+        padding: var(--nexora-space-4);
+    }
+}
+
+/* ============================================================================
+   MODO ESCURO
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --nexora-bg-primary: #111827;
+        --nexora-bg-secondary: #1f2937;
+        --nexora-bg-card: #1f2937;
+        --nexora-border-color: #374151;
+        --nexora-gray-900: #f9fafb;
+        --nexora-gray-700: #d1d5db;
+    }
+}

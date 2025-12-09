@@ -1,0 +1,395 @@
+{% extends "index.html" %}
+
+{% block title %}CRM & Vendas - NEXORA PRIME{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nexora_premium_v2.css') }}">
+<style>
+    .sales-header {
+        background: linear-gradient(135deg, var(--nexora-primary-600) 0%, var(--nexora-secondary-600) 100%);
+        padding: 2rem;
+        border-radius: 1rem;
+        color: white;
+        margin-bottom: 2rem;
+    }
+    
+    .lead-card {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: var(--nexora-shadow-sm);
+        border-left: 4px solid var(--nexora-primary-500);
+        transition: all 0.3s ease;
+    }
+    
+    .lead-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--nexora-shadow-md);
+    }
+    
+    .lead-score {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--nexora-primary-600);
+    }
+    
+    .funnel-stage {
+        background: var(--nexora-gray-50);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .funnel-stage:hover {
+        background: var(--nexora-primary-50);
+        transform: scale(1.05);
+    }
+    
+    .probability-bar {
+        height: 8px;
+        background: var(--nexora-gray-200);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .probability-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--nexora-success-500), var(--nexora-success-600));
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="sales-header nexora-animate-slideUp">
+        <h1 class="mb-2">CRM & Sistema de Vendas</h1>
+        <p class="mb-0">Gerencie leads, oportunidades e preveja conversões com IA</p>
+    </div>
+    
+    <!-- Dashboard de Vendas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="nexora-card nexora-animate-fadeIn" style="animation-delay: 0.1s">
+                <div class="nexora-card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Total de Leads</p>
+                            <h3 class="mb-0" id="total-leads">0</h3>
+                        </div>
+                        <div class="icon-circle bg-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="nexora-card nexora-animate-fadeIn" style="animation-delay: 0.2s">
+                <div class="nexora-card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Oportunidades Abertas</p>
+                            <h3 class="mb-0" id="open-opps">0</h3>
+                        </div>
+                        <div class="icon-circle bg-success">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="nexora-card nexora-animate-fadeIn" style="animation-delay: 0.3s">
+                <div class="nexora-card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Taxa de Conversão</p>
+                            <h3 class="mb-0" id="conversion-rate">0%</h3>
+                        </div>
+                        <div class="icon-circle bg-warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="nexora-card nexora-animate-fadeIn" style="animation-delay: 0.4s">
+                <div class="nexora-card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Ticket Médio</p>
+                            <h3 class="mb-0" id="avg-ticket">R$ 0</h3>
+                        </div>
+                        <div class="icon-circle bg-info">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Funil de Vendas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h3 class="nexora-card-title">Funil de Vendas</h3>
+                </div>
+                <div class="nexora-card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="funnel-stage">
+                                <i class="fas fa-eye fa-2x text-primary mb-2"></i>
+                                <h4 id="stage-awareness">0</h4>
+                                <p class="mb-0 text-muted">Awareness</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="funnel-stage">
+                                <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                                <h4 id="stage-interest">0</h4>
+                                <p class="mb-0 text-muted">Interest</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="funnel-stage">
+                                <i class="fas fa-search fa-2x text-info mb-2"></i>
+                                <h4 id="stage-consideration">0</h4>
+                                <p class="mb-0 text-muted">Consideration</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="funnel-stage">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <h4 id="stage-decision">0</h4>
+                                <p class="mb-0 text-muted">Decision</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="funnel-stage">
+                                <i class="fas fa-shopping-cart fa-2x text-danger mb-2"></i>
+                                <h4 id="stage-purchase">0</h4>
+                                <p class="mb-0 text-muted">Purchase</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Criar Novo Lead -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h3 class="nexora-card-title">Criar Novo Lead</h3>
+                </div>
+                <div class="nexora-card-body">
+                    <form id="create-lead-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Nome *</label>
+                                <input type="text" class="nexora-form-input" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Email *</label>
+                                <input type="email" class="nexora-form-input" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Telefone</label>
+                                <input type="text" class="nexora-form-input" name="phone">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Empresa</label>
+                                <input type="text" class="nexora-form-input" name="company">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Cargo</label>
+                                <input type="text" class="nexora-form-input" name="position">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Indústria</label>
+                                <input type="text" class="nexora-form-input" name="industry">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Orçamento (R$)</label>
+                                <input type="number" class="nexora-form-input" name="budget">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="nexora-form-label">Fonte</label>
+                                <select class="nexora-form-input" name="source">
+                                    <option value="website">Website</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                    <option value="google ads">Google Ads</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="indicação">Indicação</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="nexora-btn nexora-btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Criar Lead
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Previsão de Conversão -->
+        <div class="col-md-6">
+            <div class="nexora-card">
+                <div class="nexora-card-header">
+                    <h3 class="nexora-card-title">Previsão de Conversão com IA</h3>
+                </div>
+                <div class="nexora-card-body">
+                    <div id="prediction-result" class="text-center" style="display: none;">
+                        <div class="lead-score mb-3" id="prediction-score">0%</div>
+                        <p class="text-muted mb-3">Probabilidade de Conversão</p>
+                        
+                        <div class="probability-bar mb-3">
+                            <div class="probability-fill" id="probability-fill" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="nexora-alert nexora-alert-info" id="prediction-recommendation">
+                            <!-- Recomendação aqui -->
+                        </div>
+                        
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-clock me-2"></i>
+                            Tempo estimado: <strong id="days-to-convert">0 dias</strong>
+                        </p>
+                    </div>
+                    
+                    <div id="prediction-placeholder" class="text-center text-muted">
+                        <i class="fas fa-robot fa-3x mb-3"></i>
+                        <p>Crie um lead para ver a previsão de conversão</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Carregar dashboard ao carregar página
+document.addEventListener('DOMContentLoaded', function() {
+    loadSalesDashboard();
+    loadSalesFunnel();
+});
+
+// Carregar dashboard de vendas
+function loadSalesDashboard() {
+    fetch('/api/sales/dashboard')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const dashboard = data.data;
+                document.getElementById('total-leads').textContent = dashboard.total_leads;
+                document.getElementById('open-opps').textContent = dashboard.open_opportunities.count;
+                document.getElementById('conversion-rate').textContent = dashboard.metrics.conversion_rate + '%';
+                document.getElementById('avg-ticket').textContent = 'R$ ' + dashboard.metrics.average_ticket.toFixed(2);
+            }
+        })
+        .catch(error => console.error('Erro ao carregar dashboard:', error));
+}
+
+// Carregar funil de vendas
+function loadSalesFunnel() {
+    fetch('/api/sales/funnel')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const funnel = data.data;
+                document.getElementById('stage-awareness').textContent = funnel.stages.awareness;
+                document.getElementById('stage-interest').textContent = funnel.stages.interest;
+                document.getElementById('stage-consideration').textContent = funnel.stages.consideration;
+                document.getElementById('stage-decision').textContent = funnel.stages.decision;
+                document.getElementById('stage-purchase').textContent = funnel.stages.purchase;
+            }
+        })
+        .catch(error => console.error('Erro ao carregar funil:', error));
+}
+
+// Criar novo lead
+document.getElementById('create-lead-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const leadData = {};
+    formData.forEach((value, key) => {
+        leadData[key] = value;
+    });
+    
+    // Converter budget para número
+    if (leadData.budget) {
+        leadData.budget = parseFloat(leadData.budget);
+    }
+    
+    fetch('/api/sales/leads', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(leadData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.data.message);
+            e.target.reset();
+            loadSalesDashboard();
+            loadSalesFunnel();
+            
+            // Carregar previsão
+            loadPrediction(data.data.id);
+        } else {
+            alert('Erro: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao criar lead');
+    });
+});
+
+// Carregar previsão de conversão
+function loadPrediction(leadId) {
+    fetch(`/api/sales/predict/${leadId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const prediction = data.data;
+                
+                // Mostrar resultado
+                document.getElementById('prediction-placeholder').style.display = 'none';
+                document.getElementById('prediction-result').style.display = 'block';
+                
+                // Atualizar valores
+                document.getElementById('prediction-score').textContent = prediction.probability + '%';
+                document.getElementById('probability-fill').style.width = prediction.probability + '%';
+                document.getElementById('days-to-convert').textContent = prediction.days_to_convert + ' dias';
+                document.getElementById('prediction-recommendation').textContent = prediction.recommendation;
+            }
+        })
+        .catch(error => console.error('Erro ao carregar previsão:', error));
+}
+</script>
+{% endblock %}

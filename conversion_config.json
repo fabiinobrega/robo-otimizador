@@ -1,0 +1,35 @@
+{
+  "cta_buttons": {
+    "primary_color": "#6366f1",
+    "hover_effect": "scale(1.05)",
+    "position": "above_fold",
+    "text": "Começar Agora - Grátis"
+  },
+  "social_proof": {
+    "testimonials": true,
+    "case_studies": true,
+    "client_logos": true,
+    "stats": [
+      "1000+ clientes",
+      "98% satisfação",
+      "R$ 10M+ gerenciados"
+    ]
+  },
+  "urgency_triggers": {
+    "limited_time_offer": true,
+    "countdown_timer": true,
+    "stock_indicator": true
+  },
+  "trust_signals": {
+    "ssl_badge": true,
+    "money_back_guarantee": true,
+    "free_trial": true,
+    "no_credit_card": true
+  },
+  "form_optimization": {
+    "fields_count": "minimal",
+    "autofill": true,
+    "progress_indicator": true,
+    "inline_validation": true
+  }
+}
