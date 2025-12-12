@@ -1,20 +1,21 @@
 {% extends "index.html" %}
 
-{% block title %}Editor de Anúncio - Manus Marketing{% endblock %}
+{% block title %}Editor de Anúncio - Manus Marketing</main>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="fas fa-edit"></i> Editor de Anúncio</h1>
+<main role="main" class="container-fluid" aria-label="Editor de Anúncio">
+    <header class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="fas fa-edit" aria-hidden="true"></i> Editor de Anúncio</h1>
         <div>
-            <button class="btn btn-outline-secondary" onclick="history.back()">
-                <i class="fas fa-arrow-left"></i> Voltar
+            <button class="btn btn-outline-secondary" onclick="history.back()" aria-label="Voltar para página anterior">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
             </button>
-            <button class="btn btn-success" onclick="saveAndPublish()">
-                <i class="fas fa-check"></i> Salvar e Publicar
+            <button class="btn btn-success" onclick="saveAndPublish()" aria-label="Salvar e publicar anúncio">
+                <i class="fas fa-check" aria-hidden="true"></i> Salvar e Publicar
             </button>
         </div>
-    </div>
+    </header>
 
     <div class="row">
         <!-- Coluna Esquerda: Formulário de Edição -->
@@ -26,23 +27,27 @@
                 <div class="card-body">
                     <!-- Headlines -->
                     <div class="mb-4">
-                        <label class="form-label"><strong>Headline (Título Principal)</strong></label>
+                        <label for="headline" class="form-label"><strong>Headline (Título Principal)</strong></label>
                         <input type="text" class="form-control form-control-lg" id="headline" 
-                               placeholder="Digite o título do anúncio..." maxlength="40">
+                               placeholder="Digite o título do anúncio..." maxlength="40" 
+                               aria-describedby="headlineHelp headlineCount" 
+                               aria-required="true">
                         <div class="d-flex justify-content-between mt-1">
-                            <small class="text-muted">Máximo 40 caracteres</small>
+                            <small id="headlineHelp" class="text-muted">Máximo 40 caracteres</small>
                             <small id="headlineCount" class="text-muted">0/40</small>
                         </div>
                     </div>
 
                     <!-- Description -->
                     <div class="mb-4">
-                        <label class="form-label"><strong>Description (Descrição)</strong></label>
+                        <label for="description" class="form-label"><strong>Description (Descrição)</strong></label>
                         <textarea class="form-control" id="description" rows="3" 
-                                  placeholder="Digite a descrição do anúncio..." maxlength="125"></textarea>
+                                  placeholder="Digite a descrição do anúncio..." maxlength="125" 
+                                  aria-describedby="descriptionHelp descriptionCount" 
+                                  aria-required="true"></textarea>
                         <div class="d-flex justify-content-between mt-1">
-                            <small class="text-muted">Máximo 125 caracteres</small>
-                            <small id="descriptionCount" class="text-muted">0/125</small>
+                            <small id="descriptionHelp" class="text-muted">Máximo 125 caracteres</small>
+                            <small id="descriptionCount" class="text-muted" aria-live="polite">0/125</small>
                         </div>
                     </div>
 
@@ -365,4 +370,5 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+</main>
 {% endblock %}
