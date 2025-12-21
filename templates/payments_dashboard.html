@@ -1,0 +1,301 @@
+{% extends "index.html" %}
+
+{% block title %}Pagamentos & Créditos - Nexora Prime{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">💳 Pagamentos & Créditos</h1>
+        </div>
+    </div>
+
+    <!-- Saldos Atuais -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">Saldos Atuais</h3>
+        </div>
+        
+        <!-- Créditos Manus -->
+        <div class="col-md-3 mb-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h5 class="card-title">🤖 Créditos Manus</h5>
+                    <h2 class="text-primary" id="balance-manus">R$ 0,00</h2>
+                    <p class="text-muted mb-0">Disponível</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Créditos OpenAI -->
+        <div class="col-md-3 mb-3">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h5 class="card-title">🧠 Créditos OpenAI</h5>
+                    <h2 class="text-success" id="balance-openai">$ 0.00</h2>
+                    <p class="text-muted mb-0">Disponível</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Facebook Ads -->
+        <div class="col-md-3 mb-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h5 class="card-title">📘 Facebook Ads</h5>
+                    <h2 class="text-info" id="balance-facebook">R$ 0,00</h2>
+                    <p class="text-muted mb-0">Saldo</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Google Ads -->
+        <div class="col-md-3 mb-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <h5 class="card-title">🔍 Google Ads</h5>
+                    <h2 class="text-warning" id="balance-google">R$ 0,00</h2>
+                    <p class="text-muted mb-0">Saldo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adicionar Créditos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">Adicionar Créditos</h3>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">💰 Adicionar Créditos</h5>
+                    
+                    <form id="add-credits-form">
+                        <div class="mb-3">
+                            <label for="credit-type" class="form-label">Tipo de Crédito</label>
+                            <select class="form-select" id="credit-type" required>
+                                <option value="">Selecione...</option>
+                                <option value="MANUS">🤖 Créditos Manus</option>
+                                <option value="OPENAI">🧠 Créditos OpenAI</option>
+                                <option value="FACEBOOK_ADS">📘 Facebook Ads</option>
+                                <option value="GOOGLE_ADS">🔍 Google Ads</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Valor</label>
+                            <input type="number" class="form-control" id="amount" 
+                                   placeholder="Ex: 100.00" step="0.01" min="10" required>
+                            <small class="text-muted">Valor mínimo: R$ 10,00</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            Continuar para Pagamento
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">ℹ️ Informações</h5>
+                    <ul class="mb-0">
+                        <li>Pagamento seguro via Stripe</li>
+                        <li>Créditos adicionados instantaneamente</li>
+                        <li>Suporte a cartão de crédito e débito</li>
+                        <li>Histórico completo de transações</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico de Pagamentos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">Histórico de Pagamentos</h3>
+        </div>
+        
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="payments-history">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>ID Transação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        Nenhum pagamento realizado ainda
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Pagamento -->
+<div class="modal fade" id="payment-confirmation-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">⚠️ Confirmar Pagamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="payment-summary"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="confirm-payment-btn">
+                    CONFIRMAR PAGAMENTO
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Carregar saldos ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    loadBalances();
+    setInterval(loadBalances, 30000); // Atualizar a cada 30 segundos
+});
+
+// Carregar saldos
+async function loadBalances() {
+    try {
+        const response = await fetch('/api/wallet/balances?user_id=default_user');
+        const data = await response.json();
+        
+        if (data.balances) {
+            // Atualizar Manus
+            document.getElementById('balance-manus').textContent = 
+                `R$ ${data.balances.MANUS.balance.toFixed(2).replace('.', ',')}`;
+            
+            // Atualizar OpenAI
+            document.getElementById('balance-openai').textContent = 
+                `$ ${data.balances.OPENAI.balance.toFixed(2)}`;
+            
+            // Atualizar Facebook
+            document.getElementById('balance-facebook').textContent = 
+                `R$ ${data.balances.FACEBOOK_ADS.balance.toFixed(2).replace('.', ',')}`;
+            
+            // Atualizar Google
+            document.getElementById('balance-google').textContent = 
+                `R$ ${data.balances.GOOGLE_ADS.balance.toFixed(2).replace('.', ',')}`;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar saldos:', error);
+    }
+}
+
+// Formulário de adicionar créditos
+document.getElementById('add-credits-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const creditType = document.getElementById('credit-type').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    
+    if (!creditType || !amount || amount < 10) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+    }
+    
+    // Determinar moeda
+    const currency = creditType === 'OPENAI' ? 'USD' : 'BRL';
+    const currencySymbol = currency === 'USD' ? '$' : 'R$';
+    
+    // Nomes amigáveis
+    const creditNames = {
+        'MANUS': 'Créditos Manus',
+        'OPENAI': 'Créditos OpenAI',
+        'FACEBOOK_ADS': 'Saldo Facebook Ads',
+        'GOOGLE_ADS': 'Saldo Google Ads'
+    };
+    
+    // Mostrar resumo no modal
+    document.getElementById('payment-summary').innerHTML = `
+        <div class="alert alert-warning">
+            <strong>⚠️ Atenção:</strong> Esta ação irá cobrar o valor no seu cartão de crédito.
+        </div>
+        <p><strong>Tipo:</strong> ${creditNames[creditType]}</p>
+        <p><strong>Valor:</strong> ${currencySymbol} ${amount.toFixed(2)}</p>
+        <p class="mb-0"><strong>Total a pagar:</strong> ${currencySymbol} ${amount.toFixed(2)}</p>
+    `;
+    
+    // Armazenar dados para confirmação
+    window.pendingPayment = {
+        credit_type: creditType,
+        amount: amount,
+        currency: currency
+    };
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('payment-confirmation-modal'));
+    modal.show();
+});
+
+// Confirmar pagamento
+document.getElementById('confirm-payment-btn').addEventListener('click', async function() {
+    if (!window.pendingPayment) return;
+    
+    const btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Processando...';
+    
+    try {
+        // Criar Payment Intent
+        const response = await fetch('/api/payments/create-intent', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                user_id: 'default_user',
+                credit_type: window.pendingPayment.credit_type,
+                amount: window.pendingPayment.amount,
+                currency: window.pendingPayment.currency
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Pagamento iniciado com sucesso!\n\nID: ' + data.payment_intent_id);
+            
+            // Fechar modal
+            bootstrap.Modal.getInstance(document.getElementById('payment-confirmation-modal')).hide();
+            
+            // Recarregar saldos
+            loadBalances();
+            
+            // Limpar formulário
+            document.getElementById('add-credits-form').reset();
+        } else {
+            alert('❌ Erro ao processar pagamento:\n' + data.error);
+        }
+    } catch (error) {
+        alert('❌ Erro ao processar pagamento:\n' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'CONFIRMAR PAGAMENTO';
+    }
+});
+</script>
+{% endblock %}

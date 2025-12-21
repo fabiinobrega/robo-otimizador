@@ -3466,3 +3466,441 @@ def credits_dashboard_page():
     """Painel de créditos"""
     return render_template('credits_dashboard.html')
 
+
+# ============================================================================
+# API DE VALIDAÇÃO PRÉ-EXECUÇÃO
+# ============================================================================
+
+from services.pre_execution_validator import PreExecutionValidator
+
+@app.route('/api/validate-pre-execution', methods=['POST'])
+def validate_pre_execution():
+    """Valida todas as condições antes de executar Manus"""
+    try:
+        data = request.get_json()
+        
+        validator = PreExecutionValidator()
+        result = validator.validate_all(data)
+        
+        if result['valid']:
+            return jsonify({
+                'status': 'ok',
+                'message': 'Todas as validações passaram',
+                'can_proceed': True
+            }), 200
+        else:
+            return jsonify({
+                'status': 'validation_failed',
+                'message': 'Algumas validações falharam',
+                'can_proceed': False,
+                'errors': result['errors'],
+                'warnings': result['warnings']
+            }), 400
+            
+    except Exception as e:
+        logger.error(f"Erro na validação pré-execução: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'can_proceed': False
+        }), 500
+
+
+# ============================================================================
+# API DE ESPIONAGEM DE CONCORRÊNCIA
+# ============================================================================
+
+from services.competitor_spy_engine import CompetitorSpyEngine
+
+@app.route('/api/spy/analyze-competitors', methods=['POST'])
+def spy_analyze_competitors():
+    """Analisa concorrentes ANTES de gerar anúncio"""
+    try:
+        data = request.get_json()
+        
+        product = data.get('product')
+        niche = data.get('niche')
+        platform = data.get('platform', 'facebook')
+        
+        if not product or not niche:
+            return jsonify({
+                'status': 'error',
+                'message': 'Produto e nicho são obrigatórios'
+            }), 400
+        
+        spy_engine = CompetitorSpyEngine()
+        report = spy_engine.analyze_competitors(product, niche, platform)
+        
+        return jsonify({
+            'status': 'ok',
+            'message': 'Análise de concorrência concluída',
+            'report': report,
+            'summary': spy_engine.get_spy_summary(report)
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Erro na espionagem: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+# ============================================
+# PAYMENT APIS - STRIPE INTEGRATION
+# ============================================
+from services.payments.stripe_payment_service import StripePaymentService
+from services.payments.credit_wallet_service import CreditWalletService
+
+stripe_service = StripePaymentService()
+wallet_service = CreditWalletService()
+
+@app.route('/api/payments/create-intent', methods=['POST'])
+def create_payment_intent():
+    """Cria Payment Intent no Stripe"""
+    try:
+        data = request.json
+        user_id = data.get('user_id', 'default_user')
+        credit_type = data.get('credit_type')
+        amount = float(data.get('amount'))
+        currency = data.get('currency', 'BRL')
+        
+        # Validações
+        if not credit_type or not amount:
+            return jsonify({'error': 'credit_type e amount são obrigatórios'}), 400
+        
+        if amount <= 0:
+            return jsonify({'error': 'Valor deve ser positivo'}), 400
+        
+        # Criar Payment Intent
+        result = stripe_service.create_payment_intent(
+            amount=amount,
+            currency=currency,
+            credit_type=credit_type,
+            user_id=user_id
+        )
+        
+        if result['success']:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/payments/confirm', methods=['POST'])
+def confirm_payment():
+    """Confirma pagamento no Stripe"""
+    try:
+        data = request.json
+        payment_intent_id = data.get('payment_intent_id')
+        payment_method_id = data.get('payment_method_id')
+        
+        if not payment_intent_id:
+            return jsonify({'error': 'payment_intent_id é obrigatório'}), 400
+        
+        # Confirmar pagamento
+        result = stripe_service.confirm_payment_intent(
+            payment_intent_id=payment_intent_id,
+            payment_method_id=payment_method_id
+        )
+        
+        return jsonify(result), 200 if result['success'] else 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/payments/webhook', methods=['POST'])
+def stripe_webhook():
+    """Webhook do Stripe para eventos de pagamento"""
+    from services.payments.stripe_webhook_handler import StripeWebhookHandler
+    
+    webhook_handler = StripeWebhookHandler()
+    
+    try:
+        payload = request.data.decode('utf-8')
+        signature = request.headers.get('Stripe-Signature')
+        
+        # Verificar assinatura
+        result = stripe_service.verify_webhook_signature(payload, signature)
+        
+        if not result['success']:
+            return jsonify({'error': 'Assinatura inválida'}), 400
+        
+        event = result['event']
+        
+        # Processar evento com o handler
+        process_result = webhook_handler.handle_event(event)
+        
+        if process_result['success']:
+            return jsonify({'received': True, 'processed': True}), 200
+        else:
+            return jsonify({
+                'received': True, 
+                'processed': False,
+                'error': process_result.get('error')
+            }), 200
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/wallet/balances', methods=['GET'])
+def get_wallet_balances():
+    """Obtém saldos da carteira"""
+    try:
+        user_id = request.args.get('user_id', 'default_user')
+        balances = wallet_service.get_balances(user_id)
+        return jsonify(balances), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ============================================
+# MANUS PAYMENT COMMANDS API
+# ============================================
+from services.payments.manus_payment_commands import ManusPaymentCommands
+
+manus_payment_commands = ManusPaymentCommands()
+
+@app.route('/api/manus/interpret-payment-command', methods=['POST'])
+def interpret_payment_command():
+    """
+    Interpreta comando de pagamento via Manus
+    NUNCA executa pagamento - SEMPRE retorna resumo para confirmação
+    """
+    try:
+        data = request.json
+        command_text = data.get('command')
+        user_id = data.get('user_id', 'default_user')
+        
+        if not command_text:
+            return jsonify({'error': 'Comando é obrigatório'}), 400
+        
+        # Interpretar comando (NÃO executa pagamento)
+        result = manus_payment_commands.interpret_command(command_text, user_id)
+        
+        if result['success']:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/payments-dashboard')
+def payments_dashboard():
+    """Painel de Pagamentos & Créditos"""
+    return render_template('payments_dashboard.html')
+
+@app.route('/api/payments/webhook/events', methods=['GET'])
+def get_webhook_events():
+    """Obtém eventos recentes do webhook"""
+    from services.payments.stripe_webhook_handler import StripeWebhookHandler
+    
+    try:
+        webhook_handler = StripeWebhookHandler()
+        limit = int(request.args.get('limit', 50))
+        events = webhook_handler.get_recent_events(limit)
+        
+        return jsonify({
+            'success': True,
+            'events': events,
+            'count': len(events)
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ============================================
+# FACEBOOK ADS & GOOGLE ADS FUNDING APIs
+# ============================================
+from services.payments.facebook_ads_funding_service import FacebookAdsFundingService
+from services.payments.google_ads_funding_service import GoogleAdsFundingService
+
+facebook_funding_service = FacebookAdsFundingService()
+google_funding_service = GoogleAdsFundingService()
+
+@app.route('/api/funding/facebook-ads', methods=['POST'])
+def fund_facebook_ads():
+    """Adiciona saldo na conta Facebook Ads"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id', 'default_user')
+        ad_account_id = data.get('ad_account_id')
+        amount = float(data.get('amount'))
+        transaction_id = data.get('transaction_id')
+        
+        if not ad_account_id or not amount:
+            return jsonify({
+                'success': False,
+                'error': 'ad_account_id e amount são obrigatórios'
+            }), 400
+        
+        result = facebook_funding_service.fund_account(
+            user_id=user_id,
+            ad_account_id=ad_account_id,
+            amount=amount,
+            transaction_id=transaction_id
+        )
+        
+        return jsonify(result), 200 if result['success'] else 400
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/funding/google-ads', methods=['POST'])
+def fund_google_ads():
+    """Adiciona saldo na conta Google Ads"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id', 'default_user')
+        customer_id = data.get('customer_id')
+        amount = float(data.get('amount'))
+        transaction_id = data.get('transaction_id')
+        
+        if not customer_id or not amount:
+            return jsonify({
+                'success': False,
+                'error': 'customer_id e amount são obrigatórios'
+            }), 400
+        
+        result = google_funding_service.fund_account(
+            user_id=user_id,
+            customer_id=customer_id,
+            amount=amount,
+            transaction_id=transaction_id
+        )
+        
+        return jsonify(result), 200 if result['success'] else 400
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/funding/facebook-ads/history', methods=['GET'])
+def get_facebook_funding_history():
+    """Obtém histórico de funding Facebook Ads"""
+    try:
+        user_id = request.args.get('user_id', 'default_user')
+        limit = int(request.args.get('limit', 50))
+        
+        history = facebook_funding_service.get_funding_history(user_id, limit)
+        
+        return jsonify({
+            'success': True,
+            'history': history,
+            'count': len(history)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/funding/google-ads/history', methods=['GET'])
+def get_google_funding_history():
+    """Obtém histórico de funding Google Ads"""
+    try:
+        user_id = request.args.get('user_id', 'default_user')
+        limit = int(request.args.get('limit', 50))
+        
+        history = google_funding_service.get_funding_history(user_id, limit)
+        
+        return jsonify({
+            'success': True,
+            'history': history,
+            'count': len(history)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
+# PAYMENT SECURITY BLOCKS APIs
+# ============================================
+from services.payments.payment_security_blocks import PaymentSecurityBlocks
+
+security_blocks = PaymentSecurityBlocks()
+
+@app.route('/api/payments/validate', methods=['POST'])
+def validate_payment():
+    """Valida pagamento com todos os bloqueios de segurança"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id', 'default_user')
+        payment_intent_id = data.get('payment_intent_id')
+        amount = float(data.get('amount'))
+        credit_type = data.get('credit_type')
+        
+        if not payment_intent_id or not amount or not credit_type:
+            return jsonify({
+                'success': False,
+                'error': 'payment_intent_id, amount e credit_type são obrigatórios'
+            }), 400
+        
+        result = security_blocks.validate_payment(
+            user_id=user_id,
+            payment_intent_id=payment_intent_id,
+            amount=amount,
+            credit_type=credit_type
+        )
+        
+        return jsonify(result), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/payments/security/blocks', methods=['GET'])
+def get_security_blocks():
+    """Obtém bloqueios de segurança recentes"""
+    try:
+        limit = int(request.args.get('limit', 50))
+        blocks = security_blocks.get_recent_blocks(limit)
+        
+        return jsonify({
+            'success': True,
+            'blocks': blocks,
+            'count': len(blocks)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/payments/security/stripe-status', methods=['GET'])
+def check_stripe_status():
+    """Verifica status do Stripe"""
+    try:
+        result = security_blocks.check_stripe_availability()
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
+# PAYMENT AUDIT LOG APIs
+# ============================================
+from services.payments.payment_audit_log import PaymentAuditLog
+
+audit_log_service = PaymentAuditLog()
+
+@app.route('/api/payments/audit/consolidate', methods=['POST'])
+def consolidate_audit_logs():
+    """Consolida todos os logs de pagamento"""
+    try:
+        result = audit_log_service.consolidate_logs()
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/payments/audit/logs', methods=['GET'])
+def get_audit_logs():
+    """Obtém logs de auditoria consolidados"""
+    try:
+        limit = int(request.args.get('limit', 100))
+        logs = audit_log_service.get_consolidated_logs(limit)
+        return jsonify({'success': True, 'logs': logs, 'count': len(logs)}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/payments/audit/summary', methods=['GET'])
+def get_audit_summary():
+    """Obtém um resumo de auditoria"""
+    try:
+        result = audit_log_service.generate_audit_summary()
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
