@@ -4,6 +4,7 @@ Sistema completo de geração automática de campanhas e vendas
 
 Autor: Manus AI Agent
 Data: 25/11/2024
+Atualizado: 21/12/2024 - Migrado para Manus AI Service
 """
 
 import os
@@ -11,16 +12,8 @@ import json
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-# Importar OpenAI para IA
-try:
-    from openai import OpenAI
-    if os.environ.get("OPENAI_API_KEY"):
-        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    else:
-        client = None
-        print("⚠️ OPENAI_API_KEY não configurada - funcionalidades de IA desabilitadas")
-except ImportError:
-    client = None
+# Importar Manus AI Service (substitui OpenAI)
+from services.manus_ai_service import manus_ai
 
 
 class NexoraPrimeAI:
@@ -37,9 +30,6 @@ class NexoraPrimeAI:
         """
         Analisa produto e cria estratégia de campanha completa
         """
-        if not client:
-            return self._fallback_analysis(product_info)
-            
         prompt = f"""
         Você é Nexora Prime, a IA mais avançada de estratégia de vendas.
         
@@ -85,31 +75,17 @@ class NexoraPrimeAI:
         Retorne em formato JSON.
         """
         
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {"role": "system", "content": "Você é Nexora Prime, especialista em estratégia de vendas."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=2000
-            )
-            
-            analysis = response.choices[0].message.content
-            
-            # Tentar parsear JSON
-            try:
-                return json.loads(analysis)
-            except:
-                return {
-                    "analysis": analysis,
-                    "timestamp": datetime.now().isoformat()
-                }
-                
-        except Exception as e:
-            print(f"Erro na análise Nexora Prime: {e}")
-            return self._fallback_analysis(product_info)
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é Nexora Prime, especialista em estratégia de vendas.",
+            temperature=0.7
+        )
+        
+        if result:
+            result["timestamp"] = datetime.now().isoformat()
+            return result
+        
+        return self._fallback_analysis(product_info)
     
     def _fallback_analysis(self, product_info: Dict) -> Dict:
         """Análise básica quando IA não está disponível"""
@@ -132,7 +108,8 @@ class NexoraPrimeAI:
                 "google": 2000,
                 "tiktok": 1000
             },
-            "expected_roas": 3.5
+            "expected_roas": 3.5,
+            "timestamp": datetime.now().isoformat()
         }
 
 
@@ -151,16 +128,6 @@ class ManusExecutorAI:
         Gera copy de anúncio baseado na estratégia
         Aplica modelos AIDA, PAS, BAB
         """
-        if not client:
-            return self._fallback_copy(platform, format_type)
-        
-        # Selecionar modelo de copy
-        models = {
-            "AIDA": "Attention, Interest, Desire, Action",
-            "PAS": "Problem, Agitate, Solution",
-            "BAB": "Before, After, Bridge"
-        }
-        
         prompt = f"""
         Você é Manus, especialista em copywriting de alta conversão.
         
@@ -193,37 +160,16 @@ class ManusExecutorAI:
         Retorne em formato JSON.
         """
         
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {"role": "system", "content": "Você é Manus, especialista em copywriting de alta conversão."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.8,
-                max_tokens=1500
-            )
-            
-            copy_result = response.choices[0].message.content
-            
-            try:
-                return json.loads(copy_result)
-            except:
-                return {
-                    "variations": [
-                        {
-                            "model": "AIDA",
-                            "headline": "Transforme Seu Negócio Hoje",
-                            "primary_text": copy_result[:125],
-                            "description": "Resultados garantidos em 30 dias",
-                            "cta": "Começar Agora"
-                        }
-                    ]
-                }
-                
-        except Exception as e:
-            print(f"Erro na geração de copy: {e}")
-            return self._fallback_copy(platform, format_type)
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é Manus, especialista em copywriting de alta conversão.",
+            temperature=0.8
+        )
+        
+        if result:
+            return result
+        
+        return self._fallback_copy(platform, format_type)
     
     def _fallback_copy(self, platform: str, format_type: str) -> Dict:
         """Copy básico quando IA não está disponível"""
@@ -260,9 +206,6 @@ class ManusExecutorAI:
         """
         Gera prompts para criação de imagens/vídeos
         """
-        if not client:
-            return self._fallback_creative_prompts()
-        
         prompt = f"""
         Você é Manus, especialista em criativos de alta conversão.
         
@@ -281,267 +224,120 @@ class ManusExecutorAI:
         Retorne apenas os 5 prompts, um por linha.
         """
         
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {"role": "system", "content": "Você é Manus, especialista em criativos."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.9,
-                max_tokens=500
-            )
-            
-            prompts = response.choices[0].message.content.strip().split('\n')
-            return [p.strip() for p in prompts if p.strip()]
-            
-        except Exception as e:
-            print(f"Erro na geração de prompts: {e}")
-            return self._fallback_creative_prompts()
+        result = manus_ai.generate_text(
+            prompt=prompt,
+            system_prompt="Você é Manus, especialista em criativos.",
+            temperature=0.9
+        )
+        
+        if result:
+            prompts = [p.strip() for p in result.strip().split('\n') if p.strip()]
+            return prompts[:5] if len(prompts) >= 5 else prompts + self._fallback_creative_prompts()[:5-len(prompts)]
+        
+        return self._fallback_creative_prompts()
     
     def _fallback_creative_prompts(self) -> List[str]:
         """Prompts básicos quando IA não está disponível"""
         return [
-            "Fotografia profissional de produto em fundo minimalista branco, iluminação suave, alta qualidade, 8K",
-            "Pessoa feliz usando o produto, ambiente moderno e clean, cores vibrantes, estilo lifestyle",
-            "Antes e depois dramático, split screen, transformação visível, cores contrastantes",
-            "Infográfico moderno mostrando benefícios, ícones minimalistas, paleta azul e verde",
-            "Vídeo curto de 15s mostrando produto em ação, transições suaves, música energética"
+            "Fotografia profissional de produto em fundo branco minimalista, iluminação suave, alta qualidade, estilo e-commerce premium",
+            "Pessoa sorridente usando o produto em ambiente moderno, cores vibrantes, estilo lifestyle, sensação de sucesso e satisfação",
+            "Comparação antes/depois em split screen, lado esquerdo escuro e triste, lado direito brilhante e colorido, transformação visual",
+            "Infográfico moderno mostrando benefícios do produto, ícones flat design, cores azul e laranja, estilo corporativo profissional",
+            "Cena de unboxing com mãos abrindo embalagem premium, confete dourado, fundo gradiente, sensação de exclusividade e luxo"
         ]
-
-
-class CampaignPerformancePredictor:
-    """
-    Preditor de Performance de Campanhas
-    Usa IA para prever conversões e sugerir ajustes
-    """
     
-    def __init__(self):
-        self.name = "Performance Predictor"
-    
-    def predict_campaign_performance(self, campaign_data: Dict) -> Dict:
+    def optimize_campaign_performance(self, campaign_data: Dict) -> Dict:
         """
-        Prevê performance da campanha antes de lançar
+        Analisa dados de campanha e sugere otimizações
         """
-        if not client:
-            return self._fallback_prediction(campaign_data)
-        
         prompt = f"""
-        Você é um especialista em previsão de performance de campanhas.
+        Você é Manus, especialista em otimização de campanhas.
         
-        Analise esta campanha e preveja:
+        Analise estes dados de campanha e sugira otimizações:
         
-        CAMPANHA:
+        DADOS DA CAMPANHA:
         {json.dumps(campaign_data, indent=2)}
         
-        Preveja:
-        1. CTR esperado (%)
-        2. Taxa de conversão esperada (%)
-        3. CPA esperado (R$)
-        4. ROAS esperado (x)
-        5. Impressões estimadas
-        6. Cliques estimados
-        7. Conversões estimadas
-        8. Receita estimada (R$)
-        
-        Também forneça:
-        - Nível de confiança (0-100%)
-        - Fatores de risco
-        - Recomendações de otimização
+        Forneça:
+        1. Diagnóstico do desempenho atual
+        2. Problemas identificados
+        3. Otimizações recomendadas (mínimo 5)
+        4. Previsão de melhoria com cada otimização
+        5. Priorização das ações
         
         Retorne em formato JSON.
         """
         
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {"role": "system", "content": "Você é um especialista em previsão de performance."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.3,
-                max_tokens=1000
-            )
-            
-            prediction = response.choices[0].message.content
-            
-            try:
-                return json.loads(prediction)
-            except:
-                return self._fallback_prediction(campaign_data)
-                
-        except Exception as e:
-            print(f"Erro na previsão: {e}")
-            return self._fallback_prediction(campaign_data)
-    
-    def _fallback_prediction(self, campaign_data: Dict) -> Dict:
-        """Previsão básica quando IA não está disponível"""
-        budget = campaign_data.get('budget', 1000)
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é Manus, especialista em otimização de campanhas.",
+            temperature=0.5
+        )
+        
+        if result:
+            return result
         
         return {
-            "predictions": {
-                "ctr": 1.5,
-                "conversion_rate": 2.0,
-                "cpa": 50,
-                "roas": 3.5,
-                "impressions": int(budget * 100),
-                "clicks": int(budget * 1.5),
-                "conversions": int(budget / 50),
-                "revenue": int(budget * 3.5)
-            },
-            "confidence": 75,
-            "risk_factors": [
-                "Campanha nova sem histórico",
-                "Mercado competitivo"
+            "diagnosis": "Análise não disponível",
+            "issues": [],
+            "optimizations": [
+                {"action": "Aumentar orçamento em horários de pico", "impact": "alto"},
+                {"action": "Testar novos criativos", "impact": "médio"},
+                {"action": "Refinar segmentação", "impact": "alto"}
             ],
-            "recommendations": [
-                "Iniciar com budget menor para teste",
-                "Criar múltiplas variações de copy",
-                "Monitorar métricas nas primeiras 48h"
-            ]
+            "priority": ["segmentação", "criativos", "orçamento"]
+        }
+
+
+class NexoraManusOrchestrator:
+    """
+    Orquestrador que coordena Nexora Prime e Manus
+    """
+    
+    def __init__(self):
+        self.nexora = NexoraPrimeAI()
+        self.manus = ManusExecutorAI()
+    
+    def create_full_campaign(self, product_url: str, product_info: Dict, budget: float = 5000) -> Dict:
+        """
+        Cria campanha completa do zero
+        """
+        # 1. Nexora Prime analisa e cria estratégia
+        strategy = self.nexora.analyze_product_for_campaign(product_url, product_info)
+        
+        # 2. Manus gera copies para cada plataforma
+        copies = {
+            "facebook": self.manus.generate_ad_copy(strategy, "facebook", "feed"),
+            "instagram": self.manus.generate_ad_copy(strategy, "instagram", "stories"),
+            "google": self.manus.generate_ad_copy(strategy, "google", "search")
+        }
+        
+        # 3. Manus gera prompts de criativos
+        creative_prompts = self.manus.generate_creative_prompts(strategy, copies["facebook"])
+        
+        return {
+            "strategy": strategy,
+            "copies": copies,
+            "creative_prompts": creative_prompts,
+            "budget": budget,
+            "created_at": datetime.now().isoformat(),
+            "status": "ready_to_launch"
         }
     
-    def suggest_optimizations(self, campaign_id: int, current_metrics: Dict) -> List[Dict]:
+    def optimize_existing_campaign(self, campaign_id: str, campaign_data: Dict) -> Dict:
         """
-        Sugere otimizações baseadas em métricas atuais
+        Otimiza campanha existente
         """
-        if not client:
-            return self._fallback_optimizations(current_metrics)
+        optimizations = self.manus.optimize_campaign_performance(campaign_data)
         
-        prompt = f"""
-        Você é um especialista em otimização de campanhas.
-        
-        Analise estas métricas e sugira otimizações ESPECÍFICAS:
-        
-        MÉTRICAS ATUAIS:
-        {json.dumps(current_metrics, indent=2)}
-        
-        Para cada otimização, forneça:
-        - Ação específica
-        - Impacto esperado (%)
-        - Prioridade (Alta/Média/Baixa)
-        - Tempo para implementar
-        - Risco (Baixo/Médio/Alto)
-        
-        Retorne em formato JSON (lista de otimizações).
-        """
-        
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {"role": "system", "content": "Você é um especialista em otimização."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.4,
-                max_tokens=1000
-            )
-            
-            optimizations = response.choices[0].message.content
-            
-            try:
-                return json.loads(optimizations)
-            except:
-                return self._fallback_optimizations(current_metrics)
-                
-        except Exception as e:
-            print(f"Erro nas otimizações: {e}")
-            return self._fallback_optimizations(current_metrics)
-    
-    def _fallback_optimizations(self, metrics: Dict) -> List[Dict]:
-        """Otimizações básicas quando IA não está disponível"""
-        ctr = metrics.get('ctr', 0)
-        roas = metrics.get('roas', 0)
-        
-        optimizations = []
-        
-        if ctr < 1.0:
-            optimizations.append({
-                "action": "Melhorar criativos e headlines",
-                "expected_impact": "+50%",
-                "priority": "Alta",
-                "time_to_implement": "2 horas",
-                "risk": "Baixo"
-            })
-        
-        if roas < 2.0:
-            optimizations.append({
-                "action": "Refinar targeting e audiências",
-                "expected_impact": "+30%",
-                "priority": "Alta",
-                "time_to_implement": "1 hora",
-                "risk": "Médio"
-            })
-        
-        return optimizations
+        return {
+            "campaign_id": campaign_id,
+            "optimizations": optimizations,
+            "analyzed_at": datetime.now().isoformat()
+        }
 
 
 # Instâncias globais
 nexora_prime = NexoraPrimeAI()
 manus_executor = ManusExecutorAI()
-performance_predictor = CampaignPerformancePredictor()
-
-
-def create_complete_campaign(product_url: str, product_info: Dict, platforms: List[str]) -> Dict:
-    """
-    Função principal: cria campanha completa do zero
-    Integra Nexora Prime + Manus para resultado perfeito
-    """
-    
-    print(f"🚀 Iniciando criação de campanha completa...")
-    print(f"📊 Nexora Prime analisando produto...")
-    
-    # 1. Nexora Prime analisa e cria estratégia
-    strategy = nexora_prime.analyze_product_for_campaign(product_url, product_info)
-    
-    print(f"✅ Estratégia criada!")
-    print(f"✍️ Manus gerando copy...")
-    
-    # 2. Manus gera copy para cada plataforma
-    campaign_assets = {}
-    
-    for platform in platforms:
-        # Gerar copy
-        copy = manus_executor.generate_ad_copy(strategy, platform, "feed")
-        
-        # Gerar prompts de criativos
-        creative_prompts = manus_executor.generate_creative_prompts(strategy, copy)
-        
-        campaign_assets[platform] = {
-            "copy": copy,
-            "creative_prompts": creative_prompts
-        }
-    
-    print(f"✅ Copy e criativos gerados!")
-    print(f"🔮 Prevendo performance...")
-    
-    # 3. Prever performance
-    campaign_data = {
-        "product": product_info,
-        "strategy": strategy,
-        "platforms": platforms,
-        "budget": strategy.get('budget_recommendation', {}).get('total', 5000)
-    }
-    
-    prediction = performance_predictor.predict_campaign_performance(campaign_data)
-    
-    print(f"✅ Previsão completa!")
-    
-    # 4. Retornar tudo
-    return {
-        "success": True,
-        "strategy": strategy,
-        "assets": campaign_assets,
-        "prediction": prediction,
-        "created_at": datetime.now().isoformat(),
-        "created_by": "Nexora Prime + Manus AI"
-    }
-
-
-# Exportar funções principais
-__all__ = [
-    'nexora_prime',
-    'manus_executor',
-    'performance_predictor',
-    'create_complete_campaign'
-]
+orchestrator = NexoraManusOrchestrator()

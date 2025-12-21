@@ -1,20 +1,18 @@
 """
 Competitor Spy Engine - Motor de Espionagem de Concorrência
 Analisa anúncios concorrentes ANTES de gerar campanhas
+Atualizado: 21/12/2024 - Migrado para Manus AI Service
 """
 
 import os
 import json
 import logging
 from datetime import datetime
-logger = logging.getLogger(__name__)
 
-# Importar OpenAI com verificação
-try:
-    from openai import OpenAI
-    OPENAI_AVAILABLE = bool(os.environ.get("OPENAI_API_KEY"))
-except ImportError:
-    OPENAI_AVAILABLE = False
+# Importar Manus AI Service (substitui OpenAI)
+from services.manus_ai_service import manus_ai
+
+logger = logging.getLogger(__name__)
 
 
 class CompetitorSpyEngine:
@@ -23,11 +21,7 @@ class CompetitorSpyEngine:
     """
     
     def __init__(self):
-        if OPENAI_AVAILABLE:
-            self.client = OpenAI()
-        else:
-            self.client = None
-            print("⚠️ OPENAI_API_KEY não configurada - CompetitorSpyEngine desabilitado")
+        pass
     
     def analyze_competitors(self, product, niche, platform='facebook'):
         """
@@ -42,224 +36,155 @@ class CompetitorSpyEngine:
             dict: Relatório de espionagem
         """
         try:
-            # Gerar análise com OpenAI
+            # Gerar análise com Manus AI
             analysis = self._generate_spy_analysis(product, niche, platform)
             
             # Estruturar relatório
             report = {
-                'timestamp': datetime.now().isoformat(),
-                'product': product,
-                'niche': niche,
-                'platform': platform,
-                'analysis': analysis,
-                'recommendations': self._extract_recommendations(analysis)
+                "timestamp": datetime.now().isoformat(),
+                "product": product,
+                "niche": niche,
+                "platform": platform,
+                "analysis": analysis,
+                "status": "completed"
             }
             
-            # Salvar relatório
-            self._save_report(report)
-            
+            logger.info(f"Análise de concorrência concluída para {product} no nicho {niche}")
             return report
             
         except Exception as e:
-            logger.error(f"Erro na espionagem de concorrência: {e}")
-            raise
+            logger.error(f"Erro na análise de concorrência: {str(e)}")
+            return self._get_fallback_analysis(product, niche, platform)
     
     def _generate_spy_analysis(self, product, niche, platform):
+        """Gera análise usando Manus AI"""
+        
+        prompt = f"""
+        Você é um especialista em análise competitiva de anúncios digitais.
+        
+        Analise o mercado de anúncios para:
+        - Produto: {product}
+        - Nicho: {niche}
+        - Plataforma: {platform}
+        
+        Forneça uma análise DETALHADA incluindo:
+        
+        1. PRINCIPAIS CONCORRENTES (5-10)
+           - Nome/marca
+           - Posicionamento
+           - Pontos fortes
+           - Pontos fracos
+        
+        2. PADRÕES DE ANÚNCIOS IDENTIFICADOS
+           - Headlines mais usados
+           - CTAs mais comuns
+           - Formatos predominantes
+           - Cores e estilos visuais
+        
+        3. GAPS E OPORTUNIDADES
+           - O que ninguém está fazendo
+           - Ângulos inexplorados
+           - Públicos negligenciados
+        
+        4. ESTRATÉGIAS DE DIFERENCIAÇÃO
+           - Como se destacar
+           - Unique Selling Propositions
+           - Posicionamento recomendado
+        
+        5. ESTIMATIVAS DE INVESTIMENTO
+           - Budget médio dos concorrentes
+           - CPM/CPC estimados
+           - ROAS típico do nicho
+        
+        Retorne em formato JSON estruturado.
         """
-        Gera análise de concorrência usando OpenAI
+        
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é um analista de inteligência competitiva especializado em marketing digital.",
+            temperature=0.6
+        )
+        
+        if result:
+            return result
+        
+        return self._get_fallback_analysis(product, niche, platform)["analysis"]
+    
+    def _get_fallback_analysis(self, product, niche, platform):
+        """Análise básica quando IA não está disponível"""
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "product": product,
+            "niche": niche,
+            "platform": platform,
+            "analysis": {
+                "competitors": [
+                    {"name": "Concorrente A", "positioning": "Premium", "strengths": ["marca forte"], "weaknesses": ["preço alto"]},
+                    {"name": "Concorrente B", "positioning": "Custo-benefício", "strengths": ["preço"], "weaknesses": ["qualidade"]},
+                    {"name": "Concorrente C", "positioning": "Inovador", "strengths": ["tecnologia"], "weaknesses": ["pouco conhecido"]}
+                ],
+                "ad_patterns": {
+                    "common_headlines": ["Transforme sua vida", "Resultados em 30 dias", "Oferta limitada"],
+                    "common_ctas": ["Compre agora", "Saiba mais", "Comece grátis"],
+                    "formats": ["Carrossel", "Vídeo curto", "Imagem única"],
+                    "colors": ["Azul", "Laranja", "Verde"]
+                },
+                "opportunities": [
+                    "Foco em sustentabilidade",
+                    "Atendimento personalizado",
+                    "Garantia estendida"
+                ],
+                "differentiation": {
+                    "usp": "Único no mercado com [diferencial]",
+                    "positioning": "Premium acessível",
+                    "key_message": "Qualidade sem pagar mais"
+                },
+                "investment_estimates": {
+                    "avg_budget": 5000,
+                    "cpm_estimate": 15,
+                    "cpc_estimate": 1.5,
+                    "typical_roas": 3.0
+                }
+            },
+            "status": "fallback"
+        }
+    
+    def get_trending_angles(self, niche):
+        """
+        Identifica ângulos de venda em tendência no nicho
         """
         prompt = f"""
-Você é um especialista em análise competitiva de anúncios digitais.
-
-Analise a concorrência para o seguinte produto/serviço:
-- Produto: {product}
-- Nicho: {niche}
-- Plataforma: {platform}
-
-Forneça uma análise DETALHADA sobre:
-
-1. HEADLINES COMUNS:
-   - Quais headlines os concorrentes usam?
-   - Quais padrões se repetem?
-   - Quais são mais eficazes?
-
-2. CRIATIVOS VISUAIS:
-   - Que tipo de imagens/vídeos usam?
-   - Cores predominantes
-   - Estilo (profissional, casual, moderno, etc)
-
-3. PROMESSAS E BENEFÍCIOS:
-   - Quais promessas fazem?
-   - Quais benefícios destacam?
-   - Quais são mais convincentes?
-
-4. OFERTAS:
-   - Que tipo de ofertas apresentam?
-   - Descontos, brindes, garantias?
-   - Urgência e escassez?
-
-5. CALL-TO-ACTION (CTA):
-   - Quais CTAs usam?
-   - Quais são mais diretos?
-   - Quais geram mais ação?
-
-6. FREQUÊNCIA E TIMING:
-   - Com que frequência anunciam?
-   - Horários preferenciais?
-   - Sazonalidade?
-
-7. O QUE FUNCIONA:
-   - Padrões de sucesso identificados
-   - Elementos que se repetem em anúncios de alta performance
-
-8. O QUE NÃO REPETIR:
-   - Erros comuns
-   - Abordagens saturadas
-   - Promessas exageradas
-
-9. OPORTUNIDADES DE DIFERENCIAÇÃO:
-   - Lacunas no mercado
-   - Ângulos não explorados
-   - Formas de se destacar
-
-Seja específico, prático e baseado em dados reais do mercado brasileiro.
-"""
+        Identifique os 10 ângulos de venda mais eficazes atualmente para o nicho: {niche}
         
-        try:
-            response = self.client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "Você é um especialista em análise competitiva de anúncios digitais com 10 anos de experiência."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=2000
-            )
-            
-            return response.choices[0].message.content
-            
-        except Exception as e:
-            logger.error(f"Erro ao gerar análise com OpenAI: {e}")
-            # Retornar análise genérica em caso de erro
-            return self._get_generic_analysis(product, niche)
-    
-    def _extract_recommendations(self, analysis):
+        Para cada ângulo, forneça:
+        - Nome do ângulo
+        - Descrição
+        - Exemplo de headline
+        - Público-alvo ideal
+        - Nível de saturação (baixo/médio/alto)
+        
+        Retorne em formato JSON.
         """
-        Extrai recomendações práticas da análise
-        """
-        try:
-            prompt = f"""
-Com base nesta análise de concorrência:
-
-{analysis}
-
-Extraia as 5 PRINCIPAIS RECOMENDAÇÕES PRÁTICAS para criar anúncios que se destaquem.
-
-Formato:
-1. [Recomendação específica e acionável]
-2. [Recomendação específica e acionável]
-...
-
-Seja direto e prático.
-"""
-            
-            response = self.client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "Você é um consultor de marketing digital focado em resultados."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=500
-            )
-            
-            recommendations_text = response.choices[0].message.content
-            
-            # Converter em lista
-            recommendations = [
-                line.strip() 
-                for line in recommendations_text.split('\n') 
-                if line.strip() and (line.strip()[0].isdigit() or line.strip().startswith('-'))
-            ]
-            
-            return recommendations
-            
-        except Exception as e:
-            logger.error(f"Erro ao extrair recomendações: {e}")
-            return [
-                "Foque em benefícios claros e mensuráveis",
-                "Use prova social (depoimentos, números)",
-                "Crie senso de urgência genuíno",
-                "Diferencie-se com uma proposta única",
-                "Teste múltiplas variações de copy"
-            ]
-    
-    def _save_report(self, report):
-        """
-        Salva relatório de espionagem
-        """
-        try:
-            os.makedirs('reports/competitor_spy', exist_ok=True)
-            
-            filename = f"reports/competitor_spy/spy_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            
-            with open(filename, 'w', encoding='utf-8') as f:
-                json.dump(report, f, ensure_ascii=False, indent=2)
-            
-            logger.info(f"Relatório de espionagem salvo: {filename}")
-            
-        except Exception as e:
-            logger.error(f"Erro ao salvar relatório: {e}")
-    
-    def _get_generic_analysis(self, product, niche):
-        """
-        Retorna análise genérica em caso de erro
-        """
-        return f"""
-ANÁLISE GENÉRICA DE CONCORRÊNCIA
-
-Produto: {product}
-Nicho: {niche}
-
-1. HEADLINES COMUNS:
-- Foco em benefícios principais
-- Uso de números e dados
-- Perguntas que geram curiosidade
-
-2. CRIATIVOS:
-- Imagens de alta qualidade
-- Cores vibrantes
-- Foco no produto/resultado
-
-3. PROMESSAS:
-- Resultados rápidos
-- Garantia de satisfação
-- Diferencial competitivo
-
-4. OFERTAS:
-- Descontos por tempo limitado
-- Bônus exclusivos
-- Garantia de devolução
-
-5. CTA:
-- "Compre Agora"
-- "Saiba Mais"
-- "Garanta o Seu"
-
-6. OPORTUNIDADES:
-- Humanizar a comunicação
-- Mostrar casos reais
-- Criar conexão emocional
-"""
-    
-    def get_spy_summary(self, report):
-        """
-        Gera resumo executivo do relatório
-        """
+        
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é um especialista em copywriting e tendências de marketing.",
+            temperature=0.7
+        )
+        
+        if result:
+            return result
+        
         return {
-            'product': report['product'],
-            'niche': report['niche'],
-            'platform': report['platform'],
-            'key_insights': report['recommendations'][:3],
-            'analyzed_at': report['timestamp']
+            "angles": [
+                {"name": "Urgência", "description": "Criar senso de escassez", "headline": "Últimas unidades!", "audience": "Compradores impulsivos", "saturation": "alto"},
+                {"name": "Prova Social", "description": "Mostrar resultados de outros", "headline": "+10.000 clientes satisfeitos", "audience": "Cautelosos", "saturation": "médio"},
+                {"name": "Transformação", "description": "Antes vs Depois", "headline": "De R$0 a R$10k/mês", "audience": "Aspiracionais", "saturation": "médio"},
+                {"name": "Autoridade", "description": "Expertise e credenciais", "headline": "Método usado por especialistas", "audience": "Profissionais", "saturation": "baixo"},
+                {"name": "Curiosidade", "description": "Gerar interesse", "headline": "O segredo que ninguém conta", "audience": "Curiosos", "saturation": "médio"}
+            ]
         }
+
+
+# Instância global
+competitor_spy = CompetitorSpyEngine()
