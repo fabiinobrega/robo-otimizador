@@ -8,9 +8,14 @@ import os
 import json
 import logging
 from datetime import datetime
-from openai import OpenAI
-
 logger = logging.getLogger(__name__)
+
+# Importar OpenAI com verificação
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = bool(os.environ.get("OPENAI_API_KEY"))
+except ImportError:
+    OPENAI_AVAILABLE = False
 
 
 class OpenAIStrategicBrain:
@@ -20,7 +25,11 @@ class OpenAIStrategicBrain:
     """
     
     def __init__(self):
-        self.client = OpenAI()
+        if OPENAI_AVAILABLE:
+            self.client = OpenAI()
+        else:
+            self.client = None
+            print("⚠️ OPENAI_API_KEY não configurada - OpenAIStrategicBrain desabilitado")
     
     def create_campaign_strategy(self, spy_report, product, objective, total_budget, duration_days):
         """

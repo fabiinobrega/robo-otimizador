@@ -7,9 +7,14 @@ import os
 import json
 import logging
 from datetime import datetime
-from openai import OpenAI
-
 logger = logging.getLogger(__name__)
+
+# Importar OpenAI com verificação
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = bool(os.environ.get("OPENAI_API_KEY"))
+except ImportError:
+    OPENAI_AVAILABLE = False
 
 
 class CompetitorSpyEngine:
@@ -18,7 +23,11 @@ class CompetitorSpyEngine:
     """
     
     def __init__(self):
-        self.client = OpenAI()
+        if OPENAI_AVAILABLE:
+            self.client = OpenAI()
+        else:
+            self.client = None
+            print("⚠️ OPENAI_API_KEY não configurada - CompetitorSpyEngine desabilitado")
     
     def analyze_competitors(self, product, niche, platform='facebook'):
         """

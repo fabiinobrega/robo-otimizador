@@ -16,7 +16,11 @@ try:
     from services.google_ads_service_complete import google_ads_service
     from openai import OpenAI
     SERVICES_AVAILABLE = True
-    openai_client = OpenAI()
+    if os.environ.get("OPENAI_API_KEY"):
+        openai_client = OpenAI()
+    else:
+        openai_client = None
+        print("⚠️ OPENAI_API_KEY não configurada")
 except ImportError:
     SERVICES_AVAILABLE = False
     facebook_ads_service = None

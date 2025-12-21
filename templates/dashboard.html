@@ -26,6 +26,43 @@
     </div>
 </div>
 
+<!-- Painéis de Crédito -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card" id="openai-credit-panel">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1"><i class="fas fa-robot"></i> Créditos OpenAI</h6>
+                        <h3 class="mb-0" id="openai-credits-value">Verificando...</h3>
+                    </div>
+                    <div id="openai-credits-icon">
+                        <i class="fas fa-circle-notch fa-spin fa-2x text-muted"></i>
+                    </div>
+                </div>
+                <small id="openai-credits-status" class="text-muted">Aguardando verificação...</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card" id="manus-credit-panel">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1"><i class="fas fa-cogs"></i> Créditos Manus</h6>
+                        <h3 class="mb-0" id="manus-credits-value">Verificando...</h3>
+                    </div>
+                    <div id="manus-credits-icon">
+                        <i class="fas fa-circle-notch fa-spin fa-2x text-muted"></i>
+                    </div>
+                </div>
+                <small id="manus-credits-status" class="text-muted">Aguardando verificação...</small>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Cards de Métricas -->
 <div class="row mb-4">
     <div class="col-md-3 mb-3">
@@ -334,8 +371,86 @@ function createPlatformChart() {
     });
 }
 
+// Carregar painéis de crédito
+async function loadCreditsPanels() {
+    try {
+        // Carregar créditos OpenAI
+        const openaiResponse = await fetch('/api/credits/openai');
+        const openaiData = await openaiResponse.json();
+        
+        const openaiPanel = document.getElementById('openai-credit-panel');
+        const openaiValue = document.getElementById('openai-credits-value');
+        const openaiStatus = document.getElementById('openai-credits-status');
+        const openaiIcon = document.getElementById('openai-credits-icon');
+        
+        if (openaiData.status === 'ok') {
+            openaiValue.textContent = 'Disponível';
+            openaiStatus.textContent = 'API conectada com sucesso';
+            openaiIcon.innerHTML = '<i class="fas fa-check-circle fa-2x text-success"></i>';
+            openaiPanel.classList.add('border-success');
+        } else if (openaiData.status === 'invalid_key') {
+            openaiValue.textContent = 'API Inválida';
+            openaiStatus.textContent = 'Verifique sua chave de API';
+            openaiIcon.innerHTML = '<i class="fas fa-times-circle fa-2x text-danger"></i>';
+            openaiPanel.classList.add('border-danger');
+        } else {
+            openaiValue.textContent = 'Erro';
+            openaiStatus.textContent = 'Não foi possível verificar créditos';
+            openaiIcon.innerHTML = '<i class="fas fa-exclamation-circle fa-2x text-warning"></i>';
+            openaiPanel.classList.add('border-warning');
+        }
+        
+        // Carregar créditos Manus
+        const manusResponse = await fetch('/api/credits/manus');
+        const manusData = await manusResponse.json();
+        
+        const manusPanel = document.getElementById('manus-credit-panel');
+        const manusValue = document.getElementById('manus-credits-value');
+        const manusStatus = document.getElementById('manus-credits-status');
+        const manusIcon = document.getElementById('manus-credits-icon');
+        
+        if (manusData.status === 'ok') {
+            const creditsPercent = manusData.credits_percent || 100;
+            manusValue.textContent = `${creditsPercent}%`;
+            
+            if (creditsPercent > 20) {
+                manusStatus.textContent = 'Créditos disponíveis';
+                manusIcon.innerHTML = '<i class="fas fa-check-circle fa-2x text-success"></i>';
+                manusPanel.classList.add('border-success');
+            } else if (creditsPercent > 0) {
+                manusStatus.textContent = 'Créditos baixos - Recarregue em breve';
+                manusIcon.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x text-warning"></i>';
+                manusPanel.classList.add('border-warning');
+            } else {
+                manusValue.textContent = 'Sem Créditos';
+                manusStatus.textContent = 'Recarregue para executar tarefas';
+                manusIcon.innerHTML = '<i class="fas fa-times-circle fa-2x text-danger"></i>';
+                manusPanel.classList.add('border-danger');
+            }
+        } else {
+            manusValue.textContent = 'Integrado';
+            manusStatus.textContent = 'Sistema Manus conectado';
+            manusIcon.innerHTML = '<i class="fas fa-check-circle fa-2x text-success"></i>';
+            manusPanel.classList.add('border-success');
+        }
+        
+    } catch (error) {
+        console.error('Erro ao carregar painéis de crédito:', error);
+        
+        // Fallback visual
+        document.getElementById('openai-credits-value').textContent = 'Erro';
+        document.getElementById('openai-credits-status').textContent = 'Não foi possível verificar créditos';
+        document.getElementById('openai-credits-icon').innerHTML = '<i class="fas fa-exclamation-circle fa-2x text-warning"></i>';
+        
+        document.getElementById('manus-credits-value').textContent = 'Erro';
+        document.getElementById('manus-credits-status').textContent = 'Não foi possível verificar créditos';
+        document.getElementById('manus-credits-icon').innerHTML = '<i class="fas fa-exclamation-circle fa-2x text-warning"></i>';
+    }
+}
+
 // Inicializar dashboard
 document.addEventListener('DOMContentLoaded', function() {
+    loadCreditsPanels();
     loadDashboardMetrics();
     loadRecentCampaigns();
     loadActivityLogs();
@@ -344,6 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Atualizar a cada 30 segundos
     setInterval(() => {
+        loadCreditsPanels();
         loadDashboardMetrics();
         loadRecentCampaigns();
         loadActivityLogs();

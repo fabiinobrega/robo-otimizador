@@ -1,0 +1,172 @@
+{
+  "openai_credits": {
+    "no_credits": {
+      "title": "Sem Créditos OpenAI",
+      "message": "Você está sem créditos no OpenAI. Recarregue para gerar estratégias de anúncios inteligentes.",
+      "icon": "❌",
+      "type": "error",
+      "action": "Recarregar Créditos"
+    },
+    "invalid_key": {
+      "title": "API OpenAI Inválida",
+      "message": "Sua chave de API do OpenAI não é válida. Verifique as configurações.",
+      "icon": "⚠️",
+      "type": "warning",
+      "action": "Verificar Configurações"
+    },
+    "api_error": {
+      "title": "Erro na API OpenAI",
+      "message": "Não foi possível conectar com o OpenAI. Tente novamente em alguns instantes.",
+      "icon": "🔄",
+      "type": "error",
+      "action": "Tentar Novamente"
+    }
+  },
+  "manus_credits": {
+    "no_credits": {
+      "title": "Sem Créditos Manus",
+      "message": "Você está sem créditos no Manus. Recarregue para executar tarefas automatizadas.",
+      "icon": "❌",
+      "type": "error",
+      "action": "Recarregar Créditos"
+    },
+    "low_credits": {
+      "title": "Créditos Baixos",
+      "message": "Seus créditos Manus estão acabando. Recarregue em breve para não interromper suas campanhas.",
+      "icon": "⚠️",
+      "type": "warning",
+      "action": "Recarregar Créditos"
+    },
+    "integration_error": {
+      "title": "Erro de Integração",
+      "message": "Não foi possível conectar com o sistema Manus. Entre em contato com o suporte.",
+      "icon": "🔧",
+      "type": "error",
+      "action": "Contatar Suporte"
+    }
+  },
+  "budget": {
+    "not_defined": {
+      "title": "Orçamento Não Definido",
+      "message": "Defina um orçamento para continuar. O orçamento é essencial para criar campanhas eficazes.",
+      "icon": "💰",
+      "type": "error",
+      "action": "Definir Orçamento"
+    },
+    "too_low": {
+      "title": "Orçamento Muito Baixo",
+      "message": "O orçamento mínimo recomendado é R$ 20,00 por dia para obter resultados significativos.",
+      "icon": "⚠️",
+      "type": "warning",
+      "action": "Aumentar Orçamento"
+    },
+    "invalid_format": {
+      "title": "Formato Inválido",
+      "message": "O orçamento informado não é válido. Use valores como: 20, 20.00, 20,00 ou R$20,00",
+      "icon": "❌",
+      "type": "error",
+      "action": "Corrigir Valor"
+    }
+  },
+  "product": {
+    "not_defined": {
+      "title": "Produto Não Definido",
+      "message": "Informe qual produto ou serviço você deseja anunciar.",
+      "icon": "📦",
+      "type": "error",
+      "action": "Definir Produto"
+    },
+    "too_short": {
+      "title": "Nome Muito Curto",
+      "message": "O nome do produto deve ter pelo menos 3 caracteres.",
+      "icon": "⚠️",
+      "type": "warning",
+      "action": "Completar Nome"
+    }
+  },
+  "objective": {
+    "not_defined": {
+      "title": "Objetivo Não Definido",
+      "message": "Defina o objetivo de venda da sua campanha (ex: aumentar vendas em 30%, gerar 100 leads).",
+      "icon": "🎯",
+      "type": "error",
+      "action": "Definir Objetivo"
+    },
+    "too_vague": {
+      "title": "Objetivo Muito Vago",
+      "message": "Descreva melhor o objetivo de venda para que possamos criar uma estratégia mais eficaz.",
+      "icon": "⚠️",
+      "type": "warning",
+      "action": "Detalhar Objetivo"
+    }
+  },
+  "api_external": {
+    "facebook_error": {
+      "title": "Erro no Facebook Ads",
+      "message": "Não foi possível conectar com o Facebook Ads. Verifique suas credenciais.",
+      "icon": "📘",
+      "type": "error",
+      "action": "Verificar Credenciais"
+    },
+    "google_error": {
+      "title": "Erro no Google Ads",
+      "message": "Não foi possível conectar com o Google Ads. Verifique suas credenciais.",
+      "icon": "🔍",
+      "type": "error",
+      "action": "Verificar Credenciais"
+    },
+    "rate_limit": {
+      "title": "Limite de Requisições",
+      "message": "Você atingiu o limite de requisições. Aguarde alguns minutos e tente novamente.",
+      "icon": "⏱️",
+      "type": "warning",
+      "action": "Aguardar"
+    }
+  },
+  "execution": {
+    "general_error": {
+      "title": "Erro na Execução",
+      "message": "Ocorreu um erro ao executar a tarefa. Nossa equipe foi notificada.",
+      "icon": "❌",
+      "type": "error",
+      "action": "Tentar Novamente"
+    },
+    "timeout": {
+      "title": "Tempo Esgotado",
+      "message": "A operação demorou mais do que o esperado. Tente novamente.",
+      "icon": "⏰",
+      "type": "error",
+      "action": "Tentar Novamente"
+    },
+    "validation_failed": {
+      "title": "Validação Falhou",
+      "message": "Algumas informações estão faltando ou são inválidas. Revise e tente novamente.",
+      "icon": "⚠️",
+      "type": "warning",
+      "action": "Revisar Dados"
+    }
+  },
+  "success": {
+    "campaign_created": {
+      "title": "Campanha Criada!",
+      "message": "Sua campanha foi criada com sucesso e está pronta para ser publicada.",
+      "icon": "✅",
+      "type": "success",
+      "action": "Ver Campanha"
+    },
+    "ad_published": {
+      "title": "Anúncio Publicado!",
+      "message": "Seu anúncio foi publicado e já está ativo nas plataformas selecionadas.",
+      "icon": "🚀",
+      "type": "success",
+      "action": "Ver Anúncio"
+    },
+    "validation_passed": {
+      "title": "Tudo Certo!",
+      "message": "Todas as validações passaram. Você pode prosseguir.",
+      "icon": "✅",
+      "type": "success",
+      "action": "Continuar"
+    }
+  }
+}

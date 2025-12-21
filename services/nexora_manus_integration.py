@@ -14,7 +14,11 @@ from typing import Dict, List, Any, Optional
 # Importar OpenAI para IA
 try:
     from openai import OpenAI
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    if os.environ.get("OPENAI_API_KEY"):
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    else:
+        client = None
+        print("⚠️ OPENAI_API_KEY não configurada - funcionalidades de IA desabilitadas")
 except ImportError:
     client = None
 

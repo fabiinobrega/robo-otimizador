@@ -13,8 +13,13 @@ import random
 
 try:
     from openai import OpenAI
-    OPENAI_AVAILABLE = True
-    client = OpenAI()  # API key já configurada em variável de ambiente
+    if os.environ.get("OPENAI_API_KEY"):
+        OPENAI_AVAILABLE = True
+        client = OpenAI()
+    else:
+        OPENAI_AVAILABLE = False
+        client = None
+        print("⚠️ OPENAI_API_KEY não configurada")
 except ImportError:
     OPENAI_AVAILABLE = False
     print("Warning: OpenAI not available")

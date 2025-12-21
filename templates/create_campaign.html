@@ -286,23 +286,41 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-4">
-                            <label class="form-label">Orçamento Diário <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text">R$</span>
-                                <input type="number" class="form-control" id="dailyBudget" 
-                                       placeholder="100.00" step="0.01" required>
-                            </div>
-                            <small class="text-muted">Mínimo recomendado: R$ 50,00</small>
-                        </div>
-                        
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label">Orçamento Total (Opcional)</label>
+                            <label class="form-label">Orçamento Total <span class="text-danger">*</span></label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text">R$</span>
                                 <input type="number" class="form-control" id="totalBudget" 
-                                       placeholder="3000.00" step="0.01">
+                                       placeholder="1000.00" step="0.01" required oninput="calculateDailyBudget()">
                             </div>
-                            <small class="text-muted">Deixe vazio para campanha contínua</small>
+                            <small class="text-muted">Valor total a ser investido na campanha</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Duração da Campanha (em dias) <span class="text-danger">*</span> 
+                                <i class="fas fa-info-circle" data-bs-toggle="tooltip" 
+                                   title="O orçamento será distribuído ao longo do período"></i>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" class="form-control" id="campaignDuration" 
+                                       placeholder="Ex: 7" min="1" required oninput="calculateDailyBudget()">
+                                <span class="input-group-text">dias</span>
+                            </div>
+                            <small class="text-muted">Mínimo: 1 dia</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Orçamento Diário Calculado -->
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="alert alert-info" id="budgetCalculation" style="display: none;">
+                                <h6 class="alert-heading"><i class="fas fa-calculator"></i> Cálculo Automático</h6>
+                                <p class="mb-0">
+                                    <strong>Orçamento Total:</strong> R$ <span id="displayTotalBudget">0,00</span><br>
+                                    <strong>Duração:</strong> <span id="displayDuration">0</span> dias<br>
+                                    <strong>Orçamento Diário:</strong> R$ <span id="displayDailyBudget">0,00</span>/dia
+                                </p>
+                                <small class="text-muted" id="budgetWarning"></small>
+                            </div>
                         </div>
                     </div>
                     
@@ -485,6 +503,28 @@
 let currentStep = 1;
 let selectedPlatform = '';
 
+// Função para converter orçamento de vários formatos para float
+function parseBudget(value) {
+    if (!value) return null;
+    
+    // Remover espaços e converter para string
+    let str = String(value).trim();
+    
+    // Remover símbolos de moeda (R$, $, etc)
+    str = str.replace(/[R$\s]/g, '');
+    
+    // Substituir vírgula por ponto (formato brasileiro)
+    str = str.replace(',', '.');
+    
+    // Converter para float
+    const num = parseFloat(str);
+    
+    // Validar se é um número válido
+    if (isNaN(num)) return null;
+    
+    return num;
+}
+
 // Navigation
 function nextStep(step) {
     if (!validateStep(currentStep)) return;
@@ -553,10 +593,56 @@ function validateStep(step) {
             }
             break;
         case 4:
-            const budget = document.getElementById('dailyBudget').value;
+            const totalBudgetInput = document.getElementById('totalBudget').value;
+            const durationInput = document.getElementById('campaignDuration').value;
             const startDate = document.getElementById('startDate').value;
-            if (!budget || !startDate) {
-                alert('Por favor, preencha o orçamento e data de início');
+            
+            // Validar orçamento total obrigatório
+            if (!totalBudgetInput || totalBudgetInput.trim() === '') {
+                alert('❌ Defina um orçamento total para continuar.');
+                document.getElementById('totalBudget').focus();
+                return false;
+            }
+            
+            // Validar duração obrigatória
+            if (!durationInput || durationInput.trim() === '') {
+                alert('❌ Defina por quantos dias a campanha deve rodar para calcular o orçamento diário.');
+                document.getElementById('campaignDuration').focus();
+                return false;
+            }
+            
+            // Validar e converter formato do orçamento
+            const totalBudget = parseFloat(totalBudgetInput);
+            const duration = parseInt(durationInput);
+            
+            if (totalBudget === null || totalBudget <= 0) {
+                alert('❌ Orçamento inválido. Use valores como: 1000, 1000.00 ou R$1000,00');
+                document.getElementById('totalBudget').focus();
+                return false;
+            }
+            
+            if (duration <= 0) {
+                alert('❌ A duração da campanha deve ser de pelo menos 1 dia.');
+                document.getElementById('campaignDuration').focus();
+                return false;
+            }
+            
+            // Calcular orçamento diário
+            const dailyBudget = totalBudget / duration;
+            
+            // Validar orçamento diário mínimo
+            if (dailyBudget < 20) {
+                alert(`❌ Com este orçamento e duração, o orçamento diário seria R$ ${dailyBudget.toFixed(2)}, mas o mínimo recomendado é R$ 20,00/dia. Aumente o orçamento total ou reduza a duração.`);
+                document.getElementById('totalBudget').focus();
+                return false;
+            }
+            
+            // Armazenar valor convertido
+            document.getElementById('dailyBudget').value = budget.toFixed(2);
+            
+            if (!startDate) {
+                alert('Por favor, preencha a data de início');
+                document.getElementById('startDate').focus();
                 return false;
             }
             break;
@@ -650,6 +736,52 @@ document.getElementById('campaignForm').addEventListener('submit', async functio
         console.error('Error:', error);
         showToast('Erro ao criar campanha', 'error');
     }
+});
+
+// Função para calcular orçamento diário em tempo real
+function calculateDailyBudget() {
+    const totalBudgetInput = document.getElementById('totalBudget');
+    const durationInput = document.getElementById('campaignDuration');
+    const calculationDiv = document.getElementById('budgetCalculation');
+    const displayTotal = document.getElementById('displayTotalBudget');
+    const displayDuration = document.getElementById('displayDuration');
+    const displayDaily = document.getElementById('displayDailyBudget');
+    const warningText = document.getElementById('budgetWarning');
+    
+    const totalBudget = parseFloat(totalBudgetInput.value);
+    const duration = parseInt(durationInput.value);
+    
+    // Validar inputs
+    if (!totalBudget || !duration || totalBudget <= 0 || duration <= 0) {
+        calculationDiv.style.display = 'none';
+        return;
+    }
+    
+    // Calcular orçamento diário
+    const dailyBudget = totalBudget / duration;
+    
+    // Exibir cálculo
+    calculationDiv.style.display = 'block';
+    displayTotal.textContent = totalBudget.toFixed(2).replace('.', ',');
+    displayDuration.textContent = duration;
+    displayDaily.textContent = dailyBudget.toFixed(2).replace('.', ',');
+    
+    // Validar orçamento mínimo
+    if (dailyBudget < 20) {
+        calculationDiv.className = 'alert alert-warning';
+        warningText.textContent = '⚠️ Orçamento diário abaixo do mínimo recomendado (R$ 20,00). Aumente o orçamento total ou reduza a duração.';
+        warningText.style.display = 'block';
+    } else {
+        calculationDiv.className = 'alert alert-info';
+        warningText.textContent = '';
+        warningText.style.display = 'none';
+    }
+}
+
+// Inicializar tooltips do Bootstrap
+const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
 });
 
 // Set minimum date to today
