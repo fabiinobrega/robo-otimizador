@@ -1,4 +1,3 @@
-from functools import wraps
 """
 Serviço de Geração de Campanhas com IA
 Utiliza Nexora IA e Manus IA para gerar anúncios automaticamente
@@ -7,11 +6,8 @@ Utiliza Nexora IA e Manus IA para gerar anúncios automaticamente
 import random
 import json
 from datetime import datetime
+from functools import wraps
 
-
-class AICampaignGenerator:
-    """Gerador de campanhas com inteligência artificial"""
-    
 
 def handle_errors(func):
     """Decorador para tratamento automático de erros"""
@@ -25,6 +21,9 @@ def handle_errors(func):
     return wrapper
 
 
+class AICampaignGenerator:
+    """Gerador de campanhas com inteligência artificial"""
+    
     def __init__(self):
         self.platforms = {
             "meta": "Meta Ads (Facebook/Instagram)",
@@ -196,8 +195,7 @@ def handle_errors(func):
         """Gera texto principal do anúncio"""
         
         if voz == "casual":
-            return f"""
-Fala, {publico}! 👋
+            return f"""Fala, {publico}! 👋
 
 Você já conhece {produto}? É aquela solução que você estava procurando!
 
@@ -206,12 +204,10 @@ Você já conhece {produto}? É aquela solução que você estava procurando!
 • Fácil de usar
 • Resultados garantidos
 
-Não fica de fora dessa! Vem conferir! 🚀
-            """.strip()
+Não fica de fora dessa! Vem conferir! 🚀"""
         
         elif voz == "profissional":
-            return f"""
-Prezado(a) cliente,
+            return f"""Prezado(a) cliente,
 
 Apresentamos {produto}, a solução ideal para {publico}.
 
@@ -220,12 +216,10 @@ Apresentamos {produto}, a solução ideal para {publico}.
 • Suporte especializado
 • Resultados mensuráveis
 
-Agende uma demonstração e conheça todos os diferenciais.
-            """.strip()
+Agende uma demonstração e conheça todos os diferenciais."""
         
         elif voz == "urgente":
-            return f"""
-⚡ ATENÇÃO {publico.upper()}! ⚡
+            return f"""⚡ ATENÇÃO {publico.upper()}! ⚡
 
 {produto} em PROMOÇÃO RELÂMPAGO!
 
@@ -234,12 +228,10 @@ Agende uma demonstração e conheça todos os diferenciais.
 • Frete GRÁTIS
 • Bônus exclusivos
 
-⏰ Últimas unidades! CORRE!
-            """.strip()
+⏰ Últimas unidades! CORRE!"""
         
         else:  # inspirador
-            return f"""
-✨ Transforme Sua Realidade ✨
+            return f"""✨ Transforme Sua Realidade ✨
 
 {produto} foi criado para {publico} que não aceitam menos que a excelência.
 
@@ -248,8 +240,7 @@ Agende uma demonstração e conheça todos os diferenciais.
 • Suporte dedicado
 • Comunidade engajada
 
-Dê o primeiro passo rumo ao sucesso. Você merece!
-            """.strip()
+Dê o primeiro passo rumo ao sucesso. Você merece!"""
     
     def _generate_image_prompt(self, produto, plataforma, objetivo):
         """Gera prompt para geração de imagem com IA"""
