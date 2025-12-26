@@ -6,7 +6,5 @@ PyJWT==2.8.0
 flask-cors==4.0.0
 Flask-Compress==1.14
 stripe==8.0.0
-openai==1.51.0
-httpx==0.27.2
 facebook-business==19.0.0
 google-ads==24.1.0

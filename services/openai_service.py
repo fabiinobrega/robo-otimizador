@@ -1,10 +1,13 @@
 """
-Openai Service Service
-Wrapper class para padronização
+AI Service - Serviço de IA usando Manus AI
+Gera copy, headlines, descriptions e CTAs otimizados
 """
 
+import os
+import json
+
 class OpenaiService:
-    """Classe wrapper para openai_service.py"""
+    """Classe wrapper para compatibilidade - Agora usa Manus AI"""
     
     def __init__(self):
         """Inicializar serviço"""
@@ -13,43 +16,25 @@ class OpenaiService:
     def get_info(self):
         """Obter informações do serviço"""
         return {
-            "service": "openai_service.py",
+            "service": "ai_service.py",
             "class": "OpenaiService",
-            "status": "active"
+            "status": "active",
+            "engine": "Manus AI"
         }
 
-# Código original abaixo
-# ----------------------
-
-"""
-Serviço de Integração com OpenAI GPT-4
-Gera copy, headlines, descriptions e CTAs otimizados
-"""
-
-import os
-import json
-from openai import OpenAI
-
-# Importar IA nativa
+# Importar IA nativa (Manus AI)
 try:
     from services.native_ai_engine import native_ai
     NATIVE_AI_AVAILABLE = True
+    print("✅ Manus AI Engine inicializado com sucesso")
 except ImportError:
     NATIVE_AI_AVAILABLE = False
-
-# Inicializar cliente OpenAI
-client = None
-try:
-    if os.getenv("OPENAI_API_KEY"):
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-except Exception as e:
-    print(f"⚠️ Erro ao inicializar OpenAI: {e}")
-    client = None
+    print("⚠️ Manus AI Engine não disponível, usando fallback")
 
 
 def generate_ad_copy(product_info, platform="facebook", num_variants=5):
     """
-    Gera variações de copy para anúncios
+    Gera variações de copy para anúncios usando Manus AI
     
     Args:
         product_info (dict): Informações do produto (title, price, benefits, etc.)
@@ -60,84 +45,20 @@ def generate_ad_copy(product_info, platform="facebook", num_variants=5):
         dict: Variantes geradas com headlines, descriptions e CTAs
     """
     
-    # Priorizar IA nativa
+    # Usar IA nativa (Manus AI)
     if NATIVE_AI_AVAILABLE:
         try:
             return native_ai.generate_ad_copy(product_info, platform, num_variants)
         except Exception as e:
-            print(f"Erro na IA nativa, tentando OpenAI: {e}")
+            print(f"Erro na Manus AI, usando fallback: {e}")
     
-    # Se não tiver API key, retorna simulado
-    if not client or not os.getenv("OPENAI_API_KEY"):
-        return _generate_mock_copy(product_info, num_variants)
-    
-    try:
-        prompt = f"""
-Você é um especialista em copywriting para anúncios digitais.
-
-PRODUTO:
-- Título: {product_info.get('title', 'Produto')}
-- Preço: R$ {product_info.get('price', '0.00')}
-- Benefícios: {', '.join(product_info.get('benefits', []))}
-- Descrição: {product_info.get('description', '')}
-
-PLATAFORMA: {platform.upper()}
-
-TAREFA:
-Crie {num_variants} variações de anúncio otimizadas para conversão.
-
-Para cada variante, forneça:
-1. HEADLINE (máx. 40 caracteres) - Chamativo e direto
-2. DESCRIPTION (máx. 125 caracteres) - Persuasiva e com benefício claro
-3. CTA (máx. 20 caracteres) - Ação clara
-4. SCORE (0-100) - Probabilidade de conversão
-
-FORMATO DE RESPOSTA (JSON):
-{{
-  "variants": [
-    {{
-      "headline": "...",
-      "description": "...",
-      "cta": "...",
-      "score": 95,
-      "reasoning": "Por que esta variante funciona"
-    }}
-  ]
-}}
-
-IMPORTANTE:
-- Use gatilhos mentais (escassez, urgência, prova social)
-- Foque em benefícios, não características
-- Seja específico com números
-- Use emojis estrategicamente (máx. 2 por texto)
-"""
-
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {"role": "system", "content": "Você é um especialista em copywriting para anúncios digitais com 10 anos de experiência."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=1500,
-            response_format={"type": "json_object"}
-        )
-        
-        result = json.loads(response.choices[0].message.content)
-        
-        # Ordenar por score
-        result['variants'] = sorted(result['variants'], key=lambda x: x.get('score', 0), reverse=True)
-        
-        return result
-        
-    except Exception as e:
-        print(f"Erro ao gerar copy com OpenAI: {e}")
-        return _generate_mock_copy(product_info, num_variants)
+    # Fallback para copy gerado localmente
+    return _generate_mock_copy(product_info, num_variants)
 
 
 def analyze_landing_page(url, html_content=None):
     """
-    Analisa uma landing page e extrai informações relevantes
+    Analisa uma landing page e extrai informações relevantes usando Manus AI
     
     Args:
         url (str): URL da landing page
@@ -147,70 +68,19 @@ def analyze_landing_page(url, html_content=None):
         dict: Análise da página
     """
     
-    # Priorizar IA nativa
+    # Usar IA nativa (Manus AI)
     if NATIVE_AI_AVAILABLE:
         try:
             return native_ai.analyze_landing_page(url, html_content)
         except Exception as e:
-            print(f"Erro na IA nativa, tentando OpenAI: {e}")
+            print(f"Erro na Manus AI, usando fallback: {e}")
     
-    if not client or not os.getenv("OPENAI_API_KEY"):
-        return _generate_mock_analysis(url)
-    
-    try:
-        prompt = f"""
-Analise esta landing page de produto: {url}
-
-TAREFA:
-1. Identifique o produto principal
-2. Extraia o preço (se visível)
-3. Liste os principais benefícios
-4. Identifique o público-alvo
-5. Avalie a qualidade da página (0-100)
-6. Sugira melhorias
-
-FORMATO DE RESPOSTA (JSON):
-{{
-  "product": {{
-    "title": "...",
-    "price": "...",
-    "category": "...",
-    "target_audience": "..."
-  }},
-  "benefits": ["...", "...", "..."],
-  "quality_score": 85,
-  "insights": [
-    "Insight 1",
-    "Insight 2"
-  ],
-  "suggestions": [
-    "Sugestão 1",
-    "Sugestão 2"
-  ]
-}}
-"""
-
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {"role": "system", "content": "Você é um especialista em análise de landing pages e otimização de conversão."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.5,
-            max_tokens=1000,
-            response_format={"type": "json_object"}
-        )
-        
-        return json.loads(response.choices[0].message.content)
-        
-    except Exception as e:
-        print(f"Erro ao analisar landing page: {e}")
-        return _generate_mock_analysis(url)
+    return _generate_mock_analysis(url)
 
 
 def generate_targeting_suggestions(product_info, platform="facebook"):
     """
-    Gera sugestões de segmentação baseadas no produto
+    Gera sugestões de segmentação baseadas no produto usando Manus AI
     
     Args:
         product_info (dict): Informações do produto
@@ -220,55 +90,19 @@ def generate_targeting_suggestions(product_info, platform="facebook"):
         dict: Sugestões de segmentação
     """
     
-    if not os.getenv("OPENAI_API_KEY"):
-        return _generate_mock_targeting()
+    # Usar IA nativa (Manus AI)
+    if NATIVE_AI_AVAILABLE:
+        try:
+            return native_ai.generate_targeting_suggestions(product_info, platform)
+        except Exception as e:
+            print(f"Erro na Manus AI, usando fallback: {e}")
     
-    try:
-        prompt = f"""
-Produto: {product_info.get('title', 'Produto')}
-Categoria: {product_info.get('category', 'Geral')}
-Preço: R$ {product_info.get('price', '0.00')}
-
-Sugira a segmentação ideal para {platform.upper()}:
-
-FORMATO (JSON):
-{{
-  "demographics": {{
-    "age_range": "18-65",
-    "gender": "all",
-    "locations": ["Brasil", "São Paulo"]
-  }},
-  "interests": ["...", "...", "..."],
-  "behaviors": ["...", "..."],
-  "custom_audiences": ["...", "..."],
-  "lookalike": {{
-    "source": "...",
-    "percentage": 1
-  }}
-}}
-"""
-
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {"role": "system", "content": "Você é um especialista em segmentação de anúncios digitais."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.6,
-            max_tokens=800,
-            response_format={"type": "json_object"}
-        )
-        
-        return json.loads(response.choices[0].message.content)
-        
-    except Exception as e:
-        print(f"Erro ao gerar segmentação: {e}")
-        return _generate_mock_targeting()
+    return _generate_mock_targeting()
 
 
 def optimize_campaign_budget(campaign_data):
     """
-    Otimiza distribuição de orçamento entre campanhas
+    Otimiza distribuição de orçamento entre campanhas usando Manus AI
     
     Args:
         campaign_data (list): Lista de campanhas com métricas
@@ -277,58 +111,20 @@ def optimize_campaign_budget(campaign_data):
         dict: Recomendações de redistribuição
     """
     
-    if not os.getenv("OPENAI_API_KEY"):
-        return {"recommendations": [], "total_savings": 0}
+    # Usar IA nativa (Manus AI)
+    if NATIVE_AI_AVAILABLE:
+        try:
+            return native_ai.optimize_campaign_budget(campaign_data)
+        except Exception as e:
+            print(f"Erro na Manus AI, usando fallback: {e}")
     
-    try:
-        prompt = f"""
-Analise estas campanhas e sugira redistribuição de orçamento:
-
-{json.dumps(campaign_data, indent=2)}
-
-Considere:
-- ROAS de cada campanha
-- CTR e CPC
-- Tendências de performance
-- Sazonalidade
-
-FORMATO (JSON):
-{{
-  "recommendations": [
-    {{
-      "campaign_id": 1,
-      "current_budget": 1000,
-      "suggested_budget": 1500,
-      "reasoning": "..."
-    }}
-  ],
-  "total_savings": 500,
-  "expected_roas_improvement": "15%"
-}}
-"""
-
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {"role": "system", "content": "Você é um especialista em otimização de orçamento de anúncios."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.4,
-            max_tokens=1000,
-            response_format={"type": "json_object"}
-        )
-        
-        return json.loads(response.choices[0].message.content)
-        
-    except Exception as e:
-        print(f"Erro ao otimizar orçamento: {e}")
-        return {"recommendations": [], "total_savings": 0}
+    return {"recommendations": [], "total_savings": 0}
 
 
-# ===== FUNÇÕES MOCK (FALLBACK) =====
+# ===== FUNÇÕES FALLBACK (Geração Local) =====
 
 def _generate_mock_copy(product_info, num_variants=5):
-    """Gera copy simulado quando não há API key"""
+    """Gera copy otimizado localmente quando Manus AI não está disponível"""
     
     title = product_info.get('title', 'Produto Incrível')
     price = product_info.get('price', '99.90')
@@ -375,7 +171,7 @@ def _generate_mock_copy(product_info, num_variants=5):
 
 
 def _generate_mock_analysis(url):
-    """Gera análise simulada"""
+    """Gera análise localmente"""
     
     return {
         "product": {
@@ -405,7 +201,7 @@ def _generate_mock_analysis(url):
 
 
 def _generate_mock_targeting():
-    """Gera segmentação simulada"""
+    """Gera segmentação localmente"""
     
     return {
         "demographics": {
