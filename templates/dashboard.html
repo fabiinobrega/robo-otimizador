@@ -383,21 +383,30 @@ async function loadCreditsPanels() {
         const openaiStatus = document.getElementById('openai-credits-status');
         const openaiIcon = document.getElementById('openai-credits-icon');
         
-        if (openaiData.status === 'ok') {
-            openaiValue.textContent = 'Disponível';
-            openaiStatus.textContent = 'API conectada com sucesso';
+        if (openaiData.success && openaiData.status === 'ok') {
+            // Mostrar balance real se disponível, senão mostrar status
+            const balanceText = openaiData.balance || 'Ativo';
+            openaiValue.textContent = balanceText;
+            openaiStatus.textContent = openaiData.message || 'API conectada com sucesso';
             openaiIcon.innerHTML = '<i class="fas fa-check-circle fa-2x text-success"></i>';
+            openaiPanel.classList.remove('border-warning', 'border-danger');
             openaiPanel.classList.add('border-success');
         } else if (openaiData.status === 'invalid_key') {
             openaiValue.textContent = 'API Inválida';
             openaiStatus.textContent = 'Verifique sua chave de API';
             openaiIcon.innerHTML = '<i class="fas fa-times-circle fa-2x text-danger"></i>';
+            openaiPanel.classList.remove('border-success', 'border-warning');
             openaiPanel.classList.add('border-danger');
-        } else {
-            openaiValue.textContent = 'Erro';
-            openaiStatus.textContent = 'Não foi possível verificar créditos';
-            openaiIcon.innerHTML = '<i class="fas fa-exclamation-circle fa-2x text-warning"></i>';
+        } else if (openaiData.status === 'low_balance') {
+            openaiValue.textContent = openaiData.balance || 'Baixo';
+            openaiStatus.textContent = 'Saldo baixo - Recarregue em breve';
+            openaiIcon.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x text-warning"></i>';
+            openaiPanel.classList.remove('border-success', 'border-danger');
             openaiPanel.classList.add('border-warning');
+        } else {
+            openaiValue.textContent = 'Verificando...';
+            openaiStatus.textContent = 'Aguarde verificação de status';
+            openaiIcon.innerHTML = '<i class="fas fa-circle-notch fa-spin fa-2x text-muted"></i>';
         }
         
         // Carregar créditos Manus
@@ -409,29 +418,30 @@ async function loadCreditsPanels() {
         const manusStatus = document.getElementById('manus-credits-status');
         const manusIcon = document.getElementById('manus-credits-icon');
         
-        if (manusData.status === 'ok') {
-            const creditsPercent = manusData.credits_percent || 100;
-            manusValue.textContent = `${creditsPercent}%`;
+        if (manusData.success) {
+            // Manus integrado - mostrar créditos ou status
+            const credits = manusData.credits || 'Ilimitado';
+            manusValue.textContent = credits;
+            manusStatus.textContent = manusData.message || 'Sistema Manus conectado';
             
-            if (creditsPercent > 20) {
-                manusStatus.textContent = 'Créditos disponíveis';
+            if (manusData.status === 'integrated' || manusData.color === 'green') {
                 manusIcon.innerHTML = '<i class="fas fa-check-circle fa-2x text-success"></i>';
+                manusPanel.classList.remove('border-warning', 'border-danger');
                 manusPanel.classList.add('border-success');
-            } else if (creditsPercent > 0) {
-                manusStatus.textContent = 'Créditos baixos - Recarregue em breve';
+            } else if (manusData.color === 'yellow') {
                 manusIcon.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x text-warning"></i>';
+                manusPanel.classList.remove('border-success', 'border-danger');
                 manusPanel.classList.add('border-warning');
             } else {
-                manusValue.textContent = 'Sem Créditos';
-                manusStatus.textContent = 'Recarregue para executar tarefas';
                 manusIcon.innerHTML = '<i class="fas fa-times-circle fa-2x text-danger"></i>';
+                manusPanel.classList.remove('border-success', 'border-warning');
                 manusPanel.classList.add('border-danger');
             }
         } else {
-            manusValue.textContent = 'Integrado';
-            manusStatus.textContent = 'Sistema Manus conectado';
-            manusIcon.innerHTML = '<i class="fas fa-check-circle fa-2x text-success"></i>';
-            manusPanel.classList.add('border-success');
+            manusValue.textContent = 'Erro';
+            manusStatus.textContent = 'Não foi possível verificar';
+            manusIcon.innerHTML = '<i class="fas fa-exclamation-circle fa-2x text-warning"></i>';
+            manusPanel.classList.add('border-warning');
         }
         
     } catch (error) {

@@ -744,6 +744,33 @@ def api_activity_logs():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
+@app.route("/api/campaigns", methods=["GET"])
+def api_campaigns():
+    """Get campaigns list."""
+    db = get_db()
+    limit = request.args.get('limit', 10, type=int)
+    
+    try:
+        campaigns = db.execute(
+            """SELECT c.*, 
+                      COALESCE(m.impressions, 0) as impressions,
+                      COALESCE(m.clicks, 0) as clicks,
+                      COALESCE(m.conversions, 0) as conversions,
+                      COALESCE(m.roas, 0) as roas
+               FROM campaigns c
+               LEFT JOIN campaign_metrics m ON c.id = m.campaign_id
+               ORDER BY c.created_at DESC LIMIT ?""",
+            (limit,)
+        ).fetchall()
+        
+        return jsonify({
+            "success": True,
+            "campaigns": [dict(c) for c in campaigns]
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 # ===== PAGE ROUTES =====
 
 @app.route("/")

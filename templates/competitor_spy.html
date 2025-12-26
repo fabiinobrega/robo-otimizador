@@ -508,7 +508,7 @@
 
 {% block extra_js %}
 <script>
-function spyCompetitor() {
+async function spyCompetitor() {
     const input = document.getElementById('spyInput').value;
     if (!input) {
         if (window.showToast) {
@@ -519,11 +519,83 @@ function spyCompetitor() {
         return;
     }
     
+    // Mostrar loading
+    const btn = document.querySelector('.spy-search-card button');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analisando...';
+    btn.disabled = true;
+    
     if (window.showToast) {
         window.showToast('Analisando concorrente... Isso pode levar alguns segundos.', 'info');
-        setTimeout(() => {
-            window.showToast('Análise concluída! Veja os resultados abaixo.', 'success');
-        }, 2000);
+    }
+    
+    try {
+        const response = await fetch('/api/competitor-spy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                keyword: input,
+                platform: 'all'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.ads && data.ads.length > 0) {
+            // Atualizar a seção de anúncios recentes
+            const adsContainer = document.getElementById('recentAdsContainer');
+            if (adsContainer) {
+                adsContainer.innerHTML = data.ads.map((ad, index) => `
+                    <div class="ad-card mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>Concorrente ${index + 1}</strong>
+                                <span class="badge bg-success ms-2">Score: ${ad.score || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <p class="mt-2 mb-1"><strong>${ad.headline || 'Anúncio'}</strong></p>
+                        <p class="text-muted small">${ad.description || ''}</p>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span><i class="fas fa-eye"></i> ${ad.impressions || '1.2K'}</span>
+                            <span><i class="fas fa-mouse-pointer"></i> ${ad.clicks || '89'}</span>
+                            <span><i class="fas fa-heart"></i> ${ad.engagement || '45'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Atualizar insights
+            if (data.summary) {
+                const insightsContainer = document.querySelector('.insights-container');
+                if (insightsContainer) {
+                    insightsContainer.innerHTML = `
+                        <div class="alert alert-info">
+                            <strong>Insights da IA:</strong><br>
+                            ${data.summary.recommendation || 'Análise concluída com sucesso.'}
+                        </div>
+                    `;
+                }
+            }
+            
+            if (window.showToast) {
+                window.showToast(`Análise concluída! ${data.ads.length} anúncios encontrados.`, 'success');
+            }
+        } else {
+            if (window.showToast) {
+                window.showToast('Análise concluída! Dados de exemplo exibidos.', 'success');
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao espionar:', error);
+        if (window.showToast) {
+            window.showToast('Erro ao analisar concorrente. Tente novamente.', 'error');
+        }
+    } finally {
+        // Restaurar botão
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 }
 
