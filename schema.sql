@@ -332,3 +332,28 @@ ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS synced_with_manus INTEGER DEFAULT
 ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS manus_id TEXT;
 ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS last_synced_at TEXT;
 
+
+-- ===== TABELA DE AUTOMAÇÕES NEXORA =====
+
+-- Tabela principal de automações
+CREATE TABLE IF NOT EXISTS automations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    type TEXT NOT NULL,
+    config TEXT,
+    schedule TEXT,
+    status TEXT DEFAULT 'active',
+    last_run TEXT,
+    next_run TEXT,
+    run_count INTEGER DEFAULT 0,
+    success_count INTEGER DEFAULT 0,
+    error_count INTEGER DEFAULT 0,
+    last_error TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índice para busca por status
+CREATE INDEX IF NOT EXISTS idx_automations_status ON automations(status);
+CREATE INDEX IF NOT EXISTS idx_automations_type ON automations(type);
+

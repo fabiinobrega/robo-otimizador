@@ -186,5 +186,58 @@ class CompetitorSpyEngine:
         }
 
 
+    def get_spy_summary(self, report):
+        """
+        Gera um resumo executivo do relatório de espionagem
+        
+        Args:
+            report (dict): Relatório completo de espionagem
+            
+        Returns:
+            dict: Resumo executivo
+        """
+        try:
+            analysis = report.get('analysis', {})
+            
+            # Extrair informações principais
+            competitors = analysis.get('competitors', [])
+            ad_patterns = analysis.get('ad_patterns', {})
+            opportunities = analysis.get('opportunities', [])
+            investment = analysis.get('investment_estimates', {})
+            
+            summary = {
+                "total_competitors_analyzed": len(competitors),
+                "top_competitor": competitors[0].get('name', 'N/A') if competitors else 'N/A',
+                "main_opportunity": opportunities[0] if opportunities else 'Não identificada',
+                "recommended_budget": investment.get('avg_budget', 5000),
+                "expected_cpc": investment.get('cpc_estimate', 1.5),
+                "expected_roas": investment.get('typical_roas', 3.0),
+                "most_used_format": ad_patterns.get('formats', ['Imagem única'])[0] if ad_patterns.get('formats') else 'Imagem única',
+                "key_insight": f"Mercado com {len(competitors)} concorrentes ativos. Oportunidade em {opportunities[0] if opportunities else 'diferenciação'}",
+                "action_items": [
+                    "Criar anúncios com headlines diferenciados",
+                    "Focar em ângulos inexplorados",
+                    "Testar formatos menos saturados",
+                    f"Budget inicial recomendado: R$ {investment.get('avg_budget', 5000)}"
+                ]
+            }
+            
+            return summary
+            
+        except Exception as e:
+            logger.error(f"Erro ao gerar resumo: {str(e)}")
+            return {
+                "total_competitors_analyzed": 0,
+                "top_competitor": "N/A",
+                "main_opportunity": "Análise indisponível",
+                "recommended_budget": 5000,
+                "expected_cpc": 1.5,
+                "expected_roas": 3.0,
+                "most_used_format": "Imagem única",
+                "key_insight": "Análise de concorrência em processamento",
+                "action_items": ["Aguardar análise completa"]
+            }
+
+
 # Instância global
 competitor_spy = CompetitorSpyEngine()
