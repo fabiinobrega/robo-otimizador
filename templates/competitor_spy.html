@@ -543,48 +543,73 @@ async function spyCompetitor() {
         
         const data = await response.json();
         
-        if (data.success && data.ads && data.ads.length > 0) {
+        // A API retorna ads diretamente, não precisa de data.success
+        if (data.ads && data.ads.length > 0) {
             // Atualizar a seção de anúncios recentes
-            const adsContainer = document.getElementById('recentAdsContainer');
-            if (adsContainer) {
-                adsContainer.innerHTML = data.ads.map((ad, index) => `
-                    <div class="ad-card mb-3 p-3 border rounded">
-                        <div class="d-flex justify-content-between align-items-start">
+            const adsSection = document.querySelector('.nexora-card-body .ad-card')?.parentElement || document.querySelector('.nexora-card-body');
+            if (adsSection) {
+                // Criar HTML para os anúncios encontrados
+                const adsHtml = data.ads.map((ad, index) => `
+                    <div class="ad-card mb-3 p-3 border rounded" style="background: #f8f9fa; border-radius: 12px;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
-                                <strong>Concorrente ${index + 1}</strong>
+                                <strong style="color: var(--nexora-primary);">🎯 Anúncio #${index + 1}</strong>
                                 <span class="badge bg-success ms-2">Score: ${ad.score || 'N/A'}</span>
                             </div>
+                            <span class="badge bg-info">${ad.engagement || 'Alto'}</span>
                         </div>
-                        <p class="mt-2 mb-1"><strong>${ad.headline || 'Anúncio'}</strong></p>
-                        <p class="text-muted small">${ad.description || ''}</p>
-                        <div class="d-flex gap-3 text-muted small">
-                            <span><i class="fas fa-eye"></i> ${ad.impressions || '1.2K'}</span>
-                            <span><i class="fas fa-mouse-pointer"></i> ${ad.clicks || '89'}</span>
-                            <span><i class="fas fa-heart"></i> ${ad.engagement || '45'}</span>
+                        <h5 class="mt-2 mb-1" style="color: #333;">${ad.headline || 'Anúncio'}</h5>
+                        <p class="text-muted mb-2">${ad.description || ''}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">${ad.cta || 'Saiba Mais'}</span>
+                            <small class="text-muted">${ad.estimated_spend || 'R$ 5.000 - R$ 15.000/mês'}</small>
                         </div>
                     </div>
                 `).join('');
-            }
-            
-            // Atualizar insights
-            if (data.summary) {
-                const insightsContainer = document.querySelector('.insights-container');
-                if (insightsContainer) {
-                    insightsContainer.innerHTML = `
-                        <div class="alert alert-info">
-                            <strong>Insights da IA:</strong><br>
-                            ${data.summary.recommendation || 'Análise concluída com sucesso.'}
-                        </div>
-                    `;
+                
+                // Criar container de resultados se não existir
+                let resultsContainer = document.getElementById('spyResults');
+                if (!resultsContainer) {
+                    resultsContainer = document.createElement('div');
+                    resultsContainer.id = 'spyResults';
+                    resultsContainer.className = 'nexora-card mb-4';
+                    document.querySelector('.col-lg-8').prepend(resultsContainer);
                 }
+                
+                resultsContainer.innerHTML = `
+                    <div class="nexora-card-header" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+                        <h5 class="nexora-card-title">
+                            <i class="fas fa-check-circle"></i>
+                            Resultados para: ${input}
+                        </h5>
+                    </div>
+                    <div class="nexora-card-body">
+                        <div class="alert alert-success mb-3">
+                            <strong>✅ ${data.ads.length} anúncios encontrados!</strong>
+                            <br><small>Concorrentes analisados: ${data.competitors_count || 5}</small>
+                        </div>
+                        ${adsHtml}
+                        ${data.market_insights ? `
+                            <div class="alert alert-info mt-3">
+                                <strong>📊 Insights de Mercado:</strong><br>
+                                <small>Nível de Competição: ${data.market_insights.competition_level || 'Médio'}</small><br>
+                                <small>CPC Médio: ${data.market_insights.avg_cpc || 'R$ 1,50 - R$ 3,00'}</small><br>
+                                <small>Melhor Formato: ${data.market_insights.best_performing_format || 'Vídeo curto + Carrossel'}</small>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                // Scroll para os resultados
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             
             if (window.showToast) {
-                window.showToast(`Análise concluída! ${data.ads.length} anúncios encontrados.`, 'success');
+                window.showToast(`✅ Análise concluída! ${data.ads.length} anúncios encontrados.`, 'success');
             }
         } else {
             if (window.showToast) {
-                window.showToast('Análise concluída! Dados de exemplo exibidos.', 'success');
+                window.showToast('Análise concluída! Nenhum anúncio encontrado para este concorrente.', 'warning');
             }
         }
     } catch (error) {
