@@ -38,7 +38,13 @@ except ImportError:
     NATIVE_AI_AVAILABLE = False
 
 # Inicializar cliente OpenAI
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) if os.getenv("OPENAI_API_KEY") else None
+client = None
+try:
+    if os.getenv("OPENAI_API_KEY"):
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+except Exception as e:
+    print(f"⚠️ Erro ao inicializar OpenAI: {e}")
+    client = None
 
 
 def generate_ad_copy(product_info, platform="facebook", num_variants=5):
