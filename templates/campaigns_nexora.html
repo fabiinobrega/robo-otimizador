@@ -1,0 +1,249 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Campanhas - NEXORA{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="nexora-page-header">
+    <h1 class="nexora-page-title">Campanhas</h1>
+    <p class="nexora-page-subtitle">Gerencie e otimize todas as suas campanhas</p>
+</div>
+
+<!-- Actions Bar -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-6);">
+    <div style="display: flex; gap: var(--spacing-3);">
+        <!-- Search -->
+        <div style="position: relative;">
+            <input 
+                type="text" 
+                class="form-input-nexora" 
+                placeholder="Buscar campanhas..." 
+                style="padding-left: 36px; width: 300px;"
+                id="campaignSearch"
+                onkeyup="filterCampaigns()"
+            />
+            <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+        </div>
+        
+        <!-- Filters -->
+        <select class="form-input-nexora" style="width: 150px;" id="statusFilter" onchange="filterCampaigns()">
+            <option value="">Todos os status</option>
+            <option value="active">Ativas</option>
+            <option value="paused">Pausadas</option>
+            <option value="completed">Concluídas</option>
+        </select>
+        
+        <select class="form-input-nexora" style="width: 150px;" id="platformFilter" onchange="filterCampaigns()">
+            <option value="">Todas as plataformas</option>
+            <option value="facebook">Facebook</option>
+            <option value="google">Google</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+        </select>
+    </div>
+    
+    <a href="/create-campaign" class="btn-nexora btn-nexora-primary">
+        <i class="fas fa-plus"></i>
+        Nova Campanha
+    </a>
+</div>
+
+<!-- Stats Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-4); margin-bottom: var(--spacing-6);">
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">Total de Campanhas</div>
+        <div class="nexora-stat-value" style="font-size: var(--text-2xl);" id="totalCampaigns">0</div>
+    </div>
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">Ativas</div>
+        <div class="nexora-stat-value" style="font-size: var(--text-2xl); color: var(--accent-success);" id="activeCampaigns">0</div>
+    </div>
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">Pausadas</div>
+        <div class="nexora-stat-value" style="font-size: var(--text-2xl); color: var(--accent-warning);" id="pausedCampaigns">0</div>
+    </div>
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">Investimento Total</div>
+        <div class="nexora-stat-value" style="font-size: var(--text-2xl);" id="totalInvestment">R$ 0</div>
+    </div>
+</div>
+
+<!-- Campaigns Table -->
+<div class="nexora-card">
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-primary);">
+                    <th style="text-align: left; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Campanha</th>
+                    <th style="text-align: left; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Plataforma</th>
+                    <th style="text-align: right; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Investido</th>
+                    <th style="text-align: right; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Receita</th>
+                    <th style="text-align: right; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">ROAS</th>
+                    <th style="text-align: center; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Status</th>
+                    <th style="text-align: center; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="campaignsTableBody">
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: var(--spacing-8);">
+                        <div class="nexora-spinner" style="margin: 0 auto;"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+let allCampaigns = [];
+
+async function loadCampaigns() {
+    try {
+        const response = await fetch('/api/campaigns');
+        const data = await response.json();
+        
+        if (data.success && data.campaigns) {
+            allCampaigns = data.campaigns;
+            renderCampaigns(allCampaigns);
+            updateStats(allCampaigns);
+        } else {
+            // Show empty state
+            document.getElementById('campaignsTableBody').innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        <div class="nexora-empty-state">
+                            <div class="nexora-empty-state-icon"><i class="fas fa-bullhorn"></i></div>
+                            <div class="nexora-empty-state-title">Nenhuma campanha encontrada</div>
+                            <div class="nexora-empty-state-message">Crie sua primeira campanha para começar</div>
+                            <a href="/create-campaign" class="btn-nexora btn-nexora-primary">
+                                <i class="fas fa-plus"></i>
+                                Criar Campanha
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading campaigns:', error);
+        NEXORA.showToast('Erro', 'Não foi possível carregar as campanhas', 'error');
+    }
+}
+
+function renderCampaigns(campaigns) {
+    const tbody = document.getElementById('campaignsTableBody');
+    
+    if (campaigns.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    <div class="nexora-empty-state">
+                        <div class="nexora-empty-state-icon"><i class="fas fa-search"></i></div>
+                        <div class="nexora-empty-state-title">Nenhum resultado encontrado</div>
+                        <div class="nexora-empty-state-message">Tente ajustar os filtros</div>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tbody.innerHTML = campaigns.map(c => {
+        const statusColors = {
+            active: 'var(--accent-success)',
+            paused: 'var(--accent-warning)',
+            completed: 'var(--text-tertiary)'
+        };
+        
+        const statusLabels = {
+            active: 'Ativa',
+            paused: 'Pausada',
+            completed: 'Concluída'
+        };
+        
+        return `
+            <tr style="border-bottom: 1px solid var(--border-primary); transition: background-color var(--transition-fast);" onmouseover="this.style.backgroundColor='var(--fill-primary)'" onmouseout="this.style.backgroundColor='transparent'">
+                <td style="padding: var(--spacing-3);">
+                    <div style="font-size: var(--text-sm); font-weight: 500; color: var(--text-primary);">${c.name}</div>
+                    <div style="font-size: var(--text-xs); color: var(--text-tertiary);">Criada em ${c.created_at || 'N/A'}</div>
+                </td>
+                <td style="padding: var(--spacing-3);">
+                    <span style="display: inline-block; padding: 4px 8px; background-color: var(--fill-secondary); border-radius: var(--radius-md); font-size: var(--text-xs); color: var(--text-secondary);">
+                        ${c.platform || 'N/A'}
+                    </span>
+                </td>
+                <td style="padding: var(--spacing-3); text-align: right; font-size: var(--text-sm); color: var(--text-secondary);">
+                    ${NEXORA.formatCurrency(c.spent || 0)}
+                </td>
+                <td style="padding: var(--spacing-3); text-align: right; font-size: var(--text-sm); color: var(--text-secondary);">
+                    ${NEXORA.formatCurrency(c.revenue || 0)}
+                </td>
+                <td style="padding: var(--spacing-3); text-align: right; font-size: var(--text-sm); font-weight: 600; color: ${(c.roas || 0) >= 2 ? 'var(--accent-success)' : 'var(--text-secondary)'};">
+                    ${(c.roas || 0).toFixed(2)}x
+                </td>
+                <td style="padding: var(--spacing-3); text-align: center;">
+                    <span style="display: inline-block; padding: 4px 8px; background-color: rgba(${statusColors[c.status] === 'var(--accent-success)' ? '34, 197, 94' : statusColors[c.status] === 'var(--accent-warning)' ? '249, 115, 22' : '115, 115, 115'}, 0.1); color: ${statusColors[c.status]}; border-radius: var(--radius-md); font-size: var(--text-xs); font-weight: 500;">
+                        ${statusLabels[c.status] || c.status}
+                    </span>
+                </td>
+                <td style="padding: var(--spacing-3); text-align: center;">
+                    <div style="display: flex; gap: var(--spacing-2); justify-content: center;">
+                        <button class="nexora-icon-btn" style="width: 32px; height: 32px;" title="Ver detalhes" onclick="viewCampaign(${c.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="nexora-icon-btn" style="width: 32px; height: 32px;" title="Editar" onclick="editCampaign(${c.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="nexora-icon-btn" style="width: 32px; height: 32px;" title="Excluir" onclick="deleteCampaign(${c.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function updateStats(campaigns) {
+    document.getElementById('totalCampaigns').textContent = campaigns.length;
+    document.getElementById('activeCampaigns').textContent = campaigns.filter(c => c.status === 'active').length;
+    document.getElementById('pausedCampaigns').textContent = campaigns.filter(c => c.status === 'paused').length;
+    
+    const totalInvestment = campaigns.reduce((sum, c) => sum + (c.spent || 0), 0);
+    document.getElementById('totalInvestment').textContent = NEXORA.formatCurrency(totalInvestment);
+}
+
+function filterCampaigns() {
+    const searchTerm = document.getElementById('campaignSearch').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const platformFilter = document.getElementById('platformFilter').value;
+    
+    const filtered = allCampaigns.filter(c => {
+        const matchesSearch = c.name.toLowerCase().includes(searchTerm);
+        const matchesStatus = !statusFilter || c.status === statusFilter;
+        const matchesPlatform = !platformFilter || c.platform === platformFilter;
+        return matchesSearch && matchesStatus && matchesPlatform;
+    });
+    
+    renderCampaigns(filtered);
+}
+
+function viewCampaign(id) {
+    window.location.href = `/campaign/${id}`;
+}
+
+function editCampaign(id) {
+    window.location.href = `/campaign/${id}/edit`;
+}
+
+function deleteCampaign(id) {
+    if (confirm('Tem certeza que deseja excluir esta campanha?')) {
+        // TODO: Implement delete
+        NEXORA.showToast('Sucesso', 'Campanha excluída com sucesso', 'success');
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', loadCampaigns);
+</script>
+{% endblock %}

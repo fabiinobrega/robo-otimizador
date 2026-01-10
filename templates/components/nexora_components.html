@@ -1,0 +1,277 @@
+<!-- NEXORA Premium Components -->
+
+<!-- Toast Notification Container -->
+<div id="nexora-toast-container" style="position: fixed; top: var(--spacing-6); right: var(--spacing-6); z-index: var(--z-tooltip); display: flex; flex-direction: column; gap: var(--spacing-3);"></div>
+
+<!-- Global Search Modal -->
+<div id="nexora-search-modal" class="nexora-modal" style="display: none;">
+    <div class="nexora-modal-backdrop" onclick="closeSearchModal()"></div>
+    <div class="nexora-modal-content" style="max-width: 600px; margin: 10vh auto;">
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);">
+            <div style="padding: var(--spacing-5); border-bottom: 1px solid var(--border-primary);">
+                <div style="display: flex; align-items: center; gap: var(--spacing-3);">
+                    <i class="fas fa-search" style="color: var(--text-tertiary);"></i>
+                    <input 
+                        type="text" 
+                        id="nexora-search-input" 
+                        placeholder="Buscar campanhas, anúncios, relatórios..." 
+                        style="flex: 1; background: transparent; border: none; outline: none; color: var(--text-primary); font-size: var(--text-base);"
+                        onkeyup="handleSearchInput(event)"
+                    />
+                    <kbd style="padding: 2px 6px; background-color: var(--fill-primary); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-tertiary);">ESC</kbd>
+                </div>
+            </div>
+            <div id="nexora-search-results" style="max-height: 400px; overflow-y: auto; padding: var(--spacing-3);">
+                <div style="text-align: center; padding: var(--spacing-8); color: var(--text-tertiary);">
+                    Digite para buscar...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal Styles */
+.nexora-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-modal);
+}
+
+.nexora-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+}
+
+.nexora-modal-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Toast Styles */
+.nexora-toast {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.nexora-toast-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nexora-toast-content {
+    flex: 1;
+}
+
+.nexora-toast-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-1);
+}
+
+.nexora-toast-message {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.nexora-toast-close {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    transition: color var(--transition-fast);
+}
+
+.nexora-toast-close:hover {
+    color: var(--text-primary);
+}
+
+/* Loading Spinner */
+.nexora-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-primary);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Empty State */
+.nexora-empty-state {
+    text-align: center;
+    padding: var(--spacing-12) var(--spacing-6);
+}
+
+.nexora-empty-state-icon {
+    font-size: 48px;
+    color: var(--text-tertiary);
+    margin-bottom: var(--spacing-4);
+}
+
+.nexora-empty-state-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-2);
+}
+
+.nexora-empty-state-message {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-6);
+}
+</style>
+
+<script>
+// Global Search
+function openSearchModal() {
+    document.getElementById('nexora-search-modal').style.display = 'block';
+    document.getElementById('nexora-search-input').focus();
+}
+
+function closeSearchModal() {
+    document.getElementById('nexora-search-modal').style.display = 'none';
+    document.getElementById('nexora-search-input').value = '';
+    document.getElementById('nexora-search-results').innerHTML = '<div style="text-align: center; padding: var(--spacing-8); color: var(--text-tertiary);">Digite para buscar...</div>';
+}
+
+async function handleSearchInput(event) {
+    const query = event.target.value.trim();
+    
+    if (event.key === 'Escape') {
+        closeSearchModal();
+        return;
+    }
+    
+    if (query.length < 2) {
+        document.getElementById('nexora-search-results').innerHTML = '<div style="text-align: center; padding: var(--spacing-8); color: var(--text-tertiary);">Digite pelo menos 2 caracteres...</div>';
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('nexora-search-results').innerHTML = '<div style="text-align: center; padding: var(--spacing-8);"><div class="nexora-spinner"></div></div>';
+    
+    try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (data.results && data.results.length > 0) {
+            const resultsHTML = data.results.map(result => `
+                <a href="${result.url}" style="display: block; padding: var(--spacing-3); border-radius: var(--radius-lg); text-decoration: none; transition: background-color var(--transition-fast);" onmouseover="this.style.backgroundColor='var(--fill-primary)'" onmouseout="this.style.backgroundColor='transparent'">
+                    <div style="font-size: var(--text-sm); font-weight: 500; color: var(--text-primary); margin-bottom: var(--spacing-1);">${result.title}</div>
+                    <div style="font-size: var(--text-xs); color: var(--text-tertiary);">${result.category}</div>
+                </a>
+            `).join('');
+            document.getElementById('nexora-search-results').innerHTML = resultsHTML;
+        } else {
+            document.getElementById('nexora-search-results').innerHTML = '<div class="nexora-empty-state"><div class="nexora-empty-state-icon"><i class="fas fa-search"></i></div><div class="nexora-empty-state-title">Nenhum resultado encontrado</div><div class="nexora-empty-state-message">Tente usar outros termos de busca</div></div>';
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        document.getElementById('nexora-search-results').innerHTML = '<div style="text-align: center; padding: var(--spacing-8); color: var(--accent-danger);">Erro ao buscar. Tente novamente.</div>';
+    }
+}
+
+// Toast Notifications
+function showNexoraToast(title, message, type = 'info') {
+    const container = document.getElementById('nexora-toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'nexora-toast';
+    
+    const icons = {
+        success: '<i class="fas fa-check-circle" style="color: var(--accent-success);"></i>',
+        error: '<i class="fas fa-times-circle" style="color: var(--accent-danger);"></i>',
+        warning: '<i class="fas fa-exclamation-triangle" style="color: var(--accent-warning);"></i>',
+        info: '<i class="fas fa-info-circle" style="color: var(--accent-info);"></i>'
+    };
+    
+    toast.innerHTML = `
+        <div class="nexora-toast-icon">${icons[type] || icons.info}</div>
+        <div class="nexora-toast-content">
+            <div class="nexora-toast-title">${title}</div>
+            <div class="nexora-toast-message">${message}</div>
+        </div>
+        <div class="nexora-toast-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </div>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+
+// Update global NEXORA object
+if (typeof NEXORA !== 'undefined') {
+    NEXORA.showToast = showNexoraToast;
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // Ctrl+K or Cmd+K to open search
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearchModal();
+    }
+    
+    // ESC to close search
+    if (e.key === 'Escape') {
+        closeSearchModal();
+    }
+});
+
+// Bind search button
+document.addEventListener('DOMContentLoaded', () => {
+    const searchBtn = document.querySelector('.nexora-search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', openSearchModal);
+    }
+});
+</script>
