@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NEXORA - Autonomous Growth Platform{% endblock %}</title>
+    
+    <!-- NEXORA Premium Theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nexora-premium-theme.css') }}">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js (for data visualization) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.js"></script>
+    
+    {% block extra_head %}{% endblock %}
+    
+    <style>
+        /* ============================================
+           LAYOUT STRUCTURE
+           ============================================ */
+        .nexora-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .nexora-sidebar {
+            width: 240px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-primary);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: var(--z-fixed);
+        }
+
+        .nexora-sidebar-header {
+            padding: var(--spacing-6) var(--spacing-5);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .nexora-logo {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+
+        .nexora-logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #6366f1 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-sm);
+            color: var(--text-on-accent);
+        }
+
+        .nexora-sidebar-nav {
+            flex: 1;
+            padding: var(--spacing-4) var(--spacing-3);
+        }
+
+        .nexora-nav-section {
+            margin-bottom: var(--spacing-6);
+        }
+
+        .nexora-nav-section-title {
+            font-size: var(--text-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
+            padding: 0 var(--spacing-3);
+            margin-bottom: var(--spacing-2);
+        }
+
+        .nexora-nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            padding: var(--spacing-2) var(--spacing-3);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-lg);
+            transition: all var(--transition-fast);
+        }
+
+        .nexora-nav-link:hover {
+            background-color: var(--fill-primary);
+            color: var(--text-primary);
+        }
+
+        .nexora-nav-link.active {
+            background-color: var(--fill-secondary);
+            color: var(--text-primary);
+        }
+
+        .nexora-nav-link i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Content Area */
+        .nexora-main {
+            flex: 1;
+            margin-left: 240px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nexora-topbar {
+            height: 64px;
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-6);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+        }
+
+        .nexora-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-4);
+        }
+
+        .nexora-topbar-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+
+        .nexora-search-btn,
+        .nexora-icon-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            background-color: transparent;
+            border: 1px solid var(--border-primary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .nexora-search-btn:hover,
+        .nexora-icon-btn:hover {
+            background-color: var(--fill-primary);
+            color: var(--text-primary);
+        }
+
+        .nexora-content {
+            flex: 1;
+            padding: var(--spacing-8);
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           COMPONENTS
+           ============================================ */
+        
+        /* Breadcrumb */
+        .nexora-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            margin-bottom: var(--spacing-6);
+        }
+
+        .nexora-breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .nexora-breadcrumb a:hover {
+            color: var(--text-primary);
+        }
+
+        .nexora-breadcrumb-separator {
+            color: var(--text-tertiary);
+        }
+
+        /* Page Header */
+        .nexora-page-header {
+            margin-bottom: var(--spacing-8);
+        }
+
+        .nexora-page-title {
+            font-size: var(--text-3xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-2);
+        }
+
+        .nexora-page-subtitle {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+        }
+
+        /* Cards */
+        .nexora-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-6);
+            transition: all var(--transition-base);
+        }
+
+        .nexora-card:hover {
+            border-color: var(--border-secondary);
+        }
+
+        /* Stat Card */
+        .nexora-stat-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-5);
+        }
+
+        .nexora-stat-label {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            margin-bottom: var(--spacing-2);
+        }
+
+        .nexora-stat-value {
+            font-size: var(--text-3xl);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nexora-stat-change {
+            font-size: var(--text-sm);
+            margin-top: var(--spacing-2);
+        }
+
+        .nexora-stat-change.positive {
+            color: var(--accent-success);
+        }
+
+        .nexora-stat-change.negative {
+            color: var(--accent-danger);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .nexora-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .nexora-main {
+                margin-left: 0;
+            }
+
+            .nexora-content {
+                padding: var(--spacing-4);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nexora-layout">
+        <!-- Sidebar -->
+        <aside class="nexora-sidebar">
+            <div class="nexora-sidebar-header">
+                <a href="/" class="nexora-logo">
+                    <span class="nexora-logo-icon">
+                        <i class="fas fa-bolt"></i>
+                    </span>
+                    NEXORA
+                </a>
+            </div>
+
+            <nav class="nexora-sidebar-nav">
+                <div class="nexora-nav-section">
+                    <div class="nexora-nav-section-title">Overview</div>
+                    <a href="/dashboard" class="nexora-nav-link {% if request.path == '/dashboard' %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="/campaigns" class="nexora-nav-link {% if request.path == '/campaigns' %}active{% endif %}">
+                        <i class="fas fa-bullhorn"></i>
+                        Campanhas
+                    </a>
+                    <a href="/reports" class="nexora-nav-link {% if request.path == '/reports' %}active{% endif %}">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatórios
+                    </a>
+                </div>
+
+                <div class="nexora-nav-section">
+                    <div class="nexora-nav-section-title">Criação</div>
+                    <a href="/create-campaign" class="nexora-nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        Nova Campanha
+                    </a>
+                    <a href="/create-perfect-ad-v2" class="nexora-nav-link">
+                        <i class="fas fa-ad"></i>
+                        Criar Anúncio
+                    </a>
+                    <a href="/funnel-builder" class="nexora-nav-link">
+                        <i class="fas fa-filter"></i>
+                        Funil Builder
+                    </a>
+                    <a href="/landing-page-builder" class="nexora-nav-link">
+                        <i class="fas fa-file-alt"></i>
+                        Landing Page
+                    </a>
+                </div>
+
+                <div class="nexora-nav-section">
+                    <div class="nexora-nav-section-title">Inteligência</div>
+                    <a href="/velyra_prime" class="nexora-nav-link">
+                        <i class="fas fa-brain"></i>
+                        Velyra Prime
+                    </a>
+                    <a href="/ai-copywriter" class="nexora-nav-link">
+                        <i class="fas fa-pen-fancy"></i>
+                        AI Copywriter
+                    </a>
+                    <a href="/segmentation" class="nexora-nav-link">
+                        <i class="fas fa-users"></i>
+                        Segmentação
+                    </a>
+                    <a href="/competitor-spy" class="nexora-nav-link">
+                        <i class="fas fa-user-secret"></i>
+                        Competitor Spy
+                    </a>
+                </div>
+
+                <div class="nexora-nav-section">
+                    <div class="nexora-nav-section-title">Automação</div>
+                    <a href="/automation" class="nexora-nav-link">
+                        <i class="fas fa-cogs"></i>
+                        Regras
+                    </a>
+                    <a href="/ab-testing" class="nexora-nav-link">
+                        <i class="fas fa-flask"></i>
+                        A/B Testing
+                    </a>
+                    <a href="/dco-builder" class="nexora-nav-link">
+                        <i class="fas fa-magic"></i>
+                        DCO Builder
+                    </a>
+                </div>
+
+                <div class="nexora-nav-section">
+                    <div class="nexora-nav-section-title">Configurações</div>
+                    <a href="/integrations" class="nexora-nav-link">
+                        <i class="fas fa-plug"></i>
+                        Integrações
+                    </a>
+                    <a href="/media-library" class="nexora-nav-link">
+                        <i class="fas fa-images"></i>
+                        Biblioteca
+                    </a>
+                    <a href="/settings" class="nexora-nav-link">
+                        <i class="fas fa-sliders-h"></i>
+                        Configurações
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="nexora-main">
+            <!-- Top Bar -->
+            <header class="nexora-topbar">
+                <div class="nexora-topbar-left">
+                    {% block topbar_left %}{% endblock %}
+                </div>
+                <div class="nexora-topbar-right">
+                    <button class="nexora-search-btn" title="Buscar (Ctrl+K)">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="nexora-icon-btn" title="Notificações">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="nexora-icon-btn" title="Configurações">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="nexora-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Global NEXORA utilities
+        const NEXORA = {
+            // Format currency
+            formatCurrency: (value) => {
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(value);
+            },
+
+            // Format number
+            formatNumber: (value) => {
+                return new Intl.NumberFormat('pt-BR').format(value);
+            },
+
+            // Format percentage
+            formatPercentage: (value) => {
+                return `${value.toFixed(2)}%`;
+            },
+
+            // Show toast notification
+            showToast: (message, type = 'info') => {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                // TODO: Implement actual toast UI
+            }
+        };
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

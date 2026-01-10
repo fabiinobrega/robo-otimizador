@@ -1,0 +1,248 @@
+/*
+ * NEXORA - The Autonomous Growth Platform
+ * Premium Design System v1.0
+ * Inspired by Stripe, Linear, and Notion for a world-class SaaS experience.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* ============================================
+       COLOR PALETTE (Dark Mode First)
+       ============================================ */
+    --bg-primary: #0A0A0A; /* Primary background, almost black */
+    --bg-secondary: #141414; /* Secondary background for cards, modals */
+    --bg-tertiary: #1A1A1A; /* Tertiary background for elevated elements */
+
+    --fill-primary: #1F1F1F; /* Input fields, buttons */
+    --fill-secondary: #292929;
+    --fill-tertiary: #333333;
+
+    --text-primary: #F5F5F5; /* For main text */
+    --text-secondary: #A3A3A3; /* For secondary, less important text */
+    --text-tertiary: #737373; /* For disabled or placeholder text */
+    --text-on-accent: #FFFFFF;
+
+    --border-primary: #262626; /* Main border color */
+    --border-secondary: #363636; /* Lighter border for dividers */
+    --border-focus: #525252;
+
+    /* Accents */
+    --accent-primary: #4f46e5; /* Indigo for primary actions */
+    --accent-success: #22c55e; /* Green for success */
+    --accent-warning: #f97316; /* Orange for warnings */
+    --accent-danger: #ef4444; /* Red for danger/errors */
+    --accent-info: #3b82f6; /* Blue for informational messages */
+
+    /* ============================================
+       TYPOGRAPHY
+       ============================================ */
+    --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-family-mono: 'Fira Code', 'Courier New', monospace;
+
+    --text-xs: 0.75rem;   /* 12px */
+    --text-sm: 0.875rem;  /* 14px */
+    --text-base: 1rem;      /* 16px */
+    --text-lg: 1.125rem;  /* 18px */
+    --text-xl: 1.25rem;   /* 20px */
+    --text-2xl: 1.5rem;   /* 24px */
+    --text-3xl: 1.875rem; /* 30px */
+    --text-4xl: 2.25rem;  /* 36px */
+
+    /* ============================================
+       SPACING & LAYOUT
+       ============================================ */
+    --spacing-px: 1px;
+    --spacing-1: 0.25rem;  /* 4px */
+    --spacing-2: 0.5rem;   /* 8px */
+    --spacing-3: 0.75rem;  /* 12px */
+    --spacing-4: 1rem;     /* 16px */
+    --spacing-5: 1.25rem;  /* 20px */
+    --spacing-6: 1.5rem;   /* 24px */
+    --spacing-8: 2rem;     /* 32px */
+    --spacing-10: 2.5rem;  /* 40px */
+    --spacing-12: 3rem;    /* 48px */
+    --spacing-16: 4rem;    /* 64px */
+
+    /* ============================================
+       BORDERS & RADII
+       ============================================ */
+    --radius-sm: 0.25rem;  /* 4px */
+    --radius-md: 0.375rem; /* 6px */
+    --radius-lg: 0.5rem;   /* 8px */
+    --radius-xl: 0.75rem;  /* 12px */
+    --radius-full: 9999px;
+
+    /* ============================================
+       SHADOWS & EFFECTS
+       ============================================ */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+
+    /* ============================================
+       TRANSITIONS
+       ============================================ */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ============================================
+       Z-INDEX
+       ============================================ */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+}
+
+/* ============================================
+   BASE & RESET STYLES
+   ============================================ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-4);
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+h5 { font-size: var(--text-base); }
+h6 { font-size: var(--text-sm); }
+
+p {
+    margin-bottom: var(--spacing-4);
+    color: var(--text-secondary);
+}
+
+a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   GLOBAL COMPONENTS
+   ============================================ */
+
+/* Buttons */
+.btn-nexora {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.25;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-nexora:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-nexora-primary {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--text-on-accent);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-nexora-primary:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+.btn-nexora-secondary {
+    background-color: var(--fill-primary);
+    color: var(--text-primary);
+}
+
+.btn-nexora-secondary:hover:not(:disabled) {
+    background-color: var(--fill-secondary);
+    border-color: var(--border-secondary);
+}
+
+/* Cards */
+.card-nexora {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-md);
+}
+
+/* Forms */
+.form-group-nexora {
+    margin-bottom: var(--spacing-5);
+}
+
+.form-label-nexora {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-2);
+}
+
+.form-input-nexora {
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--text-base);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    background-color: var(--fill-primary);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.form-input-nexora:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.form-input-nexora::placeholder {
+    color: var(--text-tertiary);
+}
+

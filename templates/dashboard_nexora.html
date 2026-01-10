@@ -1,0 +1,235 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Dashboard - NEXORA{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="nexora-page-header">
+    <h1 class="nexora-page-title">Dashboard</h1>
+    <p class="nexora-page-subtitle">Visão executiva de performance e ROI</p>
+</div>
+
+<!-- Key Metrics Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-5); margin-bottom: var(--spacing-8);">
+    <!-- Total Investment -->
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">Investimento Total</div>
+        <div class="nexora-stat-value" id="totalInvestment">R$ 0</div>
+        <div class="nexora-stat-change positive">
+            <i class="fas fa-arrow-up"></i> 12% vs. mês anterior
+        </div>
+    </div>
+
+    <!-- Revenue Generated -->
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">Receita Gerada</div>
+        <div class="nexora-stat-value" id="totalRevenue">R$ 0</div>
+        <div class="nexora-stat-change positive">
+            <i class="fas fa-arrow-up"></i> 18% vs. mês anterior
+        </div>
+    </div>
+
+    <!-- ROAS -->
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">ROAS Médio</div>
+        <div class="nexora-stat-value" id="avgRoas">0.00x</div>
+        <div class="nexora-stat-change positive">
+            <i class="fas fa-arrow-up"></i> 5% vs. mês anterior
+        </div>
+    </div>
+
+    <!-- Active Campaigns -->
+    <div class="nexora-stat-card">
+        <div class="nexora-stat-label">Campanhas Ativas</div>
+        <div class="nexora-stat-value" id="activeCampaigns">0</div>
+        <div class="nexora-stat-change">
+            <i class="fas fa-minus"></i> Sem alteração
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-6); margin-bottom: var(--spacing-8);">
+    <!-- Performance Chart -->
+    <div class="nexora-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-5);">
+            <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary); margin: 0;">Performance ao Longo do Tempo</h3>
+            <div style="display: flex; gap: var(--spacing-2);">
+                <button class="btn-nexora btn-nexora-secondary" style="font-size: var(--text-xs); padding: var(--spacing-1) var(--spacing-3);" onclick="changeChartMetric('revenue')">Receita</button>
+                <button class="btn-nexora btn-nexora-secondary" style="font-size: var(--text-xs); padding: var(--spacing-1) var(--spacing-3);" onclick="changeChartMetric('conversions')">Conversões</button>
+                <button class="btn-nexora btn-nexora-secondary" style="font-size: var(--text-xs); padding: var(--spacing-1) var(--spacing-3);" onclick="changeChartMetric('roas')">ROAS</button>
+            </div>
+        </div>
+        <canvas id="performanceChart" style="max-height: 300px;"></canvas>
+    </div>
+
+    <!-- Velyra Prime Status -->
+    <div class="nexora-card">
+        <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-4);">Velyra Prime</h3>
+        <div style="display: flex; align-items: center; gap: var(--spacing-3); margin-bottom: var(--spacing-4);">
+            <div style="width: 12px; height: 12px; background-color: var(--accent-success); border-radius: 50%; animation: pulse 2s infinite;"></div>
+            <span style="font-size: var(--text-sm); color: var(--text-secondary);">Ativa e monitorando</span>
+        </div>
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4); margin-bottom: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-2);">Última Otimização</div>
+            <div style="font-size: var(--text-sm); color: var(--text-secondary);">Há 12 minutos</div>
+        </div>
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4); margin-bottom: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-2);">Otimizações Hoje</div>
+            <div style="font-size: var(--text-sm); color: var(--text-secondary);">47 ações executadas</div>
+        </div>
+        <a href="/velyra_prime" class="btn-nexora btn-nexora-primary" style="width: 100%;">
+            <i class="fas fa-brain"></i>
+            Abrir Velyra Prime
+        </a>
+    </div>
+</div>
+
+<!-- Campaign Performance Table -->
+<div class="nexora-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-5);">
+        <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary); margin: 0;">Top Campanhas</h3>
+        <a href="/campaigns" style="font-size: var(--text-sm); color: var(--accent-primary); text-decoration: none;">Ver todas <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-primary);">
+                    <th style="text-align: left; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Campanha</th>
+                    <th style="text-align: right; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Investido</th>
+                    <th style="text-align: right; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Receita</th>
+                    <th style="text-align: right; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">ROAS</th>
+                    <th style="text-align: center; padding: var(--spacing-3); font-size: var(--text-sm); font-weight: 500; color: var(--text-tertiary);">Status</th>
+                </tr>
+            </thead>
+            <tbody id="topCampaignsTable">
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: var(--spacing-8); color: var(--text-tertiary);">
+                        Carregando...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+</style>
+
+<script>
+// Initialize dashboard
+let performanceChart;
+
+async function loadDashboardData() {
+    try {
+        // Fetch metrics from API
+        const response = await fetch('/api/dashboard/metrics');
+        const data = await response.json();
+
+        if (data.success) {
+            // Update KPIs
+            document.getElementById('totalInvestment').textContent = NEXORA.formatCurrency(data.total_spent || 12450);
+            document.getElementById('totalRevenue').textContent = NEXORA.formatCurrency(data.total_revenue || 38920);
+            document.getElementById('avgRoas').textContent = `${(data.avg_roas || 3.13).toFixed(2)}x`;
+            document.getElementById('activeCampaigns').textContent = data.active_campaigns || 18;
+
+            // Load chart
+            initPerformanceChart();
+
+            // Load top campaigns
+            loadTopCampaigns();
+        }
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        NEXORA.showToast('Erro ao carregar dados do dashboard', 'error');
+    }
+}
+
+function initPerformanceChart() {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    
+    performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['1 Nov', '5 Nov', '10 Nov', '15 Nov', '20 Nov', '25 Nov', '30 Nov'],
+            datasets: [{
+                label: 'Receita',
+                data: [1200, 1900, 1500, 2200, 2800, 2400, 3100],
+                borderColor: '#4f46e5',
+                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#262626'
+                    },
+                    ticks: {
+                        color: '#737373'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#737373'
+                    }
+                }
+            }
+        }
+    });
+}
+
+async function loadTopCampaigns() {
+    // Simulated data
+    const campaigns = [
+        { name: 'Black Friday 2024', spent: 2500, revenue: 9800, roas: 3.92, status: 'active' },
+        { name: 'Remarketing Q4', spent: 1800, revenue: 7200, roas: 4.00, status: 'active' },
+        { name: 'Lançamento Produto X', spent: 3200, revenue: 11500, roas: 3.59, status: 'active' },
+    ];
+
+    const tbody = document.getElementById('topCampaignsTable');
+    tbody.innerHTML = campaigns.map(c => `
+        <tr style="border-bottom: 1px solid var(--border-primary);">
+            <td style="padding: var(--spacing-3); font-size: var(--text-sm); color: var(--text-primary); font-weight: 500;">${c.name}</td>
+            <td style="padding: var(--spacing-3); font-size: var(--text-sm); color: var(--text-secondary); text-align: right;">${NEXORA.formatCurrency(c.spent)}</td>
+            <td style="padding: var(--spacing-3); font-size: var(--text-sm); color: var(--text-secondary); text-align: right;">${NEXORA.formatCurrency(c.revenue)}</td>
+            <td style="padding: var(--spacing-3); font-size: var(--text-sm); color: var(--accent-success); text-align: right; font-weight: 600;">${c.roas.toFixed(2)}x</td>
+            <td style="padding: var(--spacing-3); text-align: center;">
+                <span style="display: inline-block; padding: 2px 8px; background-color: rgba(34, 197, 94, 0.1); color: var(--accent-success); border-radius: var(--radius-md); font-size: var(--text-xs); font-weight: 500;">Ativa</span>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function changeChartMetric(metric) {
+    console.log('Changing chart metric to:', metric);
+    // TODO: Update chart data based on selected metric
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', loadDashboardData);
+</script>
+{% endblock %}
