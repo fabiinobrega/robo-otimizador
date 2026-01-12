@@ -780,7 +780,7 @@ def index():
 
 @app.route("/create-campaign")
 def create_campaign():
-    return render_template("create_campaign.html")
+    return render_template("create_campaign_nexora.html")
 
 
 @app.route("/campaigns")
@@ -788,7 +788,7 @@ def campaigns():
     db = get_db()
     try:
         campaigns_list = db.execute("SELECT * FROM campaigns ORDER BY created_at DESC").fetchall()
-        return render_template("campaigns.html", campaigns=campaigns_list)
+        return render_template("campaigns_nexora.html", campaigns=campaigns_list)
     except:
         return render_template("campaigns.html", campaigns=[])
 
@@ -799,7 +799,7 @@ def dashboard():
     try:
         campaigns_list = db.execute("SELECT * FROM campaigns ORDER BY created_at DESC LIMIT 5").fetchall()
         logs = db.execute("SELECT * FROM activity_logs ORDER BY timestamp DESC LIMIT 10").fetchall()
-        return render_template("dashboard.html", campaigns=campaigns_list, logs=logs)
+        return render_template("dashboard_nexora.html", campaigns=campaigns_list, logs=logs)
     except:
         return render_template("dashboard.html", campaigns=[], logs=[])
 
@@ -826,7 +826,7 @@ def segmentation():
 
 @app.route("/reports")
 def reports():
-    return render_template("reports_dashboard.html")
+    return render_template("reports_nexora.html")
 
 
 @app.route("/media-library")
@@ -2355,7 +2355,7 @@ def report_view():
 @app.route("/reports-dashboard")
 def reports_dashboard():
     """Dashboard de relatórios"""
-    return render_template("reports_dashboard.html")
+    return render_template("reports_nexora.html")
 
 
 # ===== INTELIGÊNCIA ARTIFICIAL ROUTES =====
