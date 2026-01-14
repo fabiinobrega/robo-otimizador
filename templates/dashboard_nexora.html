@@ -48,6 +48,55 @@
     </div>
 </div>
 
+<!-- Market Intelligence Panel -->
+<div class="nexora-card" style="margin-bottom: var(--spacing-8);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-5);">
+        <div>
+            <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary); margin: 0;">Market Intelligence</h3>
+            <p style="font-size: var(--text-sm); color: var(--text-tertiary); margin: var(--spacing-1) 0 0 0;">Dados estimados - usados apenas como suporte estratégico</p>
+        </div>
+        <button class="btn-nexora btn-nexora-secondary" onclick="refreshMarketIntel()">
+            <i class="fas fa-sync-alt"></i>
+            Atualizar
+        </button>
+    </div>
+    
+    <div id="marketIntelContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-4);">
+        <!-- Market Confidence Score -->
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-2);">Market Confidence Score</div>
+            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-2);" id="confidenceScore">--</div>
+            <div style="font-size: var(--text-xs); color: var(--text-secondary);" id="confidenceLabel">Carregando...</div>
+        </div>
+        
+        <!-- Trend Signal -->
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-2);">Tendência de Mercado</div>
+            <div style="display: flex; align-items: center; gap: var(--spacing-2); margin-bottom: var(--spacing-2);">
+                <i id="trendIcon" class="fas fa-minus" style="font-size: var(--text-xl);"></i>
+                <span id="trendSignal" style="font-size: var(--text-lg); font-weight: 600;">--</span>
+            </div>
+            <div style="font-size: var(--text-xs); color: var(--text-secondary);" id="trendMessage">Carregando...</div>
+        </div>
+        
+        <!-- Traffic Sources -->
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-2);">Tráfego Pago</div>
+            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-2);" id="paidTraffic">--%</div>
+            <div style="font-size: var(--text-xs); color: var(--text-secondary);">Do tráfego total</div>
+        </div>
+        
+        <!-- Risk Level -->
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-2);">Nível de Risco</div>
+            <div style="margin-bottom: var(--spacing-2);">
+                <span id="riskBadge" class="badge">--</span>
+            </div>
+            <div style="font-size: var(--text-xs); color: var(--text-secondary);" id="riskMessage">Carregando...</div>
+        </div>
+    </div>
+</div>
+
 <!-- Main Content Grid -->
 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-6); margin-bottom: var(--spacing-8);">
     <!-- Performance Chart -->
@@ -229,7 +278,92 @@ function changeChartMetric(metric) {
     // TODO: Update chart data based on selected metric
 }
 
+async function loadMarketIntelligence() {
+    try {
+        // Get competitor domain from settings or use default
+        const domain = 'example.com'; // TODO: Get from user settings
+        
+        const response = await fetch(`/api/market-intelligence?domain=${domain}`);
+        const data = await response.json();
+        
+        if (data.success && data.intelligence) {
+            const intel = data.intelligence;
+            
+            // Update Market Confidence Score
+            const score = intel.confidence_score.score;
+            document.getElementById('confidenceScore').textContent = score;
+            document.getElementById('confidenceLabel').textContent = intel.confidence_score.message;
+            
+            // Update Trend
+            const trend = intel.trend;
+            const trendIcon = document.getElementById('trendIcon');
+            const trendSignal = document.getElementById('trendSignal');
+            
+            if (trend.signal === 'strong_up' || trend.signal === 'up') {
+                trendIcon.className = 'fas fa-arrow-up';
+                trendIcon.style.color = 'var(--accent-success)';
+                trendSignal.textContent = '↑ Crescimento';
+                trendSignal.style.color = 'var(--accent-success)';
+            } else if (trend.signal === 'strong_down' || trend.signal === 'down') {
+                trendIcon.className = 'fas fa-arrow-down';
+                trendIcon.style.color = 'var(--accent-danger)';
+                trendSignal.textContent = '↓ Declínio';
+                trendSignal.style.color = 'var(--accent-danger)';
+            } else {
+                trendIcon.className = 'fas fa-minus';
+                trendIcon.style.color = 'var(--text-secondary)';
+                trendSignal.textContent = '→ Estável';
+                trendSignal.style.color = 'var(--text-secondary)';
+            }
+            
+            document.getElementById('trendMessage').textContent = trend.message;
+            
+            // Update Paid Traffic
+            if (intel.traffic_sources && intel.traffic_sources.paid_search) {
+                document.getElementById('paidTraffic').textContent = `${intel.traffic_sources.paid_search.toFixed(1)}%`;
+            }
+            
+            // Update Risk Level
+            const riskLevel = intel.confidence_score.risk_level;
+            const riskBadge = document.getElementById('riskBadge');
+            
+            if (riskLevel === 'low') {
+                riskBadge.textContent = 'Baixo Risco';
+                riskBadge.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
+                riskBadge.style.color = 'var(--accent-success)';
+                document.getElementById('riskMessage').textContent = 'Mercado validado';
+            } else if (riskLevel === 'medium') {
+                riskBadge.textContent = 'Risco Médio';
+                riskBadge.style.backgroundColor = 'rgba(251, 191, 36, 0.1)';
+                riskBadge.style.color = '#f59e0b';
+                document.getElementById('riskMessage').textContent = 'Mercado instável';
+            } else {
+                riskBadge.textContent = 'Alto Risco';
+                riskBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                riskBadge.style.color = 'var(--accent-danger)';
+                document.getElementById('riskMessage').textContent = 'Validar demanda';
+            }
+        } else {
+            // Show placeholder when no data
+            document.getElementById('confidenceScore').textContent = '--';
+            document.getElementById('confidenceLabel').textContent = 'Configure um domínio para análise';
+        }
+    } catch (error) {
+        console.error('Error loading market intelligence:', error);
+        document.getElementById('confidenceScore').textContent = '--';
+        document.getElementById('confidenceLabel').textContent = 'Dados não disponíveis';
+    }
+}
+
+function refreshMarketIntel() {
+    NEXORA.showToast('Atualizando inteligência de mercado...', 'info');
+    loadMarketIntelligence();
+}
+
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', loadDashboardData);
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    loadMarketIntelligence();
+});
 </script>
 {% endblock %}

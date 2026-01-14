@@ -12,6 +12,14 @@ from datetime import datetime
 # Importar Manus AI Service (substitui OpenAI)
 from services.manus_ai_service import manus_ai
 
+# Importar Market Intelligence (Similarweb)
+try:
+    from services.market_intelligence_similarweb import market_intelligence
+    SIMILARWEB_AVAILABLE = True
+except ImportError:
+    SIMILARWEB_AVAILABLE = False
+    market_intelligence = None
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +31,7 @@ class CompetitorSpyEngine:
     def __init__(self):
         pass
     
-    def analyze_competitors(self, product, niche, platform='facebook'):
+    def analyze_competitors(self, product, niche, platform='facebook', competitor_domain=None):
         """
         Analisa concorrentes e gera relatório interno
         
@@ -31,13 +39,19 @@ class CompetitorSpyEngine:
             product (str): Produto/serviço a ser anunciado
             niche (str): Nicho de mercado
             platform (str): Plataforma (facebook, google, etc)
+            competitor_domain (str, optional): Domínio do concorrente para análise Similarweb
             
         Returns:
-            dict: Relatório de espionagem
+            dict: Relatório de espionagem com Market Intelligence
         """
         try:
             # Gerar análise com Manus AI
             analysis = self._generate_spy_analysis(product, niche, platform)
+            
+            # Adicionar Market Intelligence se disponível
+            market_intel = None
+            if SIMILARWEB_AVAILABLE and competitor_domain:
+                market_intel = self._get_market_intelligence(competitor_domain)
             
             # Estruturar relatório
             report = {
@@ -46,6 +60,7 @@ class CompetitorSpyEngine:
                 "niche": niche,
                 "platform": platform,
                 "analysis": analysis,
+                "market_intelligence": market_intel,
                 "status": "completed"
             }
             
@@ -148,6 +163,38 @@ class CompetitorSpyEngine:
             },
             "status": "fallback"
         }
+    
+    def _get_market_intelligence(self, domain: str) -> dict:
+        """
+        Obtém inteligência de mercado via Similarweb.
+        
+        Args:
+            domain: Domínio do concorrente
+            
+        Returns:
+            Dados de mercado ou None
+        """
+        try:
+            # Obter Market Confidence Score
+            confidence = market_intelligence.get_market_confidence_score(domain)
+            
+            # Obter tendência
+            trend = market_intelligence.get_trend_signal(domain)
+            
+            # Obter fontes de tráfego
+            sources = market_intelligence.get_traffic_sources(domain)
+            
+            return {
+                'domain': domain,
+                'confidence_score': confidence,
+                'trend': trend,
+                'traffic_sources': sources,
+                'disclaimer': 'Dados estimados - usados apenas como suporte estratégico'
+            }
+            
+        except Exception as e:
+            logger.warning(f"Market intelligence não disponível para {domain}: {str(e)}")
+            return None
     
     def get_trending_angles(self, niche):
         """

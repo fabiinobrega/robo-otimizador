@@ -4037,3 +4037,152 @@ def get_audit_summary():
         return jsonify(result), 200
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============================================
+# VELYRA PRIME - IA ASSISTANT
+# ============================================
+
+@app.route('/velyra_prime')
+def velyra_prime_page():
+    """Página da Velyra Prime - Assistente IA"""
+    return render_template('velyra_prime.html')
+
+
+# ============================================
+# MARKET INTELLIGENCE - SIMILARWEB
+# ============================================
+
+@app.route('/api/market-intelligence')
+def api_market_intelligence():
+    """
+    Retorna dados de Market Intelligence via Similarweb.
+    
+    Query params:
+        domain: Domínio do concorrente para análise
+    """
+    try:
+        from services.market_intelligence_similarweb import market_intelligence
+        
+        domain = request.args.get('domain')
+        
+        if not domain:
+            return jsonify({
+                'success': False,
+                'error': 'Domínio é obrigatório'
+            }), 400
+        
+        # Get market confidence score
+        confidence = market_intelligence.get_market_confidence_score(domain)
+        
+        # Get trend
+        trend = market_intelligence.get_trend_signal(domain)
+        
+        # Get traffic sources
+        sources = market_intelligence.get_traffic_sources(domain)
+        
+        return jsonify({
+            'success': True,
+            'intelligence': {
+                'domain': domain,
+                'confidence_score': confidence,
+                'trend': trend,
+                'traffic_sources': sources,
+                'disclaimer': 'Dados estimados - usados apenas como suporte estratégico'
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter market intelligence: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/financial-simulator/simulate', methods=['POST'])
+def api_financial_simulator():
+    """
+    Simula resultados de campanha com Market Intelligence.
+    
+    Body:
+        budget: Orçamento (R$)
+        platform: Plataforma (facebook, google, instagram)
+        niche: Nicho de mercado
+        product_type: Tipo de produto
+        competitor_domain: (opcional) Domínio do concorrente
+    """
+    try:
+        from services.financial_simulator import financial_simulator
+        
+        data = request.get_json()
+        
+        budget = float(data.get('budget', 0))
+        platform = data.get('platform', 'facebook')
+        niche = data.get('niche', '')
+        product_type = data.get('product_type', 'ecommerce')
+        competitor_domain = data.get('competitor_domain')
+        
+        if budget <= 0:
+            return jsonify({
+                'success': False,
+                'error': 'Orçamento deve ser maior que zero'
+            }), 400
+        
+        # Run simulation
+        simulation = financial_simulator.simulate_campaign(
+            budget=budget,
+            platform=platform,
+            niche=niche,
+            product_type=product_type,
+            competitor_domain=competitor_domain
+        )
+        
+        return jsonify({
+            'success': True,
+            'simulation': simulation
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro na simulação financeira: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/financial-simulator/validate-budget', methods=['POST'])
+def api_validate_budget():
+    """
+    Valida proposta de orçamento contra dados de mercado.
+    
+    Body:
+        budget: Orçamento proposto
+        expected_roas: ROAS esperado
+        competitor_domain: (opcional) Domínio do concorrente
+    """
+    try:
+        from services.financial_simulator import financial_simulator
+        
+        data = request.get_json()
+        
+        budget = float(data.get('budget', 0))
+        expected_roas = float(data.get('expected_roas', 0))
+        competitor_domain = data.get('competitor_domain')
+        
+        # Validate budget
+        validation = financial_simulator.validate_budget_proposal(
+            budget=budget,
+            expected_roas=expected_roas,
+            competitor_domain=competitor_domain
+        )
+        
+        return jsonify({
+            'success': True,
+            'validation': validation
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro na validação de orçamento: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
