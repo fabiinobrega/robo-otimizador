@@ -12,13 +12,15 @@ from datetime import datetime
 # Importar Manus AI Service (substitui OpenAI)
 from services.manus_ai_service import manus_ai
 
-# Importar Market Intelligence (Similarweb)
+# Importar Similarweb Intelligence (via Manus IA)
 try:
-    from services.market_intelligence_similarweb import market_intelligence
+    from services.similarweb_intelligence import similarweb_intelligence
+    from services.manus_credit_tracker import manus_credit_tracker, ActionType
     SIMILARWEB_AVAILABLE = True
 except ImportError:
     SIMILARWEB_AVAILABLE = False
-    market_intelligence = None
+    similarweb_intelligence = None
+    manus_credit_tracker = None
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +168,7 @@ class CompetitorSpyEngine:
     
     def _get_market_intelligence(self, domain: str) -> dict:
         """
-        Obtém inteligência de mercado via Similarweb.
+        Obtém inteligência de mercado via Similarweb (através do Manus IA).
         
         Args:
             domain: Domínio do concorrente
@@ -175,21 +177,26 @@ class CompetitorSpyEngine:
             Dados de mercado ou None
         """
         try:
-            # Obter Market Confidence Score
-            confidence = market_intelligence.get_market_confidence_score(domain)
+            # Obter insights completos via Manus IA
+            insights = similarweb_intelligence.get_market_insights(domain)
             
-            # Obter tendência
-            trend = market_intelligence.get_trend_signal(domain)
+            if not insights:
+                return None
             
-            # Obter fontes de tráfego
-            sources = market_intelligence.get_traffic_sources(domain)
+            # Registrar uso de créditos
+            if manus_credit_tracker:
+                manus_credit_tracker.log_credit_usage(
+                    action_type=ActionType.SIMILARWEB_INSIGHT,
+                    context={'domain': domain, 'source': 'competitor_spy'}
+                )
             
             return {
                 'domain': domain,
-                'confidence_score': confidence,
-                'trend': trend,
-                'traffic_sources': sources,
-                'disclaimer': 'Dados estimados - usados apenas como suporte estratégico'
+                'confidence_score': insights.get('confidence_score'),
+                'trend': insights.get('traffic_overview', {}).get('trend'),
+                'traffic_sources': insights.get('traffic_sources'),
+                'competitors': insights.get('market_analysis', {}).get('top_competitors'),
+                'disclaimer': 'Dados via Manus IA - usados apenas como suporte estratégico'
             }
             
         except Exception as e:

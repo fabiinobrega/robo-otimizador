@@ -4056,15 +4056,20 @@ def velyra_prime_page():
 @app.route('/api/market-intelligence')
 def api_market_intelligence():
     """
-    Retorna dados de Market Intelligence via Similarweb.
+    Retorna dados de Market Intelligence via Similarweb (através do Manus IA).
     
     Query params:
         domain: Domínio do concorrente para análise
+        country: Código do país (opcional, padrão: BR)
+        timeframe: Período (opcional, padrão: 3m)
     """
     try:
-        from services.market_intelligence_similarweb import market_intelligence
+        from services.similarweb_intelligence import similarweb_intelligence
+        from services.manus_credit_tracker import manus_credit_tracker, ActionType
         
         domain = request.args.get('domain')
+        country = request.args.get('country', 'BR')
+        timeframe = request.args.get('timeframe', '3m')
         
         if not domain:
             return jsonify({
@@ -4072,24 +4077,25 @@ def api_market_intelligence():
                 'error': 'Domínio é obrigatório'
             }), 400
         
-        # Get market confidence score
-        confidence = market_intelligence.get_market_confidence_score(domain)
+        # Get market insights via Manus IA
+        insights = similarweb_intelligence.get_market_insights(domain, country, timeframe)
         
-        # Get trend
-        trend = market_intelligence.get_trend_signal(domain)
+        if not insights:
+            return jsonify({
+                'success': False,
+                'error': 'Dados não disponíveis para este domínio'
+            }), 404
         
-        # Get traffic sources
-        sources = market_intelligence.get_traffic_sources(domain)
+        # Registrar uso de créditos
+        manus_credit_tracker.log_credit_usage(
+            action_type=ActionType.SIMILARWEB_INSIGHT,
+            context={'domain': domain, 'source': 'api', 'country': country}
+        )
         
         return jsonify({
             'success': True,
-            'intelligence': {
-                'domain': domain,
-                'confidence_score': confidence,
-                'trend': trend,
-                'traffic_sources': sources,
-                'disclaimer': 'Dados estimados - usados apenas como suporte estratégico'
-            }
+            'intelligence': insights,
+            'credits_used': similarweb_intelligence.get_credits_used()
         })
         
     except Exception as e:
@@ -4182,6 +4188,87 @@ def api_validate_budget():
         
     except Exception as e:
         logger.error(f"Erro na validação de orçamento: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+# ============================================
+# MANUS CREDITS TRACKING
+# ============================================
+
+@app.route('/api/manus-credits/dashboard')
+def api_manus_credits_dashboard():
+    """
+    Retorna métricas de créditos Manus para o CEO Dashboard.
+    """
+    try:
+        from services.manus_credit_tracker import manus_credit_tracker
+        
+        metrics = manus_credit_tracker.get_dashboard_metrics()
+        
+        return jsonify({
+            'success': True,
+            'metrics': metrics
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter métricas de créditos: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/manus-credits/report')
+def api_manus_credits_report():
+    """
+    Retorna relatório detalhado de uso de créditos Manus.
+    
+    Query params:
+        timeframe: Período ('today', '7d', '30d', 'all')
+    """
+    try:
+        from services.manus_credit_tracker import manus_credit_tracker
+        
+        timeframe = request.args.get('timeframe', '30d')
+        
+        report = manus_credit_tracker.get_usage_report(timeframe)
+        
+        return jsonify({
+            'success': True,
+            'report': report
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao gerar relatório de créditos: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/manus-credits/roi')
+def api_manus_credits_roi():
+    """
+    Retorna análise de ROI por uso de créditos Manus.
+    
+    Query params:
+        timeframe: Período ('today', '7d', '30d', 'all')
+    """
+    try:
+        from services.manus_credit_tracker import manus_credit_tracker
+        
+        timeframe = request.args.get('timeframe', '30d')
+        
+        roi_data = manus_credit_tracker.get_roi_by_credits(timeframe)
+        
+        return jsonify({
+            'success': True,
+            'roi': roi_data
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao calcular ROI de créditos: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)

@@ -25,13 +25,15 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-# Import Market Intelligence
+# Import Similarweb Intelligence (via Manus IA)
 try:
-    from services.market_intelligence_similarweb import market_intelligence
+    from services.similarweb_intelligence import similarweb_intelligence
+    from services.manus_credit_tracker import manus_credit_tracker, ActionType
     SIMILARWEB_AVAILABLE = True
 except ImportError:
     SIMILARWEB_AVAILABLE = False
-    market_intelligence = None
+    similarweb_intelligence = None
+    manus_credit_tracker = None
 
 
 class FinancialSimulator:
@@ -216,7 +218,7 @@ class FinancialSimulator:
     
     def _get_market_adjustment(self, domain: str, platform: str) -> Optional[Dict]:
         """
-        Obtém ajustes baseados em inteligência de mercado.
+        Obtém ajustes baseados em inteligência de mercado (via Manus IA).
         
         Args:
             domain: Domínio do concorrente
@@ -226,18 +228,25 @@ class FinancialSimulator:
             Dados de ajuste ou None
         """
         try:
-            # Get market confidence score
-            confidence = market_intelligence.get_market_confidence_score(domain)
+            # Obter insights completos via Manus IA
+            insights = similarweb_intelligence.get_market_insights(domain)
             
-            # Get trend
-            trend = market_intelligence.get_trend_signal(domain)
+            if not insights:
+                return None
+            
+            # Registrar uso de créditos
+            if manus_credit_tracker:
+                manus_credit_tracker.log_credit_usage(
+                    action_type=ActionType.SIMILARWEB_INSIGHT,
+                    context={'domain': domain, 'source': 'financial_simulator', 'platform': platform}
+                )
             
             return {
                 'domain': domain,
-                'confidence_score': confidence,
-                'trend': trend,
+                'confidence_score': insights.get('confidence_score'),
+                'trend': insights.get('traffic_overview'),
                 'platform': platform,
-                'disclaimer': 'Dados usados apenas para ajuste de expectativas - não decisórios'
+                'disclaimer': 'Dados via Manus IA - usados apenas para ajuste de expectativas'
             }
             
         except Exception as e:
