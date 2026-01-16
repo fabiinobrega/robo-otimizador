@@ -1,0 +1,448 @@
+/* ================================================================
+   NEXORA PRIME - AD CREATOR PREMIUM CSS
+   Sistema de Criação de Anúncios Mais Avançado
+   ================================================================ */
+
+:root {
+    --nexora-primary: #6366f1;
+    --nexora-primary-dark: #4f46e5;
+    --nexora-success: #10b981;
+    --nexora-warning: #f59e0b;
+    --nexora-danger: #ef4444;
+    --nexora-dark: #0a0a0a;
+    --nexora-gray-900: #111827;
+    --nexora-gray-800: #1f2937;
+    --nexora-gray-700: #374151;
+    --nexora-gray-600: #4b5563;
+    --nexora-gray-500: #6b7280;
+    --nexora-gray-400: #9ca3af;
+    --nexora-gray-300: #d1d5db;
+    --nexora-gray-200: #e5e7eb;
+    --nexora-gray-100: #f3f4f6;
+    --nexora-white: #ffffff;
+}
+
+/* ================================================================
+   LAYOUT PRINCIPAL
+   ================================================================ */
+
+.ad-creator-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--nexora-dark) 0%, var(--nexora-gray-900) 100%);
+    padding: 2rem 0;
+}
+
+.ad-creator-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* ================================================================
+   WIZARD STEPS
+   ================================================================ */
+
+.wizard-container {
+    background: var(--nexora-gray-900);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.wizard-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 0;
+}
+
+.wizard-steps::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--nexora-gray-700);
+    z-index: 0;
+}
+
+.wizard-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.wizard-step-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--nexora-gray-800);
+    border: 3px solid var(--nexora-gray-700);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--nexora-gray-400);
+    transition: all 0.3s ease;
+}
+
+.wizard-step.active .wizard-step-circle {
+    background: var(--nexora-primary);
+    border-color: var(--nexora-primary);
+    color: var(--nexora-white);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+.wizard-step.completed .wizard-step-circle {
+    background: var(--nexora-success);
+    border-color: var(--nexora-success);
+    color: var(--nexora-white);
+}
+
+.wizard-step-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--nexora-gray-400);
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.wizard-step.active .wizard-step-label {
+    color: var(--nexora-primary);
+}
+
+.wizard-step.completed .wizard-step-label {
+    color: var(--nexora-success);
+}
+
+/* ================================================================
+   CARDS
+   ================================================================ */
+
+.ad-card {
+    background: var(--nexora-gray-900);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--nexora-gray-800);
+    transition: all 0.3s ease;
+}
+
+.ad-card:hover {
+    border-color: var(--nexora-primary);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+}
+
+.ad-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--nexora-gray-800);
+}
+
+.ad-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--nexora-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--nexora-white);
+    font-size: 1.25rem;
+}
+
+.ad-card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--nexora-white);
+    margin: 0;
+}
+
+.ad-card-subtitle {
+    font-size: 0.875rem;
+    color: var(--nexora-gray-400);
+    margin: 0.25rem 0 0 0;
+}
+
+/* ================================================================
+   FORM ELEMENTS
+   ================================================================ */
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--nexora-gray-300);
+    margin-bottom: 0.5rem;
+}
+
+.form-label-required::after {
+    content: '*';
+    color: var(--nexora-danger);
+    margin-left: 0.25rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--nexora-gray-800);
+    border: 1px solid var(--nexora-gray-700);
+    border-radius: 8px;
+    color: var(--nexora-white);
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--nexora-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-control::placeholder {
+    color: var(--nexora-gray-500);
+}
+
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+.form-help {
+    font-size: 0.8125rem;
+    color: var(--nexora-gray-500);
+    margin-top: 0.375rem;
+}
+
+/* ================================================================
+   UPLOAD AREA
+   ================================================================ */
+
+.upload-area {
+    border: 2px dashed var(--nexora-gray-700);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--nexora-gray-800);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: var(--nexora-primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.upload-area.drag-over {
+    border-color: var(--nexora-primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: var(--nexora-gray-600);
+    margin-bottom: 1rem;
+}
+
+.upload-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--nexora-gray-300);
+    margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+    font-size: 0.875rem;
+    color: var(--nexora-gray-500);
+}
+
+/* ================================================================
+   AI STATUS
+   ================================================================ */
+
+.ai-status {
+    background: linear-gradient(135deg, var(--nexora-primary) 0%, var(--nexora-primary-dark) 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+}
+
+.ai-status-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--nexora-white);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.ai-status-content {
+    flex: 1;
+}
+
+.ai-status-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--nexora-white);
+    margin: 0 0 0.25rem 0;
+}
+
+.ai-status-message {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--nexora-primary);
+    color: var(--nexora-white);
+}
+
+.btn-primary:hover {
+    background: var(--nexora-primary-dark);
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+}
+
+.btn-success {
+    background: var(--nexora-success);
+    color: var(--nexora-white);
+}
+
+.btn-success:hover {
+    background: #059669;
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+}
+
+.btn-secondary {
+    background: var(--nexora-gray-700);
+    color: var(--nexora-white);
+}
+
+.btn-secondary:hover {
+    background: var(--nexora-gray-600);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.0625rem;
+}
+
+.btn-block {
+    width: 100%;
+    justify-content: center;
+}
+
+/* ================================================================
+   MODE SELECTOR
+   ================================================================ */
+
+.mode-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.mode-option {
+    background: var(--nexora-gray-800);
+    border: 2px solid var(--nexora-gray-700);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.mode-option:hover {
+    border-color: var(--nexora-primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.mode-option.active {
+    border-color: var(--nexora-primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.mode-option-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.mode-option-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--nexora-white);
+    margin-bottom: 0.5rem;
+}
+
+.mode-option-description {
+    font-size: 0.875rem;
+    color: var(--nexora-gray-400);
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 768px) {
+    .wizard-steps {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .wizard-steps::before {
+        display: none;
+    }
+    
+    .mode-selector {
+        grid-template-columns: 1fr;
+    }
+}

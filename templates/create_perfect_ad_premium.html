@@ -1,0 +1,311 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Criar Anúncio Perfeito - NEXORA Prime{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ad-creator/premium.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="ad-creator-container">
+    <div class="ad-creator-wrapper">
+        
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 class="text-white mb-2" style="font-size: 2rem; font-weight: 700;">
+                <i class="fas fa-magic" style="color: #6366f1;"></i>
+                Criar Anúncio Perfeito
+            </h1>
+            <p class="text-gray-400 mb-0">
+                Sistema mais avançado de criação, execução e otimização de anúncios do Nexora Prime
+            </p>
+        </div>
+
+        <!-- AI Status (Dynamic) -->
+        <div id="aiStatus" class="ai-status" style="display: none;">
+            <div class="ai-status-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ai-status-content">
+                <h3 class="ai-status-title" id="aiStatusTitle">IA Inicializando...</h3>
+                <p class="ai-status-message" id="aiStatusMessage">Preparando inteligências Velyra + Manus...</p>
+            </div>
+        </div>
+
+        <!-- Wizard Steps -->
+        <div class="wizard-container">
+            <div class="wizard-steps">
+                <div class="wizard-step active" data-step="1">
+                    <div class="wizard-step-circle">1</div>
+                    <div class="wizard-step-label">Configuração</div>
+                </div>
+                <div class="wizard-step" data-step="2">
+                    <div class="wizard-step-circle">2</div>
+                    <div class="wizard-step-label">Análise IA</div>
+                </div>
+                <div class="wizard-step" data-step="3">
+                    <div class="wizard-step-circle">3</div>
+                    <div class="wizard-step-label">Estratégia</div>
+                </div>
+                <div class="wizard-step" data-step="4">
+                    <div class="wizard-step-circle">4</div>
+                    <div class="wizard-step-label">Criativos</div>
+                </div>
+                <div class="wizard-step" data-step="5">
+                    <div class="wizard-step-circle">5</div>
+                    <div class="wizard-step-label">Pré-visualização</div>
+                </div>
+                <div class="wizard-step" data-step="6">
+                    <div class="wizard-step-circle">6</div>
+                    <div class="wizard-step-label">Executar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Left Column: Form Steps -->
+            <div class="col-lg-8">
+                
+                <!-- STEP 1: Configuração Inicial -->
+                <div class="wizard-content" id="step-1">
+                    
+                    <!-- Página de Vendas -->
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Página de Vendas</h3>
+                                <p class="ad-card-subtitle">URL do produto ou landing page</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label form-label-required">URL da Página de Vendas</label>
+                            <input type="url" 
+                                   class="form-control" 
+                                   id="salesPageUrl" 
+                                   placeholder="https://exemplo.com/produto"
+                                   required>
+                            <small class="form-help">
+                                <i class="fas fa-info-circle"></i>
+                                A IA analisará esta página para entender seu produto e criar anúncios otimizados
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Plataforma -->
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Plataforma de Anúncio</h3>
+                                <p class="ad-card-subtitle">Onde você quer anunciar</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label form-label-required">Selecione a Plataforma</label>
+                            <select class="form-control form-select" id="platform" required>
+                                <option value="">Escolha uma plataforma...</option>
+                                <option value="meta">Meta Ads (Facebook / Instagram)</option>
+                                <option value="google">Google Ads</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Orçamento -->
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Orçamento</h3>
+                                <p class="ad-card-subtitle">Quanto você quer investir</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label form-label-required">Tipo de Orçamento</label>
+                                    <select class="form-control form-select" id="budgetType" required>
+                                        <option value="daily">Diário</option>
+                                        <option value="total">Total</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label form-label-required">Valor (R$)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="budgetAmount" 
+                                           placeholder="100.00"
+                                           min="10"
+                                           step="0.01"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- País e Idioma -->
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Localização</h3>
+                                <p class="ad-card-subtitle">País e idioma do anúncio</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label form-label-required">País</label>
+                                    <select class="form-control form-select" id="country" required>
+                                        <option value="BR">Brasil</option>
+                                        <option value="US">Estados Unidos</option>
+                                        <option value="PT">Portugal</option>
+                                        <option value="ES">Espanha</option>
+                                        <option value="MX">México</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label form-label-required">Idioma</label>
+                                    <select class="form-control form-select" id="language" required>
+                                        <option value="pt-BR">Português (Brasil)</option>
+                                        <option value="en-US">Inglês (EUA)</option>
+                                        <option value="es-ES">Espanhol</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload de Mídia -->
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-images"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Mídias (Opcional)</h3>
+                                <p class="ad-card-subtitle">Imagens ou vídeos para seus anúncios</p>
+                            </div>
+                        </div>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="upload-text">Arraste arquivos aqui ou clique para selecionar</div>
+                            <div class="upload-hint">Imagens (JPG, PNG) ou Vídeos (MP4, MOV) - Máx. 50MB</div>
+                            <input type="file" 
+                                   id="mediaFiles" 
+                                   multiple 
+                                   accept="image/*,video/*" 
+                                   style="display: none;">
+                        </div>
+                        <div id="uploadedFiles" class="mt-3"></div>
+                    </div>
+
+                    <!-- Modo de Operação -->
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Modo de Operação</h3>
+                                <p class="ad-card-subtitle">Como a IA deve trabalhar</p>
+                            </div>
+                        </div>
+                        <div class="mode-selector">
+                            <div class="mode-option active" data-mode="normal">
+                                <div class="mode-option-icon">⭕</div>
+                                <div class="mode-option-title">Modo Normal</div>
+                                <div class="mode-option-description">
+                                    Abordagem estável e segura. Ideal para testar e aprender.
+                                </div>
+                            </div>
+                            <div class="mode-option" data-mode="turbo">
+                                <div class="mode-option-icon">🔥</div>
+                                <div class="mode-option-title">Modo Escala Agressiva</div>
+                                <div class="mode-option-description">
+                                    Testes rápidos, cortes agressivos, foco em ROI máximo.
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="operationMode" value="normal">
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" disabled>
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="btnStep1Next">
+                            Iniciar Análise IA
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Análise IA (será exibido dinamicamente) -->
+                <div class="wizard-content" id="step-2" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">IA Analisando...</h3>
+                                <p class="ad-card-subtitle">Velyra + Manus trabalhando</p>
+                            </div>
+                        </div>
+                        <div id="analysisProgress">
+                            <!-- Progresso será inserido via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3-6: Serão implementados na próxima sessão -->
+
+            </div>
+
+            <!-- Right Column: Resumo e Pré-visualização -->
+            <div class="col-lg-4">
+                <div class="ad-card" style="position: sticky; top: 2rem;">
+                    <div class="ad-card-header">
+                        <div class="ad-card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h3 class="ad-card-title">Resumo</h3>
+                            <p class="ad-card-subtitle">Configuração atual</p>
+                        </div>
+                    </div>
+                    <div id="summaryContent">
+                        <p class="text-gray-400 text-center py-4">
+                            <i class="fas fa-info-circle"></i><br>
+                            Preencha os campos para ver o resumo
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/ad-creator/engine.js') }}"></script>
+{% endblock %}

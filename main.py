@@ -4273,3 +4273,62 @@ def api_manus_credits_roi():
             'success': False,
             'error': str(e)
         }), 500
+
+# ================================================================
+# AD CREATOR PREMIUM - APIs
+# ================================================================
+
+@app.route('/create-perfect-ad-premium')
+def create_perfect_ad_premium():
+    """Página premium de criação de anúncios."""
+    return render_template('create_perfect_ad_premium.html')
+
+@app.route('/api/ad-creator/analyze', methods=['POST'])
+async def api_ad_creator_analyze():
+    """Analisar produto e mercado (FASE 3 + 4)."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        data = request.get_json()
+        
+        # Validar dados
+        required_fields = ['salesPageUrl', 'platform', 'budgetAmount', 'country', 'language']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({
+                    'success': False,
+                    'error': f'Campo obrigatório ausente: {field}'
+                }), 400
+        
+        # Executar análise
+        analysis_results = await ad_creator_service.analyze_product_and_market(data)
+        
+        return jsonify({
+            'success': True,
+            'results': analysis_results
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ad-creator/status')
+def api_ad_creator_status():
+    """Obter status do Ad Creator Service."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        status = ad_creator_service.get_status()
+        
+        return jsonify({
+            'success': True,
+            'status': status
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
