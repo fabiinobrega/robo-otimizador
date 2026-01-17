@@ -4332,3 +4332,171 @@ def api_ad_creator_status():
             'success': False,
             'error': str(e)
         }), 500
+
+@app.route('/api/ad-creator/analyze-creatives', methods=['POST'])
+async def api_ad_creator_analyze_creatives():
+    """FASE 5: Analisar e selecionar criativos."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        data = request.get_json()
+        files = request.files.getlist('files') if request.files else []
+        
+        results = await ad_creator_service.analyze_and_select_creatives(
+            config=data,
+            uploaded_files=files
+        )
+        
+        return jsonify({
+            'success': True,
+            'results': results
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ad-creator/create-strategy', methods=['POST'])
+async def api_ad_creator_create_strategy():
+    """FASE 6: Criar estratégia de campanha."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        data = request.get_json()
+        
+        strategy = await ad_creator_service.create_campaign_strategy(
+            config=data.get('config'),
+            analysis_results=data.get('analysis_results'),
+            creative_results=data.get('creative_results')
+        )
+        
+        return jsonify({
+            'success': True,
+            'strategy': strategy
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ad-creator/create-ads', methods=['POST'])
+async def api_ad_creator_create_ads():
+    """FASE 7: Criar anúncios automaticamente."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        data = request.get_json()
+        
+        ads = await ad_creator_service.create_ads_automatically(
+            config=data.get('config'),
+            strategy=data.get('strategy'),
+            creative_results=data.get('creative_results')
+        )
+        
+        return jsonify({
+            'success': True,
+            'ads': ads
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ad-creator/execute', methods=['POST'])
+async def api_ad_creator_execute():
+    """FASE 9: Executar campanha."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        data = request.get_json()
+        
+        result = await ad_creator_service.execute_campaign(
+            ads=data.get('ads'),
+            config=data.get('config')
+        )
+        
+        return jsonify({
+            'success': True,
+            'result': result
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ad-creator/turbo-optimize', methods=['POST'])
+async def api_ad_creator_turbo_optimize():
+    """FASE 9.1: Otimização Turbo Mode."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        data = request.get_json()
+        
+        result = await ad_creator_service.turbo_mode_optimizer(
+            campaign_ids=data.get('campaign_ids')
+        )
+        
+        return jsonify({
+            'success': True,
+            'result': result
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ad-creator/monitoring-dashboard')
+async def api_ad_creator_monitoring():
+    """FASE 10: Dashboard de monitoramento."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        campaign_ids = request.args.get('campaign_ids', '').split(',')
+        
+        dashboard = await ad_creator_service.intelligent_monitoring(campaign_ids)
+        
+        return jsonify({
+            'success': True,
+            'dashboard': dashboard
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ad-creator/intelligence-report')
+async def api_ad_creator_report():
+    """FASE 11: Relatório de inteligência."""
+    try:
+        from services.ad_creator_service import ad_creator_service
+        
+        campaign_ids = request.args.get('campaign_ids', '').split(',')
+        timeframe = request.args.get('timeframe', '7d')
+        
+        report = await ad_creator_service.generate_intelligence_report(
+            campaign_ids=campaign_ids,
+            timeframe=timeframe
+        )
+        
+        return jsonify({
+            'success': True,
+            'report': report
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

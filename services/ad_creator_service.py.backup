@@ -350,6 +350,8 @@ class AdCreatorService:
         }
 
 
+# Instância global
+ad_creator_service = AdCreatorService()
 
 
     # ================================================================
