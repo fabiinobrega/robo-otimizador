@@ -281,7 +281,8 @@ function changeChartMetric(metric) {
 async function loadMarketIntelligence() {
     try {
         // Get competitor domain from settings or use default
-        const domain = 'example.com'; // TODO: Get from user settings
+        // Using amazon.com.br as default for demonstration
+        const domain = localStorage.getItem('competitor_domain') || 'amazon.com.br';
         
         const response = await fetch(`/api/market-intelligence?domain=${domain}`);
         const data = await response.json();

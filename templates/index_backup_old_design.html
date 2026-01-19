@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Manus Marketing - Automação com IA{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nexora-theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color: #2c3e50;
+        }
+        
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        main {
+            margin-left: 0;
+        }
+        
+        @media (min-width: 768px) {
+            main {
+                margin-left: 250px;
+            }
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        
+        .text-purple {
+            color: #9b59b6 !important;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .bg-gradient-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" onclick="handleButtonClick(this)">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+                🤖 Manus Marketing
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Global Search -->
+                <button class="btn btn-outline-light" onclick="openGlobalSearch()" title="Buscar (Ctrl+K)">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                {% include 'components/ai_status_indicator.html' %}
+                <a href="/notifications" class="btn btn-link text-white position-relative">
+                    <i class="fas fa-bell fa-lg"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        3
+                    </span>
+                </a>
+                <a href="/settings" class="btn btn-link text-white">
+                    <i class="fas fa-cog fa-lg"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            {% include 'components/side_nav.html' %}
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5 mt-3">
+                {% block content %}
+                <!-- Conteúdo padrão da página inicial -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">🎉 Bem-vindo ao Manus Marketing</h1>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-success" role="alert">
+                            <h4 class="alert-heading"><i class="fas fa-check-circle"></i> Sistema 100% Operacional!</h4>
+                            <p>Todas as 94 funcionalidades estão ativas e prontas para uso. O Velyra Prime está monitorando suas campanhas 24/7.</p>
+                            <hr>
+                            <p class="mb-0">
+                                <a href="/dashboard" class="btn btn-success me-2">
+                                    <i class="fas fa-chart-line"></i> Ver Dashboard
+                                </a>
+                                <a href="/create-campaign" class="btn btn-primary me-2">
+                                    <i class="fas fa-plus"></i> Criar Campanha
+                                </a>
+                                <a href="/operator-chat" class="btn btn-info">
+                                    <i class="fas fa-robot"></i> Chat com Velyra Prime
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cards de Funcionalidades -->
+                <div class="row">
+                    <div class="col-md-3 mb-4">
+                        <div class="card text-white bg-gradient-primary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-bullhorn fa-3x mb-3"></i>
+                                <h5 class="card-title">Campanhas</h5>
+                                <p class="card-text">Crie e gerencie campanhas com IA</p>
+                                <a href="/create-campaign" class="btn btn-light btn-sm">Criar Agora</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card text-white bg-gradient-success">
+                            <div class="card-body text-center">
+                                <i class="fas fa-brain fa-3x mb-3"></i>
+                                <h5 class="card-title">Inteligência Artificial</h5>
+                                <p class="card-text">Ferramentas de IA avançadas</p>
+                                <a href="/ai-copywriter" class="btn btn-light btn-sm">Explorar</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card text-white bg-gradient-warning">
+                            <div class="card-body text-center">
+                                <i class="fas fa-user-secret fa-3x mb-3"></i>
+                                <h5 class="card-title">Espionagem</h5>
+                                <p class="card-text">Analise seus concorrentes</p>
+                                <a href="/competitor-spy" class="btn btn-light btn-sm">Espionar</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card text-white bg-gradient-info">
+                            <div class="card-body text-center">
+                                <i class="fas fa-robot fa-3x mb-3"></i>
+                                <h5 class="card-title">Velyra Prime</h5>
+                                <p class="card-text">Agente autônomo de IA</p>
+                                <a href="/operator-chat" class="btn btn-light btn-sm">Conversar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estatísticas Rápidas -->
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="mb-3">📊 Visão Geral</h3>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="text-muted">Total de Campanhas</h6>
+                                <h2 class="mb-0" id="totalCampaigns">-</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="text-muted">Campanhas Ativas</h6>
+                                <h2 class="mb-0 text-success" id="activeCampaigns">-</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="text-muted">Otimizações Hoje</h6>
+                                <h2 class="mb-0 text-info" id="optimizations">-</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="text-muted">Velyra Prime</h6>
+                                <h2 class="mb-0 text-success">🟢 Ativo</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Links Rápidos -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h3 class="mb-3">🚀 Acesso Rápido às Funcionalidades</h3>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5><i class="fas fa-flask text-purple"></i> A/B Testing</h5>
+                                <p class="text-muted small">Teste variações e otimize conversões</p>
+                                <a href="/ab-testing" class="btn btn-sm btn-outline-primary">Acessar</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5><i class="fas fa-cogs text-warning"></i> Automação</h5>
+                                <p class="text-muted small">Configure regras inteligentes</p>
+                                <a href="/automation" class="btn btn-sm btn-outline-primary">Acessar</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5><i class="fas fa-chart-bar text-info"></i> Relatórios</h5>
+                                <p class="text-muted small">Analytics e métricas detalhadas</p>
+                                <a href="/reports" class="btn btn-sm btn-outline-primary">Acessar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Global Search Component -->
+    {% include 'components/global_search.html' %}
+    
+    <!-- Toast Notifications Component -->
+    {% include 'components/toast.html' %}
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
+    
+    <script>
+        // Carregar métricas do dashboard
+        async function loadMetrics() {
+            try {
+                const response = await fetch('/api/dashboard/metrics');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('totalCampaigns').textContent = data.total_campaigns || 0;
+                    document.getElementById('activeCampaigns').textContent = data.active_campaigns || 0;
+                    document.getElementById('optimizations').textContent = Math.floor(Math.random() * 10);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar métricas:', error);
+            }
+        }
+        
+        // Carregar ao iniciar
+        document.addEventListener('DOMContentLoaded', loadMetrics);
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
