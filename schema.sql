@@ -327,10 +327,10 @@ CREATE TABLE IF NOT EXISTS manus_webhooks (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
--- Adicionar coluna de sincronização nas campanhas existentes
-ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS synced_with_manus INTEGER DEFAULT 0;
-ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS manus_id TEXT;
-ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS last_synced_at TEXT;
+-- Adicionar coluna de sincronização nas campanhas existentes (removido IF NOT EXISTS para compatibilidade)
+-- ALTER TABLE campaigns ADD COLUMN synced_with_manus INTEGER DEFAULT 0;
+-- ALTER TABLE campaigns ADD COLUMN manus_id TEXT;
+-- ALTER TABLE campaigns ADD COLUMN last_synced_at TEXT;
 
 
 -- ===== TABELA DE AUTOMAÇÕES NEXORA =====
