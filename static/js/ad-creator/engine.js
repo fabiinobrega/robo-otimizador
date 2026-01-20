@@ -446,3 +446,13 @@ summaryStyles.textContent = `
     }
 `;
 document.head.appendChild(summaryStyles);
+
+
+// ================================================================
+// INICIALIZAÇÃO
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🎯 Inicializando Ad Creator Engine...');
+    window.adCreatorEngine = new AdCreatorEngine();
+    console.log('✅ Ad Creator Engine inicializado com sucesso!');
+});
