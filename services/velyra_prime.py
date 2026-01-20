@@ -18,14 +18,42 @@ except ImportError:
     print("Warning: Native AI engine not available")
 
 
+# Importar sistema de treinamento
+try:
+    from services.velyra_training_system import velyra_training, check_can_execute
+    TRAINING_SYSTEM_AVAILABLE = True
+except ImportError:
+    TRAINING_SYSTEM_AVAILABLE = False
+    velyra_training = None
+    print("Warning: Training system not available")
+
+
 class VelyraPrime:
-    """Agente autônomo inteligente para automação de marketing"""
+    """
+    Agente autônomo inteligente para automação de marketing.
+    
+    🔥 IMPORTANTE: Velyra só pode operar após treinamento completo!
+    
+    Funções FINAIS da Velyra (após treinamento):
+    - Analisar mercado e concorrência
+    - Definir público-alvo e avatar real
+    - Criar estratégia de tráfego e funil
+    - Criar anúncios vencedores
+    - Otimizar campanhas com base em dados
+    - Escalar campanhas com segurança
+    - Aprender com resultados reais em produção
+    """
     
     def __init__(self, db_path: str = "database.db"):
         self.db_path = db_path
         self.openai_api_key = os.environ.get("OPENAI_API_KEY", "")
         self.status = "active"
         self.last_check = None
+        self.training_system = velyra_training if TRAINING_SYSTEM_AVAILABLE else None
+        
+        # Status de treinamento
+        self.is_trained = False
+        self.training_phase = 0
         
     def get_db(self):
         """Conectar ao banco de dados"""
@@ -228,6 +256,88 @@ class VelyraPrime:
             'recommendations': recommendations,
             'generated_at': datetime.now().isoformat()
         }
+    
+    # ===== MÉTODOS DE TREINAMENTO =====
+    
+    def check_training_status(self) -> Dict[str, Any]:
+        """Verifica o status do treinamento da Velyra."""
+        if not self.training_system:
+            return {
+                'trained': False,
+                'message': 'Sistema de treinamento não disponível',
+                'can_execute': True  # Modo legado
+            }
+        
+        status = self.training_system.get_training_status()
+        can_execute = self.training_system.check_execution_permission()
+        
+        return {
+            'trained': status['is_authorized'],
+            'phase': status['status']['phase'],
+            'modules_completed': len(status['status']['modules_completed']),
+            'total_modules': 11,
+            'can_execute': can_execute['allowed'],
+            'status': status
+        }
+    
+    def start_training(self) -> Dict[str, Any]:
+        """Inicia o treinamento estratégico da Velyra."""
+        if not self.training_system:
+            return {'error': 'Sistema de treinamento não disponível'}
+        
+        self.log_action("Treinamento Iniciado", "Iniciando treinamento estratégico de marketing digital")
+        return self.training_system.start_training()
+    
+    def get_current_training_module(self) -> Dict[str, Any]:
+        """Retorna o módulo atual de treinamento."""
+        if not self.training_system:
+            return {'error': 'Sistema de treinamento não disponível'}
+        
+        return self.training_system.get_current_module()
+    
+    def teach_module(self, module_id: int) -> Dict[str, Any]:
+        """Ensina um módulo específico."""
+        if not self.training_system:
+            return {'error': 'Sistema de treinamento não disponível'}
+        
+        return self.training_system.teach_module(module_id)
+    
+    def complete_training_module(self, module_id: int) -> Dict[str, Any]:
+        """Marca um módulo como completado."""
+        if not self.training_system:
+            return {'error': 'Sistema de treinamento não disponível'}
+        
+        result = self.training_system.complete_module(module_id)
+        self.log_action(f"Módulo {module_id} Completado", result.get('message', ''))
+        return result
+    
+    def validate_learning(self, module_id: int, response: str) -> Dict[str, Any]:
+        """Valida o aprendizado em um módulo."""
+        if not self.training_system:
+            return {'error': 'Sistema de treinamento não disponível'}
+        
+        result = self.training_system.validate_learning(module_id, response)
+        self.log_action(f"Validação Módulo {module_id}", "Aprovado" if result.get('success') else "Reprovado")
+        return result
+    
+    def can_create_campaign(self) -> Dict[str, Any]:
+        """Verifica se a Velyra pode criar campanhas."""
+        if not self.training_system:
+            # Se não há sistema de treinamento, permitir por padrão
+            return {'allowed': True, 'message': 'Modo legado - sem verificação de treinamento'}
+        
+        return self.training_system.check_execution_permission()
+    
+    def record_campaign_learning(self, campaign_id: int, metrics: Dict, insights: List[str]) -> Dict[str, Any]:
+        """Registra aprendizado de uma campanha em produção."""
+        if not self.training_system:
+            return {'error': 'Sistema de treinamento não disponível'}
+        
+        result = self.training_system.record_learning(campaign_id, metrics, insights)
+        self.log_action("Aprendizado Registrado", f"Campanha {campaign_id}: {len(insights)} insights")
+        return result
+    
+    # ===== MÉTODOS DE CHAT =====
     
     def chat_response(self, user_message: str, context: Dict = None) -> str:
         """Responder a mensagens do usuário via chat"""

@@ -4946,6 +4946,124 @@ def api_campaigns_create():
         }), 500
 
 
+# ===== APIs DE TREINAMENTO DA VELYRA PRIME =====
+
+# Importar sistema de treinamento
+try:
+    from services.velyra_training_system import velyra_training
+    VELYRA_TRAINING_AVAILABLE = True
+except ImportError:
+    VELYRA_TRAINING_AVAILABLE = False
+    velyra_training = None
+
+
+@app.route('/api/velyra/training/status', methods=['GET'])
+def api_velyra_training_status():
+    """Retorna o status do treinamento da Velyra Prime."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    return jsonify(velyra_training.get_training_status())
+
+
+@app.route('/api/velyra/training/start', methods=['POST'])
+def api_velyra_training_start():
+    """Inicia o treinamento estratégico da Velyra Prime."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    result = velyra_training.start_training()
+    log_activity("Treinamento Velyra Iniciado", "Fase 1: Treinamento Teórico")
+    return jsonify(result)
+
+
+@app.route('/api/velyra/training/module/<int:module_id>', methods=['GET'])
+def api_velyra_training_module(module_id):
+    """Retorna o conteúdo de um módulo de treinamento."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    return jsonify(velyra_training.teach_module(module_id))
+
+
+@app.route('/api/velyra/training/module/<int:module_id>/complete', methods=['POST'])
+def api_velyra_training_module_complete(module_id):
+    """Marca um módulo como completado."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    result = velyra_training.complete_module(module_id)
+    log_activity(f"Módulo {module_id} Completado", result.get('message', ''))
+    return jsonify(result)
+
+
+@app.route('/api/velyra/training/validate/<int:module_id>', methods=['POST'])
+def api_velyra_training_validate(module_id):
+    """Valida o aprendizado em um módulo."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    data = request.get_json() or {}
+    response = data.get('response', '')
+    
+    result = velyra_training.validate_learning(module_id, response)
+    return jsonify(result)
+
+
+@app.route('/api/velyra/training/can-execute', methods=['GET'])
+def api_velyra_can_execute():
+    """Verifica se a Velyra pode executar campanhas."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'allowed': True, 'message': 'Modo legado'})
+    
+    return jsonify(velyra_training.check_execution_permission())
+
+
+@app.route('/api/velyra/training/approve-first-campaign', methods=['POST'])
+def api_velyra_approve_first_campaign():
+    """Aprova a Velyra para criar sua primeira campanha real."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    result = velyra_training.approve_first_campaign()
+    if result.get('success'):
+        log_activity("Primeira Campanha Aprovada", "Velyra autorizada para criar campanhas")
+    return jsonify(result)
+
+
+@app.route('/api/velyra/training/authorize-autonomous', methods=['POST'])
+def api_velyra_authorize_autonomous():
+    """Autoriza a Velyra a operar de forma autônoma."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    result = velyra_training.authorize_autonomous_operation()
+    if result.get('success'):
+        log_activity("Operação Autônoma Autorizada", "Velyra Prime totalmente treinada")
+    return jsonify(result)
+
+
+@app.route('/api/velyra/training/record-learning', methods=['POST'])
+def api_velyra_record_learning():
+    """Registra aprendizado de uma campanha em produção."""
+    if not VELYRA_TRAINING_AVAILABLE:
+        return jsonify({'error': 'Sistema de treinamento não disponível'}), 500
+    
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', 0)
+    metrics = data.get('metrics', {})
+    insights = data.get('insights', [])
+    
+    result = velyra_training.record_learning(campaign_id, metrics, insights)
+    return jsonify(result)
+
+
+@app.route('/velyra-training')
+def velyra_training_page():
+    """Página de treinamento da Velyra Prime."""
+    return render_template('velyra_training.html')
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

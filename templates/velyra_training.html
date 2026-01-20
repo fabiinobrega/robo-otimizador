@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento Velyra Prime - NEXORA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        
+        .status-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+        }
+        
+        .status-item .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00ff88;
+        }
+        
+        .status-item .label {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        
+        .phases {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .phase {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .phase.active {
+            border-color: #00ff88;
+            background: rgba(0,255,136,0.1);
+        }
+        
+        .phase.completed {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,0.1);
+        }
+        
+        .phase-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: 700;
+        }
+        
+        .phase.active .phase-number {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .phase.completed .phase-number {
+            background: #00d4ff;
+            color: #000;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .module-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .module-card:hover {
+            border-color: #00ff88;
+            transform: translateY(-2px);
+        }
+        
+        .module-card.completed {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,0.1);
+        }
+        
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .module-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .module-card.completed .module-number {
+            background: #00d4ff;
+            color: #000;
+        }
+        
+        .module-title {
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .module-topics {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .topic-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .topic-list li {
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .topic-list li i {
+            color: #00ff88;
+        }
+        
+        .insights {
+            background: rgba(0,255,136,0.1);
+            border-left: 4px solid #00ff88;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1.5rem;
+        }
+        
+        .insights h4 {
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .back-link:hover {
+            color: #00ff88;
+        }
+        
+        @media (max-width: 768px) {
+            .phases {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/velyra-prime" class="back-link">
+            <i class="fas fa-arrow-left"></i> Voltar para Velyra Prime
+        </a>
+        
+        <div class="header">
+            <h1>🎓 Treinamento Estratégico</h1>
+            <p>Velyra Prime - Sistema de Capacitação em Marketing Digital</p>
+        </div>
+        
+        <div class="status-card">
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="value" id="phase">0</div>
+                    <div class="label">Fase Atual</div>
+                </div>
+                <div class="status-item">
+                    <div class="value" id="modules-completed">0/11</div>
+                    <div class="label">Módulos Completados</div>
+                </div>
+                <div class="status-item">
+                    <div class="value" id="can-execute">❌</div>
+                    <div class="label">Pode Executar</div>
+                </div>
+                <div class="status-item">
+                    <div class="value" id="status">Não Iniciado</div>
+                    <div class="label">Status</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="phases">
+            <div class="phase" id="phase-1">
+                <div class="phase-number">1</div>
+                <h4>Treinamento Teórico</h4>
+                <p style="color:#888;font-size:0.9rem">11 Módulos</p>
+            </div>
+            <div class="phase" id="phase-2">
+                <div class="phase-number">2</div>
+                <h4>Validação</h4>
+                <p style="color:#888;font-size:0.9rem">Testes</p>
+            </div>
+            <div class="phase" id="phase-3">
+                <div class="phase-number">3</div>
+                <h4>1ª Campanha</h4>
+                <p style="color:#888;font-size:0.9rem">Prática</p>
+            </div>
+            <div class="phase" id="phase-4">
+                <div class="phase-number">4</div>
+                <h4>Produção</h4>
+                <p style="color:#888;font-size:0.9rem">Contínuo</p>
+            </div>
+        </div>
+        
+        <h2 style="margin-bottom:1.5rem">📚 Módulos de Treinamento</h2>
+        
+        <div class="modules-grid" id="modules-container">
+            <!-- Módulos serão carregados via JavaScript -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="startTraining()">
+                <i class="fas fa-play"></i> Iniciar Treinamento
+            </button>
+            <button class="btn btn-secondary" onclick="loadStatus()">
+                <i class="fas fa-sync"></i> Atualizar Status
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal de Módulo -->
+    <div class="modal" id="module-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Módulo</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- Conteúdo do módulo -->
+            </div>
+            <div class="actions" style="margin-top:2rem">
+                <button class="btn btn-primary" id="complete-btn" onclick="completeModule()">
+                    <i class="fas fa-check"></i> Marcar como Completado
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentModuleId = null;
+        
+        const moduleNames = [
+            "Fundamentos do Marketing Digital",
+            "Psicologia do Consumidor",
+            "Público-Alvo e Avatar Real",
+            "Funis de Venda",
+            "Oferta (Elemento Mais Importante)",
+            "Copywriting para Performance",
+            "Criativos (Imagem e Vídeo)",
+            "Plataformas de Anúncio",
+            "Métricas que Importam",
+            "Escala e Otimização",
+            "Erros Fatais em Tráfego"
+        ];
+        
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/velyra/training/status');
+                const data = await response.json();
+                
+                // Atualizar status
+                document.getElementById('phase').textContent = data.status?.phase || 0;
+                document.getElementById('modules-completed').textContent = 
+                    `${data.status?.modules_completed?.length || 0}/11`;
+                document.getElementById('can-execute').textContent = 
+                    data.is_authorized ? '✅' : '❌';
+                document.getElementById('status').textContent = 
+                    data.is_authorized ? 'Autorizado' : 
+                    (data.status?.phase > 0 ? 'Em Treinamento' : 'Não Iniciado');
+                
+                // Atualizar fases
+                const phase = data.status?.phase || 0;
+                for (let i = 1; i <= 4; i++) {
+                    const el = document.getElementById(`phase-${i}`);
+                    el.classList.remove('active', 'completed');
+                    if (i < phase) el.classList.add('completed');
+                    if (i === phase) el.classList.add('active');
+                }
+                
+                // Atualizar módulos
+                renderModules(data.modules || [], data.status?.modules_completed || []);
+                
+            } catch (error) {
+                console.error('Erro ao carregar status:', error);
+            }
+        }
+        
+        function renderModules(modules, completed) {
+            const container = document.getElementById('modules-container');
+            container.innerHTML = modules.map((m, i) => `
+                <div class="module-card ${completed.includes(m.id) ? 'completed' : ''}" 
+                     onclick="openModule(${m.id})">
+                    <div class="module-header">
+                        <div class="module-number">${m.id}</div>
+                        <div class="module-title">${m.title}</div>
+                        ${completed.includes(m.id) ? '<i class="fas fa-check-circle" style="color:#00d4ff"></i>' : ''}
+                    </div>
+                    <div class="module-topics">
+                        ${completed.includes(m.id) ? '✅ Completado' : 'Clique para estudar'}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Se não há módulos, mostrar placeholder
+            if (modules.length === 0) {
+                container.innerHTML = moduleNames.map((name, i) => `
+                    <div class="module-card" onclick="openModule(${i + 1})">
+                        <div class="module-header">
+                            <div class="module-number">${i + 1}</div>
+                            <div class="module-title">${name}</div>
+                        </div>
+                        <div class="module-topics">Clique para estudar</div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        async function startTraining() {
+            try {
+                const response = await fetch('/api/velyra/training/start', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('🎓 Treinamento iniciado com sucesso!');
+                    loadStatus();
+                } else {
+                    alert(data.message || 'Erro ao iniciar treinamento');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao iniciar treinamento');
+            }
+        }
+        
+        async function openModule(moduleId) {
+            currentModuleId = moduleId;
+            
+            try {
+                const response = await fetch(`/api/velyra/training/module/${moduleId}`);
+                const data = await response.json();
+                
+                document.getElementById('modal-title').textContent = 
+                    `Módulo ${moduleId}: ${data.title || moduleNames[moduleId - 1]}`;
+                
+                let html = '';
+                
+                if (data.topics_to_teach) {
+                    html += '<h4 style="margin-bottom:1rem">📌 Tópicos a Ensinar:</h4>';
+                    html += '<ul class="topic-list">';
+                    data.topics_to_teach.forEach(topic => {
+                        html += `<li><i class="fas fa-check-circle"></i> ${topic}</li>`;
+                    });
+                    html += '</ul>';
+                }
+                
+                if (data.key_insights) {
+                    html += '<div class="insights">';
+                    html += '<h4>💡 Insights Chave:</h4>';
+                    html += '<ul style="margin-top:0.5rem;padding-left:1.5rem">';
+                    data.key_insights.forEach(insight => {
+                        html += `<li style="margin-bottom:0.5rem">${insight}</li>`;
+                    });
+                    html += '</ul></div>';
+                }
+                
+                if (data.teaching_instructions) {
+                    html += '<h4 style="margin-top:1.5rem;margin-bottom:0.5rem">📋 Instruções para Manus:</h4>';
+                    html += '<ul style="padding-left:1.5rem;color:#888">';
+                    data.teaching_instructions.forEach(inst => {
+                        html += `<li>${inst}</li>`;
+                    });
+                    html += '</ul>';
+                }
+                
+                document.getElementById('modal-body').innerHTML = html;
+                document.getElementById('module-modal').classList.add('active');
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar módulo');
+            }
+        }
+        
+        async function completeModule() {
+            if (!currentModuleId) return;
+            
+            try {
+                const response = await fetch(`/api/velyra/training/module/${currentModuleId}/complete`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message);
+                    closeModal();
+                    loadStatus();
+                } else {
+                    alert(data.error || 'Erro ao completar módulo');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao completar módulo');
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('module-modal').classList.remove('active');
+            currentModuleId = null;
+        }
+        
+        // Carregar status ao iniciar
+        loadStatus();
+    </script>
+</body>
+</html>
