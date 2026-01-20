@@ -1194,7 +1194,7 @@ class AdCreatorService:
                 dashboard['campaigns'].append(campaign_data)
 
                 # Gerar recomendações
-                recommendations = self._generate_recommendations(metrics, insights)
+                recommendations = self._generate_optimization_recommendations(metrics, insights)
                 dashboard['recommendations'].extend(recommendations)
 
                 # Verificar alertas
@@ -1231,8 +1231,8 @@ class AdCreatorService:
         avg_roas = sum(m.get('roas', 0) for m in metrics.values()) / len(metrics)
         return min(int(avg_roas * 30), 100)
 
-    def _generate_recommendations(self, metrics: Dict, insights: List[str]) -> List[Dict]:
-        """Gerar recomendações de otimização."""
+    def _generate_optimization_recommendations(self, metrics: Dict, insights: List[str]) -> List[Dict]:
+        """Gerar recomendações de otimização para monitoramento."""
         recommendations = []
 
         for ad_id, ad_metrics in metrics.items():
@@ -1359,3 +1359,10 @@ class AdCreatorService:
             "Priorizar públicos Lookalike",
             "Usar números e dados em headlines"
         ]
+
+
+# ================================================================
+# INSTÂNCIA GLOBAL DO SERVIÇO
+# ================================================================
+ad_creator_service = AdCreatorService()
+logger.info("✅ Ad Creator Service instanciado e pronto para uso")
