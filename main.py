@@ -4617,23 +4617,39 @@ def api_manus_credits_roi():
 @app.route('/api/admin/seed-database', methods=['POST'])
 def api_admin_seed_database():
     """
-    Popula o banco de dados com dados mockados consistentes.
+    Popula o banco de dados com dados mockados consistentes e dinâmicos.
     ATENÇÃO: Este endpoint deve ser protegido em produção!
     """
     try:
+        from datetime import datetime, timedelta
+        import random
+        
         db = get_db()
         cursor = db.cursor()
         
         # Limpar dados antigos
-        cursor.execute("DELETE FROM campaigns WHERE id IN (1, 2, 3, 4, 5)")
+        cursor.execute("DELETE FROM campaign_metrics")
+        cursor.execute("DELETE FROM campaigns")
+        db.commit()
         
-        # Inserir campanhas mockadas
+        # Inserir campanhas mockadas com datas dinâmicas
+        today = datetime.now()
         campaigns = [
-            (1, 'Campanha LinkedIn B2B', 'LinkedIn', 'Active', 500.00, '2024-11-01', '2024-11-30'),
-            (2, 'Campanha Pinterest Produtos', 'Pinterest', 'Active', 300.00, '2024-11-01', '2024-11-30'),
-            (3, 'Campanha TikTok Viral', 'TikTok', 'Active', 400.00, '2024-11-01', '2024-11-30'),
-            (4, 'Campanha Google Search', 'Google', 'Paused', 200.00, '2024-10-15', '2024-10-31'),
-            (5, 'Campanha Facebook Retargeting', 'Facebook', 'Paused', 150.00, '2024-10-01', '2024-10-31')
+            (1, 'Campanha Black Friday 2024', 'Facebook', 'Active', 150.00, 
+             (today - timedelta(days=15)).strftime('%Y-%m-%d'), 
+             (today + timedelta(days=15)).strftime('%Y-%m-%d')),
+            (2, 'Google Ads - Sapatos Esportivos', 'Google', 'Active', 100.00, 
+             (today - timedelta(days=20)).strftime('%Y-%m-%d'), 
+             (today + timedelta(days=10)).strftime('%Y-%m-%d')),
+            (3, 'Pinterest - Decoração Casa', 'Pinterest', 'Active', 60.00, 
+             (today - timedelta(days=25)).strftime('%Y-%m-%d'), 
+             (today + timedelta(days=5)).strftime('%Y-%m-%d')),
+            (4, 'TikTok - Lançamento Produto', 'TikTok', 'Paused', 80.00, 
+             (today - timedelta(days=10)).strftime('%Y-%m-%d'), 
+             (today + timedelta(days=20)).strftime('%Y-%m-%d')),
+            (5, 'LinkedIn - B2B Software', 'LinkedIn', 'Draft', 200.00, 
+             today.strftime('%Y-%m-%d'), 
+             (today + timedelta(days=30)).strftime('%Y-%m-%d'))
         ]
         
         for campaign in campaigns:
@@ -4642,18 +4658,22 @@ def api_admin_seed_database():
                 VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
             """, campaign)
         
-        # Inserir métricas mockadas
-        metrics = [
-            (1, '2024-11-15', 5000, 250, 5.0, 2.00, 25, 500.00),
-            (2, '2024-11-15', 8000, 320, 4.0, 0.94, 32, 300.00),
-            (3, '2024-11-15', 12000, 480, 4.0, 0.83, 48, 400.00)
-        ]
-        
-        for metric in metrics:
-            cursor.execute("""
-                INSERT INTO campaign_metrics (campaign_id, date, impressions, clicks, ctr, cpc, conversions, cost, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-            """, metric)
+        # Inserir métricas mockadas para campanhas ativas (últimos 7 dias)
+        for campaign_id, name, platform, status, budget, start, end in campaigns:
+            if status == 'Active':
+                for days_ago in range(7):
+                    date = (today - timedelta(days=days_ago)).strftime('%Y-%m-%d')
+                    impressions = random.randint(5000, 15000)
+                    clicks = random.randint(100, 500)
+                    ctr = round((clicks / impressions) * 100, 2)
+                    cpc = round(random.uniform(0.50, 2.50), 2)
+                    conversions = random.randint(10, 50)
+                    cost = round(clicks * cpc, 2)
+                    
+                    cursor.execute("""
+                        INSERT INTO campaign_metrics (campaign_id, date, impressions, clicks, ctr, cpc, conversions, cost, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                    """, (campaign_id, date, impressions, clicks, ctr, cpc, conversions, cost))
         
         db.commit()
         
@@ -4664,13 +4684,21 @@ def api_admin_seed_database():
         cursor.execute("SELECT COUNT(*) FROM campaigns WHERE status = 'Paused'")
         paused_count = cursor.fetchone()[0]
         
+        cursor.execute("SELECT COUNT(*) FROM campaign_metrics")
+        metrics_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT SUM(cost) FROM campaign_metrics")
+        total_spend = cursor.fetchone()[0] or 0
+        
         return jsonify({
             'success': True,
             'message': 'Banco de dados populado com sucesso',
             'data': {
                 'active_campaigns': active_count,
                 'paused_campaigns': paused_count,
-                'total_campaigns': active_count + paused_count
+                'total_campaigns': active_count + paused_count,
+                'total_metrics': metrics_count,
+                'total_spend': round(total_spend, 2)
             }
         })
         
