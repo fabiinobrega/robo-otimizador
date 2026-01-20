@@ -795,7 +795,7 @@ def api_campaigns():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return redirect(url_for('dashboard'))
 
 
 @app.route("/create-campaign")

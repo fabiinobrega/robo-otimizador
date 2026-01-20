@@ -206,8 +206,8 @@ function renderCampaigns(campaigns) {
 
 function updateStats(campaigns) {
     document.getElementById('totalCampaigns').textContent = campaigns.length;
-    document.getElementById('activeCampaigns').textContent = campaigns.filter(c => c.status === 'active').length;
-    document.getElementById('pausedCampaigns').textContent = campaigns.filter(c => c.status === 'paused').length;
+    document.getElementById('activeCampaigns').textContent = campaigns.filter(c => c.status && c.status.toLowerCase() === 'active').length;
+    document.getElementById('pausedCampaigns').textContent = campaigns.filter(c => c.status && c.status.toLowerCase() === 'paused').length;
     
     const totalInvestment = campaigns.reduce((sum, c) => sum + (c.spend || 0), 0);
     document.getElementById('totalInvestment').textContent = NEXORA.formatCurrency(totalInvestment);
