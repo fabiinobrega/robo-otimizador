@@ -4344,6 +4344,7 @@ def integrations_page():
 # ============================================
 
 @app.route('/velyra_prime')
+@app.route('/velyra-prime')  # Alias com hífen para compatibilidade
 def velyra_prime_page():
     """Página da Velyra Prime - Assistente IA"""
     return render_template('velyra_prime.html')

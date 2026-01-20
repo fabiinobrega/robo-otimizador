@@ -646,6 +646,15 @@ class AdCreatorEngine {
         }
 
         this.currentStep = step;
+
+        // Ações específicas por step
+        if (step === 3) {
+            this.showStrategy();
+        } else if (step === 4) {
+            this.generateCreatives();
+        } else if (step === 5) {
+            this.showPreview();
+        }
     }
 
     showAIStatus(type, title, message) {
