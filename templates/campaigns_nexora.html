@@ -173,7 +173,7 @@ function renderCampaigns(campaigns) {
                     </span>
                 </td>
                 <td style="padding: var(--spacing-3); text-align: right; font-size: var(--text-sm); color: var(--text-secondary);">
-                    ${NEXORA.formatCurrency(c.spent || 0)}
+                    ${NEXORA.formatCurrency(c.spend || 0)}
                 </td>
                 <td style="padding: var(--spacing-3); text-align: right; font-size: var(--text-sm); color: var(--text-secondary);">
                     ${NEXORA.formatCurrency(c.revenue || 0)}
@@ -209,7 +209,7 @@ function updateStats(campaigns) {
     document.getElementById('activeCampaigns').textContent = campaigns.filter(c => c.status === 'active').length;
     document.getElementById('pausedCampaigns').textContent = campaigns.filter(c => c.status === 'paused').length;
     
-    const totalInvestment = campaigns.reduce((sum, c) => sum + (c.spent || 0), 0);
+    const totalInvestment = campaigns.reduce((sum, c) => sum + (c.spend || 0), 0);
     document.getElementById('totalInvestment').textContent = NEXORA.formatCurrency(totalInvestment);
 }
 
