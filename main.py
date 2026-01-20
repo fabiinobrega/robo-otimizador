@@ -4671,9 +4671,9 @@ def api_admin_seed_database():
                     cost = round(clicks * cpc, 2)
                     
                     cursor.execute("""
-                        INSERT INTO campaign_metrics (campaign_id, date, impressions, clicks, ctr, cpc, conversions, cost, created_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-                    """, (campaign_id, date, impressions, clicks, ctr, cpc, conversions, cost))
+                        INSERT INTO campaign_metrics (campaign_id, impressions, clicks, ctr, cpc, conversions, spend, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                    """, (campaign_id, impressions, clicks, ctr, cpc, conversions, cost))
         
         db.commit()
         
@@ -4687,7 +4687,7 @@ def api_admin_seed_database():
         cursor.execute("SELECT COUNT(*) FROM campaign_metrics")
         metrics_count = cursor.fetchone()[0]
         
-        cursor.execute("SELECT SUM(cost) FROM campaign_metrics")
+        cursor.execute("SELECT SUM(spend) FROM campaign_metrics")
         total_spend = cursor.fetchone()[0] or 0
         
         return jsonify({
@@ -4703,7 +4703,7 @@ def api_admin_seed_database():
         })
         
     except Exception as e:
-        logger.error(f"Erro ao popular banco de dados: {str(e)}")
+        print(f"Erro ao popular banco de dados: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
