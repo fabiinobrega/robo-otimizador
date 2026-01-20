@@ -896,6 +896,10 @@ def landing_page_builder():
 def rules_redirect():
     return redirect(url_for('automation'))
 
+@app.route("/biblioteca")
+def biblioteca_redirect():
+    return redirect(url_for('media_library'))
+
 
 @app.route("/operator-chat")
 def operator_chat():
