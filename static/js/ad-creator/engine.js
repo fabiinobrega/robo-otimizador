@@ -674,7 +674,6 @@ class AdCreatorEngine {
         // Ações específicas por step removidas para evitar recursão
         // As funções showStrategy(), generateCreatives() e showPreview()
         // devem ser chamadas explicitamente pelos botões
-        }
     }
 
     showAIStatus(type, title, message) {
