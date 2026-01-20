@@ -1168,7 +1168,7 @@ async function oneClickGenerate() {
                     <div class="col-md-6">
                         <h6>Público-Alvo:</h6>
                         <ul class="list-group">
-                            <li class="list-group-item">Idade: ${segmentation.age_range || '25-45'}</li>
+                            <li class="list-group-item">Idade: ${typeof segmentation.age_range === 'object' ? `${segmentation.age_range.min || 25}-${segmentation.age_range.max || 45}` : (segmentation.age_range || '25-45')}</li>
                             <li class="list-group-item">Interesses: ${segmentation.interests || 'Marketing, Negócios'}</li>
                             <li class="list-group-item">Localização: ${segmentation.location || 'Brasil'}</li>
                         </ul>
