@@ -1076,9 +1076,7 @@ async function analyzeUrls() {
 }
 
 async function oneClickGenerate() {
-    if (!confirm('Modo 1-Click: A IA criará tudo automaticamente. Continuar?')) {
-        return;
-    }
+    // Removido confirm para melhor UX - usuário já sabe o que vai acontecer pelo contexto
 
     const productUrl = document.getElementById('productUrl').value;
     const landingPageUrl = document.getElementById('landingPageUrl').value;
