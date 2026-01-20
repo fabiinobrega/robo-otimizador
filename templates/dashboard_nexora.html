@@ -255,11 +255,12 @@ async function loadTopCampaigns() {
     // Buscar dados reais do banco de dados via API
     try {
         const response = await fetch('/api/campaigns');
-        const campaigns = await response.json();
+        const data = await response.json();
+        const campaigns = data.campaigns || data; // Suporta tanto {campaigns: []} quanto []
         
         // Filtrar apenas campanhas ativas e ordenar por ROAS
         const activeCampaigns = campaigns
-            .filter(c => c.status === 'active')
+            .filter(c => c.status === 'Active' || c.status === 'active')
             .sort((a, b) => (b.roas || 0) - (a.roas || 0))
             .slice(0, 3);
         
