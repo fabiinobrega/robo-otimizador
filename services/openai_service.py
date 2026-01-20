@@ -126,13 +126,16 @@ def optimize_campaign_budget(campaign_data):
 def _generate_mock_copy(product_info, num_variants=5):
     """Gera copy otimizado localmente quando Manus AI não está disponível"""
     
-    title = product_info.get('title', 'Produto Incrível')
+    # Aceitar tanto 'title' quanto 'name'
+    title = product_info.get('title') or product_info.get('name', 'Produto Incrível')
     price = product_info.get('price', '99.90')
+    description = product_info.get('description', '')
+    target_audience = product_info.get('target_audience', 'público geral')
     
     variants = [
         {
             "headline": f"{title} - Oferta Especial! 🔥",
-            "description": "Aproveite agora e ganhe desconto exclusivo. Entrega rápida e garantia total!",
+            "description": f"{description[:100]}... Aproveite agora e ganhe desconto exclusivo!" if description else "Aproveite agora e ganhe desconto exclusivo. Entrega rápida e garantia total!",
             "cta": "Comprar Agora",
             "score": 95,
             "reasoning": "Usa urgência e benefícios claros"
