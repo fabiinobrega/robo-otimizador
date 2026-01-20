@@ -4281,6 +4281,16 @@ def get_audit_summary():
 
 
 # ============================================
+# INTEGRAÇÕES
+# ============================================
+
+@app.route('/integrations')
+def integrations_page():
+    """Página de integrações com plataformas e ferramentas"""
+    return render_template('integrations.html')
+
+
+# ============================================
 # VELYRA PRIME - IA ASSISTANT
 # ============================================
 

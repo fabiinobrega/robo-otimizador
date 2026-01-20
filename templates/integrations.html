@@ -1,0 +1,239 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Integrações - NEXORA{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white mb-2">
+                <i class="fas fa-plug me-2"></i>Integrações
+            </h1>
+            <p class="text-muted">Conecte suas plataformas de anúncios e ferramentas</p>
+        </div>
+    </div>
+
+    <!-- Status das Integrações -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-dark border-success">
+                <div class="card-body text-center">
+                    <i class="fab fa-facebook fa-3x text-primary mb-3"></i>
+                    <h5 class="text-white">Meta Ads</h5>
+                    <span class="badge bg-success">Conectado</span>
+                    <p class="text-muted small mt-2">Facebook & Instagram</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-success">
+                <div class="card-body text-center">
+                    <i class="fab fa-google fa-3x text-danger mb-3"></i>
+                    <h5 class="text-white">Google Ads</h5>
+                    <span class="badge bg-success">Conectado</span>
+                    <p class="text-muted small mt-2">Search, Display, YouTube</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-warning">
+                <div class="card-body text-center">
+                    <i class="fab fa-tiktok fa-3x text-white mb-3"></i>
+                    <h5 class="text-white">TikTok Ads</h5>
+                    <span class="badge bg-warning text-dark">Pendente</span>
+                    <p class="text-muted small mt-2">Clique para conectar</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-warning">
+                <div class="card-body text-center">
+                    <i class="fab fa-linkedin fa-3x text-info mb-3"></i>
+                    <h5 class="text-white">LinkedIn Ads</h5>
+                    <span class="badge bg-warning text-dark">Pendente</span>
+                    <p class="text-muted small mt-2">Clique para conectar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integrações de IA -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="text-white mb-3"><i class="fas fa-robot me-2"></i>Integrações de IA</h4>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary rounded-circle p-3 me-3">
+                            <i class="fas fa-brain fa-2x text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white mb-0">Velyra Prime</h5>
+                            <span class="badge bg-success">Ativo</span>
+                        </div>
+                    </div>
+                    <p class="text-muted">Assistente IA para automação e otimização de campanhas</p>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Última ação: Há 12 min</span>
+                        <span>47 ações hoje</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-purple rounded-circle p-3 me-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-magic fa-2x text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white mb-0">Manus IA</h5>
+                            <span class="badge bg-success">Conectado</span>
+                        </div>
+                    </div>
+                    <p class="text-muted">Agente autônomo para execução de tarefas complexas</p>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Status: Operacional</span>
+                        <span>API: v2.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info rounded-circle p-3 me-3">
+                            <i class="fas fa-chart-line fa-2x text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white mb-0">Similarweb</h5>
+                            <span class="badge bg-success">Ativo</span>
+                        </div>
+                    </div>
+                    <p class="text-muted">Market Intelligence e análise de concorrentes</p>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Dados: Atualizados</span>
+                        <span>150K visitas/mês</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ferramentas Conectadas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="text-white mb-3"><i class="fas fa-tools me-2"></i>Ferramentas Conectadas</h4>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark">
+                <div class="card-body text-center">
+                    <i class="fas fa-database fa-2x text-success mb-2"></i>
+                    <h6 class="text-white">PostgreSQL</h6>
+                    <span class="badge bg-success">Conectado</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark">
+                <div class="card-body text-center">
+                    <i class="fas fa-cloud fa-2x text-info mb-2"></i>
+                    <h6 class="text-white">Render</h6>
+                    <span class="badge bg-success">Deploy Ativo</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark">
+                <div class="card-body text-center">
+                    <i class="fab fa-github fa-2x text-white mb-2"></i>
+                    <h6 class="text-white">GitHub</h6>
+                    <span class="badge bg-success">Sincronizado</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark">
+                <div class="card-body text-center">
+                    <i class="fas fa-credit-card fa-2x text-warning mb-2"></i>
+                    <h6 class="text-white">Stripe</h6>
+                    <span class="badge bg-warning text-dark">Configurar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhooks e APIs -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card bg-dark">
+                <div class="card-header bg-dark border-secondary">
+                    <h5 class="text-white mb-0"><i class="fas fa-code me-2"></i>API Keys</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small">Sua API Key</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control bg-dark text-white border-secondary" value="nx_live_xxxxxxxxxxxx" readonly>
+                            <button class="btn btn-outline-secondary" type="button"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Webhook URL</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-dark text-white border-secondary" value="https://robo-otimizador1.onrender.com/api/webhook" readonly>
+                            <button class="btn btn-outline-secondary" type="button"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100">
+                        <i class="fas fa-sync-alt me-2"></i>Regenerar API Key
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-dark">
+                <div class="card-header bg-dark border-secondary">
+                    <h5 class="text-white mb-0"><i class="fas fa-history me-2"></i>Atividade Recente</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge bg-success me-2">✓</span>
+                            <div>
+                                <span class="text-white">Meta Ads sincronizado</span>
+                                <small class="text-muted d-block">Há 5 minutos</small>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge bg-success me-2">✓</span>
+                            <div>
+                                <span class="text-white">Google Ads atualizado</span>
+                                <small class="text-muted d-block">Há 12 minutos</small>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge bg-info me-2">i</span>
+                            <div>
+                                <span class="text-white">Velyra Prime executou otimização</span>
+                                <small class="text-muted d-block">Há 15 minutos</small>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <span class="badge bg-warning me-2">!</span>
+                            <div>
+                                <span class="text-white">TikTok Ads aguardando conexão</span>
+                                <small class="text-muted d-block">Há 1 hora</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
