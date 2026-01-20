@@ -4681,3 +4681,65 @@ def api_admin_seed_database():
             'error': str(e)
         }), 500
 
+
+@app.route('/api/campaigns/<int:campaign_id>')
+def api_get_campaign(campaign_id):
+    """
+    Retorna detalhes de uma campanha específica.
+    """
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Buscar campanha
+        cursor.execute("""
+            SELECT id, name, platform, status, budget, start_date, end_date
+            FROM campaigns
+            WHERE id = ?
+        """, (campaign_id,))
+        
+        campaign = cursor.fetchone()
+        
+        if not campaign:
+            return jsonify({
+                'success': False,
+                'error': 'Campanha não encontrada'
+            }), 404
+        
+        # Buscar métricas da campanha
+        cursor.execute("""
+            SELECT 
+                COALESCE(SUM(impressions), 0) as total_impressions,
+                COALESCE(SUM(clicks), 0) as total_clicks,
+                COALESCE(AVG(ctr), 0) as avg_ctr,
+                COALESCE(SUM(cost), 0) as total_spend,
+                COALESCE(SUM(conversions), 0) as total_conversions
+            FROM campaign_metrics
+            WHERE campaign_id = ?
+        """, (campaign_id,))
+        
+        metrics = cursor.fetchone()
+        
+        return jsonify({
+            'success': True,
+            'id': campaign[0],
+            'name': campaign[1],
+            'platform': campaign[2],
+            'status': campaign[3],
+            'budget': campaign[4],
+            'start_date': campaign[5],
+            'end_date': campaign[6],
+            'impressions': int(metrics[0]) if metrics else 0,
+            'clicks': int(metrics[1]) if metrics else 0,
+            'ctr': round(float(metrics[2]), 2) if metrics else 0,
+            'spend': round(float(metrics[3]), 2) if metrics else 0,
+            'conversions': int(metrics[4]) if metrics else 0
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar campanha: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
