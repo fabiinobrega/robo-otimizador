@@ -423,7 +423,11 @@ class AdCreatorEngine {
     }
 
     async generateCreatives() {
+        // Sempre avançar para Step 4 primeiro
         this.goToStep(4);
+        
+        // Salvar criativos no objeto
+        this.creatives = null;
         
         const creativesContent = document.getElementById('creativesContent');
         creativesContent.innerHTML = `
@@ -450,6 +454,7 @@ class AdCreatorEngine {
             const result = await response.json();
             
             if (result.success && result.creatives) {
+                this.creatives = result.creatives;
                 this.showCreatives(result.creatives);
             } else {
                 throw new Error(result.error || 'Erro ao gerar criativos');
@@ -457,7 +462,9 @@ class AdCreatorEngine {
         } catch (error) {
             console.error('Erro:', error);
             // Usar criativos de fallback baseados na análise
-            this.showCreatives(this.generateFallbackCreatives());
+            const fallback = this.generateFallbackCreatives();
+            this.creatives = fallback;
+            this.showCreatives(fallback);
         }
     }
 
