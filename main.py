@@ -4848,3 +4848,104 @@ def api_get_campaign(campaign_id):
             'error': str(e)
         }), 500
 
+
+# ===== ROTAS ALIAS PARA COMPATIBILIDADE =====
+
+@app.route('/new-campaign')
+def new_campaign():
+    """Alias para create-campaign."""
+    return redirect(url_for('create_campaign'))
+
+
+@app.route('/create-ad')
+def create_ad():
+    """Alias para create-perfect-ad-v2."""
+    return redirect(url_for('create_perfect_ad_v2'))
+
+
+@app.route('/library')
+def library():
+    """Alias para media-library."""
+    return redirect(url_for('media_library'))
+
+
+# ===== API DE MÍDIA =====
+
+@app.route('/api/media', methods=['GET'])
+def api_media_list():
+    """Lista todas as mídias disponíveis."""
+    try:
+        upload_folder = app.config.get('UPLOAD_FOLDER', 'static/uploads')
+        media_files = []
+        
+        if os.path.exists(upload_folder):
+            for filename in os.listdir(upload_folder):
+                filepath = os.path.join(upload_folder, filename)
+                if os.path.isfile(filepath):
+                    file_stat = os.stat(filepath)
+                    media_files.append({
+                        'filename': filename,
+                        'url': f'/static/uploads/{filename}',
+                        'size': file_stat.st_size,
+                        'created_at': datetime.fromtimestamp(file_stat.st_ctime).isoformat(),
+                        'type': 'image' if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) else 'video' if filename.lower().endswith(('.mp4', '.webm', '.mov')) else 'other'
+                    })
+        
+        return jsonify({
+            'success': True,
+            'media': media_files,
+            'total': len(media_files)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+# ===== API DE CAMPANHAS (POST) =====
+
+@app.route('/api/campaigns', methods=['POST'])
+def api_campaigns_create():
+    """Cria uma nova campanha via API."""
+    try:
+        data = request.get_json() or {}
+        
+        name = data.get('name', f'Campanha {datetime.now().strftime("%Y%m%d%H%M%S")}')
+        platform = data.get('platform', 'meta')
+        objective = data.get('objective', 'conversions')
+        budget = data.get('budget', 100.00)
+        status = data.get('status', 'draft')
+        
+        db = get_db()
+        cursor = db.execute(
+            """INSERT INTO campaigns (name, platform, objective, budget, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (name, platform, objective, float(budget), status, datetime.now().isoformat(), datetime.now().isoformat())
+        )
+        db.commit()
+        campaign_id = cursor.lastrowid
+        
+        log_activity("Campanha Criada via API", f"Campanha '{name}' (ID: {campaign_id})")
+        
+        return jsonify({
+            'success': True,
+            'id': campaign_id,
+            'name': name,
+            'platform': platform,
+            'objective': objective,
+            'budget': budget,
+            'status': status,
+            'message': f"Campanha '{name}' criada com sucesso!"
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
