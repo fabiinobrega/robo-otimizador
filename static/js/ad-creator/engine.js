@@ -333,15 +333,294 @@ class AdCreatorEngine {
     updateAnalysisProgress(result) {
         const analysisProgress = document.getElementById('analysisProgress');
         
-        // Simular progresso por enquanto (será implementado completamente na próxima sessão)
+        // Mostrar resultado da análise
         analysisProgress.innerHTML = `
-            <div class="alert alert-success">
+            <div class="alert alert-success mb-3">
                 <i class="fas fa-check-circle"></i>
-                Análise concluída! Próximas etapas serão implementadas na continuação.
+                <strong>Análise concluída com sucesso!</strong>
+            </div>
+            
+            <div class="mb-3">
+                <h5 class="text-white mb-3">Resultado da Análise</h5>
+                <pre style="background: var(--nexora-gray-900); padding: 1rem; border-radius: 8px; max-height: 400px; overflow-y: auto; font-size: 0.875rem;">${JSON.stringify(result, null, 2)}</pre>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary" id="btnStep2Back">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+                <button type="button" class="btn btn-primary btn-lg" id="btnStep2Next">
+                    Continuar para Estratégia
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
         `;
 
+        // Adicionar event listeners
+        document.getElementById('btnStep2Back')?.addEventListener('click', () => this.goToStep(1));
+        document.getElementById('btnStep2Next')?.addEventListener('click', () => this.showStrategy());
+
         this.hideAIStatus();
+    }
+
+    showStrategy() {
+        this.goToStep(3);
+        
+        const strategyContent = document.getElementById('strategyContent');
+        const intelligence = this.analysisResults?.results?.competitive_intelligence || {};
+        const attackPlan = intelligence.attack_plan || {};
+        const diagnosis = intelligence.strategic_diagnosis || {};
+        
+        strategyContent.innerHTML = `
+            <div class="mb-4">
+                <h5 class="text-white mb-3"><i class="fas fa-bullseye"></i> Posicionamento</h5>
+                <p class="text-gray-300">${diagnosis.positioning || 'Não disponível'}</p>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="text-white mb-3"><i class="fas fa-lightbulb"></i> Proposta de Valor</h5>
+                <p class="text-gray-300">${attackPlan.value_proposition || 'Não disponível'}</p>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="text-white mb-3"><i class="fas fa-chart-pie"></i> Alocação de Orçamento</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="p-3" style="background: var(--nexora-gray-900); border-radius: 8px;">
+                            <div class="text-gray-400 mb-1">Testes</div>
+                            <div class="h4 text-primary mb-0">${attackPlan.budget_allocation?.testing || '30%'}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3" style="background: var(--nexora-gray-900); border-radius: 8px;">
+                            <div class="text-gray-400 mb-1">Escala</div>
+                            <div class="h4 text-success mb-0">${attackPlan.budget_allocation?.scaling || '50%'}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3" style="background: var(--nexora-gray-900); border-radius: 8px;">
+                            <div class="text-gray-400 mb-1">Retargeting</div>
+                            <div class="h4 text-warning mb-0">${attackPlan.budget_allocation?.retargeting || '20%'}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="text-white mb-3"><i class="fas fa-brain"></i> Gatilhos Mentais</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    ${(attackPlan.mental_triggers || []).map(trigger => `
+                        <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">${trigger}</span>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        // Event listeners
+        document.getElementById('btnStep3Back')?.addEventListener('click', () => this.goToStep(2));
+        document.getElementById('btnStep3Next')?.addEventListener('click', () => this.generateCreatives());
+    }
+
+    async generateCreatives() {
+        this.goToStep(4);
+        
+        const creativesContent = document.getElementById('creativesContent');
+        creativesContent.innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <p class="text-gray-400">Gerando criativos com Manus + Velyra...</p>
+            </div>
+        `;
+        
+        try {
+            // Chamar API para gerar criativos
+            const response = await fetch('/api/ad-creator/create-ads', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    config: this.formData,
+                    strategy: this.analysisResults,
+                    creative_results: {
+                        uploaded_files: this.uploadedFiles
+                    }
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showCreatives(result.ads);
+            } else {
+                throw new Error(result.error || 'Erro ao gerar criativos');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            // Usar criativos de fallback baseados na análise
+            this.showCreatives(this.generateFallbackCreatives());
+        }
+    }
+
+    generateFallbackCreatives() {
+        const intelligence = this.analysisResults?.results?.competitive_intelligence || {};
+        const headlines = intelligence.ad_espionage?.dominant_headlines || [];
+        const ctas = intelligence.ad_espionage?.top_ctas || [];
+        
+        return {
+            headlines: headlines.slice(0, 5),
+            primary_texts: [
+                'Descubra a solução perfeita para suas necessidades.',
+                'Qualidade premium com o melhor preço do mercado.',
+                'Aproveite agora e transforme seus resultados.'
+            ],
+            ctas: ctas.map(c => c.cta).slice(0, 3)
+        };
+    }
+
+    showCreatives(creatives) {
+        const creativesContent = document.getElementById('creativesContent');
+        
+        creativesContent.innerHTML = `
+            <div class="mb-4">
+                <h5 class="text-white mb-3"><i class="fas fa-heading"></i> Headlines</h5>
+                ${(creatives.headlines || []).map((headline, i) => `
+                    <div class="form-group mb-2">
+                        <input type="text" class="form-control" value="${headline}" data-creative-type="headline" data-index="${i}">
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="text-white mb-3"><i class="fas fa-align-left"></i> Textos Primários</h5>
+                ${(creatives.primary_texts || []).map((text, i) => `
+                    <div class="form-group mb-2">
+                        <textarea class="form-control" rows="3" data-creative-type="primary" data-index="${i}">${text}</textarea>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="text-white mb-3"><i class="fas fa-mouse-pointer"></i> CTAs</h5>
+                ${(creatives.ctas || []).map((cta, i) => `
+                    <div class="form-group mb-2">
+                        <input type="text" class="form-control" value="${cta}" data-creative-type="cta" data-index="${i}">
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        this.creatives = creatives;
+        
+        // Event listeners
+        document.getElementById('btnStep4Back')?.addEventListener('click', () => this.goToStep(3));
+        document.getElementById('btnStep4Next')?.addEventListener('click', () => this.showPreview());
+    }
+
+    showPreview() {
+        this.goToStep(5);
+        
+        // Coletar criativos editados
+        const editedCreatives = {
+            headlines: [],
+            primary_texts: [],
+            ctas: []
+        };
+        
+        document.querySelectorAll('[data-creative-type="headline"]').forEach(el => {
+            editedCreatives.headlines.push(el.value);
+        });
+        document.querySelectorAll('[data-creative-type="primary"]').forEach(el => {
+            editedCreatives.primary_texts.push(el.value);
+        });
+        document.querySelectorAll('[data-creative-type="cta"]').forEach(el => {
+            editedCreatives.ctas.push(el.value);
+        });
+        
+        this.finalCreatives = editedCreatives;
+        
+        const previewContent = document.getElementById('previewContent');
+        const platform = this.formData.platform || 'meta';
+        const salesPageUrl = this.formData.salesPageUrl || '#';
+        
+        previewContent.innerHTML = `
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle"></i>
+                Prévia do anúncio para <strong>${platform === 'meta' ? 'Meta Ads (Facebook/Instagram)' : 'Google Ads'}</strong>
+            </div>
+            
+            ${editedCreatives.headlines.slice(0, 3).map((headline, i) => `
+                <div class="mb-4 p-4" style="background: var(--nexora-gray-900); border-radius: 12px; border: 1px solid var(--nexora-gray-800);">
+                    <div class="mb-3">
+                        <span class="badge bg-primary">Variação ${i + 1}</span>
+                    </div>
+                    <h5 class="text-white mb-2">${headline}</h5>
+                    <p class="text-gray-300 mb-3">${editedCreatives.primary_texts[i] || editedCreatives.primary_texts[0]}</p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm" disabled>${editedCreatives.ctas[i] || editedCreatives.ctas[0]}</button>
+                        <span class="text-gray-400 small align-self-center">
+                            <i class="fas fa-link"></i> ${salesPageUrl}
+                        </span>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+        
+        // Event listeners
+        document.getElementById('btnStep5Back')?.addEventListener('click', () => this.goToStep(4));
+        document.getElementById('btnStep5Publish')?.addEventListener('click', () => this.publishAd());
+    }
+
+    async publishAd() {
+        this.goToStep(6);
+        
+        const publishProgress = document.getElementById('publishProgress');
+        publishProgress.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+                <h5 class="text-white mb-2">Publicando anúncio...</h5>
+                <p class="text-gray-400">Enviando para ${this.formData.platform === 'meta' ? 'Meta Ads' : 'Google Ads'}</p>
+            </div>
+        `;
+        
+        try {
+            const response = await fetch('/api/ad-creator/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ads: this.finalCreatives,
+                    config: this.formData
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                publishProgress.innerHTML = `
+                    <div class="alert alert-success text-center py-5">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--nexora-success);"></i>
+                        <h4 class="text-white mt-3 mb-2">Anúncio Publicado com Sucesso!</h4>
+                        <p class="text-gray-300 mb-4">Seu anúncio foi enviado para a plataforma e está em análise.</p>
+                        <a href="/campaigns" class="btn btn-primary">
+                            <i class="fas fa-chart-line"></i>
+                            Ver Campanhas
+                        </a>
+                    </div>
+                `;
+            } else {
+                throw new Error(result.error || 'Erro ao publicar');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            publishProgress.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Erro ao publicar:</strong> ${error.message}
+                    <div class="mt-3">
+                        <button class="btn btn-secondary" onclick="location.reload()">Tentar Novamente</button>
+                    </div>
+                </div>
+            `;
+        }
     }
 
     goToStep(step) {

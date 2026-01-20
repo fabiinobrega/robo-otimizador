@@ -276,7 +276,113 @@
                     </div>
                 </div>
 
-                <!-- STEP 3-6: Serão implementados na próxima sessão -->
+                <!-- STEP 3: Estratégia -->
+                <div class="wizard-content" id="step-3" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-chess"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Estratégia de Ataque</h3>
+                                <p class="ad-card-subtitle">Plano gerado pela espionagem</p>
+                            </div>
+                        </div>
+                        <div id="strategyContent">
+                            <!-- Conteúdo será inserido via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" id="btnStep3Back">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="btnStep3Next">
+                            Continuar para Criativos
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Criativos -->
+                <div class="wizard-content" id="step-4" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Criativos do Anúncio</h3>
+                                <p class="ad-card-subtitle">Headlines, copies e CTAs gerados pela IA</p>
+                            </div>
+                        </div>
+                        <div id="creativesContent">
+                            <!-- Conteúdo será inserido via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" id="btnStep4Back">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="btnStep4Next">
+                            Ver Pré-visualização
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Pré-visualização -->
+                <div class="wizard-content" id="step-5" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Pré-visualização</h3>
+                                <p class="ad-card-subtitle">Como seu anúncio aparecerá</p>
+                            </div>
+                        </div>
+                        <div id="previewContent">
+                            <!-- Conteúdo será inserido via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" id="btnStep5Back">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-success btn-lg" id="btnStep5Publish">
+                            <i class="fas fa-rocket"></i>
+                            Publicar Anúncio
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 6: Executar -->
+                <div class="wizard-content" id="step-6" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Publicando Anúncio</h3>
+                                <p class="ad-card-subtitle">Enviando para as plataformas</p>
+                            </div>
+                        </div>
+                        <div id="publishProgress">
+                            <!-- Progresso será inserido via JavaScript -->
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
