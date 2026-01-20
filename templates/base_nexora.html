@@ -402,8 +402,141 @@
         }
 
         /* ============================================
+           GLOBAL SEARCH MODAL
+           ============================================ */
+        .nexora-search-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 10vh;
+        }
+
+        .nexora-search-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .nexora-search-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-2xl);
+            border: 1px solid var(--border-primary);
+            overflow: hidden;
+        }
+
+        .nexora-search-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            padding: var(--spacing-4);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .nexora-search-header i {
+            color: var(--text-tertiary);
+            font-size: var(--text-lg);
+        }
+
+        .nexora-search-header input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            font-size: var(--text-base);
+            color: var(--text-primary);
+        }
+
+        .nexora-search-header kbd {
+            padding: var(--spacing-1) var(--spacing-2);
+            background-color: var(--fill-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+        }
+
+        .nexora-search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .nexora-search-empty {
+            padding: var(--spacing-12) var(--spacing-4);
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        .nexora-search-empty i {
+            font-size: var(--text-3xl);
+            margin-bottom: var(--spacing-3);
+            opacity: 0.5;
+        }
+
+        .nexora-search-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            padding: var(--spacing-3) var(--spacing-4);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .nexora-search-item:hover,
+        .nexora-search-item.active {
+            background-color: var(--fill-primary);
+        }
+
+        .nexora-search-item-icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--fill-secondary);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+        }
+
+        .nexora-search-item-content {
+            flex: 1;
+        }
+
+        .nexora-search-item-title {
+            font-size: var(--text-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-1);
+        }
+
+        .nexora-search-item-description {
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* ============================================
            RESPONSIVE
            ============================================ */
+        @media (max-width: 768px) {
+            .nexora-search-container {
+                margin: 0 var(--spacing-4);
+            }
+        }
+
         @media (max-width: 768px) {
             .nexora-toast-container {
                 top: var(--spacing-4);
@@ -566,6 +699,24 @@
         </main>
     </div>
 
+    <!-- Global Search Modal -->
+    <div id="searchModal" class="nexora-search-modal" style="display: none;">
+        <div class="nexora-search-backdrop" onclick="closeSearchModal()"></div>
+        <div class="nexora-search-container">
+            <div class="nexora-search-header">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar páginas, campanhas, relatórios..." autocomplete="off">
+                <kbd>ESC</kbd>
+            </div>
+            <div class="nexora-search-results" id="searchResults">
+                <div class="nexora-search-empty">
+                    <i class="fas fa-search"></i>
+                    <p>Digite para buscar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- NEXORA Components -->
     {% include 'components/nexora_components.html' %}
 
@@ -637,5 +788,106 @@
     </script>
     
     {% block extra_scripts %}{% endblock %}
+    
+    <script>
+    // Global Search Functionality
+    const searchModal = document.getElementById('searchModal');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const searchBtn = document.querySelector('.nexora-search-btn');
+    
+    // Search data - páginas disponíveis
+    const searchData = [
+        { title: 'Dashboard', description: 'Visão geral de performance', icon: 'chart-line', url: '/dashboard' },
+        { title: 'Campanhas', description: 'Gerenciar campanhas de marketing', icon: 'bullhorn', url: '/campaigns' },
+        { title: 'Relatórios', description: 'Relatórios e análises', icon: 'chart-bar', url: '/reports' },
+        { title: 'Criar Campanha', description: 'Criar nova campanha', icon: 'plus-circle', url: '/create-campaign' },
+        { title: 'Ad Creator Premium', description: 'Criar anúncios perfeitos com IA', icon: 'magic', url: '/create-perfect-ad-premium' },
+        { title: 'Velyra Prime', description: 'Assistente de IA avançada', icon: 'robot', url: '/velyra-prime' },
+        { title: 'Espionagem de Concorrentes', description: 'Analisar estratégias da concorrência', icon: 'user-secret', url: '/competitor-spy' },
+        { title: 'Biblioteca de Mídia', description: 'Gerenciar arquivos e criativos', icon: 'images', url: '/media-library' },
+        { title: 'Automação', description: 'Configurar regras automáticas', icon: 'robot', url: '/automation' },
+        { title: 'Configurações', description: 'Configurações da conta', icon: 'cog', url: '/settings' }
+    ];
+    
+    // Open search modal
+    function openSearchModal() {
+        searchModal.style.display = 'flex';
+        searchInput.focus();
+    }
+    
+    // Close search modal
+    function closeSearchModal() {
+        searchModal.style.display = 'none';
+        searchInput.value = '';
+        renderSearchResults([]);
+    }
+    
+    // Render search results
+    function renderSearchResults(results) {
+        if (results.length === 0) {
+            searchResults.innerHTML = `
+                <div class="nexora-search-empty">
+                    <i class="fas fa-search"></i>
+                    <p>Digite para buscar</p>
+                </div>
+            `;
+            return;
+        }
+        
+        searchResults.innerHTML = results.map(item => `
+            <div class="nexora-search-item" onclick="window.location.href='${item.url}'">
+                <div class="nexora-search-item-icon">
+                    <i class="fas fa-${item.icon}"></i>
+                </div>
+                <div class="nexora-search-item-content">
+                    <div class="nexora-search-item-title">${item.title}</div>
+                    <div class="nexora-search-item-description">${item.description}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Search function
+    function performSearch(query) {
+        if (!query.trim()) {
+            renderSearchResults([]);
+            return;
+        }
+        
+        const lowerQuery = query.toLowerCase();
+        const results = searchData.filter(item => 
+            item.title.toLowerCase().includes(lowerQuery) ||
+            item.description.toLowerCase().includes(lowerQuery)
+        );
+        
+        renderSearchResults(results);
+    }
+    
+    // Event listeners
+    if (searchBtn) {
+        searchBtn.addEventListener('click', openSearchModal);
+    }
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            performSearch(e.target.value);
+        });
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Ctrl+K or Cmd+K to open search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            openSearchModal();
+        }
+        
+        // ESC to close search
+        if (e.key === 'Escape' && searchModal.style.display === 'flex') {
+            closeSearchModal();
+        }
+    });
+    </script>
 </body>
 </html>
