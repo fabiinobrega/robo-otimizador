@@ -770,12 +770,15 @@ def api_campaigns():
     try:
         campaigns = db.execute(
             """SELECT c.*, 
-                      COALESCE(m.impressions, 0) as impressions,
-                      COALESCE(m.clicks, 0) as clicks,
-                      COALESCE(m.conversions, 0) as conversions,
-                      COALESCE(m.roas, 0) as roas
+                      COALESCE(SUM(m.impressions), 0) as impressions,
+                      COALESCE(SUM(m.clicks), 0) as clicks,
+                      COALESCE(SUM(m.conversions), 0) as conversions,
+                      COALESCE(SUM(m.spend), 0) as spend,
+                      COALESCE(SUM(m.revenue), 0) as revenue,
+                      COALESCE(AVG(m.roas), 0) as roas
                FROM campaigns c
                LEFT JOIN campaign_metrics m ON c.id = m.campaign_id
+               GROUP BY c.id
                ORDER BY c.created_at DESC LIMIT ?""",
             (limit,)
         ).fetchall()
