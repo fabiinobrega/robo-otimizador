@@ -4609,3 +4609,75 @@ def api_manus_credits_roi():
 # AD CREATOR PREMIUM - APIs
 # ================================================================
 
+
+# ================================================================
+# ADMIN - Database Management
+# ================================================================
+
+@app.route('/api/admin/seed-database', methods=['POST'])
+def api_admin_seed_database():
+    """
+    Popula o banco de dados com dados mockados consistentes.
+    ATENÇÃO: Este endpoint deve ser protegido em produção!
+    """
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Limpar dados antigos
+        cursor.execute("DELETE FROM campaigns WHERE id IN (1, 2, 3, 4, 5)")
+        
+        # Inserir campanhas mockadas
+        campaigns = [
+            (1, 'Campanha LinkedIn B2B', 'LinkedIn', 'Active', 500.00, '2024-11-01', '2024-11-30'),
+            (2, 'Campanha Pinterest Produtos', 'Pinterest', 'Active', 300.00, '2024-11-01', '2024-11-30'),
+            (3, 'Campanha TikTok Viral', 'TikTok', 'Active', 400.00, '2024-11-01', '2024-11-30'),
+            (4, 'Campanha Google Search', 'Google', 'Paused', 200.00, '2024-10-15', '2024-10-31'),
+            (5, 'Campanha Facebook Retargeting', 'Facebook', 'Paused', 150.00, '2024-10-01', '2024-10-31')
+        ]
+        
+        for campaign in campaigns:
+            cursor.execute("""
+                INSERT INTO campaigns (id, name, platform, status, budget, start_date, end_date, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+            """, campaign)
+        
+        # Inserir métricas mockadas
+        metrics = [
+            (1, '2024-11-15', 5000, 250, 5.0, 2.00, 25, 500.00),
+            (2, '2024-11-15', 8000, 320, 4.0, 0.94, 32, 300.00),
+            (3, '2024-11-15', 12000, 480, 4.0, 0.83, 48, 400.00)
+        ]
+        
+        for metric in metrics:
+            cursor.execute("""
+                INSERT INTO campaign_metrics (campaign_id, date, impressions, clicks, ctr, cpc, conversions, cost, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+            """, metric)
+        
+        db.commit()
+        
+        # Verificar dados inseridos
+        cursor.execute("SELECT COUNT(*) FROM campaigns WHERE status = 'Active'")
+        active_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM campaigns WHERE status = 'Paused'")
+        paused_count = cursor.fetchone()[0]
+        
+        return jsonify({
+            'success': True,
+            'message': 'Banco de dados populado com sucesso',
+            'data': {
+                'active_campaigns': active_count,
+                'paused_campaigns': paused_count,
+                'total_campaigns': active_count + paused_count
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao popular banco de dados: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
