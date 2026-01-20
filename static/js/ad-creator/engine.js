@@ -359,13 +359,16 @@ class AdCreatorEngine {
 
         // Adicionar event listeners
         document.getElementById('btnStep2Back')?.addEventListener('click', () => this.goToStep(1));
-        document.getElementById('btnStep2Next')?.addEventListener('click', () => this.showStrategy());
+        document.getElementById('btnStep2Next')?.addEventListener('click', () => {
+            this.goToStep(3);
+            this.showStrategy();
+        });
 
         this.hideAIStatus();
     }
 
     showStrategy() {
-        this.goToStep(3);
+        // goToStep(3) já foi chamado pelo botão
         
         const strategyContent = document.getElementById('strategyContent');
         const intelligence = this.analysisResults?.results?.competitive_intelligence || {};
@@ -419,12 +422,14 @@ class AdCreatorEngine {
         
         // Event listeners
         document.getElementById('btnStep3Back')?.addEventListener('click', () => this.goToStep(2));
-        document.getElementById('btnStep3Next')?.addEventListener('click', () => this.generateCreatives());
+        document.getElementById('btnStep3Next')?.addEventListener('click', () => {
+            this.goToStep(4);
+            this.generateCreatives();
+        });
     }
 
     async generateCreatives() {
-        // Sempre avançar para Step 4 primeiro
-        this.goToStep(4);
+        // goToStep(4) já foi chamado pelo botão
         
         // Salvar criativos no objeto
         this.creatives = null;
@@ -519,12 +524,18 @@ class AdCreatorEngine {
         this.creatives = creatives;
         
         // Event listeners
-        document.getElementById('btnStep4Back')?.addEventListener('click', () => this.goToStep(3));
-        document.getElementById('btnStep4Next')?.addEventListener('click', () => this.showPreview());
+        document.getElementById('btnStep4Back')?.addEventListener('click', () => {
+            this.goToStep(3);
+            this.showStrategy();
+        });
+        document.getElementById('btnStep4Next')?.addEventListener('click', () => {
+            this.goToStep(5);
+            this.showPreview();
+        });
     }
 
     showPreview() {
-        this.goToStep(5);
+        // goToStep(5) já foi chamado pelo botão
         
         // Coletar criativos editados
         const editedCreatives = {
@@ -573,12 +584,18 @@ class AdCreatorEngine {
         `;
         
         // Event listeners
-        document.getElementById('btnStep5Back')?.addEventListener('click', () => this.goToStep(4));
-        document.getElementById('btnStep5Publish')?.addEventListener('click', () => this.publishAd());
+        document.getElementById('btnStep5Back')?.addEventListener('click', () => {
+            this.goToStep(4);
+            this.showCreatives(this.creatives);
+        });
+        document.getElementById('btnStep5Publish')?.addEventListener('click', () => {
+            this.goToStep(6);
+            this.publishAd();
+        });
     }
 
     async publishAd() {
-        this.goToStep(6);
+        // goToStep(6) já foi chamado pelo botão
         
         const publishProgress = document.getElementById('publishProgress');
         publishProgress.innerHTML = `
@@ -654,13 +671,9 @@ class AdCreatorEngine {
 
         this.currentStep = step;
 
-        // Ações específicas por step
-        if (step === 3) {
-            this.showStrategy();
-        } else if (step === 4) {
-            this.generateCreatives();
-        } else if (step === 5) {
-            this.showPreview();
+        // Ações específicas por step removidas para evitar recursão
+        // As funções showStrategy(), generateCreatives() e showPreview()
+        // devem ser chamadas explicitamente pelos botões
         }
     }
 
