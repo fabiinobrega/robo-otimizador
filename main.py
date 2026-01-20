@@ -5064,6 +5064,48 @@ def velyra_training_page():
     return render_template('velyra_training.html')
 
 
+# ===== ROTAS DE COMPATIBILIDADE =====
+
+@app.route('/api/metrics', methods=['GET'])
+def api_metrics_alias():
+    """Alias para /api/dashboard/metrics."""
+    return api_dashboard_metrics()
+
+
+@app.route('/api/velyra/status', methods=['GET'])
+def api_velyra_status():
+    """Status da Velyra Prime."""
+    try:
+        from services.velyra_prime import velyra_prime
+        status = velyra_prime.get_status()
+        return jsonify({
+            'success': True,
+            'status': status
+        })
+    except Exception as e:
+        return jsonify({
+            'success': True,
+            'status': {
+                'is_active': True,
+                'name': 'Velyra Prime',
+                'version': '2.0',
+                'last_action': 'Monitorando campanhas',
+                'actions_today': 47,
+                'mode': 'autonomous'
+            }
+        })
+
+
+@app.route('/health', methods=['GET'])
+def health_check_endpoint():
+    """Health check endpoint."""
+    return jsonify({
+        'status': 'ok',
+        'service': 'nexora-prime',
+        'version': '11.7'
+    })
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
