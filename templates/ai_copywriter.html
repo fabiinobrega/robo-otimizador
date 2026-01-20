@@ -157,7 +157,7 @@ function generateCopy() {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            displayResults(result.copies || []);
+            displayResults(result.variants || result.copies || []);
         } else {
             resultsContent.innerHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> ${result.message || 'Erro ao gerar copies'}</div>`;
         }

@@ -96,6 +96,13 @@ except ImportError as e:
     print(f"Warning: Product intelligence service not available: {e}")
     product_intelligence = None
 
+# Import do serviço de inteligência competitiva (ESPIONAGEM OBRIGATÓRIA)
+try:
+    from services.competitive_intelligence_service import competitive_intelligence
+except ImportError as e:
+    print(f"Warning: Competitive intelligence service not available: {e}")
+    competitive_intelligence = None
+
 # Import da integração Nexora + Manus
 try:
     from services.nexora_manus_integration import (
@@ -1001,6 +1008,7 @@ def api_operator_optimize():
 
 
 @app.route("/api/operator/chat", methods=["POST"])
+@app.route("/api/velyra/chat", methods=["POST"])  # Alias para compatibilidade
 def api_operator_chat():
     """Chat with Velyra Prime"""
     data = request.get_json()
@@ -2337,6 +2345,19 @@ def campaign_detail():
     """Página de detalhes da campanha"""
     return render_template("campaign_detail.html")
 
+@app.route("/campaign/<int:campaign_id>")
+def campaign_detail_by_id(campaign_id):
+    """Página de detalhes da campanha por ID"""
+    db = get_db()
+    try:
+        campaign = db.execute("SELECT * FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        if campaign:
+            return render_template("campaign_detail.html", campaign=campaign)
+        else:
+            return "Campanha não encontrada", 404
+    except Exception as e:
+        return f"Erro ao carregar campanha: {str(e)}", 500
+
 
 @app.route("/create-perfect-ad-v2")
 def create_perfect_ad_v2():
@@ -2698,7 +2719,7 @@ def create_perfect_ad_premium():
 @app.route('/api/ad-creator/analyze', methods=['POST'])
 @async_route
 async def api_ad_creator_analyze():
-    """Analisar produto e mercado (FASE 3 + 4)."""
+    """Analisar produto e mercado (FASE 3 + 4) + ESPIONAGEM COMPLETA OBRIGATÓRIA."""
     try:
         from services.ad_creator_service import ad_creator_service
         
@@ -2713,8 +2734,36 @@ async def api_ad_creator_analyze():
                     'error': f'Campo obrigatório ausente: {field}'
                 }), 400
         
-        # Executar análise
+        # ========================================
+        # ESPIONAGEM COMPLETA OBRIGATÓRIA
+        # ========================================
+        # NENHUM anúncio pode ser criado sem espionagem completa
+        # 5 fases obrigatórias: Mercado, SimilarWeb, Anúncios, Diagnóstico, Ataque
+        espionage_results = None
+        if competitive_intelligence:
+            espionage_results = competitive_intelligence.execute_full_espionage(
+                sales_page_url=data['salesPageUrl'],
+                platform=data['platform'],
+                country=data['country'],
+                language=data['language'],
+                product_type=data.get('productType', 'Produto'),
+                budget=float(data['budgetAmount'])
+            )
+            
+            # BLOQUEIO: Se espionagem falhar, não continuar
+            if not espionage_results.get('ready_to_create_ad', False):
+                return jsonify({
+                    'success': False,
+                    'error': 'Espionagem de mercado incompleta. Não é possível criar anúncio sem análise competitiva completa.',
+                    'espionage_status': espionage_results
+                }), 400
+        
+        # Executar análise (agora com dados da espionagem)
         analysis_results = await ad_creator_service.analyze_product_and_market(data)
+        
+        # Adicionar resultados da espionagem à resposta
+        if espionage_results:
+            analysis_results['competitive_intelligence'] = espionage_results
         
         return jsonify({
             'success': True,
