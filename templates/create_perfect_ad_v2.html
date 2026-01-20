@@ -1076,11 +1076,130 @@ async function analyzeUrls() {
 }
 
 async function oneClickGenerate() {
-    if (confirm('Modo 1-Click: A IA criará tudo automaticamente. Continuar?')) {
-        await analyzeUrls();
-        // TODO: Implementar geração completa automática
-        alert('Gerando anúncio perfeito... (em desenvolvimento)');
+    if (!confirm('Modo 1-Click: A IA criará tudo automaticamente. Continuar?')) {
+        return;
     }
+
+    const productUrl = document.getElementById('productUrl').value;
+    const landingPageUrl = document.getElementById('landingPageUrl').value;
+    const mainKeyword = document.getElementById('mainKeyword').value;
+
+    if (!productUrl || !landingPageUrl) {
+        alert('Por favor, preencha pelo menos a URL do produto e da landing page.');
+        return;
+    }
+
+    // Mostrar progresso
+    document.getElementById('analysisProgress').style.display = 'block';
+    const progressBar = document.getElementById('analysisProgressBar');
+    const stepsDiv = document.getElementById('analysisSteps');
+
+    try {
+        // PASSO 1: Analisar Landing Page
+        updateProgress(10, 'Analisando landing page...', stepsDiv, progressBar);
+        const landingAnalysis = await fetch('/api/analyze-landing-page', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: landingPageUrl })
+        }).then(r => r.json());
+
+        // PASSO 2: Espionar Concorrentes
+        updateProgress(30, 'Espionando concorrentes...', stepsDiv, progressBar);
+        const competitorData = await fetch('/api/competitor-spy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ keyword: mainKeyword || 'produto' })
+        }).then(r => r.json());
+
+        // PASSO 3: Gerar Estratégia
+        updateProgress(50, 'Criando estratégia de campanha...', stepsDiv, progressBar);
+        const strategy = await fetch('/api/ad-creator/create-strategy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_url: productUrl,
+                landing_page_url: landingPageUrl,
+                keyword: mainKeyword,
+                landing_analysis: landingAnalysis,
+                competitor_data: competitorData
+            })
+        }).then(r => r.json());
+
+        // PASSO 4: Gerar Copy
+        updateProgress(70, 'Gerando copy otimizado...', stepsDiv, progressBar);
+        const copy = await fetch('/api/dco/generate-copy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_url: productUrl,
+                landing_page_url: landingPageUrl,
+                strategy: strategy
+            })
+        }).then(r => r.json());
+
+        // PASSO 5: Gerar Segmentação
+        updateProgress(85, 'Definindo público-alvo...', stepsDiv, progressBar);
+        const segmentation = await fetch('/api/dco/generate-segmentation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_url: productUrl,
+                landing_page_url: landingPageUrl,
+                strategy: strategy
+            })
+        }).then(r => r.json());
+
+        // PASSO 6: Finalizar
+        updateProgress(100, 'Anúncio perfeito criado com sucesso!', stepsDiv, progressBar);
+
+        // Mostrar resultados
+        setTimeout(() => {
+            document.getElementById('analysisProgress').style.display = 'none';
+            document.getElementById('analysisResults').style.display = 'block';
+            document.getElementById('analysisContent').innerHTML = `
+                <div class="alert alert-success">
+                    <h5><i class="fas fa-check-circle"></i> Anúncio Perfeito Criado!</h5>
+                    <p>Seu anúncio foi gerado com sucesso. Revise os detalhes abaixo:</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Copy Principal:</h6>
+                        <p class="bg-light p-3 rounded">${copy.headline || 'Headline gerado'}</p>
+                        <p class="bg-light p-3 rounded">${copy.description || 'Descrição gerada'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Público-Alvo:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item">Idade: ${segmentation.age_range || '25-45'}</li>
+                            <li class="list-group-item">Interesses: ${segmentation.interests || 'Marketing, Negócios'}</li>
+                            <li class="list-group-item">Localização: ${segmentation.location || 'Brasil'}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary" onclick="nextStep()">Avançar para Configuração</button>
+                </div>
+            `;
+        }, 1000);
+
+    } catch (error) {
+        console.error('Erro ao gerar anúncio:', error);
+        updateProgress(0, 'Erro ao gerar anúncio. Tente novamente.', stepsDiv, progressBar);
+        setTimeout(() => {
+            document.getElementById('analysisProgress').style.display = 'none';
+        }, 3000);
+    }
+}
+
+function updateProgress(percent, message, stepsDiv, progressBar) {
+    progressBar.style.width = percent + '%';
+    progressBar.textContent = percent + '%';
+    stepsDiv.innerHTML = `
+        <div class="analysis-step">
+            <i class="fas fa-${percent === 100 ? 'check-circle text-success' : 'circle-notch fa-spin text-primary'}"></i>
+            ${message}
+        </div>
+    `;
 }
 
 function handleMediaUpload(files) {
