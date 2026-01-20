@@ -449,8 +449,8 @@ class AdCreatorEngine {
             
             const result = await response.json();
             
-            if (result.success) {
-                this.showCreatives(result.ads);
+            if (result.success && result.creatives) {
+                this.showCreatives(result.creatives);
             } else {
                 throw new Error(result.error || 'Erro ao gerar criativos');
             }

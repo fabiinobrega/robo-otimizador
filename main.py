@@ -2848,26 +2848,56 @@ async def api_ad_creator_create_strategy():
         }), 500
 
 @app.route('/api/ad-creator/create-ads', methods=['POST'])
-@async_route
-async def api_ad_creator_create_ads():
-    """FASE 7: Criar anúncios automaticamente."""
+def api_ad_creator_create_ads():
+    """FASE 7: Criar anúncios automaticamente (versão simplificada)."""
     try:
-        from services.ad_creator_service import ad_creator_service
-        
         data = request.get_json()
+        strategy = data.get('strategy', {})
+        platform = data.get('platform', 'meta')
         
-        ads = await ad_creator_service.create_ads_automatically(
-            config=data.get('config'),
-            strategy=data.get('strategy'),
-            creative_results=data.get('creative_results')
-        )
+        # Gerar criativos baseados na estratégia
+        attack_plan = strategy.get('attack_plan', {})
+        positioning = attack_plan.get('positioning', 'Produto premium com melhor custo-benefício')
+        value_prop = attack_plan.get('value_proposition', 'Qualidade premium com o melhor custo-benefício do mercado')
+        
+        # Headlines geradas baseadas na estratégia
+        headlines = [
+            f"{positioning} - Descubra Agora!",
+            f"{value_prop}",
+            "Transforme Seus Resultados Hoje Mesmo",
+            "A Solução Que Você Estava Procurando",
+            "Qualidade Premium, Preço Justo"
+        ]
+        
+        # Primary texts (copies)
+        primary_texts = [
+            f"🎯 {value_prop}\n\n✨ Milhares de clientes satisfeitos\n🔒 Garantia de 30 dias\n🚀 Resultados comprovados\n\nNão perca esta oportunidade!",
+            f"Você merece o melhor! {positioning}\n\n✅ Aprovado por especialistas\n💎 Qualidade garantida\n⚡ Entrega rápida\n\nClique e descubra!",
+            f"🌟 Oferta Exclusiva!\n\n{value_prop}\n\n🎁 Bônus especiais inclusos\n📦 Estoque limitado\n💯 Satisfação garantida"
+        ]
+        
+        # CTAs
+        ctas = [
+            "Comprar Agora",
+            "Saiba Mais",
+            "Quero Conhecer",
+            "Aproveitar Oferta",
+            "Garantir Meu Desconto"
+        ]
         
         return jsonify({
             'success': True,
-            'ads': ads
+            'creatives': {
+                'headlines': headlines,
+                'primary_texts': primary_texts,
+                'ctas': ctas,
+                'platform': platform,
+                'generated_at': datetime.utcnow().isoformat()
+            }
         })
         
     except Exception as e:
+        logger.error(f"Erro ao gerar criativos: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
