@@ -884,9 +884,17 @@ def developer_api():
     return render_template("developer_api.html")
 
 
+@app.route("/landing-page")
+def landing_page_redirect():
+    return redirect(url_for('landing_page_builder'))
+
 @app.route("/landing-page-builder")
 def landing_page_builder():
     return render_template("landing_page_builder.html")
+
+@app.route("/rules")
+def rules_redirect():
+    return redirect(url_for('automation'))
 
 
 @app.route("/operator-chat")
