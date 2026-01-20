@@ -2338,6 +2338,19 @@ def campaign_detail():
     """Página de detalhes da campanha"""
     return render_template("campaign_detail.html")
 
+@app.route("/campaign/<int:campaign_id>")
+def campaign_detail_by_id(campaign_id):
+    """Página de detalhes da campanha por ID"""
+    db = get_db()
+    try:
+        campaign = db.execute("SELECT * FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        if campaign:
+            return render_template("campaign_detail.html", campaign=campaign)
+        else:
+            return "Campanha não encontrada", 404
+    except Exception as e:
+        return f"Erro ao carregar campanha: {str(e)}", 500
+
 
 @app.route("/create-perfect-ad-v2")
 def create_perfect_ad_v2():
