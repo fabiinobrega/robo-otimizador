@@ -1001,6 +1001,7 @@ def api_operator_optimize():
 
 
 @app.route("/api/operator/chat", methods=["POST"])
+@app.route("/api/velyra/chat", methods=["POST"])  # Alias para compatibilidade
 def api_operator_chat():
     """Chat with Velyra Prime"""
     data = request.get_json()
