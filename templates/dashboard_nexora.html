@@ -252,12 +252,40 @@ function initPerformanceChart() {
 }
 
 async function loadTopCampaigns() {
-    // Simulated data
-    const campaigns = [
-        { name: 'Black Friday 2024', spent: 2500, revenue: 9800, roas: 3.92, status: 'active' },
-        { name: 'Remarketing Q4', spent: 1800, revenue: 7200, roas: 4.00, status: 'active' },
-        { name: 'Lançamento Produto X', spent: 3200, revenue: 11500, roas: 3.59, status: 'active' },
-    ];
+    // Buscar dados reais do banco de dados via API
+    try {
+        const response = await fetch('/api/campaigns');
+        const campaigns = await response.json();
+        
+        // Filtrar apenas campanhas ativas e ordenar por ROAS
+        const activeCampaigns = campaigns
+            .filter(c => c.status === 'active')
+            .sort((a, b) => (b.roas || 0) - (a.roas || 0))
+            .slice(0, 3);
+        
+        // Mapear para formato esperado
+        const formattedCampaigns = activeCampaigns.map(c => ({
+            name: c.name,
+            spent: c.spend || 0,
+            revenue: c.revenue || 0,
+            roas: c.roas || 0,
+            status: c.status
+        }));
+        
+        renderTopCampaigns(formattedCampaigns);
+    } catch (error) {
+        console.error('Erro ao carregar campanhas:', error);
+        // Fallback para dados mockados em caso de erro
+        const campaigns = [
+            { name: 'Black Friday 2024', spent: 2500, revenue: 9800, roas: 3.92, status: 'active' },
+            { name: 'Remarketing Q4', spent: 1800, revenue: 7200, roas: 4.00, status: 'active' },
+            { name: 'Lançamento Produto X', spent: 3200, revenue: 11500, roas: 3.59, status: 'active' },
+        ];
+        renderTopCampaigns(campaigns);
+    }
+}
+
+function renderTopCampaigns(campaigns) {
 
     const tbody = document.getElementById('topCampaignsTable');
     tbody.innerHTML = campaigns.map(c => `

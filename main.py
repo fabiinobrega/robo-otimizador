@@ -4671,12 +4671,15 @@ def api_admin_seed_database():
                     ctr = round((clicks / impressions) * 100, 2)
                     cpc = round(random.uniform(0.50, 2.50), 2)
                     conversions = random.randint(10, 50)
-                    cost = round(clicks * cpc, 2)
+                    spend = round(clicks * cpc, 2)
+                    revenue = round(spend * random.uniform(1.5, 4.0), 2)  # ROAS entre 1.5x e 4.0x
+                    cpa = round(spend / conversions if conversions > 0 else 0, 2)
+                    roas = round(revenue / spend if spend > 0 else 0, 2)
                     
                     cursor.execute("""
-                        INSERT INTO campaign_metrics (campaign_id, impressions, clicks, ctr, cpc, conversions, spend, updated_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
-                    """, (campaign_id, impressions, clicks, ctr, cpc, conversions, cost))
+                        INSERT INTO campaign_metrics (campaign_id, impressions, clicks, ctr, cpc, conversions, spend, revenue, cpa, roas, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                    """, (campaign_id, impressions, clicks, ctr, cpc, conversions, spend, revenue, cpa, roas))
         
         db.commit()
         
