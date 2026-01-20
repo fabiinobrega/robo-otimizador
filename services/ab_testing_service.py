@@ -1,4 +1,3 @@
-from functools import wraps
 """
 A/B Testing Service
 Sistema avançado para criação e análise de testes A/B
@@ -7,11 +6,8 @@ import json
 import random
 from typing import Dict, List, Any
 from datetime import datetime
+from functools import wraps
 
-
-class ABTestingService:
-    """Serviço para gerenciar testes A/B de campanhas"""
-    
 
 def handle_errors(func):
     """Decorador para tratamento automático de erros"""
@@ -25,6 +21,9 @@ def handle_errors(func):
     return wrapper
 
 
+class ABTestingService:
+    """Serviço para gerenciar testes A/B de campanhas"""
+    
     def __init__(self):
         self.test_types = ['headline', 'description', 'image', 'cta', 'audience']
     
