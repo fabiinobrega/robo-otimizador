@@ -43,7 +43,7 @@
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--spacing-4); margin-bottom: var(--spacing-8);">
     <div class="nexora-stat-card">
         <div class="nexora-stat-label">Investimento Total</div>
-        <div class="nexora-stat-value" style="font-size: var(--text-2xl);">R$ 12.450</div>
+        <div class="nexora-stat-value" id="reportTotalSpend" style="font-size: var(--text-2xl);">R$ 0,00</div>
         <div class="nexora-stat-change positive">
             <i class="fas fa-arrow-up"></i> 12% vs. período anterior
         </div>
@@ -51,7 +51,7 @@
     
     <div class="nexora-stat-card">
         <div class="nexora-stat-label">Receita Gerada</div>
-        <div class="nexora-stat-value" style="font-size: var(--text-2xl);">R$ 38.920</div>
+        <div class="nexora-stat-value" id="reportTotalRevenue" style="font-size: var(--text-2xl);">R$ 0,00</div>
         <div class="nexora-stat-change positive">
             <i class="fas fa-arrow-up"></i> 18% vs. período anterior
         </div>
@@ -59,7 +59,7 @@
     
     <div class="nexora-stat-card">
         <div class="nexora-stat-label">ROAS Médio</div>
-        <div class="nexora-stat-value" style="font-size: var(--text-2xl);">3.13x</div>
+        <div class="nexora-stat-value" id="reportAvgRoas" style="font-size: var(--text-2xl);">0.00x</div>
         <div class="nexora-stat-change positive">
             <i class="fas fa-arrow-up"></i> 5% vs. período anterior
         </div>
@@ -67,7 +67,7 @@
     
     <div class="nexora-stat-card">
         <div class="nexora-stat-label">Conversões</div>
-        <div class="nexora-stat-value" style="font-size: var(--text-2xl);">1.247</div>
+        <div class="nexora-stat-value" id="reportConversions" style="font-size: var(--text-2xl);">0</div>
         <div class="nexora-stat-change positive">
             <i class="fas fa-arrow-up"></i> 22% vs. período anterior
         </div>
@@ -298,12 +298,38 @@ function initCharts() {
     });
 }
 
+async function loadReportMetrics() {
+    try {
+        const response = await fetch('/api/dashboard/metrics');
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('reportTotalSpend').textContent = NEXORA.formatCurrency(data.total_spend || 0);
+            document.getElementById('reportTotalRevenue').textContent = NEXORA.formatCurrency(data.total_revenue || 0);
+            document.getElementById('reportAvgRoas').textContent = `${(data.avg_roas || 0).toFixed(2)}x`;
+            document.getElementById('reportConversions').textContent = (data.total_conversions || 0).toLocaleString('pt-BR');
+        }
+    } catch (error) {
+        console.error('Error loading report metrics:', error);
+    }
+}
+
 async function loadTopCampaigns() {
-    const campaigns = [
-        { rank: 1, name: 'Black Friday 2024', platform: 'Facebook', spent: 2500, revenue: 9800, roas: 3.92 },
-        { rank: 2, name: 'Remarketing Q4', platform: 'Google', spent: 1800, revenue: 7200, roas: 4.00 },
-        { rank: 3, name: 'Lançamento Produto X', platform: 'Instagram', spent: 3200, revenue: 11500, roas: 3.59 },
-    ];
+    try {
+        const response = await fetch('/api/campaigns');
+        const data = await response.json();
+        const campaigns = (data.campaigns || data || []).slice(0, 3).map((c, i) => ({
+            rank: i + 1,
+            name: c.name,
+            platform: c.platform || 'Multi',
+            spent: c.spend || 0,
+            revenue: c.revenue || 0,
+            roas: c.roas || 0
+        }));
+        if (campaigns.length === 0) {
+            campaigns.push(
+                { rank: 1, name: 'Sem campanhas', platform: '-', spent: 0, revenue: 0, roas: 0 }
+            );
+        }
     
     const tbody = document.getElementById('topCampaignsTable');
     tbody.innerHTML = campaigns.map(c => `
@@ -320,6 +346,9 @@ async function loadTopCampaigns() {
             <td style="padding: var(--spacing-3); text-align: right; font-size: var(--text-sm); font-weight: 600; color: var(--accent-success);">${c.roas.toFixed(2)}x</td>
         </tr>
     `).join('');
+    } catch (error) {
+        console.error('Error loading top campaigns:', error);
+    }
 }
 
 function applyFilters() {
@@ -339,6 +368,7 @@ function exportReport(format) {
 
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
+    loadReportMetrics();
     loadTopCampaigns();
 });
 </script>

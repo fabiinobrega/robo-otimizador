@@ -185,10 +185,10 @@ async function loadDashboardData() {
 
         if (data.success) {
             // Update KPIs
-            document.getElementById('totalInvestment').textContent = NEXORA.formatCurrency(data.total_spent || 12450);
-            document.getElementById('totalRevenue').textContent = NEXORA.formatCurrency(data.total_revenue || 38920);
-            document.getElementById('avgRoas').textContent = `${(data.avg_roas || 3.13).toFixed(2)}x`;
-            document.getElementById('activeCampaigns').textContent = data.active_campaigns || 18;
+            document.getElementById('totalInvestment').textContent = NEXORA.formatCurrency(data.total_spend || 0);
+            document.getElementById('totalRevenue').textContent = NEXORA.formatCurrency(data.total_revenue || 0);
+            document.getElementById('avgRoas').textContent = `${(data.avg_roas || 0).toFixed(2)}x`;
+            document.getElementById('activeCampaigns').textContent = data.active_campaigns || 0;
 
             // Load chart
             initPerformanceChart();
