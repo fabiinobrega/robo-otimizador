@@ -238,13 +238,20 @@ class AdCreatorEngine {
         const country = document.getElementById('country').value;
         const language = document.getElementById('language').value;
 
+        // Limpar erros anteriores
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
         if (!salesPageUrl) {
+            document.getElementById('salesPageUrl').classList.add('is-invalid');
             this.showToast('Por favor, insira a URL da página de vendas', 'error');
+            document.getElementById('salesPageUrl').focus();
             return;
         }
 
-        if (!platform) {
+        if (!platform || platform === '') {
+            document.getElementById('platform').classList.add('is-invalid');
             this.showToast('Por favor, selecione uma plataforma', 'error');
+            document.getElementById('platform').focus();
             return;
         }
 
@@ -378,13 +385,26 @@ class AdCreatorEngine {
     }
 
     showToast(message, type = 'info') {
-        // Implementação simples de toast
+        // Usar sistema de toast do NEXORA se disponível
+        if (window.NEXORA && window.NEXORA.showToast) {
+            window.NEXORA.showToast(message, type);
+            return;
+        }
+
+        // Fallback: implementação própria
         const toast = document.createElement('div');
         toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'}`;
-        toast.style.position = 'fixed';
-        toast.style.top = '2rem';
-        toast.style.right = '2rem';
-        toast.style.zIndex = '9999';
+        toast.style.cssText = `
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 99999;
+            min-width: 300px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+        `;
         toast.innerHTML = `
             <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
             ${message}
@@ -392,7 +412,8 @@ class AdCreatorEngine {
         document.body.appendChild(toast);
 
         setTimeout(() => {
-            toast.remove();
+            toast.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
 }
