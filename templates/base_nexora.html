@@ -43,6 +43,56 @@
         .nexora-sidebar-header {
             padding: var(--spacing-6) var(--spacing-5);
             border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nexora-sidebar-toggle {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .nexora-sidebar-toggle:hover {
+            background: var(--accent-primary);
+            color: var(--text-on-accent);
+        }
+
+        /* Sidebar Collapsed State */
+        .nexora-sidebar.collapsed {
+            width: 60px;
+        }
+
+        .nexora-sidebar.collapsed .nexora-logo-text,
+        .nexora-sidebar.collapsed .nexora-nav-section-title,
+        .nexora-sidebar.collapsed .nexora-nav-link span {
+            display: none;
+        }
+
+        .nexora-sidebar.collapsed .nexora-sidebar-toggle i {
+            transform: rotate(180deg);
+        }
+
+        .nexora-sidebar.collapsed .nexora-nav-link {
+            justify-content: center;
+            padding: var(--spacing-3);
+        }
+
+        .nexora-sidebar.collapsed .nexora-nav-link i {
+            margin-right: 0;
+        }
+
+        .nexora-layout.sidebar-collapsed .nexora-main {
+            margin-left: 60px;
         }
 
         .nexora-logo {
@@ -233,6 +283,46 @@
 
         .nexora-card:hover {
             border-color: var(--border-secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Global Hover Effects for Interactive Elements */
+        .nexora-btn,
+        .nexora-button,
+        button:not(.nexora-toast-close):not(.nexora-sidebar-toggle) {
+            transition: all var(--transition-fast);
+        }
+
+        .nexora-btn:hover,
+        .nexora-button:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nexora-btn:active,
+        .nexora-button:active {
+            transform: translateY(0);
+        }
+
+        /* Table Row Hover */
+        .nexora-table tr:hover,
+        table tr:hover {
+            background-color: var(--fill-primary);
+        }
+
+        /* Link Hover */
+        a:not(.nexora-nav-link):not(.nexora-logo):hover {
+            color: var(--accent-primary);
+        }
+
+        /* Input Focus */
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
         /* Stat Card */
@@ -553,6 +643,12 @@
         @media (max-width: 768px) {
             .nexora-sidebar {
                 transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+
+            .nexora-sidebar.mobile-open {
+                transform: translateX(0);
             }
 
             .nexora-main {
@@ -562,6 +658,105 @@
             .nexora-content {
                 padding: var(--spacing-4);
             }
+
+            .nexora-topbar {
+                padding: 0 var(--spacing-4);
+            }
+
+            /* Mobile menu button */
+            .nexora-mobile-menu-btn {
+                display: flex !important;
+            }
+
+            /* Cards responsivos */
+            .nexora-card {
+                padding: var(--spacing-4);
+            }
+
+            /* Tabelas responsivas */
+            .nexora-table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            /* Formulários responsivos */
+            .nexora-form-row {
+                flex-direction: column;
+            }
+
+            .nexora-form-group {
+                width: 100%;
+            }
+
+            /* Grid responsivo */
+            .nexora-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Stats responsivos */
+            .nexora-stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            /* Modal responsivo */
+            .nexora-modal-content {
+                margin: var(--spacing-4);
+                max-height: calc(100vh - 2rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nexora-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nexora-topbar-title {
+                display: none;
+            }
+
+            .nexora-card {
+                padding: var(--spacing-3);
+            }
+        }
+
+        /* Mobile menu button (hidden by default) */
+        .nexora-mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-3);
+        }
+
+        .nexora-mobile-menu-btn:hover {
+            background: var(--accent-primary);
+            color: var(--text-on-accent);
+        }
+
+        /* Mobile overlay */
+        .nexora-mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .nexora-mobile-overlay.active {
+            display: block;
         }
     </style>
 </head>
@@ -577,8 +772,11 @@
                     <span class="nexora-logo-icon">
                         <i class="fas fa-bolt"></i>
                     </span>
-                    NEXORA
+                    <span class="nexora-logo-text">NEXORA</span>
                 </a>
+                <button class="nexora-sidebar-toggle" onclick="NEXORA.toggleSidebar()" title="Colapsar sidebar">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
             </div>
 
             <nav class="nexora-sidebar-nav">
@@ -674,9 +872,15 @@
 
         <!-- Main Content -->
         <main class="nexora-main">
+            <!-- Mobile Overlay -->
+            <div class="nexora-mobile-overlay" id="mobileOverlay" onclick="NEXORA.closeMobileMenu()"></div>
+
             <!-- Top Bar -->
             <header class="nexora-topbar">
                 <div class="nexora-topbar-left">
+                    <button class="nexora-mobile-menu-btn" onclick="NEXORA.toggleMobileMenu()" title="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     {% block topbar_left %}{% endblock %}
                 </div>
                 <div class="nexora-topbar-right">
@@ -694,6 +898,9 @@
 
             <!-- Content Area -->
             <div class="nexora-content">
+                <!-- Breadcrumb -->
+                {% block breadcrumb %}{% endblock %}
+                
                 {% block content %}{% endblock %}
             </div>
         </main>
@@ -724,6 +931,56 @@
     <script>
         // Global NEXORA utilities
         const NEXORA = {
+            // Toggle sidebar collapsed state
+            toggleSidebar: () => {
+                const sidebar = document.querySelector('.nexora-sidebar');
+                const layout = document.querySelector('.nexora-layout');
+                
+                if (sidebar && layout) {
+                    sidebar.classList.toggle('collapsed');
+                    layout.classList.toggle('sidebar-collapsed');
+                    
+                    // Persist state in localStorage
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    localStorage.setItem('nexora-sidebar-collapsed', isCollapsed);
+                }
+            },
+
+            // Toggle mobile menu
+            toggleMobileMenu: () => {
+                const sidebar = document.querySelector('.nexora-sidebar');
+                const overlay = document.getElementById('mobileOverlay');
+                
+                if (sidebar && overlay) {
+                    sidebar.classList.toggle('mobile-open');
+                    overlay.classList.toggle('active');
+                }
+            },
+
+            // Close mobile menu
+            closeMobileMenu: () => {
+                const sidebar = document.querySelector('.nexora-sidebar');
+                const overlay = document.getElementById('mobileOverlay');
+                
+                if (sidebar && overlay) {
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('active');
+                }
+            },
+
+            // Initialize sidebar state from localStorage
+            initSidebar: () => {
+                const isCollapsed = localStorage.getItem('nexora-sidebar-collapsed') === 'true';
+                if (isCollapsed) {
+                    const sidebar = document.querySelector('.nexora-sidebar');
+                    const layout = document.querySelector('.nexora-layout');
+                    if (sidebar && layout) {
+                        sidebar.classList.add('collapsed');
+                        layout.classList.add('sidebar-collapsed');
+                    }
+                }
+            },
+
             // Format currency
             formatCurrency: (value) => {
                 return new Intl.NumberFormat('pt-BR', {
@@ -785,6 +1042,11 @@
                 }
             }
         };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            NEXORA.initSidebar();
+        });
     </script>
     
     {% block extra_scripts %}{% endblock %}
