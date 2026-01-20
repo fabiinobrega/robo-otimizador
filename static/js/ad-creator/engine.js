@@ -477,12 +477,63 @@
                 </div>
                 <div class="mt-3 p-3" style="background: var(--nexora-gray-800, #1f2937); border-radius: 8px;">
                     <h5 style="color: var(--nexora-white, #fff);">Resultado da Análise</h5>
-                    <pre style="color: var(--nexora-gray-300, #d1d5db); font-size: 0.875rem; white-space: pre-wrap;">${JSON.stringify(result, null, 2)}</pre>
+                    <pre style="color: var(--nexora-gray-300, #d1d5db); font-size: 0.875rem; white-space: pre-wrap; max-height: 300px; overflow-y: auto;">${JSON.stringify(result, null, 2)}</pre>
                 </div>
             `;
 
+            // Mostrar botões de navegação
+            const step2Nav = document.getElementById('step2Navigation');
+            if (step2Nav) {
+                step2Nav.style.display = 'flex';
+                console.log('✅ Botões de navegação da Etapa 2 exibidos');
+            }
+
             this.hideAIStatus();
-            this.showToast('Análise concluída! Revise os resultados.', 'success');
+            this.showToast('Análise concluída! Clique em Continuar para prosseguir.', 'success');
+        }
+
+        executeCampaign() {
+            console.log('🚀 Executando campanha...');
+            
+            // Coletar todos os dados
+            const campaignData = {
+                ...this.formData,
+                analysis: this.analysisResults,
+                strategy: {
+                    objective: document.getElementById('campaignObjective')?.value,
+                    audience: document.getElementById('targetAudience')?.value,
+                    startDate: document.getElementById('startDate')?.value,
+                    endDate: document.getElementById('endDate')?.value
+                },
+                creatives: {
+                    headline: document.getElementById('adHeadline')?.value,
+                    text: document.getElementById('adText')?.value,
+                    cta: document.getElementById('adCTA')?.value
+                }
+            };
+            
+            console.log('💾 Dados da campanha:', campaignData);
+            
+            // Simular execução
+            this.showToast('Campanha configurada com sucesso! Conecte sua conta de anúncios para lançar.', 'success');
+            
+            // Atualizar resumo de execução
+            const executionSummary = document.getElementById('executionSummary');
+            if (executionSummary) {
+                executionSummary.innerHTML = `
+                    <h5 style="color: var(--nexora-white, #fff);">Resumo da Campanha</h5>
+                    <div class="p-3" style="background: var(--nexora-gray-800, #1f2937); border-radius: 8px;">
+                        <div class="mb-2"><strong style="color: #6366f1;">Plataforma:</strong> <span style="color: #d1d5db;">${campaignData.platform === 'meta' ? 'Meta Ads' : 'Google Ads'}</span></div>
+                        <div class="mb-2"><strong style="color: #6366f1;">Orçamento:</strong> <span style="color: #d1d5db;">R$ ${campaignData.budgetAmount} ${campaignData.budgetType === 'daily' ? '/dia' : 'total'}</span></div>
+                        <div class="mb-2"><strong style="color: #6366f1;">Objetivo:</strong> <span style="color: #d1d5db;">${campaignData.strategy.objective || 'Conversões'}</span></div>
+                        <div class="mb-2"><strong style="color: #6366f1;">Público:</strong> <span style="color: #d1d5db;">${campaignData.strategy.audience || 'Amplo'}</span></div>
+                    </div>
+                    <div class="alert alert-success mt-3" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #22c55e;">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Campanha pronta para lançamento!
+                    </div>
+                `;
+            }
         }
 
         goToStep(step) {

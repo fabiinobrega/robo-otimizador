@@ -274,9 +274,202 @@
                             <!-- Progresso será inserido via JavaScript -->
                         </div>
                     </div>
+                    <!-- Botões de navegação Step 2 -->
+                    <div class="d-flex justify-content-between mt-4" id="step2Navigation" style="display: none;">
+                        <button type="button" class="btn btn-secondary" onclick="window.adCreatorEngine.goToStep(1)">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="btnStep2Next" onclick="window.adCreatorEngine.goToStep(3)">
+                            Continuar para Estratégia
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- STEP 3-6: Serão implementados na próxima sessão -->
+                <!-- STEP 3: Estratégia -->
+                <div class="wizard-content" id="step-3" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-chess"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Estratégia de Campanha</h3>
+                                <p class="ad-card-subtitle">Defina como sua campanha será executada</p>
+                            </div>
+                        </div>
+                        <div id="strategyContent">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Objetivo da Campanha</label>
+                                        <select class="form-control form-select" id="campaignObjective">
+                                            <option value="conversions">Conversões</option>
+                                            <option value="traffic">Tráfego</option>
+                                            <option value="engagement">Engajamento</option>
+                                            <option value="awareness">Reconhecimento</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Público-Alvo</label>
+                                        <select class="form-control form-select" id="targetAudience">
+                                            <option value="broad">Amplo (Recomendado pela IA)</option>
+                                            <option value="interest">Por Interesses</option>
+                                            <option value="lookalike">Lookalike</option>
+                                            <option value="custom">Personalizado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label">Duração da Campanha</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="date" class="form-control" id="startDate" placeholder="Data de início">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="date" class="form-control" id="endDate" placeholder="Data de término">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" onclick="window.adCreatorEngine.goToStep(2)">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" onclick="window.adCreatorEngine.goToStep(4)">
+                            Continuar para Criativos
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Criativos -->
+                <div class="wizard-content" id="step-4" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Criativos do Anúncio</h3>
+                                <p class="ad-card-subtitle">Textos e visuais gerados pela IA</p>
+                            </div>
+                        </div>
+                        <div id="creativesContent">
+                            <div class="form-group">
+                                <label class="form-label">Título Principal</label>
+                                <input type="text" class="form-control" id="adHeadline" placeholder="Título do anúncio">
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label">Texto do Anúncio</label>
+                                <textarea class="form-control" id="adText" rows="4" placeholder="Texto principal do anúncio"></textarea>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label">Call to Action</label>
+                                <select class="form-control form-select" id="adCTA">
+                                    <option value="LEARN_MORE">Saiba Mais</option>
+                                    <option value="SHOP_NOW">Comprar Agora</option>
+                                    <option value="SIGN_UP">Cadastre-se</option>
+                                    <option value="CONTACT_US">Fale Conosco</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" onclick="window.adCreatorEngine.goToStep(3)">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" onclick="window.adCreatorEngine.goToStep(5)">
+                            Pré-visualizar
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Pré-visualização -->
+                <div class="wizard-content" id="step-5" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Pré-visualização</h3>
+                                <p class="ad-card-subtitle">Veja como seu anúncio ficará</p>
+                            </div>
+                        </div>
+                        <div id="previewContent">
+                            <div class="ad-preview-container" style="background: #f0f2f5; border-radius: 12px; padding: 20px; max-width: 500px; margin: 0 auto;">
+                                <div class="ad-preview-header" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%;"></div>
+                                    <div>
+                                        <div style="font-weight: 600; color: #1a1a1a;">Sua Empresa</div>
+                                        <div style="font-size: 12px; color: #65676b;">Patrocinado</div>
+                                    </div>
+                                </div>
+                                <div id="previewText" style="color: #1a1a1a; margin-bottom: 15px;">Texto do anúncio aparecerá aqui...</div>
+                                <div id="previewImage" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 250px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">Imagem/Vídeo do Anúncio</div>
+                                <div id="previewCTA" style="margin-top: 15px;">
+                                    <button style="width: 100%; padding: 12px; background: #6366f1; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Saiba Mais</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" onclick="window.adCreatorEngine.goToStep(4)">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-success btn-lg" onclick="window.adCreatorEngine.goToStep(6)">
+                            <i class="fas fa-rocket"></i>
+                            Executar Campanha
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 6: Executar -->
+                <div class="wizard-content" id="step-6" style="display: none;">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-card-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div>
+                                <h3 class="ad-card-title">Executar Campanha</h3>
+                                <p class="ad-card-subtitle">Confirme e lance sua campanha</p>
+                            </div>
+                        </div>
+                        <div id="executeContent">
+                            <div class="alert alert-info" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #3b82f6;">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Importante:</strong> Para executar campanhas reais, você precisa conectar sua conta de anúncios nas Configurações > Integrações.
+                            </div>
+                            <div class="mt-4" id="executionSummary">
+                                <h5 style="color: var(--nexora-white, #fff);">Resumo da Campanha</h5>
+                                <div class="p-3" style="background: var(--nexora-gray-800, #1f2937); border-radius: 8px;">
+                                    <p style="color: var(--nexora-gray-300, #d1d5db);">Os detalhes da sua campanha aparecerão aqui...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" onclick="window.adCreatorEngine.goToStep(5)">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <button type="button" class="btn btn-success btn-lg" id="btnExecuteCampaign" onclick="window.adCreatorEngine.executeCampaign()">
+                            <i class="fas fa-play"></i>
+                            Lançar Campanha
+                        </button>
+                    </div>
+                </div>
 
             </div>
 
