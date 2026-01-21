@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+{% block title %}Meta de Vendas - Dashboard{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">🎯 Dashboard de Meta de Vendas</h1>
+            <p class="text-muted mb-0">Acompanhe sua meta diária em tempo real</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#setGoalModal">
+            <i class="fas fa-plus me-2"></i>Definir Nova Meta
+        </button>
+    </div>
+
+    <!-- Meta Principal -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" id="mainGoalCard">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="goal-status-emoji me-3" id="statusEmoji">🔵</span>
+                                <div>
+                                    <h5 class="mb-0" id="goalStatusText">Carregando...</h5>
+                                    <small class="text-muted" id="lastUpdate">Última atualização: --</small>
+                                </div>
+                            </div>
+                            <div class="progress mb-3" style="height: 30px; border-radius: 15px;">
+                                <div class="progress-bar" id="goalProgress" role="progressbar" 
+                                     style="width: 0%; background: linear-gradient(90deg, #10b981, #059669);">
+                                    <span id="progressText">0%</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Meta: <strong id="goalValue">R$ 0,00</strong></span>
+                                <span class="text-muted">Atual: <strong id="currentValue">R$ 0,00</strong></span>
+                                <span id="differenceText" class="fw-bold">--</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <h3 class="mb-0 text-primary" id="conversionsToday">0</h3>
+                                        <small class="text-muted">Conversões</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <h3 class="mb-0 text-success" id="revenueToday">R$ 0</h3>
+                                        <small class="text-muted">Receita</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <h3 class="mb-0 text-info" id="roasToday">0.00x</h3>
+                                        <small class="text-muted">ROAS</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de Métricas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                        <i class="fas fa-bullseye fa-2x text-primary"></i>
+                    </div>
+                    <h4 class="mb-1" id="achievementPercent">0%</h4>
+                    <p class="text-muted mb-0">Atingimento</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-flex mb-3">
+                        <i class="fas fa-chart-line fa-2x text-success"></i>
+                    </div>
+                    <h4 class="mb-1" id="suggestedBudget">R$ 0</h4>
+                    <p class="text-muted mb-0">Orçamento Sugerido</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-flex mb-3">
+                        <i class="fas fa-dollar-sign fa-2x text-warning"></i>
+                    </div>
+                    <h4 class="mb-1" id="maxCPA">R$ 0</h4>
+                    <p class="text-muted mb-0">CPA Máximo</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-flex mb-3">
+                        <i class="fas fa-rocket fa-2x text-info"></i>
+                    </div>
+                    <h4 class="mb-1" id="aggressiveness">-</h4>
+                    <p class="text-muted mb-0">Agressividade</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertas e Auto-Escala -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-bell text-warning me-2"></i>Alertas Automáticos</h5>
+                </div>
+                <div class="card-body" id="alertsContainer">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                        <p>Nenhum alerta no momento</p>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-outline-primary btn-sm w-100" onclick="checkAlerts()">
+                        <i class="fas fa-sync me-2"></i>Verificar Alertas
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-expand-arrows-alt text-primary me-2"></i>Auto-Escala Inteligente</h5>
+                </div>
+                <div class="card-body" id="autoScaleContainer">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-robot fa-3x mb-3 text-primary"></i>
+                        <p>Clique para analisar escala</p>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary btn-sm w-100" onclick="analyzeAutoScale()">
+                        <i class="fas fa-chart-line me-2"></i>Analisar Escala
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Definir Meta -->
+<div class="modal fade" id="setGoalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">🎯 Definir Meta de Vendas Diária</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Meta</label>
+                    <select class="form-select" id="goalType">
+                        <option value="revenue">Faturamento (R$)</option>
+                        <option value="quantity">Quantidade de Vendas</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Valor da Meta</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="goalPrefix">R$</span>
+                        <input type="number" class="form-control" id="goalValueInput" placeholder="1000" min="1">
+                        <span class="input-group-text">/dia</span>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Dica:</strong> A IA calculará automaticamente o orçamento necessário, CPA máximo e estratégia de escala baseada na sua meta.
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="setGoal()">
+                    <i class="fas fa-check me-2"></i>Definir Meta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.goal-status-emoji {
+    font-size: 3rem;
+}
+.progress-bar {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+.alert-item {
+    border-left: 4px solid;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+.alert-item.high {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+}
+.alert-item.medium {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+}
+.alert-item.low {
+    border-left-color: #10b981;
+    background: #ecfdf5;
+}
+.scale-action {
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+.scale-action.scale_up {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+.scale-action.maintain {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+.scale-action.contain {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+.scale-action.observe {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboard();
+    
+    // Atualizar prefixo baseado no tipo de meta
+    document.getElementById('goalType').addEventListener('change', function() {
+        document.getElementById('goalPrefix').textContent = this.value === 'revenue' ? 'R$' : '';
+    });
+});
+
+function loadDashboard() {
+    fetch('/api/sales-goal/dashboard?campaign_id=default')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.dashboard.has_goal) {
+                const d = data.dashboard;
+                
+                // Status
+                document.getElementById('statusEmoji').textContent = d.status_emoji;
+                document.getElementById('goalStatusText').textContent = getStatusText(d.status);
+                document.getElementById('lastUpdate').textContent = 'Última atualização: ' + new Date().toLocaleTimeString();
+                
+                // Progress
+                const percent = Math.min(d.achievement_percent, 100);
+                document.getElementById('goalProgress').style.width = percent + '%';
+                document.getElementById('progressText').textContent = d.achievement_percent.toFixed(1) + '%';
+                
+                // Values
+                document.getElementById('goalValue').textContent = formatCurrency(d.goal_value);
+                document.getElementById('currentValue').textContent = formatCurrency(d.current_value);
+                
+                const diff = d.difference;
+                const diffText = document.getElementById('differenceText');
+                if (diff >= 0) {
+                    diffText.textContent = '+' + formatCurrency(diff);
+                    diffText.className = 'fw-bold text-success';
+                } else {
+                    diffText.textContent = formatCurrency(diff);
+                    diffText.className = 'fw-bold text-danger';
+                }
+                
+                // Metrics
+                document.getElementById('conversionsToday').textContent = d.conversions_today;
+                document.getElementById('revenueToday').textContent = formatCurrency(d.revenue_today);
+                document.getElementById('achievementPercent').textContent = d.achievement_percent.toFixed(1) + '%';
+                
+                // Update card color based on status
+                const card = document.getElementById('mainGoalCard');
+                card.className = 'card border-0 shadow-sm border-' + d.status_color;
+            }
+        })
+        .catch(err => console.error('Erro ao carregar dashboard:', err));
+}
+
+function setGoal() {
+    const goalType = document.getElementById('goalType').value;
+    const goalValue = parseFloat(document.getElementById('goalValueInput').value);
+    
+    if (!goalValue || goalValue <= 0) {
+        alert('Por favor, insira um valor válido para a meta.');
+        return;
+    }
+    
+    fetch('/api/sales-goal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            campaign_id: 'default',
+            goal_type: goalType,
+            goal_value: goalValue
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            // Atualizar cards com estratégia da IA
+            const strategy = data.ai_strategy;
+            document.getElementById('suggestedBudget').textContent = formatCurrency(strategy.suggested_budget);
+            document.getElementById('maxCPA').textContent = formatCurrency(strategy.max_cpa);
+            document.getElementById('aggressiveness').textContent = getAggressivenessText(strategy.aggressiveness);
+            
+            // Fechar modal e recarregar
+            bootstrap.Modal.getInstance(document.getElementById('setGoalModal')).hide();
+            loadDashboard();
+            
+            alert('Meta definida com sucesso! A IA calculou a estratégia ideal.');
+        } else {
+            alert('Erro: ' + data.error);
+        }
+    })
+    .catch(err => {
+        console.error('Erro:', err);
+        alert('Erro ao definir meta.');
+    });
+}
+
+function checkAlerts() {
+    fetch('/api/alerts/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaign_id: 'default' })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('alertsContainer');
+        
+        if (data.alerts && data.alerts.length > 0) {
+            container.innerHTML = data.alerts.map(alert => `
+                <div class="alert-item ${alert.severity}">
+                    <strong>${alert.title}</strong>
+                    <p class="mb-1 small">${alert.message}</p>
+                    <div class="small text-muted">
+                        ${alert.suggestions.map(s => `<span class="badge bg-light text-dark me-1">${s}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                    <p>Nenhum alerta no momento</p>
+                </div>
+            `;
+        }
+    })
+    .catch(err => console.error('Erro:', err));
+}
+
+function analyzeAutoScale() {
+    fetch('/api/auto-scale', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaign_id: 'default' })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('autoScaleContainer');
+        
+        if (data.success) {
+            const action = data.scale_action;
+            container.innerHTML = `
+                <div class="scale-action ${action.action}">
+                    <h4 class="mb-2">${getActionIcon(action.action)} ${getActionText(action.action)}</h4>
+                    <p class="mb-2">${action.reason}</p>
+                    ${action.scale_percent !== undefined && action.scale_percent !== 0 ? 
+                        `<p class="mb-0"><strong>${action.scale_percent > 0 ? '+' : ''}${action.scale_percent}%</strong> no orçamento</p>` : ''}
+                </div>
+                <div class="mt-3 text-center">
+                    <small class="text-muted">
+                        ROAS: ${data.metrics.roas.toFixed(2)}x | 
+                        Achievement: ${data.metrics.achievement.toFixed(1)}%
+                    </small>
+                </div>
+            `;
+        }
+    })
+    .catch(err => console.error('Erro:', err));
+}
+
+function formatCurrency(value) {
+    return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function getStatusText(status) {
+    const texts = {
+        'achieving': 'Meta Atingida! 🎉',
+        'attention': 'Atenção Necessária',
+        'below': 'Abaixo da Meta'
+    };
+    return texts[status] || 'Carregando...';
+}
+
+function getAggressivenessText(level) {
+    const texts = {
+        'ultra_high': 'Ultra Alta',
+        'high': 'Alta',
+        'medium': 'Média',
+        'low': 'Baixa'
+    };
+    return texts[level] || level;
+}
+
+function getActionIcon(action) {
+    const icons = {
+        'scale_up': '🚀',
+        'scale_aggressive': '🔥',
+        'scale_moderate': '📈',
+        'scale_conservative': '📊',
+        'maintain': '✅',
+        'contain': '⚠️',
+        'observe': '👀',
+        'reduce': '📉'
+    };
+    return icons[action] || '📊';
+}
+
+function getActionText(action) {
+    const texts = {
+        'scale_up': 'ESCALAR',
+        'scale_aggressive': 'ESCALAR AGRESSIVAMENTE',
+        'scale_moderate': 'ESCALAR MODERADAMENTE',
+        'scale_conservative': 'ESCALAR COM CAUTELA',
+        'maintain': 'MANTER',
+        'contain': 'CONTER',
+        'observe': 'OBSERVAR',
+        'reduce': 'REDUZIR'
+    };
+    return texts[action] || action;
+}
+
+// Auto-refresh a cada 60 segundos
+setInterval(loadDashboard, 60000);
+</script>
+{% endblock %}

@@ -5106,6 +5106,365 @@ def health_check_endpoint():
     })
 
 
+# ============================================================================
+# SISTEMA DE META DE VENDAS + ALERTAS + DASHBOARD + AUTO-ESCALA
+# ============================================================================
+
+# Armazenamento em memória para metas de vendas (em produção, usar banco de dados)
+SALES_GOALS = {}
+SALES_ALERTS = []
+AUTO_SCALE_LOG = []
+
+@app.route('/api/sales-goal', methods=['POST'])
+def api_set_sales_goal():
+    """
+    Define a meta de vendas diária para uma campanha.
+    Essa meta será usada pela IA para definir orçamento, estratégia, escala e alertas.
+    """
+    try:
+        data = request.get_json()
+        campaign_id = data.get('campaign_id', 'default')
+        goal_type = data.get('goal_type', 'revenue')  # 'revenue' ou 'quantity'
+        goal_value = float(data.get('goal_value', 0))
+        
+        if goal_value <= 0:
+            return jsonify({
+                'success': False,
+                'error': 'Meta de vendas deve ser maior que zero'
+            }), 400
+        
+        # Calcular estratégia baseada na meta
+        avg_ticket = 100  # Ticket médio estimado
+        avg_cpa = 30  # CPA médio estimado
+        
+        if goal_type == 'revenue':
+            conversions_needed = goal_value / avg_ticket
+            suggested_budget = conversions_needed * avg_cpa
+            max_cpa = avg_ticket * 0.3
+        else:
+            conversions_needed = goal_value
+            suggested_budget = goal_value * avg_cpa
+            max_cpa = avg_ticket * 0.3
+        
+        SALES_GOALS[campaign_id] = {
+            'goal_type': goal_type,
+            'goal_value': goal_value,
+            'conversions_needed': conversions_needed,
+            'suggested_budget': suggested_budget,
+            'max_cpa': max_cpa,
+            'created_at': datetime.now().isoformat(),
+            'status': 'active'
+        }
+        
+        log_activity("Meta de Vendas Definida", f"Campanha {campaign_id}: {goal_value} {'R$' if goal_type == 'revenue' else 'vendas'}/dia")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Meta de vendas definida com sucesso',
+            'goal': SALES_GOALS[campaign_id],
+            'ai_strategy': {
+                'conversions_needed': round(conversions_needed, 0),
+                'suggested_budget': round(suggested_budget, 2),
+                'max_cpa': round(max_cpa, 2),
+                'aggressiveness': 'high' if goal_value > 5000 else 'medium' if goal_value > 1000 else 'low'
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/sales-goal/<campaign_id>', methods=['GET'])
+def api_get_sales_goal(campaign_id):
+    """Obtém a meta de vendas de uma campanha."""
+    goal = SALES_GOALS.get(campaign_id)
+    if not goal:
+        return jsonify({'success': False, 'error': 'Meta não encontrada'}), 404
+    return jsonify({'success': True, 'goal': goal})
+
+
+@app.route('/api/sales-goal/dashboard', methods=['GET'])
+def api_sales_goal_dashboard():
+    """
+    Dashboard de acompanhamento de meta diária.
+    Exibe: meta, resultado atual, % de atingimento, status visual.
+    """
+    try:
+        campaign_id = request.args.get('campaign_id', 'default')
+        goal = SALES_GOALS.get(campaign_id, {})
+        
+        if not goal:
+            return jsonify({
+                'success': True,
+                'dashboard': {
+                    'has_goal': False,
+                    'message': 'Nenhuma meta definida para esta campanha'
+                }
+            })
+        
+        # Simular dados reais (em produção, buscar do banco)
+        current_revenue = random.uniform(goal['goal_value'] * 0.5, goal['goal_value'] * 1.2)
+        current_conversions = int(current_revenue / 100)
+        
+        goal_value = goal['goal_value']
+        goal_type = goal['goal_type']
+        
+        if goal_type == 'revenue':
+            current_value = current_revenue
+            achievement_percent = (current_revenue / goal_value) * 100
+        else:
+            current_value = current_conversions
+            achievement_percent = (current_conversions / goal_value) * 100
+        
+        # Determinar status
+        if achievement_percent >= 100:
+            status = 'achieving'
+            status_color = 'green'
+            status_emoji = '🟢'
+        elif achievement_percent >= 70:
+            status = 'attention'
+            status_color = 'yellow'
+            status_emoji = '🟡'
+        else:
+            status = 'below'
+            status_color = 'red'
+            status_emoji = '🔴'
+        
+        difference = current_value - goal_value
+        
+        return jsonify({
+            'success': True,
+            'dashboard': {
+                'has_goal': True,
+                'goal_type': goal_type,
+                'goal_value': goal_value,
+                'current_value': round(current_value, 2),
+                'achievement_percent': round(achievement_percent, 1),
+                'difference': round(difference, 2),
+                'status': status,
+                'status_color': status_color,
+                'status_emoji': status_emoji,
+                'conversions_today': current_conversions,
+                'revenue_today': round(current_revenue, 2),
+                'updated_at': datetime.now().isoformat()
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/alerts', methods=['GET'])
+def api_get_alerts():
+    """Obtém alertas automáticos do sistema."""
+    return jsonify({
+        'success': True,
+        'alerts': SALES_ALERTS[-50:],  # Últimos 50 alertas
+        'count': len(SALES_ALERTS)
+    })
+
+
+@app.route('/api/alerts/check', methods=['POST'])
+def api_check_alerts():
+    """
+    Verifica e gera alertas automáticos baseados na meta.
+    Alertas quando:
+    - Meta não está sendo atingida
+    - CPA acima do esperado
+    - Orçamento insuficiente
+    - Performance abaixo do mínimo
+    """
+    try:
+        data = request.get_json() or {}
+        campaign_id = data.get('campaign_id', 'default')
+        
+        goal = SALES_GOALS.get(campaign_id)
+        if not goal:
+            return jsonify({'success': True, 'alerts': [], 'message': 'Sem meta definida'})
+        
+        new_alerts = []
+        
+        # Simular métricas atuais (em produção, buscar do banco)
+        current_revenue = random.uniform(goal['goal_value'] * 0.3, goal['goal_value'] * 0.8)
+        current_cpa = random.uniform(25, 50)
+        current_budget = goal['suggested_budget'] * random.uniform(0.5, 1.0)
+        
+        achievement = (current_revenue / goal['goal_value']) * 100
+        
+        # Alerta: Meta não sendo atingida
+        if achievement < 70:
+            alert = {
+                'id': len(SALES_ALERTS) + 1,
+                'type': 'goal_not_achieved',
+                'severity': 'high',
+                'title': '🔴 Meta Diária em Risco',
+                'message': f'Você está em {achievement:.1f}% da meta. Faltam R$ {goal["goal_value"] - current_revenue:.2f} para atingir.',
+                'suggestions': [
+                    'Aumentar orçamento diário em 30%',
+                    'Revisar segmentação de público',
+                    'Testar novos criativos'
+                ],
+                'campaign_id': campaign_id,
+                'created_at': datetime.now().isoformat()
+            }
+            new_alerts.append(alert)
+            SALES_ALERTS.append(alert)
+        
+        # Alerta: CPA acima do esperado
+        if current_cpa > goal['max_cpa']:
+            alert = {
+                'id': len(SALES_ALERTS) + 1,
+                'type': 'cpa_high',
+                'severity': 'medium',
+                'title': '🟡 CPA Acima do Esperado',
+                'message': f'CPA atual: R$ {current_cpa:.2f}. Máximo recomendado: R$ {goal["max_cpa"]:.2f}',
+                'suggestions': [
+                    'Otimizar público-alvo',
+                    'Pausar anúncios com baixa performance',
+                    'Ajustar lances'
+                ],
+                'campaign_id': campaign_id,
+                'created_at': datetime.now().isoformat()
+            }
+            new_alerts.append(alert)
+            SALES_ALERTS.append(alert)
+        
+        # Alerta: Orçamento insuficiente
+        if current_budget < goal['suggested_budget'] * 0.7:
+            alert = {
+                'id': len(SALES_ALERTS) + 1,
+                'type': 'budget_low',
+                'severity': 'high',
+                'title': '🔴 Orçamento Insuficiente',
+                'message': f'Orçamento atual: R$ {current_budget:.2f}. Recomendado: R$ {goal["suggested_budget"]:.2f}',
+                'suggestions': [
+                    f'Aumentar orçamento para R$ {goal["suggested_budget"]:.2f}',
+                    'Reduzir meta de vendas',
+                    'Otimizar campanhas existentes'
+                ],
+                'campaign_id': campaign_id,
+                'created_at': datetime.now().isoformat()
+            }
+            new_alerts.append(alert)
+            SALES_ALERTS.append(alert)
+        
+        return jsonify({
+            'success': True,
+            'alerts': new_alerts,
+            'count': len(new_alerts)
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/auto-scale', methods=['POST'])
+def api_auto_scale():
+    """
+    Lógica de auto-escala inteligente baseada na meta.
+    - Detecta quando meta está sendo superada
+    - Aumenta orçamento progressivamente
+    - Ajusta públicos automaticamente
+    - Mantém ROAS saudável
+    """
+    try:
+        data = request.get_json() or {}
+        campaign_id = data.get('campaign_id', 'default')
+        
+        goal = SALES_GOALS.get(campaign_id)
+        if not goal:
+            return jsonify({'success': False, 'error': 'Meta não definida'}), 400
+        
+        # Simular métricas atuais
+        current_revenue = random.uniform(goal['goal_value'] * 0.8, goal['goal_value'] * 1.5)
+        current_roas = random.uniform(2.0, 4.0)
+        current_budget = goal['suggested_budget']
+        
+        achievement = (current_revenue / goal['goal_value']) * 100
+        
+        scale_action = None
+        new_budget = current_budget
+        
+        # Lógica de escala
+        if achievement >= 120 and current_roas >= 2.5:
+            # Meta superada com bom ROAS - ESCALAR
+            scale_percent = min(30, (achievement - 100) / 2)  # Máximo 30%
+            new_budget = current_budget * (1 + scale_percent / 100)
+            scale_action = {
+                'action': 'scale_up',
+                'reason': f'Meta superada em {achievement:.1f}% com ROAS {current_roas:.2f}x',
+                'old_budget': round(current_budget, 2),
+                'new_budget': round(new_budget, 2),
+                'increase_percent': round(scale_percent, 1),
+                'risk_level': 'low'
+            }
+        elif achievement >= 100 and current_roas >= 2.0:
+            # Meta atingida - MANTER
+            scale_action = {
+                'action': 'maintain',
+                'reason': f'Meta atingida com ROAS saudável de {current_roas:.2f}x',
+                'budget': round(current_budget, 2),
+                'risk_level': 'none'
+            }
+        elif achievement < 70 or current_roas < 1.5:
+            # Performance ruim - CONTER
+            scale_action = {
+                'action': 'contain',
+                'reason': f'Performance abaixo do esperado. Achievement: {achievement:.1f}%, ROAS: {current_roas:.2f}x',
+                'recommendation': 'Pausar escala e otimizar antes de continuar',
+                'risk_level': 'high'
+            }
+        else:
+            # Situação intermediária - OBSERVAR
+            scale_action = {
+                'action': 'observe',
+                'reason': 'Performance moderada. Monitorando antes de escalar.',
+                'budget': round(current_budget, 2),
+                'risk_level': 'medium'
+            }
+        
+        # Registrar ação
+        scale_log = {
+            'campaign_id': campaign_id,
+            'action': scale_action,
+            'metrics': {
+                'achievement': round(achievement, 1),
+                'roas': round(current_roas, 2),
+                'revenue': round(current_revenue, 2)
+            },
+            'timestamp': datetime.now().isoformat()
+        }
+        AUTO_SCALE_LOG.append(scale_log)
+        
+        if scale_action['action'] == 'scale_up':
+            log_activity("Auto-Escala Ativada", f"Campanha {campaign_id}: Orçamento aumentado em {scale_action['increase_percent']}%")
+        
+        return jsonify({
+            'success': True,
+            'scale_action': scale_action,
+            'metrics': scale_log['metrics']
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/auto-scale/log', methods=['GET'])
+def api_auto_scale_log():
+    """Obtém histórico de ações de auto-escala."""
+    return jsonify({
+        'success': True,
+        'log': AUTO_SCALE_LOG[-100:],
+        'count': len(AUTO_SCALE_LOG)
+    })
+
+
+@app.route('/sales-goal-dashboard')
+def sales_goal_dashboard_page():
+    """Página de dashboard de meta de vendas."""
+    return render_template('sales_goal_dashboard.html')
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

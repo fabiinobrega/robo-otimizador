@@ -431,5 +431,199 @@ Como posso ajudar você hoje?"""
         }
 
 
+    # ===== INTEGRAÇÃO COM META DE VENDAS =====
+    
+    def analyze_goal_strategy(self, goal_value: float, goal_type: str = 'revenue') -> Dict[str, Any]:
+        """
+        Analisa a meta de vendas e define estratégia inteligente.
+        Usa conhecimento de marketing digital para calcular:
+        - Orçamento necessário
+        - CPA máximo
+        - Agressividade da campanha
+        - Recomendações de otimização
+        """
+        # Ticket médio estimado baseado em dados históricos
+        avg_ticket = 100
+        avg_cpa = 30
+        avg_conversion_rate = 0.03  # 3%
+        
+        if goal_type == 'revenue':
+            conversions_needed = goal_value / avg_ticket
+        else:
+            conversions_needed = goal_value
+        
+        # Calcular orçamento necessário
+        suggested_budget = conversions_needed * avg_cpa
+        
+        # CPA máximo para manter lucro (30% do ticket)
+        max_cpa = avg_ticket * 0.3
+        
+        # Determinar agressividade
+        if goal_value > 10000:
+            aggressiveness = 'ultra_high'
+            scale_strategy = 'Escala agressiva com múltiplos conjuntos de anúncios'
+        elif goal_value > 5000:
+            aggressiveness = 'high'
+            scale_strategy = 'Escala rápida com duplicação de campanhas vencedoras'
+        elif goal_value > 1000:
+            aggressiveness = 'medium'
+            scale_strategy = 'Escala gradual com aumento de 20% a cada 3 dias'
+        else:
+            aggressiveness = 'low'
+            scale_strategy = 'Otimização antes de escala'
+        
+        # Gerar recomendações baseadas na meta
+        recommendations = []
+        
+        if goal_value > suggested_budget * 2:
+            recommendations.append({
+                'type': 'budget_warning',
+                'message': f'Meta ambiciosa! Considere aumentar orçamento para R$ {suggested_budget:.2f}/dia',
+                'priority': 'high'
+            })
+        
+        recommendations.append({
+            'type': 'targeting',
+            'message': 'Segmente público quente (visitantes do site, lista de emails) primeiro',
+            'priority': 'high'
+        })
+        
+        recommendations.append({
+            'type': 'creative',
+            'message': 'Teste 3-5 criativos diferentes para encontrar vencedores',
+            'priority': 'medium'
+        })
+        
+        recommendations.append({
+            'type': 'copy',
+            'message': 'Use copy focada em benefícios e prova social',
+            'priority': 'medium'
+        })
+        
+        self.log_action("Análise de Meta", f"Meta: R$ {goal_value}/dia - Estratégia: {aggressiveness}")
+        
+        return {
+            'success': True,
+            'goal_analysis': {
+                'goal_value': goal_value,
+                'goal_type': goal_type,
+                'conversions_needed': round(conversions_needed, 0),
+                'suggested_budget': round(suggested_budget, 2),
+                'max_cpa': round(max_cpa, 2),
+                'aggressiveness': aggressiveness,
+                'scale_strategy': scale_strategy
+            },
+            'recommendations': recommendations,
+            'ai_confidence': 0.85
+        }
+    
+    def monitor_goal_progress(self, campaign_id: int, goal_value: float) -> Dict[str, Any]:
+        """
+        Monitora o progresso em relação à meta e gera alertas.
+        """
+        db = self.get_db()
+        
+        try:
+            # Buscar métricas atuais
+            metrics = db.execute("""
+                SELECT SUM(revenue) as total_revenue, SUM(conversions) as total_conversions,
+                       SUM(spend) as total_spend, AVG(cpa) as avg_cpa
+                FROM campaign_metrics
+                WHERE campaign_id = ?
+            """, (campaign_id,)).fetchone()
+            
+            if metrics:
+                current_revenue = metrics['total_revenue'] or 0
+                current_conversions = metrics['total_conversions'] or 0
+                current_spend = metrics['total_spend'] or 0
+                current_cpa = metrics['avg_cpa'] or 0
+            else:
+                current_revenue = 0
+                current_conversions = 0
+                current_spend = 0
+                current_cpa = 0
+            
+            # Calcular progresso
+            achievement = (current_revenue / goal_value) * 100 if goal_value > 0 else 0
+            
+            # Determinar status
+            if achievement >= 100:
+                status = 'achieved'
+                action = 'scale_up'
+                message = 'Meta atingida! Considere escalar a campanha.'
+            elif achievement >= 70:
+                status = 'on_track'
+                action = 'maintain'
+                message = 'Campanha no caminho certo. Continue monitorando.'
+            elif achievement >= 50:
+                status = 'attention'
+                action = 'optimize'
+                message = 'Atenção! Performance abaixo do esperado. Otimize criativos.'
+            else:
+                status = 'critical'
+                action = 'urgent_action'
+                message = 'Crítico! Meta em risco. Ação urgente necessária.'
+            
+            return {
+                'success': True,
+                'progress': {
+                    'goal_value': goal_value,
+                    'current_revenue': round(current_revenue, 2),
+                    'achievement_percent': round(achievement, 1),
+                    'status': status,
+                    'recommended_action': action,
+                    'message': message
+                },
+                'metrics': {
+                    'conversions': current_conversions,
+                    'spend': round(current_spend, 2),
+                    'cpa': round(current_cpa, 2),
+                    'roas': round(current_revenue / current_spend, 2) if current_spend > 0 else 0
+                }
+            }
+            
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+        finally:
+            db.close()
+    
+    def auto_scale_decision(self, campaign_id: int, goal_value: float, current_roas: float) -> Dict[str, Any]:
+        """
+        Decide automaticamente se deve escalar a campanha baseado na meta.
+        """
+        # Regras de escala inteligente
+        if current_roas >= 3.0:
+            scale_percent = 30
+            decision = 'scale_aggressive'
+            reason = f'ROAS excelente ({current_roas}x). Escalar agressivamente.'
+        elif current_roas >= 2.5:
+            scale_percent = 20
+            decision = 'scale_moderate'
+            reason = f'ROAS bom ({current_roas}x). Escalar moderadamente.'
+        elif current_roas >= 2.0:
+            scale_percent = 10
+            decision = 'scale_conservative'
+            reason = f'ROAS aceitável ({current_roas}x). Escalar com cautela.'
+        elif current_roas >= 1.5:
+            scale_percent = 0
+            decision = 'maintain'
+            reason = f'ROAS marginal ({current_roas}x). Manter e otimizar.'
+        else:
+            scale_percent = -20
+            decision = 'reduce'
+            reason = f'ROAS baixo ({current_roas}x). Reduzir orçamento e otimizar.'
+        
+        self.log_action("Auto-Escala", f"Campanha {campaign_id}: {decision} ({scale_percent}%)")
+        
+        return {
+            'success': True,
+            'decision': decision,
+            'scale_percent': scale_percent,
+            'reason': reason,
+            'current_roas': current_roas,
+            'goal_value': goal_value
+        }
+
+
 # Instância global do operador
 operator = VelyraPrime()

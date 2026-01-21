@@ -291,6 +291,69 @@
                             </div>
                         </div>
 
+                        <!-- 🎯 META DE VENDAS - SEÇÃO PREMIUM -->
+                        <div class="card border-success mb-4" style="background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-target"></i> 🎯 Meta de Vendas Diária
+                                    <span class="badge bg-warning text-dark ms-2">PREMIUM</span>
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Essa meta será usada pela IA para definir orçamento, estratégia, escala e alertas automáticos.</strong>
+                                </p>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">
+                                            Tipo de Meta <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" id="salesGoalType" onchange="updateSalesGoalLabel()">
+                                            <option value="revenue" selected>Valor em R$ (Receita)</option>
+                                            <option value="quantity">Quantidade de Vendas</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold" id="salesGoalLabel">
+                                            Meta Diária (R$) <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="salesGoalPrefix">R$</span>
+                                            <input type="number" class="form-control form-control-lg" id="dailySalesGoal" 
+                                                   placeholder="Ex: 1000" min="1" step="1" required
+                                                   oninput="validateSalesGoal()">
+                                        </div>
+                                        <div class="invalid-feedback" id="salesGoalError">
+                                            Meta de vendas é obrigatória e deve ser maior que zero.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Estimativas baseadas na meta -->
+                                <div class="alert alert-info mb-0" id="salesGoalEstimates" style="display: none;">
+                                    <h6 class="alert-heading mb-2">
+                                        <i class="fas fa-calculator"></i> Estimativas da IA:
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <small>Orçamento Sugerido:</small>
+                                            <div class="fw-bold" id="suggestedBudget">R$ 0</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small>Conversões Necessárias:</small>
+                                            <div class="fw-bold" id="requiredConversions">0</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small>CPA Máximo:</small>
+                                            <div class="fw-bold" id="maxCpa">R$ 0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Meta Pixel -->
                         <div class="card bg-light mb-4">
                             <div class="card-body">
@@ -716,6 +779,10 @@
                                 <tr>
                                     <th>Orçamento Diário:</th>
                                     <td id="summaryBudget">-</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <th>🎯 Meta de Vendas Diária:</th>
+                                    <td id="summarySalesGoal"><strong>-</strong></td>
                                 </tr>
                                 <tr>
                                     <th>Duração:</th>
@@ -1257,6 +1324,15 @@ function updateSummary() {
             document.getElementById('campaignObjective')?.value || '-';
         document.getElementById('summaryBudget').textContent = 
             'R$ ' + (document.getElementById('dailyBudget')?.value || '0') + '/dia';
+        
+        // Meta de Vendas
+        const salesGoalType = document.getElementById('salesGoalType')?.value || 'revenue';
+        const salesGoalValue = document.getElementById('dailySalesGoal')?.value || '0';
+        const salesGoalPrefix = salesGoalType === 'revenue' ? 'R$ ' : '';
+        const salesGoalSuffix = salesGoalType === 'quantity' ? ' vendas' : '';
+        document.getElementById('summarySalesGoal').innerHTML = 
+            `<strong class="text-success">${salesGoalPrefix}${salesGoalValue}${salesGoalSuffix}/dia</strong>`;
+        
         document.getElementById('summaryDuration').textContent = 
             document.getElementById('campaignDuration')?.value + ' dias' || '-';
         
@@ -1308,6 +1384,94 @@ if (uploadZone) {
         handleMediaUpload(files);
     });
 }
+
+// ========== FUNÇÕES META DE VENDAS ==========
+
+// Atualizar label do campo de meta baseado no tipo
+function updateSalesGoalLabel() {
+    const type = document.getElementById('salesGoalType').value;
+    const label = document.getElementById('salesGoalLabel');
+    const prefix = document.getElementById('salesGoalPrefix');
+    
+    if (type === 'revenue') {
+        label.innerHTML = 'Meta Diária (R$) <span class="text-danger">*</span>';
+        prefix.textContent = 'R$';
+    } else {
+        label.innerHTML = 'Meta Diária (Vendas) <span class="text-danger">*</span>';
+        prefix.textContent = '#';
+    }
+    
+    validateSalesGoal();
+}
+
+// Validar campo de meta de vendas
+function validateSalesGoal() {
+    const input = document.getElementById('dailySalesGoal');
+    const value = parseFloat(input.value);
+    const errorDiv = document.getElementById('salesGoalError');
+    const estimatesDiv = document.getElementById('salesGoalEstimates');
+    
+    if (!value || value <= 0 || isNaN(value)) {
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+        estimatesDiv.style.display = 'none';
+        return false;
+    } else {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        
+        // Calcular estimativas baseadas na meta
+        calculateSalesGoalEstimates(value);
+        estimatesDiv.style.display = 'block';
+        return true;
+    }
+}
+
+// Calcular estimativas baseadas na meta de vendas
+function calculateSalesGoalEstimates(goalValue) {
+    const type = document.getElementById('salesGoalType').value;
+    const avgTicket = 100; // Ticket médio estimado
+    const avgConversionRate = 0.03; // Taxa de conversão média 3%
+    const avgCpc = 1.50; // CPC médio
+    
+    let conversionsNeeded, suggestedBudget, maxCpa;
+    
+    if (type === 'revenue') {
+        // Meta em R$
+        conversionsNeeded = Math.ceil(goalValue / avgTicket);
+        maxCpa = avgTicket * 0.3; // CPA máximo = 30% do ticket
+        suggestedBudget = conversionsNeeded * maxCpa;
+    } else {
+        // Meta em quantidade
+        conversionsNeeded = goalValue;
+        maxCpa = avgTicket * 0.3;
+        suggestedBudget = conversionsNeeded * maxCpa;
+    }
+    
+    // Atualizar UI
+    document.getElementById('suggestedBudget').textContent = 'R$ ' + suggestedBudget.toFixed(2);
+    document.getElementById('requiredConversions').textContent = conversionsNeeded + ' vendas';
+    document.getElementById('maxCpa').textContent = 'R$ ' + maxCpa.toFixed(2);
+    
+    // Atualizar orçamento sugerido automaticamente
+    const budgetInput = document.getElementById('dailyBudget');
+    if (budgetInput && suggestedBudget > parseFloat(budgetInput.value || 0)) {
+        budgetInput.value = Math.ceil(suggestedBudget / 10) * 10; // Arredondar para dezena
+    }
+}
+
+// Validar antes de avançar do Step 2
+const originalNextStep = nextStep;
+nextStep = function() {
+    if (currentStep === 2) {
+        if (!validateSalesGoal()) {
+            alert('⚠️ Meta de Vendas é obrigatória!\n\nPor favor, defina sua meta de vendas diária para continuar.');
+            document.getElementById('dailySalesGoal').focus();
+            return;
+        }
+    }
+    originalNextStep();
+};
 
 // Inicializar tooltips
 document.addEventListener('DOMContentLoaded', function() {
