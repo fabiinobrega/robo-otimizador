@@ -1,0 +1,598 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Inteligência Competitiva - Nexora Prime{% endblock %}
+
+{% block extra_head %}
+<style>
+    .competitive-page {
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .intel-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+    
+    .competitor-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .competitor-card:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        transform: translateX(4px);
+    }
+    
+    .competitor-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .competitor-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.25rem;
+    }
+    
+    .competitor-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+    }
+    
+    .competitor-domain {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .threat-level {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .threat-high {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    
+    .threat-medium {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+    }
+    
+    .threat-low {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+    
+    .metric-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .metric-row:last-child {
+        border-bottom: none;
+    }
+    
+    .metric-label {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.875rem;
+    }
+    
+    .metric-value {
+        color: #fff;
+        font-weight: 600;
+    }
+    
+    .ad-preview {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .ad-preview-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .ad-preview-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #4267B2;
+    }
+    
+    .ad-preview-name {
+        font-weight: 600;
+        color: #fff;
+        font-size: 0.875rem;
+    }
+    
+    .ad-preview-sponsored {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .ad-preview-text {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+    
+    .ad-preview-image {
+        width: 100%;
+        height: 150px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+    }
+    
+    .ad-preview-cta {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 8px 16px;
+        text-align: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .trend-chart {
+        height: 200px;
+    }
+    
+    .keyword-tag {
+        display: inline-block;
+        padding: 6px 12px;
+        background: rgba(99, 102, 241, 0.2);
+        border-radius: 6px;
+        color: #fff;
+        font-size: 0.875rem;
+        margin: 4px;
+    }
+    
+    .keyword-tag .volume {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.75rem;
+        margin-left: 8px;
+    }
+    
+    .comparison-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .comparison-table th {
+        background: rgba(99, 102, 241, 0.2);
+        color: #fff;
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+    }
+    
+    .comparison-table th:first-child {
+        border-radius: 8px 0 0 0;
+    }
+    
+    .comparison-table th:last-child {
+        border-radius: 0 8px 0 0;
+    }
+    
+    .comparison-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .comparison-table tr:hover td {
+        background: rgba(99, 102, 241, 0.1);
+    }
+    
+    .winner-badge {
+        background: linear-gradient(135deg, #10b981, #14b8a6);
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .btn-spy {
+        background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+        border: none;
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    .btn-spy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    .alert-opportunity {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .alert-opportunity i {
+        font-size: 1.5rem;
+        color: #10b981;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="competitive-page">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="text-white mb-1">
+                    <i class="fas fa-user-secret me-2" style="color: #3b82f6;"></i>
+                    Inteligência Competitiva
+                </h1>
+                <p class="text-white-50 mb-0">Monitore concorrentes, descubra estratégias e encontre oportunidades</p>
+            </div>
+            <div class="d-flex gap-3">
+                <button class="btn btn-outline-light">
+                    <i class="fas fa-plus me-2"></i>Adicionar Concorrente
+                </button>
+                <button class="btn-spy" onclick="runFullAnalysis()">
+                    <i class="fas fa-search me-2"></i>Análise Completa
+                </button>
+            </div>
+        </div>
+        
+        <!-- Oportunidade Detectada -->
+        <div class="alert-opportunity">
+            <i class="fas fa-lightbulb"></i>
+            <div class="flex-grow-1">
+                <strong class="text-white">Oportunidade Detectada!</strong>
+                <p class="text-white-50 mb-0">Concorrente "TechStore" reduziu investimento em 40% esta semana. Momento ideal para aumentar presença no segmento.</p>
+            </div>
+            <button class="btn btn-outline-success">Explorar</button>
+        </div>
+        
+        <div class="row">
+            <!-- Lista de Concorrentes -->
+            <div class="col-lg-4">
+                <div class="intel-card">
+                    <h5 class="text-white mb-4">
+                        <i class="fas fa-users me-2"></i>Concorrentes Monitorados
+                    </h5>
+                    
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo">TS</div>
+                            <div class="flex-grow-1">
+                                <div class="competitor-name">TechStore</div>
+                                <div class="competitor-domain">techstore.com.br</div>
+                            </div>
+                            <span class="threat-level threat-high">Alto</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Investimento Est.</span>
+                            <span class="metric-value">R$ 45k/mês</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Anúncios Ativos</span>
+                            <span class="metric-value">127</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Engajamento</span>
+                            <span class="metric-value text-success">↑ 12%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo" style="background: linear-gradient(135deg, #f59e0b, #f97316);">ME</div>
+                            <div class="flex-grow-1">
+                                <div class="competitor-name">MegaEletro</div>
+                                <div class="competitor-domain">megaeletro.com.br</div>
+                            </div>
+                            <span class="threat-level threat-medium">Médio</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Investimento Est.</span>
+                            <span class="metric-value">R$ 28k/mês</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Anúncios Ativos</span>
+                            <span class="metric-value">84</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Engajamento</span>
+                            <span class="metric-value text-danger">↓ 5%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo" style="background: linear-gradient(135deg, #10b981, #14b8a6);">SB</div>
+                            <div class="flex-grow-1">
+                                <div class="competitor-name">ShopBest</div>
+                                <div class="competitor-domain">shopbest.com.br</div>
+                            </div>
+                            <span class="threat-level threat-low">Baixo</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Investimento Est.</span>
+                            <span class="metric-value">R$ 12k/mês</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Anúncios Ativos</span>
+                            <span class="metric-value">32</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Engajamento</span>
+                            <span class="metric-value text-warning">→ 0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Anúncios dos Concorrentes -->
+            <div class="col-lg-4">
+                <div class="intel-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="text-white mb-0">
+                            <i class="fas fa-ad me-2"></i>Anúncios Detectados
+                        </h5>
+                        <span class="badge bg-primary">243 anúncios</span>
+                    </div>
+                    
+                    <div class="ad-preview">
+                        <div class="ad-preview-header">
+                            <div class="ad-preview-avatar"></div>
+                            <div>
+                                <div class="ad-preview-name">TechStore</div>
+                                <div class="ad-preview-sponsored">Patrocinado · Facebook</div>
+                            </div>
+                        </div>
+                        <div class="ad-preview-text">
+                            🔥 MEGA PROMOÇÃO! Fones Bluetooth com até 50% OFF. Frete grátis para todo Brasil. Estoque limitado!
+                        </div>
+                        <div class="ad-preview-image">
+                            <i class="fas fa-headphones" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                        </div>
+                        <div class="ad-preview-cta">Comprar Agora</div>
+                        <div class="d-flex justify-content-between mt-3 text-white-50 small">
+                            <span><i class="fas fa-eye me-1"></i> 45k impressões</span>
+                            <span><i class="fas fa-clock me-1"></i> Ativo há 5 dias</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ad-preview">
+                        <div class="ad-preview-header">
+                            <div class="ad-preview-avatar" style="background: #f59e0b;"></div>
+                            <div>
+                                <div class="ad-preview-name">MegaEletro</div>
+                                <div class="ad-preview-sponsored">Patrocinado · Instagram</div>
+                            </div>
+                        </div>
+                        <div class="ad-preview-text">
+                            Qualidade Premium, Preço Justo. Conheça nossa linha de fones sem fio. Garantia de 2 anos! ✨
+                        </div>
+                        <div class="ad-preview-image">
+                            <i class="fas fa-music" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                        </div>
+                        <div class="ad-preview-cta">Saiba Mais</div>
+                        <div class="d-flex justify-content-between mt-3 text-white-50 small">
+                            <span><i class="fas fa-eye me-1"></i> 28k impressões</span>
+                            <span><i class="fas fa-clock me-1"></i> Ativo há 12 dias</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Análise e Insights -->
+            <div class="col-lg-4">
+                <div class="intel-card">
+                    <h5 class="text-white mb-4">
+                        <i class="fas fa-key me-2"></i>Keywords dos Concorrentes
+                    </h5>
+                    
+                    <div class="mb-4">
+                        <div class="keyword-tag">fone bluetooth <span class="volume">12.5k</span></div>
+                        <div class="keyword-tag">fone sem fio <span class="volume">8.2k</span></div>
+                        <div class="keyword-tag">headphone gamer <span class="volume">6.8k</span></div>
+                        <div class="keyword-tag">fone cancelamento ruído <span class="volume">4.5k</span></div>
+                        <div class="keyword-tag">airpods <span class="volume">15.2k</span></div>
+                        <div class="keyword-tag">fone barato <span class="volume">9.1k</span></div>
+                        <div class="keyword-tag">earbuds <span class="volume">3.2k</span></div>
+                    </div>
+                    
+                    <div class="alert alert-info bg-transparent border-info text-white-50 small">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Oportunidade:</strong> "fone cancelamento ruído" tem baixa concorrência e alto volume.
+                    </div>
+                </div>
+                
+                <div class="intel-card">
+                    <h5 class="text-white mb-4">
+                        <i class="fas fa-chart-pie me-2"></i>Share of Voice
+                    </h5>
+                    
+                    <div class="trend-chart">
+                        <canvas id="shareChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="intel-card">
+                    <h5 class="text-white mb-4">
+                        <i class="fas fa-trophy me-2"></i>Seu Posicionamento
+                    </h5>
+                    
+                    <div class="metric-row">
+                        <span class="metric-label">Ranking Geral</span>
+                        <span class="metric-value">#2 de 4 <span class="winner-badge">↑1</span></span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Share of Voice</span>
+                        <span class="metric-value">28%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Engajamento Médio</span>
+                        <span class="metric-value">4.2%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Custo vs. Mercado</span>
+                        <span class="metric-value text-success">-15%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabela Comparativa -->
+        <div class="intel-card">
+            <h5 class="text-white mb-4">
+                <i class="fas fa-table me-2"></i>Comparativo Detalhado
+            </h5>
+            
+            <div class="table-responsive">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Métrica</th>
+                            <th>Você</th>
+                            <th>TechStore</th>
+                            <th>MegaEletro</th>
+                            <th>ShopBest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Investimento Mensal</td>
+                            <td>R$ 35k <span class="winner-badge">2º</span></td>
+                            <td>R$ 45k</td>
+                            <td>R$ 28k</td>
+                            <td>R$ 12k</td>
+                        </tr>
+                        <tr>
+                            <td>Anúncios Ativos</td>
+                            <td>98</td>
+                            <td>127 <span class="winner-badge">1º</span></td>
+                            <td>84</td>
+                            <td>32</td>
+                        </tr>
+                        <tr>
+                            <td>CTR Médio</td>
+                            <td>3.8% <span class="winner-badge">1º</span></td>
+                            <td>2.9%</td>
+                            <td>2.5%</td>
+                            <td>2.1%</td>
+                        </tr>
+                        <tr>
+                            <td>Engajamento</td>
+                            <td>4.2% <span class="winner-badge">1º</span></td>
+                            <td>3.8%</td>
+                            <td>3.2%</td>
+                            <td>2.8%</td>
+                        </tr>
+                        <tr>
+                            <td>Frequência de Posts</td>
+                            <td>5/semana</td>
+                            <td>7/semana <span class="winner-badge">1º</span></td>
+                            <td>4/semana</td>
+                            <td>2/semana</td>
+                        </tr>
+                        <tr>
+                            <td>Plataformas</td>
+                            <td>FB, IG, Google</td>
+                            <td>FB, IG, Google, TikTok</td>
+                            <td>FB, IG</td>
+                            <td>FB</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico de Share of Voice
+const ctx = document.getElementById('shareChart').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Você', 'TechStore', 'MegaEletro', 'ShopBest'],
+        datasets: [{
+            data: [28, 35, 25, 12],
+            backgroundColor: [
+                '#6366f1',
+                '#ef4444',
+                '#f59e0b',
+                '#10b981'
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: 'rgba(255,255,255,0.7)' }
+            }
+        }
+    }
+});
+
+function runFullAnalysis() {
+    fetch('/api/v2/competitive/full-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ competitors: ['techstore', 'megaeletro', 'shopbest'] })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Análise completa:', data);
+    });
+}
+</script>
+{% endblock %}
