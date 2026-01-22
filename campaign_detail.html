@@ -1,0 +1,286 @@
+{% extends "base_nexora.html" %}
+{% block title %}Detalhes da Campanha - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="nexora-page-title">
+                <i class="fas fa-bullhorn me-3" aria-hidden="true"></i>
+                <span id="campaignName">{{ campaign.name if campaign else 'Campanha de Teste' }}</span>
+            </h1>
+            <p class="text-muted">
+                <span class="badge {% if campaign and campaign.status == 'active' %}bg-success{% elif campaign and campaign.status == 'paused' %}bg-warning{% else %}bg-secondary{% endif %}">
+                    {{ campaign.status|capitalize if campaign else 'Ativa' }}
+                </span>
+                <span class="ms-3">Plataforma: <strong>{{ campaign.platform if campaign else 'Meta Ads' }}</strong></span>
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="nexora-btn nexora-btn-secondary me-2" onclick="editCampaign()">
+                <i class="fas fa-edit me-2" aria-hidden="true"></i>Editar
+            </button>
+            <button class="nexora-btn nexora-btn-primary" onclick="duplicateCampaign()">
+                <i class="fas fa-copy me-2" aria-hidden="true"></i>Duplicar
+            </button>
+        </div>
+    </div>
+    
+    <!-- KPIs -->
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Impressões</h6>
+                <h2 id="impressions">{{ "{:,}".format(campaign.impressions|default(45678)) if campaign else '45,678' }}</h2>
+                <small class="text-success"><i class="fas fa-arrow-up" aria-hidden="true"></i> +12%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Cliques</h6>
+                <h2 id="clicks">{{ "{:,}".format(campaign.clicks|default(1234)) if campaign else '1,234' }}</h2>
+                <small class="text-success"><i class="fas fa-arrow-up" aria-hidden="true"></i> +8%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">CTR</h6>
+                <h2 id="ctr">{{ campaign.ctr|default(2.7) if campaign else '2.7' }}%</h2>
+                <small class="text-success"><i class="fas fa-arrow-up" aria-hidden="true"></i> +0.3%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Gasto</h6>
+                <h2 id="spend">R$ {{ "{:,.2f}".format(campaign.spend|default(847.50)) if campaign else '847,50' }}</h2>
+                <small class="text-muted">de R$ {{ "{:,.2f}".format(campaign.budget|default(1000)) if campaign else '1.000,00' }}</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Segunda linha de KPIs -->
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Conversões</h6>
+                <h2>{{ campaign.conversions|default(47) if campaign else '47' }}</h2>
+                <small class="text-success"><i class="fas fa-arrow-up" aria-hidden="true"></i> +15%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">CPA</h6>
+                <h2>R$ {{ "{:.2f}".format(campaign.cpa|default(18.03)) if campaign else '18,03' }}</h2>
+                <small class="text-success"><i class="fas fa-arrow-down" aria-hidden="true"></i> -5%</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">ROAS</h6>
+                <h2>{{ campaign.roas|default(4.2) if campaign else '4.2' }}x</h2>
+                <small class="text-success"><i class="fas fa-arrow-up" aria-hidden="true"></i> +0.5x</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="nexora-card">
+                <h6 class="text-muted mb-3">Receita</h6>
+                <h2>R$ {{ "{:,.2f}".format(campaign.revenue|default(3559.50)) if campaign else '3.559,50' }}</h2>
+                <small class="text-success"><i class="fas fa-arrow-up" aria-hidden="true"></i> +22%</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Gráfico de Performance -->
+        <div class="col-md-8">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-4">Performance ao Longo do Tempo</h5>
+                <canvas id="performanceChart" height="300"></canvas>
+            </div>
+        </div>
+        
+        <!-- Status da Campanha -->
+        <div class="col-md-4">
+            <div class="nexora-card mb-4">
+                <h5 class="mb-3">Status da Campanha</h5>
+                <div class="mb-3">
+                    <span class="badge {% if campaign and campaign.status == 'active' %}bg-success{% elif campaign and campaign.status == 'paused' %}bg-warning{% else %}bg-success{% endif %}" style="font-size: 1rem; padding: 8px 16px;">
+                        {{ campaign.status|capitalize if campaign else 'Ativa' }}
+                    </span>
+                </div>
+                <p class="text-muted mb-2">Plataforma: <strong>{{ campaign.platform if campaign else 'Meta Ads' }}</strong></p>
+                <p class="text-muted mb-2">Orçamento Diário: <strong>R$ {{ campaign.daily_budget|default(100) if campaign else '100' }}</strong></p>
+                <p class="text-muted mb-2">Início: <strong>{{ campaign.start_date if campaign else '15/01/2026' }}</strong></p>
+                <p class="text-muted mb-2">Término: <strong>{{ campaign.end_date if campaign else '15/02/2026' }}</strong></p>
+                <hr>
+                <p class="text-muted mb-2">Objetivo: <strong>{{ campaign.objective if campaign else 'Conversões' }}</strong></p>
+                <p class="text-muted mb-2">Público: <strong>{{ campaign.audience if campaign else 'Mulheres 25-45' }}</strong></p>
+            </div>
+            
+            <!-- Ações Rápidas -->
+            <div class="nexora-card mb-4">
+                <h5 class="mb-3">Ações Rápidas</h5>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="pauseCampaign()">
+                        <i class="fas fa-pause me-2"></i>Pausar Campanha
+                    </button>
+                    <button class="btn btn-outline-success" onclick="scaleCampaign()">
+                        <i class="fas fa-chart-line me-2"></i>Escalar Budget
+                    </button>
+                    <button class="btn btn-outline-info" onclick="optimizeCampaign()">
+                        <i class="fas fa-magic me-2"></i>Otimizar com IA
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="duplicateCampaign()">
+                        <i class="fas fa-copy me-2"></i>Duplicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Insights da IA -->
+    <div class="row">
+        <div class="col-12">
+            <div class="nexora-card mb-4" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); border: 1px solid rgba(79, 70, 229, 0.3);">
+                <div class="d-flex align-items-center mb-3">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4f46e5, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                        <i class="fas fa-brain text-white"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Insights da Velyra Prime</h5>
+                        <small class="text-muted">Análise automática de performance</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <h6 class="text-success mb-2"><i class="fas fa-check-circle me-2"></i>Pontos Fortes</h6>
+                            <ul class="mb-0 ps-3">
+                                <li>CTR acima da média do mercado</li>
+                                <li>CPA em tendência de queda</li>
+                                <li>ROAS excelente (4.2x)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);">
+                            <h6 class="text-warning mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Atenção</h6>
+                            <ul class="mb-0 ps-3">
+                                <li>Frequência aumentando (1.8)</li>
+                                <li>Considere novos criativos</li>
+                                <li>Teste novos públicos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded" style="background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.3);">
+                            <h6 class="text-primary mb-2"><i class="fas fa-lightbulb me-2"></i>Recomendações</h6>
+                            <ul class="mb-0 ps-3">
+                                <li>Aumentar budget em 20%</li>
+                                <li>Criar lookalike 3%</li>
+                                <li>Testar horário 20h-23h</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Inicializar gráfico de performance
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('performanceChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['15/01', '16/01', '17/01', '18/01', '19/01', '20/01', '21/01', '22/01'],
+                datasets: [
+                    {
+                        label: 'Impressões (mil)',
+                        data: [4.2, 5.1, 4.8, 6.2, 5.9, 7.1, 6.8, 5.5],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Cliques',
+                        data: [120, 145, 132, 178, 165, 198, 187, 152],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Conversões',
+                        data: [5, 7, 6, 8, 7, 9, 8, 7],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#9ca3af' }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#9ca3af' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#9ca3af' }
+                    }
+                }
+            }
+        });
+    }
+});
+
+// Funções de ação
+function editCampaign() {
+    showToast('info', 'Abrindo editor de campanha...');
+    // window.location.href = '/edit-campaign/' + campaignId;
+}
+
+function duplicateCampaign() {
+    showToast('success', 'Campanha duplicada com sucesso!');
+}
+
+function pauseCampaign() {
+    showToast('warning', 'Campanha pausada');
+}
+
+function scaleCampaign() {
+    showToast('success', 'Budget aumentado em 20%');
+}
+
+function optimizeCampaign() {
+    showToast('info', 'Velyra Prime está otimizando sua campanha...');
+    setTimeout(() => {
+        showToast('success', 'Otimização concluída! 3 melhorias aplicadas.');
+    }, 2000);
+}
+
+function showToast(type, message) {
+    // Criar toast
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'error' ? 'danger' : 'info'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'error' ? 'times-circle' : 'info-circle'} me-2"></i>${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
+{% endblock %}

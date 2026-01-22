@@ -1,0 +1,454 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Nova Campanha - NEXORA{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="nexora-page-header">
+    <h1 class="nexora-page-title">Criar Nova Campanha</h1>
+    <p class="nexora-page-subtitle">Configure sua campanha em poucos passos</p>
+</div>
+
+<!-- Wizard Progress -->
+<div style="margin-bottom: var(--spacing-8);">
+    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
+        <div class="wizard-step active" data-step="1">
+            <div class="wizard-step-number">1</div>
+            <div class="wizard-step-label">Informações Básicas</div>
+        </div>
+        <div class="wizard-connector"></div>
+        <div class="wizard-step" data-step="2">
+            <div class="wizard-step-number">2</div>
+            <div class="wizard-step-label">Plataforma</div>
+        </div>
+        <div class="wizard-connector"></div>
+        <div class="wizard-step" data-step="3">
+            <div class="wizard-step-number">3</div>
+            <div class="wizard-step-label">Orçamento</div>
+        </div>
+        <div class="wizard-connector"></div>
+        <div class="wizard-step" data-step="4">
+            <div class="wizard-step-number">4</div>
+            <div class="wizard-step-label">Revisão</div>
+        </div>
+    </div>
+</div>
+
+<!-- Wizard Content -->
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="nexora-card">
+        <!-- Step 1: Basic Information -->
+        <div class="wizard-content" id="step1">
+            <h3 style="font-size: var(--text-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-6);">Informações Básicas</h3>
+            
+            <div class="form-group-nexora">
+                <label class="form-label-nexora">Nome da Campanha *</label>
+                <input type="text" class="form-input-nexora" id="campaignName" placeholder="Ex: Black Friday 2024" required />
+            </div>
+            
+            <div class="form-group-nexora">
+                <label class="form-label-nexora">Objetivo da Campanha *</label>
+                <select class="form-input-nexora" id="campaignObjective" required>
+                    <option value="">Selecione um objetivo</option>
+                    <option value="conversions">Conversões</option>
+                    <option value="traffic">Tráfego</option>
+                    <option value="awareness">Reconhecimento de Marca</option>
+                    <option value="engagement">Engajamento</option>
+                </select>
+            </div>
+            
+            <div class="form-group-nexora">
+                <label class="form-label-nexora">Descrição</label>
+                <textarea class="form-input-nexora" id="campaignDescription" rows="4" placeholder="Descreva os objetivos e estratégia da campanha..."></textarea>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: var(--spacing-3); margin-top: var(--spacing-6);">
+                <button class="btn-nexora btn-nexora-primary" onclick="nextStep()">
+                    Próximo
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Platform Selection -->
+        <div class="wizard-content" id="step2" style="display: none;">
+            <h3 style="font-size: var(--text-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-6);">Selecione a Plataforma</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-4);">
+                <div class="platform-card" data-platform="facebook" onclick="selectPlatform('facebook')">
+                    <i class="fab fa-facebook fa-3x" style="color: #1877f2;"></i>
+                    <div style="margin-top: var(--spacing-3); font-weight: 500;">Facebook</div>
+                </div>
+                <div class="platform-card" data-platform="google" onclick="selectPlatform('google')">
+                    <i class="fab fa-google fa-3x" style="color: #4285f4;"></i>
+                    <div style="margin-top: var(--spacing-3); font-weight: 500;">Google</div>
+                </div>
+                <div class="platform-card" data-platform="instagram" onclick="selectPlatform('instagram')">
+                    <i class="fab fa-instagram fa-3x" style="color: #e4405f;"></i>
+                    <div style="margin-top: var(--spacing-3); font-weight: 500;">Instagram</div>
+                </div>
+                <div class="platform-card" data-platform="tiktok" onclick="selectPlatform('tiktok')">
+                    <i class="fab fa-tiktok fa-3x" style="color: #000;"></i>
+                    <div style="margin-top: var(--spacing-3); font-weight: 500;">TikTok</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; gap: var(--spacing-3); margin-top: var(--spacing-8);">
+                <button class="btn-nexora btn-nexora-secondary" onclick="previousStep()">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+                <button class="btn-nexora btn-nexora-primary" onclick="nextStep()">
+                    Próximo
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Budget -->
+        <div class="wizard-content" id="step3" style="display: none;">
+            <h3 style="font-size: var(--text-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-6);">Defina o Orçamento</h3>
+            
+            <div class="form-group-nexora">
+                <label class="form-label-nexora">Tipo de Orçamento *</label>
+                <select class="form-input-nexora" id="budgetType" onchange="updateBudgetFields()">
+                    <option value="daily">Diário</option>
+                    <option value="total">Total da Campanha</option>
+                </select>
+            </div>
+            
+            <div class="form-group-nexora">
+                <label class="form-label-nexora">Valor (R$) *</label>
+                <input type="number" class="form-input-nexora" id="budgetAmount" placeholder="0.00" min="0" step="0.01" required />
+            </div>
+            
+            <div class="form-group-nexora">
+                <label class="form-label-nexora">Período</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-3);">
+                    <input type="date" class="form-input-nexora" id="startDate" />
+                    <input type="date" class="form-input-nexora" id="endDate" />
+                </div>
+            </div>
+            
+            <!-- Estimation Card -->
+            <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-5); margin-top: var(--spacing-6);">
+                <div style="font-size: var(--text-sm); color: var(--text-tertiary); margin-bottom: var(--spacing-3);">Estimativa de Resultados</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-4);">
+                    <div>
+                        <div style="font-size: var(--text-xs); color: var(--text-tertiary);">Alcance</div>
+                        <div style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary);">2.5K - 5K</div>
+                    </div>
+                    <div>
+                        <div style="font-size: var(--text-xs); color: var(--text-tertiary);">Cliques</div>
+                        <div style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary);">150 - 300</div>
+                    </div>
+                    <div>
+                        <div style="font-size: var(--text-xs); color: var(--text-tertiary);">Conversões</div>
+                        <div style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary);">15 - 30</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; gap: var(--spacing-3); margin-top: var(--spacing-8);">
+                <button class="btn-nexora btn-nexora-secondary" onclick="previousStep()">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+                <button class="btn-nexora btn-nexora-primary" onclick="nextStep()">
+                    Próximo
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 4: Review -->
+        <div class="wizard-content" id="step4" style="display: none;">
+            <h3 style="font-size: var(--text-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-6);">Revisão Final</h3>
+            
+            <div id="reviewContent" style="display: flex; flex-direction: column; gap: var(--spacing-4);">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; gap: var(--spacing-3); margin-top: var(--spacing-8);">
+                <button class="btn-nexora btn-nexora-secondary" onclick="previousStep()">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+                <button class="btn-nexora btn-nexora-primary" onclick="createCampaign()">
+                    <i class="fas fa-check"></i>
+                    Criar Campanha
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Wizard Styles */
+.wizard-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.wizard-step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--fill-primary);
+    border: 2px solid var(--border-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    transition: all var(--transition-base);
+}
+
+.wizard-step.active .wizard-step-number {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--text-on-accent);
+}
+
+.wizard-step.completed .wizard-step-number {
+    background-color: var(--accent-success);
+    border-color: var(--accent-success);
+    color: var(--text-on-accent);
+}
+
+.wizard-step-label {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    text-align: center;
+}
+
+.wizard-step.active .wizard-step-label {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.wizard-connector {
+    flex: 1;
+    height: 2px;
+    background-color: var(--border-primary);
+    margin: 0 var(--spacing-3);
+}
+
+/* Platform Cards */
+.platform-card {
+    background-color: var(--fill-primary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-6);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.platform-card:hover {
+    border-color: var(--border-secondary);
+    background-color: var(--fill-secondary);
+}
+
+.platform-card.selected {
+    border-color: var(--accent-primary);
+    background-color: rgba(79, 70, 229, 0.1);
+}
+</style>
+
+<script>
+let currentStep = 1;
+let campaignData = {};
+
+function nextStep() {
+    // Validate current step
+    if (!validateStep(currentStep)) {
+        return;
+    }
+    
+    // Save data from current step
+    saveStepData(currentStep);
+    
+    // Hide current step
+    document.getElementById(`step${currentStep}`).style.display = 'none';
+    document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('active');
+    document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('completed');
+    
+    // Show next step
+    currentStep++;
+    document.getElementById(`step${currentStep}`).style.display = 'block';
+    document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+    
+    // If final step, populate review
+    if (currentStep === 4) {
+        populateReview();
+    }
+}
+
+function previousStep() {
+    // Hide current step
+    document.getElementById(`step${currentStep}`).style.display = 'none';
+    document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('active');
+    
+    // Show previous step
+    currentStep--;
+    document.getElementById(`step${currentStep}`).style.display = 'block';
+    document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('completed');
+    document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+}
+
+function validateStep(step) {
+    // Limpar erros anteriores
+    document.querySelectorAll('.form-input-nexora').forEach(el => {
+        el.style.borderColor = '';
+    });
+    
+    if (step === 1) {
+        const nameEl = document.getElementById('campaignName');
+        const objectiveEl = document.getElementById('campaignObjective');
+        const name = nameEl.value.trim();
+        const objective = objectiveEl.value;
+        
+        let errors = [];
+        
+        if (!name) {
+            nameEl.style.borderColor = '#ef4444';
+            errors.push('Nome da campanha');
+        }
+        if (!objective) {
+            objectiveEl.style.borderColor = '#ef4444';
+            errors.push('Objetivo da campanha');
+        }
+        
+        if (errors.length > 0) {
+            showValidationError('Preencha os campos: ' + errors.join(', '));
+            return false;
+        }
+    } else if (step === 2) {
+        if (!campaignData.platform) {
+            showValidationError('Selecione uma plataforma de anúncios');
+            return false;
+        }
+    } else if (step === 3) {
+        const budgetEl = document.getElementById('budgetAmount');
+        const budget = parseFloat(budgetEl.value);
+        if (!budget || budget <= 0) {
+            budgetEl.style.borderColor = '#ef4444';
+            showValidationError('Defina um orçamento válido (maior que R$ 0)');
+            return false;
+        }
+    }
+    return true;
+}
+
+function showValidationError(message) {
+    // Criar alerta visual
+    const alert = document.createElement('div');
+    alert.className = 'validation-alert';
+    alert.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <span>${message}</span>
+    `;
+    alert.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 500;
+        box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    document.body.appendChild(alert);
+    
+    // Remover após 4 segundos
+    setTimeout(() => {
+        alert.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => alert.remove(), 300);
+    }, 4000);
+}
+
+function saveStepData(step) {
+    if (step === 1) {
+        campaignData.name = document.getElementById('campaignName').value;
+        campaignData.objective = document.getElementById('campaignObjective').value;
+        campaignData.description = document.getElementById('campaignDescription').value;
+    } else if (step === 3) {
+        campaignData.budgetType = document.getElementById('budgetType').value;
+        campaignData.budgetAmount = document.getElementById('budgetAmount').value;
+        campaignData.startDate = document.getElementById('startDate').value;
+        campaignData.endDate = document.getElementById('endDate').value;
+    }
+}
+
+function selectPlatform(platform) {
+    // Remove previous selection
+    document.querySelectorAll('.platform-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Add selection
+    document.querySelector(`.platform-card[data-platform="${platform}"]`).classList.add('selected');
+    campaignData.platform = platform;
+}
+
+function populateReview() {
+    const reviewContent = document.getElementById('reviewContent');
+    reviewContent.innerHTML = `
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-1);">Nome</div>
+            <div style="font-size: var(--text-base); color: var(--text-primary);">${campaignData.name}</div>
+        </div>
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-1);">Objetivo</div>
+            <div style="font-size: var(--text-base); color: var(--text-primary);">${campaignData.objective}</div>
+        </div>
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-1);">Plataforma</div>
+            <div style="font-size: var(--text-base); color: var(--text-primary); text-transform: capitalize;">${campaignData.platform}</div>
+        </div>
+        <div style="background-color: var(--fill-primary); border-radius: var(--radius-lg); padding: var(--spacing-4);">
+            <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--spacing-1);">Orçamento</div>
+            <div style="font-size: var(--text-base); color: var(--text-primary);">${NEXORA.formatCurrency(parseFloat(campaignData.budgetAmount))} (${campaignData.budgetType === 'daily' ? 'Diário' : 'Total'})</div>
+        </div>
+    `;
+}
+
+async function createCampaign() {
+    try {
+        const response = await fetch('/api/campaigns', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(campaignData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            NEXORA.showToast('Sucesso', 'Campanha criada com sucesso!', 'success');
+            setTimeout(() => {
+                window.location.href = '/campaigns';
+            }, 1500);
+        } else {
+            NEXORA.showToast('Erro', data.message || 'Erro ao criar campanha', 'error');
+        }
+    } catch (error) {
+        console.error('Error creating campaign:', error);
+        NEXORA.showToast('Erro', 'Erro ao criar campanha', 'error');
+    }
+}
+
+function updateBudgetFields() {
+    // Update estimation based on budget type
+    console.log('Budget type changed');
+}
+</script>
+{% endblock %}
