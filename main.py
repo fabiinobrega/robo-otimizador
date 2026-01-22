@@ -5484,6 +5484,16 @@ try:
 except ImportError as e:
     print(f"Warning: Unicorn Expansion routes not available: {e}")
 
+# ============================================
+# ROTAS UI PREMIUM - 10 NOVOS TEMPLATES
+# ============================================
+try:
+    from routes_ui_premium import ui_premium_bp
+    app.register_blueprint(ui_premium_bp)
+    print("✅ UI Premium (10 templates) loaded successfully!")
+except ImportError as e:
+    print(f"Warning: UI Premium routes not available: {e}")
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
