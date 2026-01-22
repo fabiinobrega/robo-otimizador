@@ -4480,7 +4480,8 @@ def api_market_intelligence():
         # Get market insights via Manus IA
         insights = similarweb_intelligence.get_market_insights(domain, country, timeframe)
         
-        if insights:
+        # Verificar se os insights são válidos e completos (não offline)
+        if insights and insights.get('status') != 'offline' and insights.get('data'):
             # Registrar uso de créditos
             try:
                 manus_credit_tracker.log_credit_usage(
