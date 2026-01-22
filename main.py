@@ -5474,6 +5474,16 @@ try:
 except ImportError as e:
     print(f"Warning: Advanced routes not available: {e}")
 
+# ============================================
+# EXPANSÃO UNICÓRNIO - 19 SISTEMAS AVANÇADOS
+# ============================================
+try:
+    from routes_unicorn_expansion import unicorn_bp
+    app.register_blueprint(unicorn_bp)
+    print("✅ Unicorn Expansion (19 systems) loaded successfully!")
+except ImportError as e:
+    print(f"Warning: Unicorn Expansion routes not available: {e}")
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
