@@ -5465,6 +5465,15 @@ def sales_goal_dashboard_page():
     return render_template('sales_goal_dashboard.html')
 
 
+# ============================================
+# INTEGRAÇÃO DE ROTAS AVANÇADAS V2
+# ============================================
+try:
+    from routes_advanced_integration import register_advanced_routes
+    register_advanced_routes(app)
+except ImportError as e:
+    print(f"Warning: Advanced routes not available: {e}")
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
