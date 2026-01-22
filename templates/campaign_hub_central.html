@@ -1,0 +1,1254 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Hub Central de Campanha - NEXORA{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ============================================
+       HUB CENTRAL - TABS PREMIUM (DESIGN SYSTEM)
+       ============================================ */
+    .hub-container {
+        padding: var(--spacing-6);
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .hub-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+        padding-bottom: var(--spacing-4);
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .hub-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .hub-title h1 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .hub-status {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-1) var(--spacing-3);
+        background-color: rgba(34, 197, 94, 0.1);
+        border: 1px solid var(--accent-success);
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--accent-success);
+    }
+
+    .hub-status-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--accent-success);
+        border-radius: var(--radius-full);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .hub-actions {
+        display: flex;
+        gap: var(--spacing-3);
+    }
+
+    /* Tabs Navigation */
+    .hub-tabs-wrapper {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-2);
+        margin-bottom: var(--spacing-6);
+        overflow-x: auto;
+    }
+
+    .hub-tabs {
+        display: flex;
+        gap: var(--spacing-1);
+        min-width: max-content;
+    }
+
+    .hub-tab {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+    }
+
+    .hub-tab:hover {
+        background-color: var(--fill-primary);
+        color: var(--text-primary);
+    }
+
+    .hub-tab.active {
+        background-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    .hub-tab i {
+        font-size: var(--text-sm);
+    }
+
+    .hub-tab-badge {
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: 700;
+        background-color: var(--accent-danger);
+        color: var(--text-on-accent);
+        border-radius: var(--radius-full);
+    }
+
+    /* Tab Content */
+    .hub-content {
+        display: none;
+    }
+
+    .hub-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards Grid */
+    .hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-6);
+    }
+
+    .hub-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hub-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 1024px) {
+        .hub-grid-2, .hub-grid-3 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Score Cards */
+    .score-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        text-align: center;
+    }
+
+    .score-value {
+        font-size: var(--text-4xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .score-value.success { color: var(--accent-success); }
+    .score-value.warning { color: var(--accent-warning); }
+    .score-value.danger { color: var(--accent-danger); }
+    .score-value.info { color: var(--accent-info); }
+
+    .score-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .score-bar {
+        height: 8px;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+    }
+
+    .score-bar-fill {
+        height: 100%;
+        border-radius: var(--radius-full);
+        transition: width 0.5s ease;
+    }
+
+    .score-bar-fill.success { background-color: var(--accent-success); }
+    .score-bar-fill.warning { background-color: var(--accent-warning); }
+    .score-bar-fill.danger { background-color: var(--accent-danger); }
+    .score-bar-fill.info { background-color: var(--accent-info); }
+
+    /* Metric Cards */
+    .metric-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-5);
+    }
+
+    .metric-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .metric-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-lg);
+        color: var(--accent-primary);
+    }
+
+    .metric-trend {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        font-size: var(--text-sm);
+        font-weight: 600;
+    }
+
+    .metric-trend.up { color: var(--accent-success); }
+    .metric-trend.down { color: var(--accent-danger); }
+
+    .metric-value {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .metric-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    /* Info List */
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .info-list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--spacing-3) 0;
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .info-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-list-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    .info-list-value {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    /* Tags */
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: var(--spacing-1) var(--spacing-3);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        background-color: var(--fill-primary);
+        color: var(--text-secondary);
+        border-radius: var(--radius-full);
+    }
+
+    .tag.primary { background-color: rgba(79, 70, 229, 0.1); color: var(--accent-primary); }
+    .tag.success { background-color: rgba(34, 197, 94, 0.1); color: var(--accent-success); }
+    .tag.warning { background-color: rgba(249, 115, 22, 0.1); color: var(--accent-warning); }
+    .tag.danger { background-color: rgba(239, 68, 68, 0.1); color: var(--accent-danger); }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-left: var(--spacing-8);
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 12px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--border-primary);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: var(--spacing-6);
+    }
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -26px;
+        top: 4px;
+        width: 12px;
+        height: 12px;
+        background-color: var(--accent-primary);
+        border: 2px solid var(--bg-primary);
+        border-radius: var(--radius-full);
+    }
+
+    .timeline-dot.success { background-color: var(--accent-success); }
+    .timeline-dot.warning { background-color: var(--accent-warning); }
+    .timeline-dot.danger { background-color: var(--accent-danger); }
+
+    .timeline-content {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-4);
+    }
+
+    .timeline-time {
+        font-size: var(--text-xs);
+        color: var(--text-tertiary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .timeline-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .timeline-desc {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    /* Charts Container */
+    .chart-container {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+    }
+
+    .chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .chart-title {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .chart-canvas {
+        height: 300px;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--text-primary);
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .action-btn:hover {
+        background-color: var(--fill-secondary);
+        border-color: var(--border-secondary);
+    }
+
+    .action-btn.primary {
+        background-color: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    .action-btn.primary:hover {
+        filter: brightness(1.1);
+    }
+
+    /* Section Title */
+    .section-title {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-4);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .section-title i {
+        color: var(--accent-primary);
+    }
+
+    /* Alert Box */
+    .alert-box {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+        padding: var(--spacing-4);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-left: 4px solid var(--accent-info);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .alert-box.success { border-left-color: var(--accent-success); }
+    .alert-box.warning { border-left-color: var(--accent-warning); }
+    .alert-box.danger { border-left-color: var(--accent-danger); }
+
+    .alert-box i {
+        font-size: var(--text-lg);
+        color: var(--accent-info);
+    }
+
+    .alert-box.success i { color: var(--accent-success); }
+    .alert-box.warning i { color: var(--accent-warning); }
+    .alert-box.danger i { color: var(--accent-danger); }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .alert-text {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    /* Suggestion Card */
+    .suggestion-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-5);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .suggestion-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-3);
+    }
+
+    .suggestion-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .suggestion-impact {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--accent-success);
+    }
+
+    .suggestion-text {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .suggestion-actions {
+        display: flex;
+        gap: var(--spacing-2);
+    }
+
+    /* Progress Ring */
+    .progress-ring {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto var(--spacing-4);
+    }
+
+    .progress-ring svg {
+        transform: rotate(-90deg);
+    }
+
+    .progress-ring-bg {
+        fill: none;
+        stroke: var(--fill-primary);
+        stroke-width: 8;
+    }
+
+    .progress-ring-fill {
+        fill: none;
+        stroke: var(--accent-primary);
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .progress-ring-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hub-header {
+            flex-direction: column;
+            gap: var(--spacing-4);
+            align-items: flex-start;
+        }
+
+        .hub-tabs-wrapper {
+            margin-left: calc(-1 * var(--spacing-6));
+            margin-right: calc(-1 * var(--spacing-6));
+            border-radius: 0;
+            padding: var(--spacing-2) var(--spacing-4);
+        }
+
+        .hub-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hub-container">
+    <!-- Header -->
+    <div class="hub-header">
+        <div class="hub-title">
+            <h1><i class="fas fa-bullseye"></i> Hub Central de Campanha</h1>
+            <div class="hub-status">
+                <span class="hub-status-dot"></span>
+                Campanha Ativa
+            </div>
+        </div>
+        <div class="hub-actions">
+            <button class="btn-nexora btn-nexora-secondary">
+                <i class="fas fa-download"></i> Exportar
+            </button>
+            <button class="btn-nexora btn-nexora-primary">
+                <i class="fas fa-play"></i> Publicar Alterações
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="hub-tabs-wrapper">
+        <div class="hub-tabs">
+            <button class="hub-tab active" data-tab="oferta">
+                <i class="fas fa-gift"></i> Oferta
+            </button>
+            <button class="hub-tab" data-tab="psicologia">
+                <i class="fas fa-brain"></i> Psicologia
+            </button>
+            <button class="hub-tab" data-tab="criativos">
+                <i class="fas fa-palette"></i> Criativos
+                <span class="hub-tab-badge">12</span>
+            </button>
+            <button class="hub-tab" data-tab="simulacoes">
+                <i class="fas fa-chart-line"></i> Simulações
+            </button>
+            <button class="hub-tab" data-tab="predicao">
+                <i class="fas fa-crystal-ball"></i> Predição & Risco
+            </button>
+            <button class="hub-tab" data-tab="performance">
+                <i class="fas fa-tachometer-alt"></i> Performance
+                <span class="hub-tab-badge">!</span>
+            </button>
+            <button class="hub-tab" data-tab="otimizacoes">
+                <i class="fas fa-magic"></i> Otimizações IA
+            </button>
+            <button class="hub-tab" data-tab="autoescala">
+                <i class="fas fa-rocket"></i> Auto-Escala
+            </button>
+            <button class="hub-tab" data-tab="benchmark">
+                <i class="fas fa-chart-bar"></i> Benchmark
+            </button>
+            <button class="hub-tab" data-tab="compliance">
+                <i class="fas fa-shield-alt"></i> Compliance
+            </button>
+            <button class="hub-tab" data-tab="historico">
+                <i class="fas fa-history"></i> Histórico
+            </button>
+            <button class="hub-tab" data-tab="logs">
+                <i class="fas fa-terminal"></i> Logs IA
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Content: Oferta -->
+    <div class="hub-content active" id="tab-oferta">
+        <div class="hub-grid hub-grid-3">
+            <div class="score-card">
+                <div class="score-value success" id="oferta-score">87</div>
+                <div class="score-label">Score da Oferta</div>
+                <div class="score-bar">
+                    <div class="score-bar-fill success" style="width: 87%"></div>
+                </div>
+            </div>
+            <div class="score-card">
+                <div class="score-value info">R$ 197</div>
+                <div class="score-label">Preço Otimizado</div>
+                <div class="score-bar">
+                    <div class="score-bar-fill info" style="width: 75%"></div>
+                </div>
+            </div>
+            <div class="score-card">
+                <div class="score-value warning">3.2x</div>
+                <div class="score-label">Valor Percebido</div>
+                <div class="score-bar">
+                    <div class="score-bar-fill warning" style="width: 64%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-nexora" style="margin-top: var(--spacing-6);">
+            <h3 class="section-title"><i class="fas fa-lightbulb"></i> Sugestões de Otimização</h3>
+            
+            <div class="suggestion-card">
+                <div class="suggestion-header">
+                    <span class="suggestion-title">Adicionar Bônus de Urgência</span>
+                    <span class="suggestion-impact"><i class="fas fa-arrow-up"></i> +15% conversão</span>
+                </div>
+                <p class="suggestion-text">Incluir um bônus exclusivo para compras nas próximas 24h pode aumentar significativamente a taxa de conversão.</p>
+                <div class="suggestion-actions">
+                    <button class="action-btn primary"><i class="fas fa-check"></i> Aplicar</button>
+                    <button class="action-btn"><i class="fas fa-times"></i> Ignorar</button>
+                </div>
+            </div>
+
+            <div class="suggestion-card">
+                <div class="suggestion-header">
+                    <span class="suggestion-title">Ajustar Ancoragem de Preço</span>
+                    <span class="suggestion-impact"><i class="fas fa-arrow-up"></i> +8% conversão</span>
+                </div>
+                <p class="suggestion-text">Mostrar o preço original de R$ 497 antes do preço promocional aumenta a percepção de valor.</p>
+                <div class="suggestion-actions">
+                    <button class="action-btn primary"><i class="fas fa-check"></i> Aplicar</button>
+                    <button class="action-btn"><i class="fas fa-times"></i> Ignorar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Psicologia -->
+    <div class="hub-content" id="tab-psicologia">
+        <div class="hub-grid hub-grid-2">
+            <div class="card-nexora">
+                <h3 class="section-title"><i class="fas fa-heart-broken"></i> Medos Identificados</h3>
+                <div class="tag-list">
+                    <span class="tag danger"><i class="fas fa-exclamation-circle"></i> Perder dinheiro</span>
+                    <span class="tag danger"><i class="fas fa-exclamation-circle"></i> Não funcionar</span>
+                    <span class="tag warning"><i class="fas fa-exclamation-triangle"></i> Ser enganado</span>
+                    <span class="tag warning"><i class="fas fa-exclamation-triangle"></i> Complexidade</span>
+                </div>
+            </div>
+            <div class="card-nexora">
+                <h3 class="section-title"><i class="fas fa-star"></i> Desejos Identificados</h3>
+                <div class="tag-list">
+                    <span class="tag success"><i class="fas fa-check-circle"></i> Liberdade financeira</span>
+                    <span class="tag success"><i class="fas fa-check-circle"></i> Mais tempo livre</span>
+                    <span class="tag primary"><i class="fas fa-gem"></i> Status social</span>
+                    <span class="tag primary"><i class="fas fa-gem"></i> Reconhecimento</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-nexora" style="margin-top: var(--spacing-6);">
+            <h3 class="section-title"><i class="fas fa-user-friends"></i> Perfil Psicográfico</h3>
+            <ul class="info-list">
+                <li class="info-list-item">
+                    <span class="info-list-label">Nível de Consciência</span>
+                    <span class="info-list-value">Problem-Aware</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-list-label">Gatilho Principal</span>
+                    <span class="info-list-value">Escassez + Prova Social</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-list-label">Objeção Principal</span>
+                    <span class="info-list-value">"Será que funciona pra mim?"</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-list-label">Momento de Compra</span>
+                    <span class="info-list-value">Noite (20h-23h)</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tab Content: Criativos -->
+    <div class="hub-content" id="tab-criativos">
+        <div class="alert-box success">
+            <i class="fas fa-check-circle"></i>
+            <div class="alert-content">
+                <div class="alert-title">12 Criativos Ativos</div>
+                <div class="alert-text">3 criativos estão performando acima da média. Considere pausar os 2 com menor CTR.</div>
+            </div>
+        </div>
+
+        <div class="hub-grid hub-grid-3">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon"><i class="fas fa-image"></i></div>
+                    <span class="metric-trend up"><i class="fas fa-arrow-up"></i> 12%</span>
+                </div>
+                <div class="metric-value">3.2%</div>
+                <div class="metric-label">CTR Médio</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon"><i class="fas fa-video"></i></div>
+                    <span class="metric-trend up"><i class="fas fa-arrow-up"></i> 8%</span>
+                </div>
+                <div class="metric-value">45%</div>
+                <div class="metric-label">Hook Rate</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon"><i class="fas fa-trophy"></i></div>
+                    <span class="metric-trend down"><i class="fas fa-arrow-down"></i> 3%</span>
+                </div>
+                <div class="metric-value">2.1</div>
+                <div class="metric-label">Frequência</div>
+            </div>
+        </div>
+
+        <div class="card-nexora" style="margin-top: var(--spacing-6);">
+            <h3 class="section-title"><i class="fas fa-magic"></i> Gerar Novos Criativos</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-4);">
+                A IA pode gerar automaticamente variações dos seus melhores criativos.
+            </p>
+            <div class="hub-actions">
+                <button class="action-btn primary"><i class="fas fa-wand-magic-sparkles"></i> Gerar 5 Variações</button>
+                <button class="action-btn"><i class="fas fa-upload"></i> Upload Manual</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Simulações -->
+    <div class="hub-content" id="tab-simulacoes">
+        <div class="hub-grid hub-grid-3">
+            <div class="card-nexora" style="text-align: center;">
+                <h4 style="color: var(--text-secondary); margin-bottom: var(--spacing-2);">7 Dias</h4>
+                <div class="score-value info">R$ 4.850</div>
+                <div class="score-label">Receita Projetada</div>
+                <ul class="info-list" style="margin-top: var(--spacing-4);">
+                    <li class="info-list-item">
+                        <span class="info-list-label">Investimento</span>
+                        <span class="info-list-value">R$ 1.200</span>
+                    </li>
+                    <li class="info-list-item">
+                        <span class="info-list-label">ROAS</span>
+                        <span class="info-list-value">4.04x</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-nexora" style="text-align: center;">
+                <h4 style="color: var(--text-secondary); margin-bottom: var(--spacing-2);">14 Dias</h4>
+                <div class="score-value success">R$ 12.400</div>
+                <div class="score-label">Receita Projetada</div>
+                <ul class="info-list" style="margin-top: var(--spacing-4);">
+                    <li class="info-list-item">
+                        <span class="info-list-label">Investimento</span>
+                        <span class="info-list-value">R$ 2.800</span>
+                    </li>
+                    <li class="info-list-item">
+                        <span class="info-list-label">ROAS</span>
+                        <span class="info-list-value">4.43x</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-nexora" style="text-align: center;">
+                <h4 style="color: var(--text-secondary); margin-bottom: var(--spacing-2);">30 Dias</h4>
+                <div class="score-value warning">R$ 28.900</div>
+                <div class="score-label">Receita Projetada</div>
+                <ul class="info-list" style="margin-top: var(--spacing-4);">
+                    <li class="info-list-item">
+                        <span class="info-list-label">Investimento</span>
+                        <span class="info-list-value">R$ 6.500</span>
+                    </li>
+                    <li class="info-list-item">
+                        <span class="info-list-label">ROAS</span>
+                        <span class="info-list-value">4.45x</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="chart-container" style="margin-top: var(--spacing-6);">
+            <div class="chart-header">
+                <span class="chart-title">Projeção de Receita</span>
+                <div class="hub-actions">
+                    <button class="action-btn"><i class="fas fa-sliders-h"></i> Ajustar Parâmetros</button>
+                </div>
+            </div>
+            <div class="chart-canvas">
+                <canvas id="simulationChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Predição & Risco -->
+    <div class="hub-content" id="tab-predicao">
+        <div class="hub-grid hub-grid-2">
+            <div class="card-nexora">
+                <div class="progress-ring">
+                    <svg width="120" height="120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"></circle>
+                        <circle class="progress-ring-fill" cx="60" cy="60" r="52" 
+                                stroke-dasharray="326.7" stroke-dashoffset="65"></circle>
+                    </svg>
+                    <span class="progress-ring-value">80%</span>
+                </div>
+                <h3 style="text-align: center; color: var(--text-primary);">Probabilidade de Sucesso</h3>
+                <p style="text-align: center; color: var(--text-secondary); font-size: var(--text-sm);">
+                    Baseado em 1.247 campanhas similares
+                </p>
+            </div>
+            <div class="card-nexora">
+                <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> Riscos Identificados</h3>
+                <div class="alert-box warning" style="margin-bottom: var(--spacing-3);">
+                    <i class="fas fa-clock"></i>
+                    <div class="alert-content">
+                        <div class="alert-title">Fadiga de Criativo</div>
+                        <div class="alert-text">Frequência alta pode causar fadiga em 5 dias</div>
+                    </div>
+                </div>
+                <div class="alert-box danger">
+                    <i class="fas fa-dollar-sign"></i>
+                    <div class="alert-content">
+                        <div class="alert-title">CPA Crescente</div>
+                        <div class="alert-text">Tendência de aumento de 12% no CPA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Performance -->
+    <div class="hub-content" id="tab-performance">
+        <div class="hub-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon"><i class="fas fa-mouse-pointer"></i></div>
+                    <span class="metric-trend up"><i class="fas fa-arrow-up"></i> 15%</span>
+                </div>
+                <div class="metric-value">2,847</div>
+                <div class="metric-label">Cliques Hoje</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <span class="metric-trend up"><i class="fas fa-arrow-up"></i> 23%</span>
+                </div>
+                <div class="metric-value">47</div>
+                <div class="metric-label">Conversões Hoje</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <span class="metric-trend down"><i class="fas fa-arrow-down"></i> 5%</span>
+                </div>
+                <div class="metric-value">R$ 42,50</div>
+                <div class="metric-label">CPA</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                    <span class="metric-trend up"><i class="fas fa-arrow-up"></i> 18%</span>
+                </div>
+                <div class="metric-value">4.2x</div>
+                <div class="metric-label">ROAS</div>
+            </div>
+        </div>
+
+        <div class="chart-container" style="margin-top: var(--spacing-6);">
+            <div class="chart-header">
+                <span class="chart-title">Performance em Tempo Real</span>
+                <span style="color: var(--accent-success); font-size: var(--text-sm);">
+                    <i class="fas fa-circle"></i> Ao vivo
+                </span>
+            </div>
+            <div class="chart-canvas">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Otimizações IA -->
+    <div class="hub-content" id="tab-otimizacoes">
+        <div class="alert-box success">
+            <i class="fas fa-robot"></i>
+            <div class="alert-content">
+                <div class="alert-title">3 Otimizações Aplicadas Hoje</div>
+                <div class="alert-text">A IA fez ajustes automáticos que melhoraram o ROAS em 12%</div>
+            </div>
+        </div>
+
+        <div class="card-nexora">
+            <h3 class="section-title"><i class="fas fa-history"></i> Últimas Otimizações</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot success"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Há 2 horas</div>
+                        <div class="timeline-title">Ajuste de Lance</div>
+                        <div class="timeline-desc">Aumentou lance em 15% para público de alta conversão</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot success"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Há 5 horas</div>
+                        <div class="timeline-title">Pausa de Criativo</div>
+                        <div class="timeline-desc">Pausou criativo com CTR abaixo de 1%</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot warning"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Há 8 horas</div>
+                        <div class="timeline-title">Alerta de Orçamento</div>
+                        <div class="timeline-desc">Redistribuiu orçamento entre conjuntos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Auto-Escala -->
+    <div class="hub-content" id="tab-autoescala">
+        <div class="hub-grid hub-grid-2">
+            <div class="card-nexora">
+                <h3 class="section-title"><i class="fas fa-bullseye"></i> Meta Diária</h3>
+                <div class="score-value success" style="text-align: center;">R$ 5.000</div>
+                <div class="score-bar" style="margin-top: var(--spacing-4);">
+                    <div class="score-bar-fill success" style="width: 68%"></div>
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); margin-top: var(--spacing-2);">
+                    R$ 3.400 alcançados (68%)
+                </p>
+            </div>
+            <div class="card-nexora">
+                <h3 class="section-title"><i class="fas fa-cog"></i> Modo de Escala</h3>
+                <div class="tag-list" style="justify-content: center; margin-bottom: var(--spacing-4);">
+                    <span class="tag">Conservador</span>
+                    <span class="tag primary">Moderado</span>
+                    <span class="tag">Agressivo</span>
+                    <span class="tag danger">TURBO</span>
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); font-size: var(--text-sm);">
+                    Escala automática de até 20% ao dia
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Benchmark -->
+    <div class="hub-content" id="tab-benchmark">
+        <div class="card-nexora">
+            <h3 class="section-title"><i class="fas fa-chart-bar"></i> Comparação com Mercado</h3>
+            <ul class="info-list">
+                <li class="info-list-item">
+                    <span class="info-list-label">CTR</span>
+                    <span class="info-list-value" style="color: var(--accent-success);">3.2% (+45% acima)</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-list-label">CPA</span>
+                    <span class="info-list-value" style="color: var(--accent-success);">R$ 42,50 (-23% abaixo)</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-list-label">ROAS</span>
+                    <span class="info-list-value" style="color: var(--accent-success);">4.2x (+67% acima)</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-list-label">Taxa de Conversão</span>
+                    <span class="info-list-value" style="color: var(--accent-warning);">1.8% (+5% acima)</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tab Content: Compliance -->
+    <div class="hub-content" id="tab-compliance">
+        <div class="hub-grid hub-grid-2">
+            <div class="card-nexora">
+                <h3 class="section-title"><i class="fas fa-shield-alt"></i> Status de Compliance</h3>
+                <div class="alert-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="alert-content">
+                        <div class="alert-title">Conta Saudável</div>
+                        <div class="alert-text">Nenhuma violação detectada nos últimos 30 dias</div>
+                    </div>
+                </div>
+                <ul class="info-list">
+                    <li class="info-list-item">
+                        <span class="info-list-label">Saúde da Conta</span>
+                        <span class="info-list-value" style="color: var(--accent-success);">98%</span>
+                    </li>
+                    <li class="info-list-item">
+                        <span class="info-list-label">Risco de Ban</span>
+                        <span class="info-list-value" style="color: var(--accent-success);">Baixo</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-nexora">
+                <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> Alertas</h3>
+                <p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-8);">
+                    <i class="fas fa-check-circle" style="font-size: var(--text-3xl); color: var(--accent-success); display: block; margin-bottom: var(--spacing-4);"></i>
+                    Nenhum alerta ativo
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Histórico -->
+    <div class="hub-content" id="tab-historico">
+        <div class="card-nexora">
+            <h3 class="section-title"><i class="fas fa-history"></i> Histórico de Aprendizado</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot success"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Semana 4</div>
+                        <div class="timeline-title">Padrão Identificado</div>
+                        <div class="timeline-desc">Público feminino 25-34 converte 3x mais às quartas-feiras</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Semana 3</div>
+                        <div class="timeline-title">Criativo Vencedor</div>
+                        <div class="timeline-desc">Vídeo com depoimento teve 2x mais conversões</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Semana 2</div>
+                        <div class="timeline-title">Otimização de Copy</div>
+                        <div class="timeline-desc">Headline com número específico aumentou CTR em 25%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Logs IA -->
+    <div class="hub-content" id="tab-logs">
+        <div class="card-nexora">
+            <h3 class="section-title"><i class="fas fa-terminal"></i> Logs da IA</h3>
+            <div style="background-color: var(--bg-primary); border-radius: var(--radius-lg); padding: var(--spacing-4); font-family: var(--font-family-mono); font-size: var(--text-sm); color: var(--text-secondary); max-height: 400px; overflow-y: auto;">
+                <div style="margin-bottom: var(--spacing-2);">
+                    <span style="color: var(--accent-success);">[2026-01-22 16:30:15]</span> 
+                    <span style="color: var(--accent-info);">[INFO]</span> 
+                    Análise de performance iniciada
+                </div>
+                <div style="margin-bottom: var(--spacing-2);">
+                    <span style="color: var(--accent-success);">[2026-01-22 16:30:16]</span> 
+                    <span style="color: var(--accent-info);">[INFO]</span> 
+                    CTR atual: 3.2% | Meta: 2.5% | Status: ACIMA
+                </div>
+                <div style="margin-bottom: var(--spacing-2);">
+                    <span style="color: var(--accent-success);">[2026-01-22 16:30:17]</span> 
+                    <span style="color: var(--accent-warning);">[WARN]</span> 
+                    Frequência em 2.1 - monitorando fadiga
+                </div>
+                <div style="margin-bottom: var(--spacing-2);">
+                    <span style="color: var(--accent-success);">[2026-01-22 16:30:18]</span> 
+                    <span style="color: var(--accent-info);">[INFO]</span> 
+                    Decisão: Manter configuração atual
+                </div>
+                <div style="margin-bottom: var(--spacing-2);">
+                    <span style="color: var(--accent-success);">[2026-01-22 16:30:19]</span> 
+                    <span style="color: var(--accent-success);">[SUCCESS]</span> 
+                    Ciclo de otimização concluído
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tab Navigation
+document.querySelectorAll('.hub-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        // Remove active from all tabs
+        document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.hub-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active to clicked tab
+        this.classList.add('active');
+        const tabId = this.dataset.tab;
+        document.getElementById('tab-' + tabId).classList.add('active');
+    });
+});
+
+// Initialize Charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Simulation Chart
+    const simCtx = document.getElementById('simulationChart');
+    if (simCtx) {
+        new Chart(simCtx, {
+            type: 'line',
+            data: {
+                labels: ['Dia 1', 'Dia 7', 'Dia 14', 'Dia 21', 'Dia 30'],
+                datasets: [{
+                    label: 'Receita Projetada',
+                    data: [500, 4850, 12400, 20500, 28900],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#262626' },
+                        ticks: { color: '#A3A3A3' }
+                    },
+                    x: {
+                        grid: { color: '#262626' },
+                        ticks: { color: '#A3A3A3' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Performance Chart
+    const perfCtx = document.getElementById('performanceChart');
+    if (perfCtx) {
+        new Chart(perfCtx, {
+            type: 'line',
+            data: {
+                labels: ['00h', '04h', '08h', '12h', '16h', '20h'],
+                datasets: [{
+                    label: 'Conversões',
+                    data: [5, 8, 15, 22, 35, 47],
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Cliques',
+                    data: [120, 280, 650, 1200, 2100, 2847],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        labels: { color: '#A3A3A3' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#262626' },
+                        ticks: { color: '#A3A3A3' }
+                    },
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: { display: false },
+                        ticks: { color: '#A3A3A3' }
+                    },
+                    x: {
+                        grid: { color: '#262626' },
+                        ticks: { color: '#A3A3A3' }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

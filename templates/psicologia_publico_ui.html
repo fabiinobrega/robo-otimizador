@@ -1,0 +1,995 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Psicologia do Público - NEXORA{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ============================================
+       PSICOLOGIA DO PÚBLICO UI - DESIGN PREMIUM
+       ============================================ */
+    .psico-container {
+        padding: var(--spacing-6);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .psico-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .psico-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .psico-title h1 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .psico-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ec4899, #8b5cf6);
+        border-radius: var(--radius-xl);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    /* Persona Card */
+    .persona-card {
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: var(--spacing-6);
+        align-items: center;
+    }
+
+    @media (max-width: 768px) {
+        .persona-card {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+    }
+
+    .persona-avatar {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: var(--text-on-accent);
+    }
+
+    .persona-info h2 {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .persona-info p {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .persona-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+
+    .persona-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: var(--spacing-1) var(--spacing-3);
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .persona-stats {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+
+    .persona-stat {
+        text-align: center;
+        padding: var(--spacing-3) var(--spacing-4);
+        background-color: var(--bg-primary);
+        border-radius: var(--radius-lg);
+    }
+
+    .persona-stat-value {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .persona-stat-label {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    /* Grid Principal */
+    .psico-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    @media (max-width: 1024px) {
+        .psico-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Cards de Emoção */
+    .emotion-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+    }
+
+    .emotion-card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        margin-bottom: var(--spacing-4);
+        padding-bottom: var(--spacing-4);
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .emotion-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+        font-size: var(--text-xl);
+    }
+
+    .emotion-icon.fears {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+    }
+
+    .emotion-icon.desires {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .emotion-icon.objections {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .emotion-icon.triggers {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--accent-info);
+    }
+
+    .emotion-title {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .emotion-count {
+        margin-left: auto;
+        padding: var(--spacing-1) var(--spacing-2);
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+
+    /* Lista de Itens */
+    .emotion-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+
+    .emotion-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+        padding: var(--spacing-3);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+        transition: all var(--transition-fast);
+    }
+
+    .emotion-item:hover {
+        background-color: var(--fill-primary);
+    }
+
+    .emotion-item-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        font-size: var(--text-sm);
+        flex-shrink: 0;
+    }
+
+    .emotion-item-icon.fear {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+    }
+
+    .emotion-item-icon.desire {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .emotion-item-icon.objection {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .emotion-item-icon.trigger {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--accent-info);
+    }
+
+    .emotion-item-content {
+        flex: 1;
+    }
+
+    .emotion-item-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .emotion-item-desc {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .emotion-item-intensity {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .emotion-item-intensity.high {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+    }
+
+    .emotion-item-intensity.medium {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .emotion-item-intensity.low {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    /* Nível de Consciência */
+    .awareness-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .awareness-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .awareness-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .awareness-title i {
+        color: var(--accent-primary);
+    }
+
+    .awareness-stages {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        padding: 0 var(--spacing-4);
+    }
+
+    .awareness-stages::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 40px;
+        right: 40px;
+        height: 4px;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-full);
+    }
+
+    .awareness-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-2);
+        position: relative;
+        z-index: 1;
+    }
+
+    .awareness-stage-dot {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--fill-primary);
+        border: 3px solid var(--bg-secondary);
+        border-radius: var(--radius-full);
+        font-size: var(--text-sm);
+        color: var(--text-tertiary);
+        transition: all var(--transition-fast);
+    }
+
+    .awareness-stage.active .awareness-stage-dot {
+        background-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    .awareness-stage.completed .awareness-stage-dot {
+        background-color: var(--accent-success);
+        color: var(--text-on-accent);
+    }
+
+    .awareness-stage-label {
+        font-size: var(--text-xs);
+        font-weight: 500;
+        color: var(--text-tertiary);
+        text-align: center;
+        max-width: 80px;
+    }
+
+    .awareness-stage.active .awareness-stage-label,
+    .awareness-stage.completed .awareness-stage-label {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    /* Momento de Compra */
+    .timing-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .timing-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .timing-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .timing-title i {
+        color: var(--accent-warning);
+    }
+
+    .timing-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-4);
+    }
+
+    @media (max-width: 768px) {
+        .timing-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .timing-day {
+        text-align: center;
+        padding: var(--spacing-3);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+        transition: all var(--transition-fast);
+    }
+
+    .timing-day.hot {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1));
+        border: 1px solid var(--accent-warning);
+    }
+
+    .timing-day-name {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .timing-day-value {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .timing-day.hot .timing-day-value {
+        color: var(--accent-warning);
+    }
+
+    .timing-hours {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+    }
+
+    .timing-hour-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+        border-radius: var(--radius-lg);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    .timing-hour-info h4 {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .timing-hour-info p {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    /* Recomendações de Copy */
+    .copy-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+    }
+
+    .copy-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .copy-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .copy-title i {
+        color: var(--accent-success);
+    }
+
+    .copy-suggestions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    .copy-suggestion {
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-primary);
+        border-left: 4px solid var(--accent-primary);
+        border-radius: var(--radius-lg);
+    }
+
+    .copy-suggestion-type {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--accent-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .copy-suggestion-text {
+        font-size: var(--text-sm);
+        color: var(--text-primary);
+        font-style: italic;
+        margin-bottom: var(--spacing-3);
+    }
+
+    .copy-suggestion-reason {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .copy-suggestion-reason i {
+        color: var(--accent-info);
+    }
+
+    .copy-suggestion-actions {
+        display: flex;
+        gap: var(--spacing-2);
+        margin-top: var(--spacing-3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="psico-container">
+    <!-- Header -->
+    <div class="psico-header">
+        <div class="psico-title">
+            <div class="psico-title-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div>
+                <h1>Psicologia do Público</h1>
+                <p style="color: var(--text-secondary); font-size: var(--text-sm); margin: 0;">
+                    Mapeamento psicográfico profundo do seu público-alvo
+                </p>
+            </div>
+        </div>
+        <div class="hub-actions">
+            <button class="btn-nexora btn-nexora-secondary">
+                <i class="fas fa-download"></i> Exportar
+            </button>
+            <button class="btn-nexora btn-nexora-primary">
+                <i class="fas fa-sync-alt"></i> Reanalisar
+            </button>
+        </div>
+    </div>
+
+    <!-- Persona Principal -->
+    <div class="persona-card">
+        <div class="persona-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="persona-info">
+            <h2>Maria Empreendedora</h2>
+            <p>Mulher, 28-45 anos, empreendedora digital iniciante buscando escalar seu negócio online com tráfego pago.</p>
+            <div class="persona-tags">
+                <span class="persona-tag"><i class="fas fa-venus"></i> Feminino 68%</span>
+                <span class="persona-tag"><i class="fas fa-birthday-cake"></i> 28-45 anos</span>
+                <span class="persona-tag"><i class="fas fa-map-marker-alt"></i> SP, RJ, MG</span>
+                <span class="persona-tag"><i class="fas fa-dollar-sign"></i> R$ 3-8k/mês</span>
+                <span class="persona-tag"><i class="fas fa-mobile-alt"></i> Mobile 78%</span>
+            </div>
+        </div>
+        <div class="persona-stats">
+            <div class="persona-stat">
+                <div class="persona-stat-value">87%</div>
+                <div class="persona-stat-label">Match Score</div>
+            </div>
+            <div class="persona-stat">
+                <div class="persona-stat-value">4.2x</div>
+                <div class="persona-stat-label">ROAS Médio</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid de Emoções -->
+    <div class="psico-grid">
+        <!-- Medos -->
+        <div class="emotion-card">
+            <div class="emotion-card-header">
+                <div class="emotion-icon fears">
+                    <i class="fas fa-heart-broken"></i>
+                </div>
+                <span class="emotion-title">Medos Identificados</span>
+                <span class="emotion-count">5 medos</span>
+            </div>
+            <div class="emotion-list">
+                <div class="emotion-item">
+                    <div class="emotion-item-icon fear">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Perder dinheiro investido</div>
+                        <div class="emotion-item-desc">Medo de investir em tráfego e não ter retorno</div>
+                    </div>
+                    <span class="emotion-item-intensity high">Alta</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon fear">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Não conseguir resultados</div>
+                        <div class="emotion-item-desc">Receio de que o método não funcione para ela</div>
+                    </div>
+                    <span class="emotion-item-intensity high">Alta</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon fear">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Ser enganada</div>
+                        <div class="emotion-item-desc">Desconfiança de cursos e promessas</div>
+                    </div>
+                    <span class="emotion-item-intensity medium">Média</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon fear">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Complexidade técnica</div>
+                        <div class="emotion-item-desc">Medo de não entender a ferramenta</div>
+                    </div>
+                    <span class="emotion-item-intensity medium">Média</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desejos -->
+        <div class="emotion-card">
+            <div class="emotion-card-header">
+                <div class="emotion-icon desires">
+                    <i class="fas fa-star"></i>
+                </div>
+                <span class="emotion-title">Desejos Identificados</span>
+                <span class="emotion-count">5 desejos</span>
+            </div>
+            <div class="emotion-list">
+                <div class="emotion-item">
+                    <div class="emotion-item-icon desire">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Liberdade financeira</div>
+                        <div class="emotion-item-desc">Não depender de emprego CLT</div>
+                    </div>
+                    <span class="emotion-item-intensity high">Alta</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon desire">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Mais tempo com a família</div>
+                        <div class="emotion-item-desc">Flexibilidade de horários</div>
+                    </div>
+                    <span class="emotion-item-intensity high">Alta</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon desire">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Reconhecimento profissional</div>
+                        <div class="emotion-item-desc">Ser vista como especialista</div>
+                    </div>
+                    <span class="emotion-item-intensity medium">Média</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon desire">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Escalar o negócio</div>
+                        <div class="emotion-item-desc">Sair do 1 a 1 para 1 para muitos</div>
+                    </div>
+                    <span class="emotion-item-intensity high">Alta</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Objeções -->
+        <div class="emotion-card">
+            <div class="emotion-card-header">
+                <div class="emotion-icon objections">
+                    <i class="fas fa-hand-paper"></i>
+                </div>
+                <span class="emotion-title">Objeções Comuns</span>
+                <span class="emotion-count">4 objeções</span>
+            </div>
+            <div class="emotion-list">
+                <div class="emotion-item">
+                    <div class="emotion-item-icon objection">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">"Será que funciona pra mim?"</div>
+                        <div class="emotion-item-desc">Dúvida sobre aplicabilidade ao seu caso</div>
+                    </div>
+                    <span class="emotion-item-intensity high">Alta</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon objection">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">"Não tenho dinheiro agora"</div>
+                        <div class="emotion-item-desc">Objeção de preço/investimento</div>
+                    </div>
+                    <span class="emotion-item-intensity high">Alta</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon objection">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">"Preciso falar com meu marido"</div>
+                        <div class="emotion-item-desc">Decisão compartilhada</div>
+                    </div>
+                    <span class="emotion-item-intensity medium">Média</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon objection">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">"Vou pensar e volto depois"</div>
+                        <div class="emotion-item-desc">Procrastinação/indecisão</div>
+                    </div>
+                    <span class="emotion-item-intensity medium">Média</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gatilhos -->
+        <div class="emotion-card">
+            <div class="emotion-card-header">
+                <div class="emotion-icon triggers">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <span class="emotion-title">Gatilhos Efetivos</span>
+                <span class="emotion-count">4 gatilhos</span>
+            </div>
+            <div class="emotion-list">
+                <div class="emotion-item">
+                    <div class="emotion-item-icon trigger">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Escassez</div>
+                        <div class="emotion-item-desc">"Últimas vagas", "Oferta por tempo limitado"</div>
+                    </div>
+                    <span class="emotion-item-intensity high">95%</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon trigger">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Prova Social</div>
+                        <div class="emotion-item-desc">Depoimentos, números de alunos</div>
+                    </div>
+                    <span class="emotion-item-intensity high">92%</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon trigger">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Autoridade</div>
+                        <div class="emotion-item-desc">Resultados comprovados, credenciais</div>
+                    </div>
+                    <span class="emotion-item-intensity medium">85%</span>
+                </div>
+                <div class="emotion-item">
+                    <div class="emotion-item-icon trigger">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="emotion-item-content">
+                        <div class="emotion-item-title">Reciprocidade</div>
+                        <div class="emotion-item-desc">Conteúdo gratuito de valor</div>
+                    </div>
+                    <span class="emotion-item-intensity medium">78%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nível de Consciência -->
+    <div class="awareness-section">
+        <div class="awareness-header">
+            <div class="awareness-title">
+                <i class="fas fa-layer-group"></i> Nível de Consciência do Público
+            </div>
+        </div>
+        <div class="awareness-stages">
+            <div class="awareness-stage completed">
+                <div class="awareness-stage-dot"><i class="fas fa-check"></i></div>
+                <span class="awareness-stage-label">Unaware</span>
+            </div>
+            <div class="awareness-stage completed">
+                <div class="awareness-stage-dot"><i class="fas fa-check"></i></div>
+                <span class="awareness-stage-label">Problem Aware</span>
+            </div>
+            <div class="awareness-stage active">
+                <div class="awareness-stage-dot"><i class="fas fa-circle"></i></div>
+                <span class="awareness-stage-label">Solution Aware</span>
+            </div>
+            <div class="awareness-stage">
+                <div class="awareness-stage-dot">4</div>
+                <span class="awareness-stage-label">Product Aware</span>
+            </div>
+            <div class="awareness-stage">
+                <div class="awareness-stage-dot">5</div>
+                <span class="awareness-stage-label">Most Aware</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Momento de Compra -->
+    <div class="timing-section">
+        <div class="timing-header">
+            <div class="timing-title">
+                <i class="fas fa-clock"></i> Melhor Momento de Compra
+            </div>
+        </div>
+        <div class="timing-grid">
+            <div class="timing-day">
+                <div class="timing-day-name">DOM</div>
+                <div class="timing-day-value">12%</div>
+            </div>
+            <div class="timing-day">
+                <div class="timing-day-name">SEG</div>
+                <div class="timing-day-value">15%</div>
+            </div>
+            <div class="timing-day">
+                <div class="timing-day-name">TER</div>
+                <div class="timing-day-value">14%</div>
+            </div>
+            <div class="timing-day hot">
+                <div class="timing-day-name">QUA</div>
+                <div class="timing-day-value">18%</div>
+            </div>
+            <div class="timing-day hot">
+                <div class="timing-day-name">QUI</div>
+                <div class="timing-day-value">19%</div>
+            </div>
+            <div class="timing-day">
+                <div class="timing-day-name">SEX</div>
+                <div class="timing-day-value">13%</div>
+            </div>
+            <div class="timing-day">
+                <div class="timing-day-name">SAB</div>
+                <div class="timing-day-value">9%</div>
+            </div>
+        </div>
+        <div class="timing-hours">
+            <div class="timing-hour-icon">
+                <i class="fas fa-moon"></i>
+            </div>
+            <div class="timing-hour-info">
+                <h4>Horário Ideal: 20h - 23h</h4>
+                <p>78% das conversões acontecem neste período. Agende seus anúncios para este horário.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recomendações de Copy -->
+    <div class="copy-section">
+        <div class="copy-header">
+            <div class="copy-title">
+                <i class="fas fa-pen-fancy"></i> Recomendações de Copy
+            </div>
+        </div>
+        <div class="copy-suggestions">
+            <div class="copy-suggestion">
+                <div class="copy-suggestion-type">Headline Principal</div>
+                <div class="copy-suggestion-text">
+                    "Descubra como empreendedoras estão faturando R$ 10k/mês com tráfego pago (mesmo começando do zero)"
+                </div>
+                <div class="copy-suggestion-reason">
+                    <i class="fas fa-lightbulb"></i>
+                    Combina prova social + resultado específico + quebra de objeção
+                </div>
+                <div class="copy-suggestion-actions">
+                    <button class="btn-nexora btn-nexora-primary btn-sm">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn-nexora btn-nexora-secondary btn-sm">
+                        <i class="fas fa-magic"></i> Gerar Variações
+                    </button>
+                </div>
+            </div>
+            <div class="copy-suggestion">
+                <div class="copy-suggestion-type">Quebra de Objeção</div>
+                <div class="copy-suggestion-text">
+                    "Funciona mesmo se você nunca fez um anúncio na vida. Nosso método passo a passo foi criado para iniciantes."
+                </div>
+                <div class="copy-suggestion-reason">
+                    <i class="fas fa-lightbulb"></i>
+                    Endereça diretamente o medo de complexidade técnica
+                </div>
+                <div class="copy-suggestion-actions">
+                    <button class="btn-nexora btn-nexora-primary btn-sm">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn-nexora btn-nexora-secondary btn-sm">
+                        <i class="fas fa-magic"></i> Gerar Variações
+                    </button>
+                </div>
+            </div>
+            <div class="copy-suggestion">
+                <div class="copy-suggestion-type">CTA com Urgência</div>
+                <div class="copy-suggestion-text">
+                    "Garanta sua vaga agora - apenas 23 vagas restantes com bônus exclusivo"
+                </div>
+                <div class="copy-suggestion-reason">
+                    <i class="fas fa-lightbulb"></i>
+                    Gatilho de escassez + reciprocidade (bônus)
+                </div>
+                <div class="copy-suggestion-actions">
+                    <button class="btn-nexora btn-nexora-primary btn-sm">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn-nexora btn-nexora-secondary btn-sm">
+                        <i class="fas fa-magic"></i> Gerar Variações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

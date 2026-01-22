@@ -1,0 +1,966 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Auto-Otimização & Logs - NEXORA{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ============================================
+       AUTO-OTIMIZAÇÃO & LOGS UI - DESIGN PREMIUM
+       ============================================ */
+    .otimizacao-container {
+        padding: var(--spacing-6);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .otimizacao-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .otimizacao-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .otimizacao-title h1 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .otimizacao-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        border-radius: var(--radius-xl);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    /* Status Cards */
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .status-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-5);
+        text-align: center;
+    }
+
+    .status-card-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto var(--spacing-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+        font-size: var(--text-xl);
+    }
+
+    .status-card-icon.active {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .status-card-icon.paused {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .status-card-icon.info {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--accent-info);
+    }
+
+    .status-card-value {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .status-card-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    /* AI Status */
+    .ai-status {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1));
+        border: 1px solid var(--accent-success);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    @media (max-width: 768px) {
+        .ai-status {
+            flex-direction: column;
+            gap: var(--spacing-4);
+            text-align: center;
+        }
+    }
+
+    .ai-status-info {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+    }
+
+    .ai-status-icon {
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--accent-success), #4ade80);
+        border-radius: var(--radius-xl);
+        color: var(--text-on-accent);
+        font-size: var(--text-2xl);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .ai-status-text h3 {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .ai-status-text p {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .ai-status-actions {
+        display: flex;
+        gap: var(--spacing-3);
+    }
+
+    /* Optimization Rules */
+    .rules-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .rules-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .rules-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .rules-title i {
+        color: var(--accent-primary);
+    }
+
+    .rules-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+
+    .rule-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+    }
+
+    .rule-toggle {
+        position: relative;
+        width: 48px;
+        height: 24px;
+        background-color: var(--fill-secondary);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .rule-toggle.active {
+        background-color: var(--accent-success);
+    }
+
+    .rule-toggle::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: var(--radius-full);
+        transition: all var(--transition-fast);
+    }
+
+    .rule-toggle.active::after {
+        left: 26px;
+    }
+
+    .rule-content {
+        flex: 1;
+    }
+
+    .rule-name {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .rule-desc {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .rule-stats {
+        display: flex;
+        gap: var(--spacing-4);
+    }
+
+    .rule-stat {
+        text-align: center;
+    }
+
+    .rule-stat-value {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--accent-success);
+    }
+
+    .rule-stat-label {
+        font-size: 10px;
+        color: var(--text-tertiary);
+    }
+
+    .rule-actions {
+        display: flex;
+        gap: var(--spacing-2);
+    }
+
+    .rule-action-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .rule-action-btn:hover {
+        background-color: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    /* Logs Section */
+    .logs-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .logs-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .logs-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .logs-title i {
+        color: var(--accent-info);
+    }
+
+    .logs-filters {
+        display: flex;
+        gap: var(--spacing-2);
+    }
+
+    .log-filter-btn {
+        padding: var(--spacing-2) var(--spacing-3);
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        font-size: var(--text-xs);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .log-filter-btn.active {
+        background-color: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    .logs-container {
+        max-height: 400px;
+        overflow-y: auto;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-4);
+    }
+
+    .log-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+        padding: var(--spacing-3);
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .log-item:last-child {
+        border-bottom: none;
+    }
+
+    .log-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        flex-shrink: 0;
+    }
+
+    .log-icon.success {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .log-icon.warning {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .log-icon.info {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--accent-info);
+    }
+
+    .log-icon.error {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+    }
+
+    .log-content {
+        flex: 1;
+    }
+
+    .log-message {
+        font-size: var(--text-sm);
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .log-details {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .log-time {
+        font-size: var(--text-xs);
+        color: var(--text-tertiary);
+        white-space: nowrap;
+    }
+
+    /* Recent Actions */
+    .actions-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .actions-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .actions-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .actions-title i {
+        color: var(--accent-warning);
+    }
+
+    .actions-timeline {
+        position: relative;
+        padding-left: var(--spacing-8);
+    }
+
+    .actions-timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--border-primary);
+    }
+
+    .action-item {
+        position: relative;
+        padding-bottom: var(--spacing-4);
+    }
+
+    .action-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .action-dot {
+        position: absolute;
+        left: -25px;
+        top: 4px;
+        width: 12px;
+        height: 12px;
+        border-radius: var(--radius-full);
+        border: 2px solid var(--bg-secondary);
+    }
+
+    .action-dot.success { background-color: var(--accent-success); }
+    .action-dot.warning { background-color: var(--accent-warning); }
+    .action-dot.info { background-color: var(--accent-info); }
+    .action-dot.error { background-color: var(--accent-danger); }
+
+    .action-content {
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-4);
+    }
+
+    .action-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .action-type {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .action-type i {
+        color: var(--accent-primary);
+    }
+
+    .action-time {
+        font-size: var(--text-xs);
+        color: var(--text-tertiary);
+    }
+
+    .action-desc {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .action-impact {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: 2px 8px;
+        background-color: rgba(34, 197, 94, 0.1);
+        border-radius: var(--radius-full);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--accent-success);
+    }
+
+    /* Performance Impact */
+    .impact-section {
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+    }
+
+    .impact-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .impact-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .impact-title i {
+        color: var(--accent-success);
+    }
+
+    .impact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-4);
+    }
+
+    .impact-card {
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-4);
+        text-align: center;
+    }
+
+    .impact-card-label {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .impact-card-value {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        margin-bottom: var(--spacing-1);
+    }
+
+    .impact-card-value.positive { color: var(--accent-success); }
+    .impact-card-value.negative { color: var(--accent-danger); }
+
+    .impact-card-change {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-1);
+        font-size: var(--text-xs);
+        font-weight: 600;
+    }
+
+    .impact-card-change.up { color: var(--accent-success); }
+    .impact-card-change.down { color: var(--accent-danger); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="otimizacao-container">
+    <!-- Header -->
+    <div class="otimizacao-header">
+        <div class="otimizacao-title">
+            <div class="otimizacao-title-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div>
+                <h1>Auto-Otimização & Logs</h1>
+                <p style="color: var(--text-secondary); font-size: var(--text-sm); margin: 0;">
+                    Otimização automática com IA e histórico de ações
+                </p>
+            </div>
+        </div>
+        <div class="hub-actions">
+            <button class="btn-nexora btn-nexora-secondary">
+                <i class="fas fa-download"></i> Exportar Logs
+            </button>
+            <button class="btn-nexora btn-nexora-primary">
+                <i class="fas fa-plus"></i> Nova Regra
+            </button>
+        </div>
+    </div>
+
+    <!-- Status Cards -->
+    <div class="status-grid">
+        <div class="status-card">
+            <div class="status-card-icon active">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="status-card-value">12</div>
+            <div class="status-card-label">Regras Ativas</div>
+        </div>
+        <div class="status-card">
+            <div class="status-card-icon info">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="status-card-value">847</div>
+            <div class="status-card-label">Ações Executadas</div>
+        </div>
+        <div class="status-card">
+            <div class="status-card-icon active">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="status-card-value">R$ 12.4k</div>
+            <div class="status-card-label">Economia Gerada</div>
+        </div>
+        <div class="status-card">
+            <div class="status-card-icon info">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="status-card-value">+34%</div>
+            <div class="status-card-label">Melhoria ROAS</div>
+        </div>
+    </div>
+
+    <!-- AI Status -->
+    <div class="ai-status">
+        <div class="ai-status-info">
+            <div class="ai-status-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="ai-status-text">
+                <h3>IA de Otimização Ativa</h3>
+                <p>Monitorando 23 campanhas em tempo real • Última ação há 3 minutos</p>
+            </div>
+        </div>
+        <div class="ai-status-actions">
+            <button class="btn-nexora btn-nexora-secondary">
+                <i class="fas fa-pause"></i> Pausar IA
+            </button>
+            <button class="btn-nexora btn-nexora-primary">
+                <i class="fas fa-cog"></i> Configurar
+            </button>
+        </div>
+    </div>
+
+    <!-- Optimization Rules -->
+    <div class="rules-section">
+        <div class="rules-header">
+            <div class="rules-title">
+                <i class="fas fa-list-check"></i> Regras de Otimização
+            </div>
+            <button class="btn-nexora btn-nexora-secondary btn-sm">
+                <i class="fas fa-plus"></i> Adicionar Regra
+            </button>
+        </div>
+        <div class="rules-list">
+            <div class="rule-item">
+                <div class="rule-toggle active" onclick="this.classList.toggle('active')"></div>
+                <div class="rule-content">
+                    <div class="rule-name">Pausar Anúncios com CPA Alto</div>
+                    <div class="rule-desc">Pausa automaticamente anúncios com CPA 50% acima da meta</div>
+                </div>
+                <div class="rule-stats">
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">127</div>
+                        <div class="rule-stat-label">Execuções</div>
+                    </div>
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">R$ 4.2k</div>
+                        <div class="rule-stat-label">Economia</div>
+                    </div>
+                </div>
+                <div class="rule-actions">
+                    <button class="rule-action-btn"><i class="fas fa-edit"></i></button>
+                    <button class="rule-action-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="rule-item">
+                <div class="rule-toggle active" onclick="this.classList.toggle('active')"></div>
+                <div class="rule-content">
+                    <div class="rule-name">Escalar Anúncios Vencedores</div>
+                    <div class="rule-desc">Aumenta budget em 20% para anúncios com ROAS > 3x por 3 dias</div>
+                </div>
+                <div class="rule-stats">
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">45</div>
+                        <div class="rule-stat-label">Execuções</div>
+                    </div>
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">+R$ 8.7k</div>
+                        <div class="rule-stat-label">Receita</div>
+                    </div>
+                </div>
+                <div class="rule-actions">
+                    <button class="rule-action-btn"><i class="fas fa-edit"></i></button>
+                    <button class="rule-action-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="rule-item">
+                <div class="rule-toggle active" onclick="this.classList.toggle('active')"></div>
+                <div class="rule-content">
+                    <div class="rule-name">Rotacionar Criativos Fadigados</div>
+                    <div class="rule-desc">Substitui criativos com CTR caindo 30% em 7 dias</div>
+                </div>
+                <div class="rule-stats">
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">23</div>
+                        <div class="rule-stat-label">Execuções</div>
+                    </div>
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">+15%</div>
+                        <div class="rule-stat-label">CTR</div>
+                    </div>
+                </div>
+                <div class="rule-actions">
+                    <button class="rule-action-btn"><i class="fas fa-edit"></i></button>
+                    <button class="rule-action-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="rule-item">
+                <div class="rule-toggle" onclick="this.classList.toggle('active')"></div>
+                <div class="rule-content">
+                    <div class="rule-name">Ajuste de Horário Automático</div>
+                    <div class="rule-desc">Concentra budget nos horários de melhor performance</div>
+                </div>
+                <div class="rule-stats">
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">0</div>
+                        <div class="rule-stat-label">Execuções</div>
+                    </div>
+                    <div class="rule-stat">
+                        <div class="rule-stat-value">-</div>
+                        <div class="rule-stat-label">Impacto</div>
+                    </div>
+                </div>
+                <div class="rule-actions">
+                    <button class="rule-action-btn"><i class="fas fa-edit"></i></button>
+                    <button class="rule-action-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Actions Timeline -->
+    <div class="actions-section">
+        <div class="actions-header">
+            <div class="actions-title">
+                <i class="fas fa-history"></i> Ações Recentes da IA
+            </div>
+            <button class="btn-nexora btn-nexora-secondary btn-sm">
+                <i class="fas fa-external-link-alt"></i> Ver Todas
+            </button>
+        </div>
+        <div class="actions-timeline">
+            <div class="action-item">
+                <div class="action-dot success"></div>
+                <div class="action-content">
+                    <div class="action-header">
+                        <div class="action-type">
+                            <i class="fas fa-arrow-up"></i> Budget Aumentado
+                        </div>
+                        <span class="action-time">Há 3 minutos</span>
+                    </div>
+                    <div class="action-desc">
+                        Campanha "Lançamento_Produto_X" teve budget aumentado de R$ 100 para R$ 120 (+20%)
+                    </div>
+                    <span class="action-impact"><i class="fas fa-arrow-up"></i> ROAS 4.2x mantido</span>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-dot warning"></div>
+                <div class="action-content">
+                    <div class="action-header">
+                        <div class="action-type">
+                            <i class="fas fa-pause"></i> Anúncio Pausado
+                        </div>
+                        <span class="action-time">Há 15 minutos</span>
+                    </div>
+                    <div class="action-desc">
+                        Anúncio "Video_Depoimento_v2" pausado por CPA R$ 85 (meta: R$ 50)
+                    </div>
+                    <span class="action-impact"><i class="fas fa-shield-alt"></i> R$ 340 economizados</span>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-dot info"></div>
+                <div class="action-content">
+                    <div class="action-header">
+                        <div class="action-type">
+                            <i class="fas fa-sync-alt"></i> Criativo Rotacionado
+                        </div>
+                        <span class="action-time">Há 1 hora</span>
+                    </div>
+                    <div class="action-desc">
+                        Criativo "Static_Oferta_v1" substituído por "Static_Oferta_v3" devido à fadiga
+                    </div>
+                    <span class="action-impact"><i class="fas fa-arrow-up"></i> CTR +18% esperado</span>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-dot success"></div>
+                <div class="action-content">
+                    <div class="action-header">
+                        <div class="action-type">
+                            <i class="fas fa-users"></i> Público Expandido
+                        </div>
+                        <span class="action-time">Há 2 horas</span>
+                    </div>
+                    <div class="action-desc">
+                        Lookalike 1% expandido para 3% na campanha "Remarketing_Carrinho"
+                    </div>
+                    <span class="action-impact"><i class="fas fa-arrow-up"></i> Alcance +150%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Section -->
+    <div class="logs-section">
+        <div class="logs-header">
+            <div class="logs-title">
+                <i class="fas fa-terminal"></i> Logs do Sistema
+            </div>
+            <div class="logs-filters">
+                <button class="log-filter-btn active">Todos</button>
+                <button class="log-filter-btn">Sucesso</button>
+                <button class="log-filter-btn">Avisos</button>
+                <button class="log-filter-btn">Erros</button>
+            </div>
+        </div>
+        <div class="logs-container">
+            <div class="log-item">
+                <div class="log-icon success"><i class="fas fa-check"></i></div>
+                <div class="log-content">
+                    <div class="log-message">Regra "Pausar CPA Alto" executada com sucesso</div>
+                    <div class="log-details">Campanha: Lançamento_Produto_X • Anúncio: Video_Depoimento_v2</div>
+                </div>
+                <span class="log-time">14:32:15</span>
+            </div>
+            <div class="log-item">
+                <div class="log-icon info"><i class="fas fa-info"></i></div>
+                <div class="log-content">
+                    <div class="log-message">Análise de performance iniciada</div>
+                    <div class="log-details">23 campanhas • 87 anúncios • 12 conjuntos</div>
+                </div>
+                <span class="log-time">14:30:00</span>
+            </div>
+            <div class="log-item">
+                <div class="log-icon warning"><i class="fas fa-exclamation"></i></div>
+                <div class="log-content">
+                    <div class="log-message">Alerta de saturação de público detectado</div>
+                    <div class="log-details">Campanha: Remarketing_Carrinho • Frequência: 4.2</div>
+                </div>
+                <span class="log-time">14:28:45</span>
+            </div>
+            <div class="log-item">
+                <div class="log-icon success"><i class="fas fa-check"></i></div>
+                <div class="log-content">
+                    <div class="log-message">Budget ajustado automaticamente</div>
+                    <div class="log-details">Campanha: Lançamento_Produto_X • R$ 100 → R$ 120</div>
+                </div>
+                <span class="log-time">14:25:30</span>
+            </div>
+            <div class="log-item">
+                <div class="log-icon error"><i class="fas fa-times"></i></div>
+                <div class="log-content">
+                    <div class="log-message">Falha ao conectar com API do Facebook</div>
+                    <div class="log-details">Erro: Rate limit exceeded • Retry em 60s</div>
+                </div>
+                <span class="log-time">14:20:12</span>
+            </div>
+            <div class="log-item">
+                <div class="log-icon success"><i class="fas fa-check"></i></div>
+                <div class="log-content">
+                    <div class="log-message">Conexão com API restabelecida</div>
+                    <div class="log-details">Latência: 145ms • Status: OK</div>
+                </div>
+                <span class="log-time">14:21:15</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Impact -->
+    <div class="impact-section">
+        <div class="impact-header">
+            <div class="impact-title">
+                <i class="fas fa-chart-bar"></i> Impacto da Auto-Otimização (30 dias)
+            </div>
+        </div>
+        <div class="impact-grid">
+            <div class="impact-card">
+                <div class="impact-card-label">ROAS Médio</div>
+                <div class="impact-card-value positive">4.2x</div>
+                <div class="impact-card-change up">
+                    <i class="fas fa-arrow-up"></i> +34% vs manual
+                </div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-card-label">CPA Médio</div>
+                <div class="impact-card-value positive">R$ 32</div>
+                <div class="impact-card-change up">
+                    <i class="fas fa-arrow-down"></i> -28% vs manual
+                </div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-card-label">Economia Total</div>
+                <div class="impact-card-value positive">R$ 12.4k</div>
+                <div class="impact-card-change up">
+                    <i class="fas fa-arrow-up"></i> Budget otimizado
+                </div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-card-label">Tempo Economizado</div>
+                <div class="impact-card-value positive">47h</div>
+                <div class="impact-card-change up">
+                    <i class="fas fa-arrow-up"></i> Automação
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

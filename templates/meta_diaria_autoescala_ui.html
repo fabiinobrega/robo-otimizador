@@ -1,0 +1,976 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Meta Diária & Auto-Escala - NEXORA{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ============================================
+       META DIÁRIA & AUTO-ESCALA UI - DESIGN PREMIUM
+       ============================================ */
+    .meta-container {
+        padding: var(--spacing-6);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .meta-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .meta-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .meta-title h1 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .meta-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        border-radius: var(--radius-xl);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    /* Daily Goal Section */
+    .goal-section {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(239, 68, 68, 0.1));
+        border: 1px solid var(--accent-warning);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-8);
+        margin-bottom: var(--spacing-6);
+        text-align: center;
+    }
+
+    .goal-progress-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .goal-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .goal-value {
+        font-size: var(--text-5xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .goal-target {
+        font-size: var(--text-lg);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .goal-progress-bar {
+        height: 24px;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+        margin-bottom: var(--spacing-4);
+        position: relative;
+    }
+
+    .goal-progress-fill {
+        height: 100%;
+        border-radius: var(--radius-full);
+        transition: width 1s ease;
+        position: relative;
+    }
+
+    .goal-progress-fill.on-track {
+        background: linear-gradient(90deg, var(--accent-success), #4ade80);
+    }
+
+    .goal-progress-fill.behind {
+        background: linear-gradient(90deg, var(--accent-warning), #fbbf24);
+    }
+
+    .goal-progress-fill.critical {
+        background: linear-gradient(90deg, var(--accent-danger), #f87171);
+    }
+
+    .goal-progress-text {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--text-on-accent);
+    }
+
+    .goal-stats {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-8);
+    }
+
+    .goal-stat {
+        text-align: center;
+    }
+
+    .goal-stat-value {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .goal-stat-value.success { color: var(--accent-success); }
+    .goal-stat-value.warning { color: var(--accent-warning); }
+
+    .goal-stat-label {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    /* Scale Mode Selector */
+    .scale-mode-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .scale-mode-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .scale-mode-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .scale-mode-title i {
+        color: var(--accent-warning);
+    }
+
+    .scale-modes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-4);
+    }
+
+    .scale-mode-card {
+        padding: var(--spacing-5);
+        background-color: var(--bg-tertiary);
+        border: 2px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .scale-mode-card:hover {
+        border-color: var(--accent-primary);
+    }
+
+    .scale-mode-card.active {
+        border-color: var(--accent-primary);
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.1));
+    }
+
+    .scale-mode-card.active.conservador {
+        border-color: var(--accent-success);
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1));
+    }
+
+    .scale-mode-card.active.moderado {
+        border-color: var(--accent-info);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1));
+    }
+
+    .scale-mode-card.active.agressivo {
+        border-color: var(--accent-warning);
+        background: linear-gradient(135deg, rgba(249, 115, 22, 0.05), rgba(249, 115, 22, 0.1));
+    }
+
+    .scale-mode-card.active.turbo {
+        border-color: var(--accent-danger);
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.1));
+    }
+
+    .scale-mode-icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--spacing-3);
+        font-size: var(--text-xl);
+    }
+
+    .scale-mode-card.conservador .scale-mode-icon {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .scale-mode-card.moderado .scale-mode-icon {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--accent-info);
+    }
+
+    .scale-mode-card.agressivo .scale-mode-icon {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .scale-mode-card.turbo .scale-mode-icon {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1));
+        color: var(--accent-danger);
+    }
+
+    .scale-mode-name {
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .scale-mode-desc {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .scale-mode-specs {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+
+    .scale-mode-spec {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-xs);
+        color: var(--text-tertiary);
+    }
+
+    .scale-mode-spec i {
+        width: 16px;
+        color: var(--accent-primary);
+    }
+
+    /* Auto-Scale Settings */
+    .autoscale-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .autoscale-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .autoscale-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .autoscale-title i {
+        color: var(--accent-success);
+    }
+
+    .autoscale-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .autoscale-toggle-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 56px;
+        height: 28px;
+        background-color: var(--fill-secondary);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .toggle-switch.active {
+        background-color: var(--accent-success);
+    }
+
+    .toggle-switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 24px;
+        height: 24px;
+        background-color: white;
+        border-radius: var(--radius-full);
+        transition: all var(--transition-fast);
+    }
+
+    .toggle-switch.active::after {
+        left: 30px;
+    }
+
+    .autoscale-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-6);
+    }
+
+    .autoscale-card {
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-5);
+    }
+
+    .autoscale-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .autoscale-card-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .autoscale-card-status {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .autoscale-card-status.active {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .autoscale-card-status.inactive {
+        background-color: rgba(107, 114, 128, 0.1);
+        color: var(--text-tertiary);
+    }
+
+    .autoscale-slider {
+        margin-bottom: var(--spacing-4);
+    }
+
+    .autoscale-slider-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .autoscale-slider-label {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .autoscale-slider-value {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--accent-primary);
+    }
+
+    .autoscale-slider input[type="range"] {
+        width: 100%;
+        height: 8px;
+        -webkit-appearance: none;
+        background: var(--fill-primary);
+        border-radius: var(--radius-full);
+        outline: none;
+    }
+
+    .autoscale-slider input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        background: var(--accent-primary);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+    }
+
+    .autoscale-card-desc {
+        font-size: var(--text-xs);
+        color: var(--text-tertiary);
+    }
+
+    /* Campaigns Grid */
+    .campaigns-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .campaigns-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .campaigns-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .campaigns-title i {
+        color: var(--accent-info);
+    }
+
+    .campaign-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .campaign-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .campaign-status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+    }
+
+    .campaign-status-dot.active { background-color: var(--accent-success); }
+    .campaign-status-dot.scaling { background-color: var(--accent-warning); animation: pulse 1s infinite; }
+    .campaign-status-dot.paused { background-color: var(--text-tertiary); }
+
+    .campaign-info {
+        flex: 1;
+    }
+
+    .campaign-name {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .campaign-meta {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .campaign-metrics {
+        display: flex;
+        gap: var(--spacing-6);
+    }
+
+    .campaign-metric {
+        text-align: center;
+    }
+
+    .campaign-metric-value {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .campaign-metric-value.success { color: var(--accent-success); }
+
+    .campaign-metric-label {
+        font-size: 10px;
+        color: var(--text-tertiary);
+    }
+
+    .campaign-scale-action {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .scale-badge {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--radius-md);
+        font-size: var(--text-xs);
+        font-weight: 600;
+    }
+
+    .scale-badge.up {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .scale-badge.down {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+    }
+
+    .scale-badge.hold {
+        background-color: rgba(107, 114, 128, 0.1);
+        color: var(--text-tertiary);
+    }
+
+    /* Schedule Section */
+    .schedule-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+    }
+
+    .schedule-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .schedule-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .schedule-title i {
+        color: var(--accent-primary);
+    }
+
+    .schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(24, 1fr);
+        gap: 2px;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .schedule-hour {
+        height: 40px;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .schedule-hour.active {
+        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+        color: var(--text-on-accent);
+    }
+
+    .schedule-hour.peak {
+        background: linear-gradient(135deg, var(--accent-success), #4ade80);
+        color: var(--text-on-accent);
+    }
+
+    .schedule-legend {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-6);
+    }
+
+    .schedule-legend-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .schedule-legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: var(--radius-sm);
+    }
+
+    .schedule-legend-dot.active {
+        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+    }
+
+    .schedule-legend-dot.peak {
+        background: linear-gradient(135deg, var(--accent-success), #4ade80);
+    }
+
+    .schedule-legend-dot.inactive {
+        background-color: var(--fill-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="meta-container">
+    <!-- Header -->
+    <div class="meta-header">
+        <div class="meta-title">
+            <div class="meta-title-icon">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <div>
+                <h1>Meta Diária & Auto-Escala</h1>
+                <p style="color: var(--text-secondary); font-size: var(--text-sm); margin: 0;">
+                    Defina metas e escale automaticamente
+                </p>
+            </div>
+        </div>
+        <div class="hub-actions">
+            <button class="btn-nexora btn-nexora-secondary">
+                <i class="fas fa-history"></i> Histórico
+            </button>
+            <button class="btn-nexora btn-nexora-primary">
+                <i class="fas fa-save"></i> Salvar Config
+            </button>
+        </div>
+    </div>
+
+    <!-- Daily Goal Section -->
+    <div class="goal-section">
+        <div class="goal-progress-container">
+            <div class="goal-label">Progresso da Meta Diária</div>
+            <div class="goal-value">R$ 8.450</div>
+            <div class="goal-target">Meta: R$ 10.000 / dia</div>
+            <div class="goal-progress-bar">
+                <div class="goal-progress-fill on-track" style="width: 84.5%;">
+                    <span class="goal-progress-text">84.5%</span>
+                </div>
+            </div>
+            <div class="goal-stats">
+                <div class="goal-stat">
+                    <div class="goal-stat-value success">R$ 1.550</div>
+                    <div class="goal-stat-label">Faltam para meta</div>
+                </div>
+                <div class="goal-stat">
+                    <div class="goal-stat-value">6h 23min</div>
+                    <div class="goal-stat-label">Tempo restante</div>
+                </div>
+                <div class="goal-stat">
+                    <div class="goal-stat-value success">+12%</div>
+                    <div class="goal-stat-label">Acima da média</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scale Mode Selector -->
+    <div class="scale-mode-section">
+        <div class="scale-mode-header">
+            <div class="scale-mode-title">
+                <i class="fas fa-sliders-h"></i> Modo de Escala
+            </div>
+        </div>
+        <div class="scale-modes">
+            <div class="scale-mode-card conservador" onclick="selectScaleMode(this, 'conservador')">
+                <div class="scale-mode-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="scale-mode-name">Conservador</div>
+                <div class="scale-mode-desc">Crescimento gradual e seguro, ideal para contas novas</div>
+                <div class="scale-mode-specs">
+                    <div class="scale-mode-spec"><i class="fas fa-arrow-up"></i> Max +10% budget/dia</div>
+                    <div class="scale-mode-spec"><i class="fas fa-shield-alt"></i> Stop-loss automático</div>
+                    <div class="scale-mode-spec"><i class="fas fa-clock"></i> Escala após 3 dias lucro</div>
+                </div>
+            </div>
+            <div class="scale-mode-card moderado active" onclick="selectScaleMode(this, 'moderado')">
+                <div class="scale-mode-icon"><i class="fas fa-balance-scale"></i></div>
+                <div class="scale-mode-name">Moderado</div>
+                <div class="scale-mode-desc">Equilíbrio entre crescimento e segurança</div>
+                <div class="scale-mode-specs">
+                    <div class="scale-mode-spec"><i class="fas fa-arrow-up"></i> Max +20% budget/dia</div>
+                    <div class="scale-mode-spec"><i class="fas fa-shield-alt"></i> Proteção de ROAS</div>
+                    <div class="scale-mode-spec"><i class="fas fa-clock"></i> Escala após 2 dias lucro</div>
+                </div>
+            </div>
+            <div class="scale-mode-card agressivo" onclick="selectScaleMode(this, 'agressivo')">
+                <div class="scale-mode-icon"><i class="fas fa-rocket"></i></div>
+                <div class="scale-mode-name">Agressivo</div>
+                <div class="scale-mode-desc">Crescimento rápido para campanhas validadas</div>
+                <div class="scale-mode-specs">
+                    <div class="scale-mode-spec"><i class="fas fa-arrow-up"></i> Max +50% budget/dia</div>
+                    <div class="scale-mode-spec"><i class="fas fa-bolt"></i> Escala em tempo real</div>
+                    <div class="scale-mode-spec"><i class="fas fa-clock"></i> Escala após 1 dia lucro</div>
+                </div>
+            </div>
+            <div class="scale-mode-card turbo" onclick="selectScaleMode(this, 'turbo')">
+                <div class="scale-mode-icon"><i class="fas fa-fire"></i></div>
+                <div class="scale-mode-name">TURBO</div>
+                <div class="scale-mode-desc">Escala máxima para oportunidades únicas</div>
+                <div class="scale-mode-specs">
+                    <div class="scale-mode-spec"><i class="fas fa-arrow-up"></i> Max +100% budget/dia</div>
+                    <div class="scale-mode-spec"><i class="fas fa-bolt"></i> Duplicação automática</div>
+                    <div class="scale-mode-spec"><i class="fas fa-exclamation-triangle"></i> Alto risco</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-Scale Settings -->
+    <div class="autoscale-section">
+        <div class="autoscale-header">
+            <div class="autoscale-title">
+                <i class="fas fa-cogs"></i> Configurações de Auto-Escala
+            </div>
+            <div class="autoscale-toggle">
+                <span class="autoscale-toggle-label">Auto-Escala</span>
+                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+            </div>
+        </div>
+        <div class="autoscale-grid">
+            <div class="autoscale-card">
+                <div class="autoscale-card-header">
+                    <span class="autoscale-card-title">ROAS Mínimo para Escalar</span>
+                    <span class="autoscale-card-status active"><i class="fas fa-check"></i> Ativo</span>
+                </div>
+                <div class="autoscale-slider">
+                    <div class="autoscale-slider-header">
+                        <span class="autoscale-slider-label">Valor mínimo</span>
+                        <span class="autoscale-slider-value">2.5x</span>
+                    </div>
+                    <input type="range" min="1" max="5" step="0.1" value="2.5">
+                </div>
+                <div class="autoscale-card-desc">Só escala campanhas com ROAS acima deste valor</div>
+            </div>
+            <div class="autoscale-card">
+                <div class="autoscale-card-header">
+                    <span class="autoscale-card-title">CPA Máximo Tolerado</span>
+                    <span class="autoscale-card-status active"><i class="fas fa-check"></i> Ativo</span>
+                </div>
+                <div class="autoscale-slider">
+                    <div class="autoscale-slider-header">
+                        <span class="autoscale-slider-label">Valor máximo</span>
+                        <span class="autoscale-slider-value">R$ 50</span>
+                    </div>
+                    <input type="range" min="10" max="200" step="5" value="50">
+                </div>
+                <div class="autoscale-card-desc">Pausa escala se CPA ultrapassar este valor</div>
+            </div>
+            <div class="autoscale-card">
+                <div class="autoscale-card-header">
+                    <span class="autoscale-card-title">Budget Máximo Diário</span>
+                    <span class="autoscale-card-status active"><i class="fas fa-check"></i> Ativo</span>
+                </div>
+                <div class="autoscale-slider">
+                    <div class="autoscale-slider-header">
+                        <span class="autoscale-slider-label">Limite diário</span>
+                        <span class="autoscale-slider-value">R$ 5.000</span>
+                    </div>
+                    <input type="range" min="100" max="10000" step="100" value="5000">
+                </div>
+                <div class="autoscale-card-desc">Limite máximo de gasto diário por campanha</div>
+            </div>
+            <div class="autoscale-card">
+                <div class="autoscale-card-header">
+                    <span class="autoscale-card-title">Incremento por Escala</span>
+                    <span class="autoscale-card-status active"><i class="fas fa-check"></i> Ativo</span>
+                </div>
+                <div class="autoscale-slider">
+                    <div class="autoscale-slider-header">
+                        <span class="autoscale-slider-label">Percentual</span>
+                        <span class="autoscale-slider-value">20%</span>
+                    </div>
+                    <input type="range" min="5" max="100" step="5" value="20">
+                </div>
+                <div class="autoscale-card-desc">Quanto aumentar o budget a cada escala</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campaigns Grid -->
+    <div class="campaigns-section">
+        <div class="campaigns-header">
+            <div class="campaigns-title">
+                <i class="fas fa-ad"></i> Campanhas em Auto-Escala
+            </div>
+            <button class="btn-nexora btn-nexora-secondary btn-sm">
+                <i class="fas fa-plus"></i> Adicionar Campanha
+            </button>
+        </div>
+        <div class="campaign-item">
+            <div class="campaign-status-dot scaling"></div>
+            <div class="campaign-info">
+                <div class="campaign-name">Lançamento_Produto_X</div>
+                <div class="campaign-meta">Budget: R$ 500/dia • Iniciada há 5 dias</div>
+            </div>
+            <div class="campaign-metrics">
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value success">4.2x</div>
+                    <div class="campaign-metric-label">ROAS</div>
+                </div>
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value">R$ 32</div>
+                    <div class="campaign-metric-label">CPA</div>
+                </div>
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value">47</div>
+                    <div class="campaign-metric-label">Vendas</div>
+                </div>
+            </div>
+            <div class="campaign-scale-action">
+                <span class="scale-badge up"><i class="fas fa-arrow-up"></i> +20%</span>
+            </div>
+        </div>
+        <div class="campaign-item">
+            <div class="campaign-status-dot active"></div>
+            <div class="campaign-info">
+                <div class="campaign-name">Remarketing_Carrinho</div>
+                <div class="campaign-meta">Budget: R$ 200/dia • Iniciada há 12 dias</div>
+            </div>
+            <div class="campaign-metrics">
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value success">6.8x</div>
+                    <div class="campaign-metric-label">ROAS</div>
+                </div>
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value">R$ 18</div>
+                    <div class="campaign-metric-label">CPA</div>
+                </div>
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value">89</div>
+                    <div class="campaign-metric-label">Vendas</div>
+                </div>
+            </div>
+            <div class="campaign-scale-action">
+                <span class="scale-badge hold"><i class="fas fa-minus"></i> Mantendo</span>
+            </div>
+        </div>
+        <div class="campaign-item">
+            <div class="campaign-status-dot paused"></div>
+            <div class="campaign-info">
+                <div class="campaign-name">Teste_Público_Frio</div>
+                <div class="campaign-meta">Budget: R$ 100/dia • Iniciada há 3 dias</div>
+            </div>
+            <div class="campaign-metrics">
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value">1.8x</div>
+                    <div class="campaign-metric-label">ROAS</div>
+                </div>
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value">R$ 65</div>
+                    <div class="campaign-metric-label">CPA</div>
+                </div>
+                <div class="campaign-metric">
+                    <div class="campaign-metric-value">8</div>
+                    <div class="campaign-metric-label">Vendas</div>
+                </div>
+            </div>
+            <div class="campaign-scale-action">
+                <span class="scale-badge down"><i class="fas fa-arrow-down"></i> -30%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Section -->
+    <div class="schedule-section">
+        <div class="schedule-header">
+            <div class="schedule-title">
+                <i class="fas fa-clock"></i> Horários de Escala
+            </div>
+            <button class="btn-nexora btn-nexora-secondary btn-sm">
+                <i class="fas fa-magic"></i> Auto-detectar
+            </button>
+        </div>
+        <div class="schedule-grid">
+            <div class="schedule-hour">0h</div>
+            <div class="schedule-hour">1h</div>
+            <div class="schedule-hour">2h</div>
+            <div class="schedule-hour">3h</div>
+            <div class="schedule-hour">4h</div>
+            <div class="schedule-hour">5h</div>
+            <div class="schedule-hour active">6h</div>
+            <div class="schedule-hour active">7h</div>
+            <div class="schedule-hour active">8h</div>
+            <div class="schedule-hour active">9h</div>
+            <div class="schedule-hour active">10h</div>
+            <div class="schedule-hour active">11h</div>
+            <div class="schedule-hour peak">12h</div>
+            <div class="schedule-hour peak">13h</div>
+            <div class="schedule-hour active">14h</div>
+            <div class="schedule-hour active">15h</div>
+            <div class="schedule-hour active">16h</div>
+            <div class="schedule-hour active">17h</div>
+            <div class="schedule-hour active">18h</div>
+            <div class="schedule-hour peak">19h</div>
+            <div class="schedule-hour peak">20h</div>
+            <div class="schedule-hour peak">21h</div>
+            <div class="schedule-hour active">22h</div>
+            <div class="schedule-hour">23h</div>
+        </div>
+        <div class="schedule-legend">
+            <div class="schedule-legend-item">
+                <div class="schedule-legend-dot peak"></div>
+                Horário de Pico
+            </div>
+            <div class="schedule-legend-item">
+                <div class="schedule-legend-dot active"></div>
+                Ativo
+            </div>
+            <div class="schedule-legend-item">
+                <div class="schedule-legend-dot inactive"></div>
+                Inativo
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectScaleMode(element, mode) {
+    document.querySelectorAll('.scale-mode-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    element.classList.add('active');
+}
+</script>
+{% endblock %}

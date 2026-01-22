@@ -1,0 +1,939 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Simulador de Campanha - NEXORA{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ============================================
+       SIMULADOR DE CAMPANHA UI - DESIGN PREMIUM
+       ============================================ */
+    .simulador-container {
+        padding: var(--spacing-6);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .simulador-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .simulador-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .simulador-title h1 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .simulador-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #06b6d4, #3b82f6);
+        border-radius: var(--radius-xl);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    /* Input Section */
+    .input-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .input-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .input-section-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .input-section-title i {
+        color: var(--accent-primary);
+    }
+
+    .input-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--spacing-6);
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-2);
+    }
+
+    .input-label {
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .input-field {
+        padding: var(--spacing-3) var(--spacing-4);
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        color: var(--text-primary);
+        font-size: var(--text-sm);
+        transition: all var(--transition-fast);
+    }
+
+    .input-field:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .input-hint {
+        font-size: var(--text-xs);
+        color: var(--text-tertiary);
+    }
+
+    /* Slider Input */
+    .slider-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-2);
+    }
+
+    .slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .slider-value {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--accent-primary);
+    }
+
+    .slider-input {
+        width: 100%;
+        height: 8px;
+        -webkit-appearance: none;
+        background: var(--fill-primary);
+        border-radius: var(--radius-full);
+        outline: none;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        background: var(--accent-primary);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+    }
+
+    /* Mode Selector */
+    .mode-selector {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-3);
+        margin-top: var(--spacing-4);
+    }
+
+    @media (max-width: 768px) {
+        .mode-selector {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .mode-option {
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border: 2px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .mode-option:hover {
+        border-color: var(--accent-primary);
+    }
+
+    .mode-option.active {
+        border-color: var(--accent-primary);
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
+    }
+
+    .mode-option-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto var(--spacing-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+        font-size: var(--text-lg);
+    }
+
+    .mode-option.conservador .mode-option-icon {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .mode-option.moderado .mode-option-icon {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--accent-info);
+    }
+
+    .mode-option.agressivo .mode-option-icon {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .mode-option.turbo .mode-option-icon {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1));
+        color: var(--accent-danger);
+    }
+
+    .mode-option-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .mode-option-desc {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    /* Results Section */
+    .results-section {
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .results-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .results-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .results-title i {
+        color: var(--accent-success);
+    }
+
+    /* Period Tabs */
+    .period-tabs {
+        display: flex;
+        gap: var(--spacing-2);
+        background-color: var(--fill-primary);
+        padding: var(--spacing-1);
+        border-radius: var(--radius-lg);
+    }
+
+    .period-tab {
+        padding: var(--spacing-2) var(--spacing-4);
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .period-tab.active {
+        background-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    /* Results Grid */
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .result-card {
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-5);
+        text-align: center;
+    }
+
+    .result-card-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto var(--spacing-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-lg);
+        color: var(--accent-primary);
+        font-size: var(--text-xl);
+    }
+
+    .result-card-value {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .result-card-value.success { color: var(--accent-success); }
+    .result-card-value.warning { color: var(--accent-warning); }
+    .result-card-value.danger { color: var(--accent-danger); }
+
+    .result-card-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .result-card-range {
+        font-size: var(--text-xs);
+        color: var(--text-tertiary);
+        padding: var(--spacing-1) var(--spacing-2);
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-full);
+        display: inline-block;
+    }
+
+    /* Chart Section */
+    .chart-section {
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .chart-title {
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .chart-container {
+        height: 300px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+    }
+
+    .chart-bar-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-2);
+        flex: 1;
+    }
+
+    .chart-bar {
+        width: 100%;
+        max-width: 60px;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        transition: height 0.5s ease;
+    }
+
+    .chart-bar.investment {
+        background: linear-gradient(to top, var(--accent-info), #60a5fa);
+    }
+
+    .chart-bar.revenue {
+        background: linear-gradient(to top, var(--accent-success), #4ade80);
+    }
+
+    .chart-bar.profit {
+        background: linear-gradient(to top, var(--accent-primary), #818cf8);
+    }
+
+    .chart-bar-label {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        text-align: center;
+    }
+
+    .chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-6);
+        margin-top: var(--spacing-4);
+    }
+
+    .chart-legend-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    .chart-legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: var(--radius-full);
+    }
+
+    .chart-legend-dot.investment { background-color: var(--accent-info); }
+    .chart-legend-dot.revenue { background-color: var(--accent-success); }
+    .chart-legend-dot.profit { background-color: var(--accent-primary); }
+
+    /* Risk Analysis */
+    .risk-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .risk-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .risk-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .risk-title i {
+        color: var(--accent-warning);
+    }
+
+    .risk-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-4);
+    }
+
+    .risk-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+    }
+
+    .risk-item-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+        flex-shrink: 0;
+    }
+
+    .risk-item-icon.low {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .risk-item-icon.medium {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .risk-item-icon.high {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+    }
+
+    .risk-item-content h4 {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .risk-item-content p {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    /* Success Score */
+    .success-score {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-8);
+        padding: var(--spacing-8);
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1));
+        border: 1px solid var(--accent-success);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--spacing-6);
+    }
+
+    @media (max-width: 768px) {
+        .success-score {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    .success-score-circle {
+        width: 160px;
+        height: 160px;
+        position: relative;
+    }
+
+    .success-score-circle svg {
+        transform: rotate(-90deg);
+    }
+
+    .success-score-bg {
+        fill: none;
+        stroke: var(--fill-primary);
+        stroke-width: 12;
+    }
+
+    .success-score-fill {
+        fill: none;
+        stroke: var(--accent-success);
+        stroke-width: 12;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1s ease;
+    }
+
+    .success-score-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .success-score-number {
+        font-size: var(--text-4xl);
+        font-weight: 700;
+        color: var(--accent-success);
+    }
+
+    .success-score-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    .success-score-info h3 {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .success-score-info p {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-4);
+        max-width: 400px;
+    }
+
+    .success-factors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+
+    .success-factor {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: var(--spacing-1) var(--spacing-3);
+        background-color: rgba(34, 197, 94, 0.1);
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: 500;
+        color: var(--accent-success);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: var(--spacing-4);
+    }
+
+    @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="simulador-container">
+    <!-- Header -->
+    <div class="simulador-header">
+        <div class="simulador-title">
+            <div class="simulador-title-icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <div>
+                <h1>Simulador de Campanha</h1>
+                <p style="color: var(--text-secondary); font-size: var(--text-sm); margin: 0;">
+                    Projete resultados antes de investir
+                </p>
+            </div>
+        </div>
+        <div class="hub-actions">
+            <button class="btn-nexora btn-nexora-secondary">
+                <i class="fas fa-history"></i> Histórico
+            </button>
+            <button class="btn-nexora btn-nexora-primary" onclick="runSimulation()">
+                <i class="fas fa-play"></i> Simular
+            </button>
+        </div>
+    </div>
+
+    <!-- Input Section -->
+    <div class="input-section">
+        <div class="input-section-header">
+            <div class="input-section-title">
+                <i class="fas fa-sliders-h"></i> Parâmetros da Simulação
+            </div>
+        </div>
+
+        <div class="input-grid">
+            <!-- Investimento Diário -->
+            <div class="input-group">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="input-label">Investimento Diário</span>
+                        <span class="slider-value" id="investmentValue">R$ 100</span>
+                    </div>
+                    <input type="range" class="slider-input" min="50" max="5000" value="100" step="50" 
+                           oninput="updateSlider('investment', this.value)">
+                    <span class="input-hint">Mínimo R$ 50 • Máximo R$ 5.000</span>
+                </div>
+            </div>
+
+            <!-- Ticket Médio -->
+            <div class="input-group">
+                <label class="input-label">Ticket Médio do Produto</label>
+                <input type="text" class="input-field" value="R$ 197" placeholder="R$ 197">
+                <span class="input-hint">Valor médio de cada venda</span>
+            </div>
+
+            <!-- Taxa de Conversão -->
+            <div class="input-group">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="input-label">Taxa de Conversão Esperada</span>
+                        <span class="slider-value" id="conversionValue">2.5%</span>
+                    </div>
+                    <input type="range" class="slider-input" min="0.5" max="10" value="2.5" step="0.1" 
+                           oninput="updateSlider('conversion', this.value)">
+                    <span class="input-hint">Média do mercado: 1-3%</span>
+                </div>
+            </div>
+
+            <!-- CPC Médio -->
+            <div class="input-group">
+                <label class="input-label">CPC Médio Esperado</label>
+                <input type="text" class="input-field" value="R$ 1.50" placeholder="R$ 1.50">
+                <span class="input-hint">Custo por clique médio</span>
+            </div>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="input-group" style="margin-top: var(--spacing-6);">
+            <span class="input-label">Modo de Escala</span>
+            <div class="mode-selector">
+                <div class="mode-option conservador" onclick="selectMode(this, 'conservador')">
+                    <div class="mode-option-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="mode-option-title">Conservador</div>
+                    <div class="mode-option-desc">Baixo risco, crescimento gradual</div>
+                </div>
+                <div class="mode-option moderado active" onclick="selectMode(this, 'moderado')">
+                    <div class="mode-option-icon"><i class="fas fa-balance-scale"></i></div>
+                    <div class="mode-option-title">Moderado</div>
+                    <div class="mode-option-desc">Equilíbrio risco/retorno</div>
+                </div>
+                <div class="mode-option agressivo" onclick="selectMode(this, 'agressivo')">
+                    <div class="mode-option-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="mode-option-title">Agressivo</div>
+                    <div class="mode-option-desc">Alto potencial, maior risco</div>
+                </div>
+                <div class="mode-option turbo" onclick="selectMode(this, 'turbo')">
+                    <div class="mode-option-icon"><i class="fas fa-fire"></i></div>
+                    <div class="mode-option-title">TURBO</div>
+                    <div class="mode-option-desc">Escala máxima, risco elevado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Score -->
+    <div class="success-score">
+        <div class="success-score-circle">
+            <svg width="160" height="160">
+                <circle class="success-score-bg" cx="80" cy="80" r="68"></circle>
+                <circle class="success-score-fill" cx="80" cy="80" r="68" 
+                        stroke-dasharray="427" stroke-dashoffset="64"></circle>
+            </svg>
+            <div class="success-score-value">
+                <div class="success-score-number">85</div>
+                <div class="success-score-label">Score</div>
+            </div>
+        </div>
+        <div class="success-score-info">
+            <h3>Alta Probabilidade de Sucesso</h3>
+            <p>Com base nos parâmetros informados e dados históricos do mercado, sua campanha tem excelentes chances de atingir os resultados projetados.</p>
+            <div class="success-factors">
+                <span class="success-factor"><i class="fas fa-check"></i> Ticket adequado</span>
+                <span class="success-factor"><i class="fas fa-check"></i> CPC competitivo</span>
+                <span class="success-factor"><i class="fas fa-check"></i> Conversão realista</span>
+                <span class="success-factor"><i class="fas fa-check"></i> Budget suficiente</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+        <div class="results-header">
+            <div class="results-title">
+                <i class="fas fa-chart-line"></i> Projeção de Resultados
+            </div>
+            <div class="period-tabs">
+                <button class="period-tab" onclick="selectPeriod(this, 7)">7 dias</button>
+                <button class="period-tab active" onclick="selectPeriod(this, 14)">14 dias</button>
+                <button class="period-tab" onclick="selectPeriod(this, 30)">30 dias</button>
+            </div>
+        </div>
+
+        <div class="results-grid">
+            <div class="result-card">
+                <div class="result-card-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="result-card-value">R$ 1.400</div>
+                <div class="result-card-label">Investimento Total</div>
+                <span class="result-card-range">R$ 100/dia × 14 dias</span>
+            </div>
+            <div class="result-card">
+                <div class="result-card-icon"><i class="fas fa-mouse-pointer"></i></div>
+                <div class="result-card-value">933</div>
+                <div class="result-card-label">Cliques Estimados</div>
+                <span class="result-card-range">66-67 cliques/dia</span>
+            </div>
+            <div class="result-card">
+                <div class="result-card-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="result-card-value success">23</div>
+                <div class="result-card-label">Vendas Estimadas</div>
+                <span class="result-card-range">1-2 vendas/dia</span>
+            </div>
+            <div class="result-card">
+                <div class="result-card-icon"><i class="fas fa-coins"></i></div>
+                <div class="result-card-value success">R$ 4.531</div>
+                <div class="result-card-label">Faturamento Estimado</div>
+                <span class="result-card-range">R$ 323/dia</span>
+            </div>
+            <div class="result-card">
+                <div class="result-card-icon"><i class="fas fa-chart-pie"></i></div>
+                <div class="result-card-value success">R$ 3.131</div>
+                <div class="result-card-label">Lucro Estimado</div>
+                <span class="result-card-range">223% de retorno</span>
+            </div>
+            <div class="result-card">
+                <div class="result-card-icon"><i class="fas fa-percentage"></i></div>
+                <div class="result-card-value success">3.24x</div>
+                <div class="result-card-label">ROAS Projetado</div>
+                <span class="result-card-range">Acima da média</span>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <span class="chart-title">Projeção Diária</span>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bar-group">
+                    <div class="chart-bar investment" style="height: 50px;"></div>
+                    <div class="chart-bar revenue" style="height: 162px;"></div>
+                    <div class="chart-bar profit" style="height: 112px;"></div>
+                    <span class="chart-bar-label">Dia 1-3</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar investment" style="height: 50px;"></div>
+                    <div class="chart-bar revenue" style="height: 180px;"></div>
+                    <div class="chart-bar profit" style="height: 130px;"></div>
+                    <span class="chart-bar-label">Dia 4-7</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar investment" style="height: 50px;"></div>
+                    <div class="chart-bar revenue" style="height: 200px;"></div>
+                    <div class="chart-bar profit" style="height: 150px;"></div>
+                    <span class="chart-bar-label">Dia 8-10</span>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar investment" style="height: 50px;"></div>
+                    <div class="chart-bar revenue" style="height: 220px;"></div>
+                    <div class="chart-bar profit" style="height: 170px;"></div>
+                    <span class="chart-bar-label">Dia 11-14</span>
+                </div>
+            </div>
+            <div class="chart-legend">
+                <div class="chart-legend-item">
+                    <span class="chart-legend-dot investment"></span>
+                    Investimento
+                </div>
+                <div class="chart-legend-item">
+                    <span class="chart-legend-dot revenue"></span>
+                    Faturamento
+                </div>
+                <div class="chart-legend-item">
+                    <span class="chart-legend-dot profit"></span>
+                    Lucro
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Analysis -->
+    <div class="risk-section">
+        <div class="risk-header">
+            <div class="risk-title">
+                <i class="fas fa-exclamation-triangle"></i> Análise de Riscos
+            </div>
+        </div>
+        <div class="risk-grid">
+            <div class="risk-item">
+                <div class="risk-item-icon low">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="risk-item-content">
+                    <h4>Risco de Orçamento</h4>
+                    <p>Investimento diário está dentro do recomendado para o ticket médio informado.</p>
+                </div>
+            </div>
+            <div class="risk-item">
+                <div class="risk-item-icon low">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="risk-item-content">
+                    <h4>Risco de Conversão</h4>
+                    <p>Taxa de conversão está alinhada com médias do mercado para este nicho.</p>
+                </div>
+            </div>
+            <div class="risk-item">
+                <div class="risk-item-icon medium">
+                    <i class="fas fa-exclamation"></i>
+                </div>
+                <div class="risk-item-content">
+                    <h4>Risco de Sazonalidade</h4>
+                    <p>Período atual pode ter variações. Monitore os primeiros 3 dias.</p>
+                </div>
+            </div>
+            <div class="risk-item">
+                <div class="risk-item-icon low">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="risk-item-content">
+                    <h4>Risco de Competição</h4>
+                    <p>CPC informado está competitivo para o mercado atual.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn-nexora btn-nexora-secondary" style="flex: 1;">
+            <i class="fas fa-download"></i> Exportar Projeção
+        </button>
+        <button class="btn-nexora btn-nexora-secondary" style="flex: 1;">
+            <i class="fas fa-save"></i> Salvar Cenário
+        </button>
+        <button class="btn-nexora btn-nexora-primary" style="flex: 1;">
+            <i class="fas fa-rocket"></i> Criar Campanha com estes Parâmetros
+        </button>
+    </div>
+</div>
+
+<script>
+function updateSlider(type, value) {
+    if (type === 'investment') {
+        document.getElementById('investmentValue').textContent = 'R$ ' + value;
+    } else if (type === 'conversion') {
+        document.getElementById('conversionValue').textContent = value + '%';
+    }
+    // Recalculate simulation
+}
+
+function selectMode(element, mode) {
+    document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+}
+
+function selectPeriod(element, days) {
+    document.querySelectorAll('.period-tab').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+    // Update results based on period
+}
+
+function runSimulation() {
+    // Animation and recalculation
+    const scoreCircle = document.querySelector('.success-score-fill');
+    scoreCircle.style.strokeDashoffset = '427';
+    
+    setTimeout(() => {
+        scoreCircle.style.strokeDashoffset = '64';
+    }, 100);
+}
+</script>
+{% endblock %}

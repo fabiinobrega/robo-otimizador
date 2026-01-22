@@ -1,0 +1,993 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Dashboard Executivo - CEO Mode - NEXORA{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ============================================
+       DASHBOARD EXECUTIVO CEO MODE - DESIGN PREMIUM
+       ============================================ */
+    .ceo-container {
+        padding: var(--spacing-6);
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .ceo-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .ceo-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .ceo-title h1 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .ceo-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-radius: var(--radius-xl);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    .ceo-badge {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: #000;
+    }
+
+    /* Period Selector */
+    .period-selector {
+        display: flex;
+        gap: var(--spacing-2);
+        background-color: var(--fill-primary);
+        padding: var(--spacing-1);
+        border-radius: var(--radius-lg);
+    }
+
+    .period-btn {
+        padding: var(--spacing-2) var(--spacing-4);
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .period-btn.active {
+        background-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    /* Executive Summary */
+    .executive-summary {
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(245, 158, 11, 0.1));
+        border: 1px solid rgba(251, 191, 36, 0.3);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-8);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .summary-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .summary-title {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .summary-date {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-6);
+    }
+
+    .summary-card {
+        text-align: center;
+    }
+
+    .summary-card-value {
+        font-size: var(--text-4xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .summary-card-value.success { color: var(--accent-success); }
+    .summary-card-value.warning { color: var(--accent-warning); }
+    .summary-card-value.gold { color: #fbbf24; }
+
+    .summary-card-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .summary-card-change {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: 600;
+    }
+
+    .summary-card-change.up {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .summary-card-change.down {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .kpi-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-5);
+    }
+
+    .kpi-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .kpi-card-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .kpi-card-title i {
+        color: var(--accent-primary);
+    }
+
+    .kpi-card-badge {
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .kpi-card-badge.good {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--accent-success);
+    }
+
+    .kpi-card-badge.warning {
+        background-color: rgba(249, 115, 22, 0.1);
+        color: var(--accent-warning);
+    }
+
+    .kpi-card-value {
+        font-size: var(--text-3xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .kpi-card-chart {
+        height: 60px;
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+    }
+
+    .kpi-bar {
+        flex: 1;
+        background: linear-gradient(to top, var(--accent-primary), #818cf8);
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        transition: height 0.3s ease;
+    }
+
+    /* Charts Section */
+    .charts-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    @media (max-width: 1024px) {
+        .charts-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .chart-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+    }
+
+    .chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .chart-title {
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .chart-area {
+        height: 250px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: var(--spacing-2);
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+    }
+
+    .chart-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .chart-bar-stack {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .chart-bar-segment {
+        width: 100%;
+        border-radius: var(--radius-sm);
+    }
+
+    .chart-bar-segment.revenue {
+        background: linear-gradient(to top, var(--accent-success), #4ade80);
+    }
+
+    .chart-bar-segment.cost {
+        background: linear-gradient(to top, var(--accent-danger), #f87171);
+    }
+
+    .chart-bar-segment.profit {
+        background: linear-gradient(to top, var(--accent-primary), #818cf8);
+    }
+
+    .chart-label {
+        font-size: 10px;
+        color: var(--text-tertiary);
+    }
+
+    /* Pie Chart */
+    .pie-chart-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-4);
+    }
+
+    .pie-chart {
+        width: 180px;
+        height: 180px;
+        border-radius: var(--radius-full);
+        background: conic-gradient(
+            var(--accent-success) 0deg 144deg,
+            var(--accent-info) 144deg 216deg,
+            var(--accent-warning) 216deg 288deg,
+            var(--accent-primary) 288deg 360deg
+        );
+        position: relative;
+    }
+
+    .pie-chart::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100px;
+        height: 100px;
+        background-color: var(--bg-secondary);
+        border-radius: var(--radius-full);
+    }
+
+    .pie-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--spacing-4);
+    }
+
+    .pie-legend-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .pie-legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: var(--radius-full);
+    }
+
+    /* Top Performers */
+    .performers-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .performers-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .performers-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .performers-title i {
+        color: #fbbf24;
+    }
+
+    .performers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-4);
+    }
+
+    .performer-card {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+    }
+
+    .performer-rank {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+        font-size: var(--text-lg);
+        font-weight: 700;
+    }
+
+    .performer-rank.gold {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #000;
+    }
+
+    .performer-rank.silver {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        color: #fff;
+    }
+
+    .performer-rank.bronze {
+        background: linear-gradient(135deg, #d97706, #b45309);
+        color: #fff;
+    }
+
+    .performer-info {
+        flex: 1;
+    }
+
+    .performer-name {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .performer-meta {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .performer-metrics {
+        text-align: right;
+    }
+
+    .performer-value {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--accent-success);
+    }
+
+    .performer-label {
+        font-size: 10px;
+        color: var(--text-tertiary);
+    }
+
+    /* Insights Section */
+    .insights-section {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.1));
+        border: 1px solid var(--accent-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .insights-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .insights-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .insights-title i {
+        color: var(--accent-primary);
+    }
+
+    .insights-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-4);
+    }
+
+    .insight-card {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+        padding: var(--spacing-4);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+    }
+
+    .insight-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+        border-radius: var(--radius-lg);
+        color: var(--text-on-accent);
+        flex-shrink: 0;
+    }
+
+    .insight-content h4 {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .insight-content p {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    /* Health Score */
+    .health-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .health-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-5);
+        text-align: center;
+    }
+
+    .health-score {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto var(--spacing-3);
+        position: relative;
+    }
+
+    .health-score svg {
+        transform: rotate(-90deg);
+    }
+
+    .health-score-bg {
+        fill: none;
+        stroke: var(--fill-primary);
+        stroke-width: 8;
+    }
+
+    .health-score-fill {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1s ease;
+    }
+
+    .health-score-fill.good { stroke: var(--accent-success); }
+    .health-score-fill.warning { stroke: var(--accent-warning); }
+    .health-score-fill.danger { stroke: var(--accent-danger); }
+
+    .health-score-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .health-label {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .health-status {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-4);
+    }
+
+    .quick-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-4);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        color: var(--text-primary);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .quick-action-btn:hover {
+        background-color: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    .quick-action-btn i {
+        font-size: var(--text-lg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ceo-container">
+    <!-- Header -->
+    <div class="ceo-header">
+        <div class="ceo-title">
+            <div class="ceo-title-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div>
+                <h1>Dashboard Executivo</h1>
+                <p style="color: var(--text-secondary); font-size: var(--text-sm); margin: 0;">
+                    Visão estratégica de alto nível
+                </p>
+            </div>
+            <span class="ceo-badge"><i class="fas fa-crown"></i> CEO MODE</span>
+        </div>
+        <div style="display: flex; gap: var(--spacing-4); align-items: center;">
+            <div class="period-selector">
+                <button class="period-btn">Hoje</button>
+                <button class="period-btn">7 dias</button>
+                <button class="period-btn active">30 dias</button>
+                <button class="period-btn">90 dias</button>
+            </div>
+            <button class="btn-nexora btn-nexora-primary">
+                <i class="fas fa-download"></i> Exportar
+            </button>
+        </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="executive-summary">
+        <div class="summary-header">
+            <span class="summary-title">Resumo Executivo</span>
+            <span class="summary-date">Janeiro 2026</span>
+        </div>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-card-value gold">R$ 847.5k</div>
+                <div class="summary-card-label">Faturamento Total</div>
+                <span class="summary-card-change up"><i class="fas fa-arrow-up"></i> +34% vs mês anterior</span>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-value success">R$ 198.2k</div>
+                <div class="summary-card-label">Investimento Ads</div>
+                <span class="summary-card-change up"><i class="fas fa-arrow-up"></i> +18% vs mês anterior</span>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-value success">R$ 649.3k</div>
+                <div class="summary-card-label">Lucro Líquido</div>
+                <span class="summary-card-change up"><i class="fas fa-arrow-up"></i> +42% vs mês anterior</span>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-value success">4.27x</div>
+                <div class="summary-card-label">ROAS Médio</div>
+                <span class="summary-card-change up"><i class="fas fa-arrow-up"></i> +0.8x vs mês anterior</span>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-value">4.298</div>
+                <div class="summary-card-label">Total de Vendas</div>
+                <span class="summary-card-change up"><i class="fas fa-arrow-up"></i> +28% vs mês anterior</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-card-header">
+                <div class="kpi-card-title"><i class="fas fa-dollar-sign"></i> CPA Médio</div>
+                <span class="kpi-card-badge good">Ótimo</span>
+            </div>
+            <div class="kpi-card-value">R$ 46,12</div>
+            <div class="kpi-card-chart">
+                <div class="kpi-bar" style="height: 60%;"></div>
+                <div class="kpi-bar" style="height: 55%;"></div>
+                <div class="kpi-bar" style="height: 50%;"></div>
+                <div class="kpi-bar" style="height: 48%;"></div>
+                <div class="kpi-bar" style="height: 45%;"></div>
+                <div class="kpi-bar" style="height: 42%;"></div>
+                <div class="kpi-bar" style="height: 40%;"></div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-card-header">
+                <div class="kpi-card-title"><i class="fas fa-mouse-pointer"></i> CTR Médio</div>
+                <span class="kpi-card-badge good">Acima da média</span>
+            </div>
+            <div class="kpi-card-value">3.42%</div>
+            <div class="kpi-card-chart">
+                <div class="kpi-bar" style="height: 70%;"></div>
+                <div class="kpi-bar" style="height: 75%;"></div>
+                <div class="kpi-bar" style="height: 72%;"></div>
+                <div class="kpi-bar" style="height: 80%;"></div>
+                <div class="kpi-bar" style="height: 85%;"></div>
+                <div class="kpi-bar" style="height: 82%;"></div>
+                <div class="kpi-bar" style="height: 88%;"></div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-card-header">
+                <div class="kpi-card-title"><i class="fas fa-percentage"></i> Taxa de Conversão</div>
+                <span class="kpi-card-badge good">Excelente</span>
+            </div>
+            <div class="kpi-card-value">4.8%</div>
+            <div class="kpi-card-chart">
+                <div class="kpi-bar" style="height: 65%;"></div>
+                <div class="kpi-bar" style="height: 70%;"></div>
+                <div class="kpi-bar" style="height: 75%;"></div>
+                <div class="kpi-bar" style="height: 78%;"></div>
+                <div class="kpi-bar" style="height: 82%;"></div>
+                <div class="kpi-bar" style="height: 85%;"></div>
+                <div class="kpi-bar" style="height: 90%;"></div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-card-header">
+                <div class="kpi-card-title"><i class="fas fa-users"></i> Novos Clientes</div>
+                <span class="kpi-card-badge good">Crescendo</span>
+            </div>
+            <div class="kpi-card-value">2.847</div>
+            <div class="kpi-card-chart">
+                <div class="kpi-bar" style="height: 50%;"></div>
+                <div class="kpi-bar" style="height: 55%;"></div>
+                <div class="kpi-bar" style="height: 60%;"></div>
+                <div class="kpi-bar" style="height: 68%;"></div>
+                <div class="kpi-bar" style="height: 75%;"></div>
+                <div class="kpi-bar" style="height: 82%;"></div>
+                <div class="kpi-bar" style="height: 95%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-card">
+            <div class="chart-header">
+                <span class="chart-title">Faturamento vs Investimento vs Lucro</span>
+            </div>
+            <div class="chart-area">
+                <div class="chart-column">
+                    <div class="chart-bar-stack">
+                        <div class="chart-bar-segment profit" style="height: 80px;"></div>
+                        <div class="chart-bar-segment cost" style="height: 30px;"></div>
+                    </div>
+                    <span class="chart-label">Sem 1</span>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar-stack">
+                        <div class="chart-bar-segment profit" style="height: 95px;"></div>
+                        <div class="chart-bar-segment cost" style="height: 35px;"></div>
+                    </div>
+                    <span class="chart-label">Sem 2</span>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar-stack">
+                        <div class="chart-bar-segment profit" style="height: 110px;"></div>
+                        <div class="chart-bar-segment cost" style="height: 40px;"></div>
+                    </div>
+                    <span class="chart-label">Sem 3</span>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar-stack">
+                        <div class="chart-bar-segment profit" style="height: 130px;"></div>
+                        <div class="chart-bar-segment cost" style="height: 45px;"></div>
+                    </div>
+                    <span class="chart-label">Sem 4</span>
+                </div>
+            </div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <span class="chart-title">Distribuição por Canal</span>
+            </div>
+            <div class="pie-chart-container">
+                <div class="pie-chart"></div>
+                <div class="pie-legend">
+                    <div class="pie-legend-item">
+                        <div class="pie-legend-dot" style="background-color: var(--accent-success);"></div>
+                        Facebook 40%
+                    </div>
+                    <div class="pie-legend-item">
+                        <div class="pie-legend-dot" style="background-color: var(--accent-info);"></div>
+                        Instagram 20%
+                    </div>
+                    <div class="pie-legend-item">
+                        <div class="pie-legend-dot" style="background-color: var(--accent-warning);"></div>
+                        Google 20%
+                    </div>
+                    <div class="pie-legend-item">
+                        <div class="pie-legend-dot" style="background-color: var(--accent-primary);"></div>
+                        Outros 20%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Performers -->
+    <div class="performers-section">
+        <div class="performers-header">
+            <div class="performers-title">
+                <i class="fas fa-trophy"></i> Top Performers
+            </div>
+            <button class="btn-nexora btn-nexora-secondary btn-sm">
+                <i class="fas fa-external-link-alt"></i> Ver Todos
+            </button>
+        </div>
+        <div class="performers-grid">
+            <div class="performer-card">
+                <div class="performer-rank gold">1</div>
+                <div class="performer-info">
+                    <div class="performer-name">Lançamento_Produto_X</div>
+                    <div class="performer-meta">Facebook • 12 dias ativo</div>
+                </div>
+                <div class="performer-metrics">
+                    <div class="performer-value">6.8x</div>
+                    <div class="performer-label">ROAS</div>
+                </div>
+            </div>
+            <div class="performer-card">
+                <div class="performer-rank silver">2</div>
+                <div class="performer-info">
+                    <div class="performer-name">Remarketing_Carrinho</div>
+                    <div class="performer-meta">Facebook • 30 dias ativo</div>
+                </div>
+                <div class="performer-metrics">
+                    <div class="performer-value">5.4x</div>
+                    <div class="performer-label">ROAS</div>
+                </div>
+            </div>
+            <div class="performer-card">
+                <div class="performer-rank bronze">3</div>
+                <div class="performer-info">
+                    <div class="performer-name">Lookalike_Compradores</div>
+                    <div class="performer-meta">Instagram • 8 dias ativo</div>
+                </div>
+                <div class="performer-metrics">
+                    <div class="performer-value">4.2x</div>
+                    <div class="performer-label">ROAS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Scores -->
+    <div class="health-section">
+        <div class="health-card">
+            <div class="health-score">
+                <svg width="100" height="100">
+                    <circle class="health-score-bg" cx="50" cy="50" r="42"></circle>
+                    <circle class="health-score-fill good" cx="50" cy="50" r="42" 
+                            stroke-dasharray="264" stroke-dashoffset="26"></circle>
+                </svg>
+                <div class="health-score-value">92</div>
+            </div>
+            <div class="health-label">Saúde da Conta</div>
+            <div class="health-status">Excelente - Sem restrições</div>
+        </div>
+        <div class="health-card">
+            <div class="health-score">
+                <svg width="100" height="100">
+                    <circle class="health-score-bg" cx="50" cy="50" r="42"></circle>
+                    <circle class="health-score-fill good" cx="50" cy="50" r="42" 
+                            stroke-dasharray="264" stroke-dashoffset="40"></circle>
+                </svg>
+                <div class="health-score-value">85</div>
+            </div>
+            <div class="health-label">Qualidade dos Anúncios</div>
+            <div class="health-status">Muito Bom - Acima da média</div>
+        </div>
+        <div class="health-card">
+            <div class="health-score">
+                <svg width="100" height="100">
+                    <circle class="health-score-bg" cx="50" cy="50" r="42"></circle>
+                    <circle class="health-score-fill warning" cx="50" cy="50" r="42" 
+                            stroke-dasharray="264" stroke-dashoffset="79"></circle>
+                </svg>
+                <div class="health-score-value">70</div>
+            </div>
+            <div class="health-label">Diversificação</div>
+            <div class="health-status">Atenção - Concentrado em 1 canal</div>
+        </div>
+        <div class="health-card">
+            <div class="health-score">
+                <svg width="100" height="100">
+                    <circle class="health-score-bg" cx="50" cy="50" r="42"></circle>
+                    <circle class="health-score-fill good" cx="50" cy="50" r="42" 
+                            stroke-dasharray="264" stroke-dashoffset="32"></circle>
+                </svg>
+                <div class="health-score-value">88</div>
+            </div>
+            <div class="health-label">Eficiência de Budget</div>
+            <div class="health-status">Ótimo - Budget bem distribuído</div>
+        </div>
+    </div>
+
+    <!-- AI Insights -->
+    <div class="insights-section">
+        <div class="insights-header">
+            <div class="insights-title">
+                <i class="fas fa-lightbulb"></i> Insights da IA
+            </div>
+        </div>
+        <div class="insights-grid">
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="insight-content">
+                    <h4>Oportunidade de Escala</h4>
+                    <p>Campanha "Lançamento_Produto_X" tem potencial para aumentar budget em 50% mantendo ROAS acima de 5x.</p>
+                </div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="insight-content">
+                    <h4>Alerta de Saturação</h4>
+                    <p>Público "Interesse_Fitness" está saturando. Recomendamos expandir para lookalikes de 3-5%.</p>
+                </div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-palette"></i></div>
+                <div class="insight-content">
+                    <h4>Criativo em Destaque</h4>
+                    <p>Vídeos de depoimento têm CTR 45% maior que imagens estáticas. Considere produzir mais.</p>
+                </div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-clock"></i></div>
+                <div class="insight-content">
+                    <h4>Melhor Horário</h4>
+                    <p>Conversões concentradas entre 19h-22h. Recomendamos aumentar budget neste período.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="quick-action-btn">
+            <i class="fas fa-plus"></i> Nova Campanha
+        </button>
+        <button class="quick-action-btn">
+            <i class="fas fa-file-pdf"></i> Relatório PDF
+        </button>
+        <button class="quick-action-btn">
+            <i class="fas fa-share-alt"></i> Compartilhar
+        </button>
+        <button class="quick-action-btn">
+            <i class="fas fa-cog"></i> Configurações
+        </button>
+    </div>
+</div>
+{% endblock %}

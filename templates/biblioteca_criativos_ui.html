@@ -1,0 +1,1136 @@
+{% extends "base_nexora.html" %}
+
+{% block title %}Biblioteca de Criativos - NEXORA{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ============================================
+       BIBLIOTECA DE CRIATIVOS UI - DESIGN PREMIUM
+       ============================================ */
+    .criativos-container {
+        padding: var(--spacing-6);
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .criativos-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .criativos-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .criativos-title h1 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .criativos-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        border-radius: var(--radius-xl);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+        display: flex;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-6);
+        overflow-x: auto;
+        padding-bottom: var(--spacing-2);
+    }
+
+    .stat-card {
+        flex: 1;
+        min-width: 180px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-4);
+    }
+
+    .stat-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .stat-card-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-lg);
+        color: var(--accent-primary);
+    }
+
+    .stat-card-trend {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        font-size: var(--text-xs);
+        font-weight: 600;
+    }
+
+    .stat-card-trend.up { color: var(--accent-success); }
+    .stat-card-trend.down { color: var(--accent-danger); }
+
+    .stat-card-value {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .stat-card-label {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    /* Filters Bar */
+    .filters-bar {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-6);
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .filter-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+    }
+
+    .filter-select {
+        padding: var(--spacing-2) var(--spacing-3);
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        color: var(--text-primary);
+        font-size: var(--text-sm);
+        cursor: pointer;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+    }
+
+    .search-input {
+        flex: 1;
+        min-width: 200px;
+        padding: var(--spacing-2) var(--spacing-4);
+        padding-left: var(--spacing-10);
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        color: var(--text-primary);
+        font-size: var(--text-sm);
+        position: relative;
+    }
+
+    .search-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: var(--spacing-3);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-tertiary);
+    }
+
+    .view-toggle {
+        display: flex;
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .view-toggle-btn {
+        padding: var(--spacing-2) var(--spacing-3);
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .view-toggle-btn.active {
+        background-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    /* Criativos Grid */
+    .criativos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    /* Criativo Card */
+    .criativo-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        transition: all var(--transition-fast);
+    }
+
+    .criativo-card:hover {
+        border-color: var(--accent-primary);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .criativo-preview {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        background-color: var(--bg-tertiary);
+        overflow: hidden;
+    }
+
+    .criativo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .criativo-preview-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-tertiary);
+    }
+
+    .criativo-preview-placeholder i {
+        font-size: 48px;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .criativo-type-badge {
+        position: absolute;
+        top: var(--spacing-3);
+        left: var(--spacing-3);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: var(--spacing-1) var(--spacing-2);
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        border-radius: var(--radius-md);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--text-on-accent);
+    }
+
+    .criativo-status-badge {
+        position: absolute;
+        top: var(--spacing-3);
+        right: var(--spacing-3);
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--radius-md);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .criativo-status-badge.active {
+        background-color: var(--accent-success);
+        color: var(--text-on-accent);
+    }
+
+    .criativo-status-badge.paused {
+        background-color: var(--accent-warning);
+        color: var(--text-on-accent);
+    }
+
+    .criativo-status-badge.draft {
+        background-color: var(--fill-secondary);
+        color: var(--text-secondary);
+    }
+
+    .criativo-rank {
+        position: absolute;
+        bottom: var(--spacing-3);
+        left: var(--spacing-3);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: var(--spacing-1) var(--spacing-2);
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        border-radius: var(--radius-md);
+        font-size: var(--text-xs);
+        font-weight: 600;
+    }
+
+    .criativo-rank.winner {
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: var(--text-on-accent);
+    }
+
+    .criativo-rank.top {
+        background-color: var(--accent-success);
+        color: var(--text-on-accent);
+    }
+
+    .criativo-rank.low {
+        background-color: var(--accent-danger);
+        color: var(--text-on-accent);
+    }
+
+    .criativo-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: var(--spacing-4);
+    }
+
+    .criativo-card:hover .criativo-overlay {
+        opacity: 1;
+    }
+
+    .criativo-overlay-actions {
+        display: flex;
+        gap: var(--spacing-2);
+    }
+
+    .criativo-overlay-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .criativo-overlay-btn:hover {
+        background-color: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    .criativo-content {
+        padding: var(--spacing-4);
+    }
+
+    .criativo-name {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .criativo-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-2);
+    }
+
+    .criativo-metric {
+        text-align: center;
+        padding: var(--spacing-2);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-md);
+    }
+
+    .criativo-metric-value {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .criativo-metric-value.success { color: var(--accent-success); }
+    .criativo-metric-value.warning { color: var(--accent-warning); }
+    .criativo-metric-value.danger { color: var(--accent-danger); }
+
+    .criativo-metric-label {
+        font-size: 10px;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+    }
+
+    /* AI Generator Section */
+    .ai-generator {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
+        border: 1px solid var(--accent-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .ai-generator-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .ai-generator-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .ai-generator-title i {
+        color: var(--accent-primary);
+    }
+
+    .ai-generator-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-4);
+    }
+
+    .ai-generator-option {
+        padding: var(--spacing-4);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .ai-generator-option:hover {
+        border-color: var(--accent-primary);
+        transform: translateY(-2px);
+    }
+
+    .ai-generator-option-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto var(--spacing-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+        border-radius: var(--radius-lg);
+        color: var(--text-on-accent);
+        font-size: var(--text-xl);
+    }
+
+    .ai-generator-option-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .ai-generator-option-desc {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    /* Top Performers */
+    .top-performers {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .top-performers-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .top-performers-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .top-performers-title i {
+        color: var(--accent-warning);
+    }
+
+    .top-performers-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+
+    .top-performer-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-3);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+    }
+
+    .top-performer-rank {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-full);
+        font-size: var(--text-sm);
+        font-weight: 700;
+    }
+
+    .top-performer-rank.gold {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: var(--text-on-accent);
+    }
+
+    .top-performer-rank.silver {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        color: var(--text-on-accent);
+    }
+
+    .top-performer-rank.bronze {
+        background: linear-gradient(135deg, #d97706, #92400e);
+        color: var(--text-on-accent);
+    }
+
+    .top-performer-preview {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background-color: var(--fill-primary);
+    }
+
+    .top-performer-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .top-performer-info {
+        flex: 1;
+    }
+
+    .top-performer-name {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-1);
+    }
+
+    .top-performer-type {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+    }
+
+    .top-performer-metrics {
+        display: flex;
+        gap: var(--spacing-6);
+    }
+
+    .top-performer-metric {
+        text-align: center;
+    }
+
+    .top-performer-metric-value {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--accent-success);
+    }
+
+    .top-performer-metric-label {
+        font-size: 10px;
+        color: var(--text-tertiary);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-16);
+        background-color: var(--bg-secondary);
+        border: 2px dashed var(--border-primary);
+        border-radius: var(--radius-xl);
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto var(--spacing-4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--fill-primary);
+        border-radius: var(--radius-full);
+        color: var(--text-tertiary);
+        font-size: 32px;
+    }
+
+    .empty-state-title {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .empty-state-desc {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-6);
+    }
+
+    /* Pagination */
+    .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+    }
+
+    .pagination-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--fill-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .pagination-btn:hover {
+        background-color: var(--fill-secondary);
+        color: var(--text-primary);
+    }
+
+    .pagination-btn.active {
+        background-color: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: var(--text-on-accent);
+    }
+
+    .pagination-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="criativos-container">
+    <!-- Header -->
+    <div class="criativos-header">
+        <div class="criativos-title">
+            <div class="criativos-title-icon">
+                <i class="fas fa-palette"></i>
+            </div>
+            <div>
+                <h1>Biblioteca de Criativos</h1>
+                <p style="color: var(--text-secondary); font-size: var(--text-sm); margin: 0;">
+                    Gerencie e otimize todos os seus criativos em um só lugar
+                </p>
+            </div>
+        </div>
+        <div class="hub-actions">
+            <button class="btn-nexora btn-nexora-secondary">
+                <i class="fas fa-upload"></i> Upload
+            </button>
+            <button class="btn-nexora btn-nexora-primary">
+                <i class="fas fa-wand-magic-sparkles"></i> Gerar com IA
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon"><i class="fas fa-images"></i></div>
+                <span class="stat-card-trend up"><i class="fas fa-arrow-up"></i> 12%</span>
+            </div>
+            <div class="stat-card-value">47</div>
+            <div class="stat-card-label">Total de Criativos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon"><i class="fas fa-play-circle"></i></div>
+                <span class="stat-card-trend up"><i class="fas fa-arrow-up"></i> 8%</span>
+            </div>
+            <div class="stat-card-value">23</div>
+            <div class="stat-card-label">Ativos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon"><i class="fas fa-mouse-pointer"></i></div>
+                <span class="stat-card-trend up"><i class="fas fa-arrow-up"></i> 15%</span>
+            </div>
+            <div class="stat-card-value">3.2%</div>
+            <div class="stat-card-label">CTR Médio</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon"><i class="fas fa-trophy"></i></div>
+                <span class="stat-card-trend up"><i class="fas fa-arrow-up"></i> 23%</span>
+            </div>
+            <div class="stat-card-value">5</div>
+            <div class="stat-card-label">Top Performers</div>
+        </div>
+    </div>
+
+    <!-- AI Generator -->
+    <div class="ai-generator">
+        <div class="ai-generator-header">
+            <div class="ai-generator-title">
+                <i class="fas fa-robot"></i> Gerador de Criativos com IA
+            </div>
+        </div>
+        <div class="ai-generator-grid">
+            <div class="ai-generator-option">
+                <div class="ai-generator-option-icon">
+                    <i class="fas fa-clone"></i>
+                </div>
+                <div class="ai-generator-option-title">Variações</div>
+                <div class="ai-generator-option-desc">Gerar variações dos melhores criativos</div>
+            </div>
+            <div class="ai-generator-option">
+                <div class="ai-generator-option-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div class="ai-generator-option-title">Imagem</div>
+                <div class="ai-generator-option-desc">Criar imagem do zero com IA</div>
+            </div>
+            <div class="ai-generator-option">
+                <div class="ai-generator-option-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="ai-generator-option-title">Vídeo</div>
+                <div class="ai-generator-option-desc">Transformar imagem em vídeo</div>
+            </div>
+            <div class="ai-generator-option">
+                <div class="ai-generator-option-icon">
+                    <i class="fas fa-font"></i>
+                </div>
+                <div class="ai-generator-option-title">Copy</div>
+                <div class="ai-generator-option-desc">Gerar textos para anúncios</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Performers -->
+    <div class="top-performers">
+        <div class="top-performers-header">
+            <div class="top-performers-title">
+                <i class="fas fa-crown"></i> Top Performers
+            </div>
+            <button class="btn-nexora btn-nexora-secondary btn-sm">
+                <i class="fas fa-external-link-alt"></i> Ver Todos
+            </button>
+        </div>
+        <div class="top-performers-list">
+            <div class="top-performer-item">
+                <div class="top-performer-rank gold">1</div>
+                <div class="top-performer-preview">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-video"></i>
+                    </div>
+                </div>
+                <div class="top-performer-info">
+                    <div class="top-performer-name">Depoimento_Maria_v3</div>
+                    <div class="top-performer-type">Vídeo • 15s • Stories</div>
+                </div>
+                <div class="top-performer-metrics">
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">4.8%</div>
+                        <div class="top-performer-metric-label">CTR</div>
+                    </div>
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">R$ 28</div>
+                        <div class="top-performer-metric-label">CPA</div>
+                    </div>
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">5.2x</div>
+                        <div class="top-performer-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+            <div class="top-performer-item">
+                <div class="top-performer-rank silver">2</div>
+                <div class="top-performer-preview">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb, #f5576c); display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                <div class="top-performer-info">
+                    <div class="top-performer-name">Carrossel_Resultados</div>
+                    <div class="top-performer-type">Carrossel • 5 slides • Feed</div>
+                </div>
+                <div class="top-performer-metrics">
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">4.2%</div>
+                        <div class="top-performer-metric-label">CTR</div>
+                    </div>
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">R$ 32</div>
+                        <div class="top-performer-metric-label">CPA</div>
+                    </div>
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">4.8x</div>
+                        <div class="top-performer-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+            <div class="top-performer-item">
+                <div class="top-performer-rank bronze">3</div>
+                <div class="top-performer-preview">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                <div class="top-performer-info">
+                    <div class="top-performer-name">Static_Oferta_v2</div>
+                    <div class="top-performer-type">Imagem • 1080x1080 • Feed</div>
+                </div>
+                <div class="top-performer-metrics">
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">3.9%</div>
+                        <div class="top-performer-metric-label">CTR</div>
+                    </div>
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">R$ 35</div>
+                        <div class="top-performer-metric-label">CPA</div>
+                    </div>
+                    <div class="top-performer-metric">
+                        <div class="top-performer-metric-value">4.5x</div>
+                        <div class="top-performer-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+        <div class="filter-group">
+            <span class="filter-label">Tipo:</span>
+            <select class="filter-select">
+                <option>Todos</option>
+                <option>Imagem</option>
+                <option>Vídeo</option>
+                <option>Carrossel</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Status:</span>
+            <select class="filter-select">
+                <option>Todos</option>
+                <option>Ativos</option>
+                <option>Pausados</option>
+                <option>Rascunho</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Ordenar:</span>
+            <select class="filter-select">
+                <option>Mais Recentes</option>
+                <option>Maior CTR</option>
+                <option>Menor CPA</option>
+                <option>Maior ROAS</option>
+            </select>
+        </div>
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" placeholder="Buscar criativos...">
+        </div>
+        <div class="view-toggle">
+            <button class="view-toggle-btn active"><i class="fas fa-th"></i></button>
+            <button class="view-toggle-btn"><i class="fas fa-list"></i></button>
+        </div>
+    </div>
+
+    <!-- Criativos Grid -->
+    <div class="criativos-grid">
+        <!-- Criativo 1 - Winner -->
+        <div class="criativo-card">
+            <div class="criativo-preview">
+                <div class="criativo-preview-placeholder" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <i class="fas fa-video"></i>
+                    <span style="font-size: var(--text-xs);">Vídeo 15s</span>
+                </div>
+                <span class="criativo-type-badge"><i class="fas fa-video"></i> Vídeo</span>
+                <span class="criativo-status-badge active">Ativo</span>
+                <span class="criativo-rank winner"><i class="fas fa-crown"></i> Winner</span>
+                <div class="criativo-overlay">
+                    <div class="criativo-overlay-actions">
+                        <button class="criativo-overlay-btn"><i class="fas fa-eye"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-edit"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-chart-line"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-clone"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="criativo-content">
+                <div class="criativo-name">Depoimento_Maria_v3</div>
+                <div class="criativo-metrics">
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">4.8%</div>
+                        <div class="criativo-metric-label">CTR</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">R$ 28</div>
+                        <div class="criativo-metric-label">CPA</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">5.2x</div>
+                        <div class="criativo-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criativo 2 - Top -->
+        <div class="criativo-card">
+            <div class="criativo-preview">
+                <div class="criativo-preview-placeholder" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <i class="fas fa-images"></i>
+                    <span style="font-size: var(--text-xs);">Carrossel</span>
+                </div>
+                <span class="criativo-type-badge"><i class="fas fa-images"></i> Carrossel</span>
+                <span class="criativo-status-badge active">Ativo</span>
+                <span class="criativo-rank top"><i class="fas fa-arrow-up"></i> Top 3</span>
+                <div class="criativo-overlay">
+                    <div class="criativo-overlay-actions">
+                        <button class="criativo-overlay-btn"><i class="fas fa-eye"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-edit"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-chart-line"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-clone"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="criativo-content">
+                <div class="criativo-name">Carrossel_Resultados</div>
+                <div class="criativo-metrics">
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">4.2%</div>
+                        <div class="criativo-metric-label">CTR</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">R$ 32</div>
+                        <div class="criativo-metric-label">CPA</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">4.8x</div>
+                        <div class="criativo-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criativo 3 -->
+        <div class="criativo-card">
+            <div class="criativo-preview">
+                <div class="criativo-preview-placeholder" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                    <i class="fas fa-image"></i>
+                    <span style="font-size: var(--text-xs);">1080x1080</span>
+                </div>
+                <span class="criativo-type-badge"><i class="fas fa-image"></i> Imagem</span>
+                <span class="criativo-status-badge active">Ativo</span>
+                <div class="criativo-overlay">
+                    <div class="criativo-overlay-actions">
+                        <button class="criativo-overlay-btn"><i class="fas fa-eye"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-edit"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-chart-line"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-clone"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="criativo-content">
+                <div class="criativo-name">Static_Oferta_v2</div>
+                <div class="criativo-metrics">
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">3.9%</div>
+                        <div class="criativo-metric-label">CTR</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value warning">R$ 35</div>
+                        <div class="criativo-metric-label">CPA</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">4.5x</div>
+                        <div class="criativo-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criativo 4 - Low -->
+        <div class="criativo-card">
+            <div class="criativo-preview">
+                <div class="criativo-preview-placeholder" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                    <i class="fas fa-image"></i>
+                    <span style="font-size: var(--text-xs);">1080x1920</span>
+                </div>
+                <span class="criativo-type-badge"><i class="fas fa-image"></i> Stories</span>
+                <span class="criativo-status-badge paused">Pausado</span>
+                <span class="criativo-rank low"><i class="fas fa-arrow-down"></i> Baixo</span>
+                <div class="criativo-overlay">
+                    <div class="criativo-overlay-actions">
+                        <button class="criativo-overlay-btn"><i class="fas fa-eye"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-edit"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-chart-line"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="criativo-content">
+                <div class="criativo-name">Stories_Urgencia_v1</div>
+                <div class="criativo-metrics">
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value danger">1.2%</div>
+                        <div class="criativo-metric-label">CTR</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value danger">R$ 68</div>
+                        <div class="criativo-metric-label">CPA</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value danger">2.1x</div>
+                        <div class="criativo-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criativo 5 -->
+        <div class="criativo-card">
+            <div class="criativo-preview">
+                <div class="criativo-preview-placeholder" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
+                    <i class="fas fa-video"></i>
+                    <span style="font-size: var(--text-xs);">Vídeo 30s</span>
+                </div>
+                <span class="criativo-type-badge"><i class="fas fa-video"></i> Vídeo</span>
+                <span class="criativo-status-badge active">Ativo</span>
+                <div class="criativo-overlay">
+                    <div class="criativo-overlay-actions">
+                        <button class="criativo-overlay-btn"><i class="fas fa-eye"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-edit"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-chart-line"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-clone"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="criativo-content">
+                <div class="criativo-name">Video_Explicativo_v2</div>
+                <div class="criativo-metrics">
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">3.5%</div>
+                        <div class="criativo-metric-label">CTR</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value warning">R$ 38</div>
+                        <div class="criativo-metric-label">CPA</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value success">4.1x</div>
+                        <div class="criativo-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criativo 6 - Draft -->
+        <div class="criativo-card">
+            <div class="criativo-preview">
+                <div class="criativo-preview-placeholder">
+                    <i class="fas fa-plus"></i>
+                    <span style="font-size: var(--text-xs);">Rascunho</span>
+                </div>
+                <span class="criativo-type-badge"><i class="fas fa-image"></i> Imagem</span>
+                <span class="criativo-status-badge draft">Rascunho</span>
+                <div class="criativo-overlay">
+                    <div class="criativo-overlay-actions">
+                        <button class="criativo-overlay-btn"><i class="fas fa-edit"></i></button>
+                        <button class="criativo-overlay-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="criativo-content">
+                <div class="criativo-name">Novo_Criativo_Draft</div>
+                <div class="criativo-metrics">
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value">-</div>
+                        <div class="criativo-metric-label">CTR</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value">-</div>
+                        <div class="criativo-metric-label">CPA</div>
+                    </div>
+                    <div class="criativo-metric">
+                        <div class="criativo-metric-value">-</div>
+                        <div class="criativo-metric-label">ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+        <button class="pagination-btn active">1</button>
+        <button class="pagination-btn">2</button>
+        <button class="pagination-btn">3</button>
+        <button class="pagination-btn">...</button>
+        <button class="pagination-btn">8</button>
+        <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</div>
+{% endblock %}
