@@ -706,3 +706,77 @@ async def get_insights() -> List[Dict[str, Any]]:
         }
         for i in velyra_prime_v2.insights_cache
     ]
+
+
+# Métodos adicionais para compatibilidade com rotas V2
+def get_system_status(self=None) -> Dict[str, Any]:
+    """Retorna status completo do sistema Velyra Prime V2"""
+    return {
+        "status": "active",
+        "version": "2.0.0",
+        "is_running": velyra_prime_v2.is_running,
+        "strategy": velyra_prime_v2.optimization_strategy.value,
+        "agents": {
+            agent_type.value: {
+                "status": "active",
+                "type": agent_type.value,
+                "config": agent.config
+            }
+            for agent_type, agent in velyra_prime_v2.agents.items()
+        },
+        "agents_count": len(velyra_prime_v2.agents),
+        "total_optimizations": velyra_prime_v2.total_optimizations,
+        "pending_actions": len(velyra_prime_v2.actions_queue),
+        "cached_insights": len(velyra_prime_v2.insights_cache),
+        "last_cycle": velyra_prime_v2.performance_history[-1] if velyra_prime_v2.performance_history else None,
+        "capabilities": [
+            "campaign_analysis",
+            "bid_optimization",
+            "audience_refinement",
+            "anomaly_detection",
+            "performance_prediction",
+            "automated_optimization"
+        ]
+    }
+
+def get_active_agents(self=None) -> Dict[str, Any]:
+    """Retorna lista de agentes de IA ativos"""
+    return {
+        "agents": [
+            {
+                "id": agent_type.value,
+                "name": agent_type.name,
+                "type": agent_type.value,
+                "status": "active",
+                "description": _get_agent_description(agent_type),
+                "capabilities": _get_agent_capabilities(agent_type)
+            }
+            for agent_type in velyra_prime_v2.agents.keys()
+        ],
+        "total_agents": len(velyra_prime_v2.agents),
+        "system_status": "active"
+    }
+
+def _get_agent_description(agent_type: AgentType) -> str:
+    """Retorna descrição do agente"""
+    descriptions = {
+        AgentType.OPTIMIZER: "Agente de otimização geral de campanhas",
+        AgentType.BIDDER: "Agente de otimização de lances e orçamento",
+        AgentType.AUDIENCE: "Agente de refinamento de audiência",
+        AgentType.ANOMALY_DETECTOR: "Agente de detecção de anomalias"
+    }
+    return descriptions.get(agent_type, "Agente de IA")
+
+def _get_agent_capabilities(agent_type: AgentType) -> List[str]:
+    """Retorna capacidades do agente"""
+    capabilities = {
+        AgentType.OPTIMIZER: ["analyze_performance", "suggest_optimizations", "auto_optimize"],
+        AgentType.BIDDER: ["bid_analysis", "budget_optimization", "cpc_management"],
+        AgentType.AUDIENCE: ["audience_analysis", "segment_refinement", "lookalike_creation"],
+        AgentType.ANOMALY_DETECTOR: ["spike_detection", "drop_detection", "trend_analysis"]
+    }
+    return capabilities.get(agent_type, [])
+
+# Adicionar métodos à classe VelyraPrimeV2
+VelyraPrimeV2.get_system_status = get_system_status
+VelyraPrimeV2.get_active_agents = get_active_agents
