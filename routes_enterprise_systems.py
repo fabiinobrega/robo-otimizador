@@ -541,6 +541,18 @@ def get_entropy_health():
 
 # ==================== EXPLAINABLE DECISIONS ====================
 
+@enterprise_bp.route('/explain/status', methods=['GET'])
+def explain_status_v2():
+    """Retorna status do sistema de decisões explicáveis (rota alternativa)."""
+    return jsonify({
+        "status": "active",
+        "system": "ExplainableDecisionPatterns",
+        "version": "1.0.0",
+        "templates_count": len(decision_patterns.decision_templates),
+        "history_count": len(decision_patterns.decision_history),
+        "timestamp": datetime.now().isoformat()
+    })
+
 @enterprise_bp.route('/patterns/status', methods=['GET'])
 def explain_status():
     """Retorna status do sistema de decisões explicáveis."""
