@@ -1,31 +1,17 @@
-{% extends "index.html" %}
+{% extends "base_nexora.html" %}
 {% block title %}Incrementality - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-chart-bar me-2"></i>Análise de Incrementalidade</h1>
-            <p class="text-muted">Meça o impacto real das suas campanhas de marketing</p>
-        </div>
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Incrementality</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-chart-bar text-primary"></i> Incrementality Testing</h1><p class="text-muted mb-0">Meça o impacto incremental real das suas campanhas</p></div>
     </div>
     <div class="row mb-4">
-        <div class="col-md-4"><div class="card bg-dark border-success"><div class="card-body text-center"><h3 class="text-success">+32%</h3><p class="text-muted mb-0">Lift Incremental</p></div></div></div>
-        <div class="col-md-4"><div class="card bg-dark border-info"><div class="card-body text-center"><h3 class="text-info">R$ 45,200</h3><p class="text-muted mb-0">Receita Incremental</p></div></div></div>
-        <div class="col-md-4"><div class="card bg-dark border-warning"><div class="card-body text-center"><h3 class="text-warning">95%</h3><p class="text-muted mb-0">Confiança Estatística</p></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Lift Incremental</p><h3 class="mb-0 text-success">+23%</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">iROAS</p><h3 class="mb-0 text-info">3.2x</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Testes Ativos</p><h3 class="mb-0 text-primary">4</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Confiança</p><h3 class="mb-0 text-warning">95%</h3></div></div></div>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="card bg-dark">
-                <div class="card-header"><h5 class="mb-0 text-white">Teste de Incrementalidade</h5></div>
-                <div class="card-body">
-                    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>O teste de incrementalidade compara um grupo exposto aos anúncios com um grupo de controle para medir o impacto real.</div>
-                    <div class="row">
-                        <div class="col-md-6"><div class="card bg-secondary"><div class="card-body"><h5 class="text-white">Grupo Exposto</h5><h3 class="text-success">4.2% conversão</h3></div></div></div>
-                        <div class="col-md-6"><div class="card bg-secondary"><div class="card-body"><h5 class="text-white">Grupo Controle</h5><h3 class="text-warning">3.2% conversão</h3></div></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="row"><div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Testes de Incrementalidade</h5></div><div class="card-body"><table class="table"><thead><tr><th>Teste</th><th>Canal</th><th>Lift</th><th>Status</th></tr></thead><tbody><tr><td>Teste Facebook Q1</td><td>Facebook Ads</td><td class="text-success">+28%</td><td><span class="badge bg-success">Concluído</span></td></tr><tr><td>Teste Google Brand</td><td>Google Ads</td><td class="text-success">+18%</td><td><span class="badge bg-success">Concluído</span></td></tr><tr><td>Teste TikTok Awareness</td><td>TikTok</td><td class="text-muted">-</td><td><span class="badge bg-primary">Em andamento</span></td></tr></tbody></table></div></div></div></div>
 </div>
 {% endblock %}

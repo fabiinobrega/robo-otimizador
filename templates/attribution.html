@@ -1,40 +1,24 @@
-{% extends "index.html" %}
-{% block title %}Attribution - NEXORA{% endblock %}
+{% extends "base_nexora.html" %}
+{% block title %}Atribuição - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-route me-2"></i>Atribuição de Conversões</h1>
-            <p class="text-muted">Entenda a jornada do cliente e atribua conversões corretamente</p>
-        </div>
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Atribuição</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-project-diagram text-primary"></i> Modelo de Atribuição</h1><p class="text-muted mb-0">Entenda a jornada do cliente e atribua conversões corretamente</p></div>
     </div>
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card bg-dark">
-                <div class="card-header"><h5 class="mb-0 text-white">Modelo de Atribuição</h5></div>
-                <div class="card-body">
-                    <select class="form-select bg-dark text-white mb-3">
-                        <option>Last Click</option>
-                        <option>First Click</option>
-                        <option>Linear</option>
-                        <option>Time Decay</option>
-                        <option selected>Data-Driven (IA)</option>
-                    </select>
-                    <div class="alert alert-info"><i class="fas fa-robot me-2"></i>O modelo Data-Driven usa IA para atribuir conversões baseado em padrões reais.</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card bg-dark border-success">
-                <div class="card-header"><h5 class="mb-0 text-success">Atribuição por Canal</h5></div>
-                <div class="card-body">
-                    <div class="mb-2"><span class="text-white">Facebook</span><span class="float-end text-success">42%</span></div>
-                    <div class="mb-2"><span class="text-white">Google</span><span class="float-end text-info">28%</span></div>
-                    <div class="mb-2"><span class="text-white">Instagram</span><span class="float-end text-warning">18%</span></div>
-                    <div class="mb-2"><span class="text-white">Orgânico</span><span class="float-end text-primary">12%</span></div>
-                </div>
-            </div>
-        </div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Conversões Totais</p><h3 class="mb-0 text-primary">12,450</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Touchpoints Médios</p><h3 class="mb-0 text-info">4.2</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Tempo Médio</p><h3 class="mb-0 text-warning">7.3 dias</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Canal Principal</p><h3 class="mb-0 text-success">Facebook</h3></div></div></div>
     </div>
+    <div class="row"><div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Atribuição por Canal</h5></div><div class="card-body"><canvas id="attrChart" height="100"></canvas></div></div></div></div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    new Chart(document.getElementById('attrChart').getContext('2d'), {
+        type: 'bar', data: { labels: ['Facebook', 'Google', 'Email', 'Orgânico'], datasets: [{label: 'Conversões', data: [4731, 3486, 2241, 1992], backgroundColor: ['#0d6efd', '#198754', '#0dcaf0', '#ffc107']}] }
+    });
+});
+</script>
 {% endblock %}

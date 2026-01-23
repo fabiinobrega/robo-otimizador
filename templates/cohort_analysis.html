@@ -1,31 +1,17 @@
-{% extends "index.html" %}
-{% block title %}Cohort Analysis - NEXORA{% endblock %}
+{% extends "base_nexora.html" %}
+{% block title %}Análise de Cohort - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Análise de Cohort</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-layer-group text-primary"></i> Análise de Cohort</h1><p class="text-muted mb-0">Analise o comportamento de grupos de usuários ao longo do tempo</p></div>
+    </div>
     <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-layer-group me-2"></i>Análise de Coorte</h1>
-            <p class="text-muted">Analise o comportamento de grupos de usuários ao longo do tempo</p>
-        </div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Retenção Média</p><h3 class="mb-0 text-success">42%</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Cohorts</p><h3 class="mb-0 text-primary">12</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Melhor Cohort</p><h3 class="mb-0 text-info">Nov 2024</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Usuários</p><h3 class="mb-0 text-warning">45,230</h3></div></div></div>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="card bg-dark">
-                <div class="card-header"><h5 class="mb-0 text-white">Retenção por Coorte</h5></div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-dark table-sm">
-                            <thead><tr><th>Coorte</th><th>Mês 0</th><th>Mês 1</th><th>Mês 2</th><th>Mês 3</th><th>Mês 4</th><th>Mês 5</th></tr></thead>
-                            <tbody>
-                                <tr><td>Jan 2024</td><td class="bg-success">100%</td><td style="background:rgba(40,167,69,0.8)">78%</td><td style="background:rgba(40,167,69,0.6)">62%</td><td style="background:rgba(40,167,69,0.5)">48%</td><td style="background:rgba(40,167,69,0.4)">35%</td><td style="background:rgba(40,167,69,0.3)">28%</td></tr>
-                                <tr><td>Fev 2024</td><td class="bg-success">100%</td><td style="background:rgba(40,167,69,0.8)">82%</td><td style="background:rgba(40,167,69,0.7)">68%</td><td style="background:rgba(40,167,69,0.5)">52%</td><td style="background:rgba(40,167,69,0.4)">38%</td><td>-</td></tr>
-                                <tr><td>Mar 2024</td><td class="bg-success">100%</td><td style="background:rgba(40,167,69,0.9)">85%</td><td style="background:rgba(40,167,69,0.7)">72%</td><td style="background:rgba(40,167,69,0.6)">58%</td><td>-</td><td>-</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="row"><div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Matriz de Retenção</h5></div><div class="card-body"><div class="table-responsive"><table class="table table-bordered text-center"><thead><tr><th>Cohort</th><th>M0</th><th>M1</th><th>M2</th><th>M3</th></tr></thead><tbody><tr><td>Jan 2025</td><td class="bg-success text-white">100%</td><td>68%</td><td>52%</td><td>45%</td></tr><tr><td>Dez 2024</td><td class="bg-success text-white">100%</td><td>72%</td><td>55%</td><td>48%</td></tr></tbody></table></div></div></div></div></div>
 </div>
 {% endblock %}

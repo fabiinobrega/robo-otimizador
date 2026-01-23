@@ -1,42 +1,17 @@
-{% extends "index.html" %}
+{% extends "base_nexora.html" %}
 {% block title %}Geo Testing - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-map-marked-alt me-2"></i>Testes Geográficos</h1>
-            <p class="text-muted">Teste campanhas em diferentes regiões geográficas</p>
-        </div>
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Geo Testing</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-globe-americas text-primary"></i> Geo Testing</h1><p class="text-muted mb-0">Teste o impacto de campanhas por região geográfica</p></div>
     </div>
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card bg-dark">
-                <div class="card-header"><h5 class="mb-0 text-white">Criar Novo Teste</h5></div>
-                <div class="card-body">
-                    <div class="mb-3"><label class="form-label text-white">Nome do Teste</label><input type="text" class="form-control bg-dark text-white" placeholder="Ex: Teste São Paulo vs Rio"></div>
-                    <div class="mb-3"><label class="form-label text-white">Região de Teste</label><select class="form-select bg-dark text-white"><option>São Paulo</option><option>Rio de Janeiro</option><option>Minas Gerais</option></select></div>
-                    <div class="mb-3"><label class="form-label text-white">Região de Controle</label><select class="form-select bg-dark text-white"><option>Paraná</option><option>Santa Catarina</option><option>Rio Grande do Sul</option></select></div>
-                    <button class="btn btn-success"><i class="fas fa-play me-2"></i>Iniciar Teste</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card bg-dark border-info">
-                <div class="card-header"><h5 class="mb-0 text-info">Testes Ativos</h5></div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-dark text-white border-secondary">
-                            <div class="d-flex justify-content-between"><strong>SP vs RJ</strong><span class="badge bg-success">Em andamento</span></div>
-                            <small class="text-muted">Lift: +18% | Confiança: 87%</small>
-                        </div>
-                        <div class="list-group-item bg-dark text-white border-secondary">
-                            <div class="d-flex justify-content-between"><strong>Sul vs Nordeste</strong><span class="badge bg-primary">Concluído</span></div>
-                            <small class="text-muted">Lift: +24% | Confiança: 95%</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Testes Ativos</p><h3 class="mb-0 text-primary">3</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Regiões</p><h3 class="mb-0 text-info">12</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Lift Médio</p><h3 class="mb-0 text-success">+18%</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Confiança</p><h3 class="mb-0 text-warning">92%</h3></div></div></div>
     </div>
+    <div class="row"><div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Resultados por Região</h5></div><div class="card-body"><table class="table"><thead><tr><th>Região</th><th>Tipo</th><th>Lift</th><th>Status</th></tr></thead><tbody><tr><td>São Paulo</td><td><span class="badge bg-primary">Teste</span></td><td class="text-success">+22%</td><td><span class="badge bg-success">Concluído</span></td></tr><tr><td>Rio de Janeiro</td><td><span class="badge bg-secondary">Controle</span></td><td>-</td><td><span class="badge bg-success">Concluído</span></td></tr><tr><td>Minas Gerais</td><td><span class="badge bg-primary">Teste</span></td><td class="text-success">+15%</td><td><span class="badge bg-warning">Em andamento</span></td></tr></tbody></table></div></div></div></div>
 </div>
 {% endblock %}

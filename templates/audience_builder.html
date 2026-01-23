@@ -1,67 +1,102 @@
-{% extends "index.html" %}
-{% block title %}Audience Builder - NEXORA{% endblock %}
+{% extends "base_nexora.html" %}
+{% block title %}Construtor de Audiência - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/all-features">Analytics Avançado</a></li>
+        <li class="breadcrumb-item active">Construtor de Audiência</li>
+    </ol>
+</nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 mb-2"><i class="fas fa-users-cog text-primary"></i> Construtor de Audiência</h1>
+            <p class="text-muted mb-0">Crie audiências personalizadas com IA para maximizar conversões</p>
+        </div>
+        <div class="btn-toolbar">
+            <button class="btn btn-primary me-2" onclick="createAudience()"><i class="fas fa-plus"></i> Nova Audiência</button>
+            <button class="btn btn-outline-secondary" onclick="importAudience()"><i class="fas fa-upload"></i> Importar</button>
+        </div>
+    </div>
     <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-users-cog me-2"></i>Audience Builder</h1>
-            <p class="text-muted">Construa audiências personalizadas com IA</p>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small">Audiências Ativas</p>
+                    <h3 class="mb-0 text-primary">24</h3>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +3 esta semana</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small">Alcance Total</p>
+                    <h3 class="mb-0 text-success">12.5M</h3>
+                    <small class="text-muted">pessoas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small">Lookalikes Criados</p>
+                    <h3 class="mb-0 text-info">18</h3>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +5 este mês</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small">Taxa de Match</p>
+                    <h3 class="mb-0 text-warning">78%</h3>
+                    <small class="text-muted">média</small>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-8">
-            <div class="card bg-dark mb-4">
-                <div class="card-header"><h5 class="mb-0 text-white">Criar Nova Audiência</h5></div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white"><h5 class="mb-0"><i class="fas fa-list text-primary me-2"></i>Suas Audiências</h5></div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label text-white">Nome da Audiência</label>
-                        <input type="text" class="form-control bg-dark text-white" placeholder="Ex: Compradores de Alto Valor">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead><tr><th>Nome</th><th>Tipo</th><th>Tamanho</th><th>Status</th><th>Ações</th></tr></thead>
+                            <tbody>
+                                <tr><td><i class="fas fa-users text-primary me-2"></i>Compradores 30d</td><td><span class="badge bg-success">Custom</span></td><td>125,000</td><td><span class="badge bg-success">Ativa</span></td><td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button></td></tr>
+                                <tr><td><i class="fas fa-user-friends text-info me-2"></i>Lookalike 1%</td><td><span class="badge bg-info">Lookalike</span></td><td>2,500,000</td><td><span class="badge bg-success">Ativa</span></td><td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button></td></tr>
+                                <tr><td><i class="fas fa-shopping-cart text-warning me-2"></i>Carrinho Abandonado</td><td><span class="badge bg-warning">Retargeting</span></td><td>45,000</td><td><span class="badge bg-success">Ativa</span></td><td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button></td></tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label text-white">Segmentação Demográfica</label>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <select class="form-select bg-dark text-white">
-                                    <option>Idade: 25-34</option>
-                                    <option>Idade: 35-44</option>
-                                    <option>Idade: 45-54</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <select class="form-select bg-dark text-white">
-                                    <option>Gênero: Todos</option>
-                                    <option>Gênero: Masculino</option>
-                                    <option>Gênero: Feminino</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-white">Interesses</label>
-                        <input type="text" class="form-control bg-dark text-white" placeholder="Ex: Marketing Digital, E-commerce, Tecnologia">
-                    </div>
-                    <button class="btn btn-success"><i class="fas fa-magic me-2"></i>Gerar Audiência com IA</button>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-dark border-info">
-                <div class="card-header"><h5 class="mb-0 text-info">Audiências Salvas</h5></div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white"><h5 class="mb-0"><i class="fas fa-magic text-warning me-2"></i>Sugestões da IA</h5></div>
                 <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-dark text-white border-secondary">
-                            <strong>Compradores Premium</strong><br><small class="text-muted">2.5M pessoas</small>
-                        </div>
-                        <div class="list-group-item bg-dark text-white border-secondary">
-                            <strong>Leads Quentes</strong><br><small class="text-muted">850K pessoas</small>
-                        </div>
-                        <div class="list-group-item bg-dark text-white border-secondary">
-                            <strong>Remarketing 30 dias</strong><br><small class="text-muted">125K pessoas</small>
-                        </div>
-                    </div>
+                    <div class="alert alert-success"><strong>Criar Lookalike 2%</strong><br><small>Baseado em compradores de alto valor</small></div>
+                    <div class="alert alert-info"><strong>Segmentar por Interesse</strong><br><small>Adicionar interesse em tecnologia</small></div>
+                    <div class="alert alert-warning"><strong>Excluir Convertidos</strong><br><small>Remover compradores dos últimos 7 dias</small></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+function createAudience() { showToast('Abrindo construtor de audiência...', 'info'); }
+function importAudience() { showToast('Abrindo importador...', 'info'); }
+function showToast(msg, type) {
+    const t = document.createElement('div');
+    t.className = 'alert alert-' + (type === 'info' ? 'primary' : type) + ' position-fixed';
+    t.style.cssText = 'top:20px;right:20px;z-index:9999;min-width:300px;';
+    t.innerHTML = '<i class="fas fa-info-circle me-2"></i>' + msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+</script>
 {% endblock %}

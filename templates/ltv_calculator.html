@@ -1,39 +1,18 @@
-{% extends "index.html" %}
-{% block title %}LTV Calculator - NEXORA{% endblock %}
+{% extends "base_nexora.html" %}
+{% block title %}Calculadora de LTV - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Calculadora de LTV</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-gem text-primary"></i> Calculadora de LTV</h1><p class="text-muted mb-0">Calcule o Lifetime Value dos seus clientes</p></div>
+    </div>
     <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-calculator me-2"></i>Calculadora de LTV</h1>
-            <p class="text-muted">Calcule o Lifetime Value dos seus clientes</p>
-        </div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">LTV Médio</p><h3 class="mb-0 text-success">R$ 2,450</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">CAC Médio</p><h3 class="mb-0 text-warning">R$ 185</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">LTV:CAC</p><h3 class="mb-0 text-info">13.2x</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Payback</p><h3 class="mb-0 text-primary">2.3 meses</h3></div></div></div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card bg-dark mb-4">
-                <div class="card-header"><h5 class="mb-0 text-white">Parâmetros</h5></div>
-                <div class="card-body">
-                    <div class="mb-3"><label class="form-label text-white">Ticket Médio (R$)</label><input type="number" class="form-control bg-dark text-white" value="150"></div>
-                    <div class="mb-3"><label class="form-label text-white">Frequência de Compra (por ano)</label><input type="number" class="form-control bg-dark text-white" value="4"></div>
-                    <div class="mb-3"><label class="form-label text-white">Tempo Médio de Retenção (anos)</label><input type="number" class="form-control bg-dark text-white" value="3"></div>
-                    <button class="btn btn-success"><i class="fas fa-calculator me-2"></i>Calcular LTV</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card bg-dark border-success">
-                <div class="card-header"><h5 class="mb-0 text-success">Resultado</h5></div>
-                <div class="card-body text-center">
-                    <h1 class="text-success display-4">R$ 1.800</h1>
-                    <p class="text-muted">Lifetime Value Estimado</p>
-                    <hr class="border-secondary">
-                    <div class="row">
-                        <div class="col-6"><h4 class="text-info">R$ 450</h4><small class="text-muted">Valor Anual</small></div>
-                        <div class="col-6"><h4 class="text-warning">R$ 37,50</h4><small class="text-muted">Valor Mensal</small></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="row"><div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Parâmetros</h5></div><div class="card-body"><div class="mb-3"><label class="form-label">Ticket Médio</label><input type="number" class="form-control" value="350" id="avgTicket"></div><div class="mb-3"><label class="form-label">Frequência (ano)</label><input type="number" class="form-control" value="4" id="freq"></div><div class="mb-3"><label class="form-label">Tempo de Vida (anos)</label><input type="number" class="form-control" value="2.5" id="lifetime"></div><button class="btn btn-primary w-100" onclick="calcLTV()">Calcular</button></div></div></div><div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Resultado</h5></div><div class="card-body text-center"><h1 class="display-4 text-success" id="ltvResult">R$ 3,500</h1><p class="text-muted">Lifetime Value</p></div></div></div></div>
 </div>
+<script>function calcLTV(){const t=parseFloat(document.getElementById('avgTicket').value),f=parseFloat(document.getElementById('freq').value),l=parseFloat(document.getElementById('lifetime').value);document.getElementById('ltvResult').textContent='R$ '+(t*f*l).toLocaleString('pt-BR');}</script>
 {% endblock %}

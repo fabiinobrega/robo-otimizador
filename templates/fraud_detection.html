@@ -1,28 +1,17 @@
-{% extends "index.html" %}
-{% block title %}Fraud Detection - NEXORA{% endblock %}
+{% extends "base_nexora.html" %}
+{% block title %}Detecção de Fraude - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-shield-alt me-2"></i>Detecção de Fraude</h1>
-            <p class="text-muted">Proteja suas campanhas contra tráfego fraudulento</p>
-        </div>
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Detecção de Fraude</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-shield-alt text-danger"></i> Detecção de Fraude</h1><p class="text-muted mb-0">Proteja suas campanhas contra tráfego fraudulento</p></div>
     </div>
     <div class="row mb-4">
-        <div class="col-md-3"><div class="card bg-dark border-success"><div class="card-body text-center"><h3 class="text-success">98.5%</h3><p class="text-muted mb-0">Tráfego Válido</p></div></div></div>
-        <div class="col-md-3"><div class="card bg-dark border-danger"><div class="card-body text-center"><h3 class="text-danger">1.5%</h3><p class="text-muted mb-0">Tráfego Suspeito</p></div></div></div>
-        <div class="col-md-3"><div class="card bg-dark border-warning"><div class="card-body text-center"><h3 class="text-warning">R$ 2,450</h3><p class="text-muted mb-0">Economia Estimada</p></div></div></div>
-        <div class="col-md-3"><div class="card bg-dark border-info"><div class="card-body text-center"><h3 class="text-info">12</h3><p class="text-muted mb-0">IPs Bloqueados</p></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100 border-start border-success border-4"><div class="card-body"><p class="text-muted mb-1 small">Tráfego Legítimo</p><h3 class="mb-0 text-success">94.2%</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100 border-start border-danger border-4"><div class="card-body"><p class="text-muted mb-1 small">Fraude Detectada</p><h3 class="mb-0 text-danger">5.8%</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100 border-start border-warning border-4"><div class="card-body"><p class="text-muted mb-1 small">Economia</p><h3 class="mb-0 text-warning">R$ 4,680</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100 border-start border-info border-4"><div class="card-body"><p class="text-muted mb-1 small">Score</p><h3 class="mb-0 text-info">98/100</h3></div></div></div>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="card bg-dark">
-                <div class="card-header"><h5 class="mb-0 text-white">Atividades Suspeitas Recentes</h5></div>
-                <div class="card-body">
-                    <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Nenhuma atividade suspeita detectada nas últimas 24 horas.</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="row"><div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Tipos de Fraude</h5></div><div class="card-body"><table class="table"><thead><tr><th>Tipo</th><th>Ocorrências</th><th>Status</th></tr></thead><tbody><tr><td><i class="fas fa-robot text-danger me-2"></i>Bot Traffic</td><td>1,245</td><td><span class="badge bg-danger">Bloqueado</span></td></tr><tr><td><i class="fas fa-mouse-pointer text-warning me-2"></i>Click Farms</td><td>678</td><td><span class="badge bg-danger">Bloqueado</span></td></tr></tbody></table></div></div></div></div>
 </div>
 {% endblock %}

@@ -1,36 +1,24 @@
-{% extends "index.html" %}
+{% extends "base_nexora.html" %}
 {% block title %}Viewability - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-eye me-2"></i>Análise de Viewability</h1>
-            <p class="text-muted">Verifique se seus anúncios estão sendo realmente vistos</p>
-        </div>
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Viewability</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-eye text-primary"></i> Viewability Analytics</h1><p class="text-muted mb-0">Meça a visibilidade real dos seus anúncios</p></div>
     </div>
     <div class="row mb-4">
-        <div class="col-md-4"><div class="card bg-dark border-success"><div class="card-body text-center"><h3 class="text-success">78%</h3><p class="text-muted mb-0">Taxa de Viewability</p></div></div></div>
-        <div class="col-md-4"><div class="card bg-dark border-info"><div class="card-body text-center"><h3 class="text-info">2.8s</h3><p class="text-muted mb-0">Tempo Médio em Tela</p></div></div></div>
-        <div class="col-md-4"><div class="card bg-dark border-warning"><div class="card-body text-center"><h3 class="text-warning">65%</h3><p class="text-muted mb-0">Above the Fold</p></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Taxa de Viewability</p><h3 class="mb-0 text-success">78%</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Tempo em Tela</p><h3 class="mb-0 text-info">4.2s</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Impressões Viewable</p><h3 class="mb-0 text-primary">1.8M</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">vCPM</p><h3 class="mb-0 text-warning">R$ 12,50</h3></div></div></div>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="card bg-dark">
-                <div class="card-header"><h5 class="mb-0 text-white">Viewability por Formato</h5></div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-dark">
-                            <thead><tr><th>Formato</th><th>Impressões</th><th>Viewable</th><th>Taxa</th></tr></thead>
-                            <tbody>
-                                <tr><td>Display 300x250</td><td>1.2M</td><td>936K</td><td class="text-success">78%</td></tr>
-                                <tr><td>Video In-Stream</td><td>450K</td><td>382K</td><td class="text-success">85%</td></tr>
-                                <tr><td>Native</td><td>800K</td><td>680K</td><td class="text-success">85%</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="row"><div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Viewability por Formato</h5></div><div class="card-body"><canvas id="viewChart" height="100"></canvas></div></div></div></div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    new Chart(document.getElementById('viewChart').getContext('2d'), {
+        type: 'bar', data: { labels: ['Display', 'Video', 'Native', 'Rich Media'], datasets: [{label: 'Viewability %', data: [72, 85, 68, 78], backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0']}] }
+    });
+});
+</script>
 {% endblock %}

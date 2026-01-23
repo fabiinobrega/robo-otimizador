@@ -1,35 +1,17 @@
-{% extends "index.html" %}
+{% extends "base_nexora.html" %}
 {% block title %}Brand Safety - NEXORA{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li class="breadcrumb-item active">Brand Safety</li></ol></nav>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div><h1 class="h2 mb-2"><i class="fas fa-shield-virus text-primary"></i> Brand Safety</h1><p class="text-muted mb-0">Proteja sua marca de conteúdo inadequado</p></div>
+    </div>
     <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-white"><i class="fas fa-certificate me-2"></i>Brand Safety</h1>
-            <p class="text-muted">Proteja sua marca de conteúdo inadequado</p>
-        </div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Score de Segurança</p><h3 class="mb-0 text-success">96%</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Sites Bloqueados</p><h3 class="mb-0 text-danger">234</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Impressões Seguras</p><h3 class="mb-0 text-info">2.5M</h3></div></div></div>
+        <div class="col-md-3 mb-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-muted mb-1 small">Alertas</p><h3 class="mb-0 text-warning">3</h3></div></div></div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card bg-dark mb-4">
-                <div class="card-header"><h5 class="mb-0 text-white">Score de Segurança</h5></div>
-                <div class="card-body text-center">
-                    <h1 class="text-success display-3">95</h1>
-                    <p class="text-muted">de 100 pontos</p>
-                    <div class="progress"><div class="progress-bar bg-success" style="width: 95%"></div></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card bg-dark">
-                <div class="card-header"><h5 class="mb-0 text-white">Categorias Bloqueadas</h5></div>
-                <div class="card-body">
-                    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked><label class="form-check-label text-white">Conteúdo Adulto</label></div>
-                    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked><label class="form-check-label text-white">Violência</label></div>
-                    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked><label class="form-check-label text-white">Discurso de Ódio</label></div>
-                    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked><label class="form-check-label text-white">Fake News</label></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="row"><div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Categorias Bloqueadas</h5></div><div class="card-body"><div class="row"><div class="col-md-4"><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" checked><label>Conteúdo Adulto</label></div><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" checked><label>Violência</label></div></div><div class="col-md-4"><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" checked><label>Fake News</label></div><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" checked><label>Drogas</label></div></div><div class="col-md-4"><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" checked><label>Discurso de Ódio</label></div><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox"><label>Política</label></div></div></div></div></div></div></div>
 </div>
 {% endblock %}
