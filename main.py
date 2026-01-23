@@ -952,6 +952,25 @@ def settings():
     return render_template("settings.html")
 
 
+@app.route("/api/settings/general", methods=["GET"])
+def api_settings_general():
+    """Retorna configurações gerais do sistema."""
+    return jsonify({
+        "status": "success",
+        "settings": {
+            "timezone": "America/Sao_Paulo",
+            "locale": "pt-BR",
+            "currency": "BRL",
+            "date_format": "DD/MM/YYYY",
+            "notifications_enabled": True,
+            "auto_optimization": True,
+            "ai_suggestions": True,
+            "dark_mode": False,
+            "language": "pt-BR"
+        }
+    })
+
+
 @app.route("/notifications")
 def notifications():
     return render_template("notifications.html")
@@ -1112,6 +1131,7 @@ def api_operator_optimize():
 
 @app.route("/api/operator/chat", methods=["POST"])
 @app.route("/api/velyra/chat", methods=["POST"])  # Alias para compatibilidade
+@app.route("/api/v2/velyra/chat", methods=["POST"])  # Alias V2
 def api_operator_chat():
     """Chat with Velyra Prime"""
     data = request.get_json()

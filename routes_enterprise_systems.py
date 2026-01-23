@@ -239,6 +239,7 @@ def get_ux_mode(user_id):
 # ==================== FINANCIAL PROTECTION ====================
 
 @enterprise_bp.route('/financial/status', methods=['GET'])
+@enterprise_bp.route('/protection/status', methods=['GET'])
 def financial_status():
     """Retorna status do sistema de proteção financeira."""
     return jsonify({
@@ -475,6 +476,7 @@ def memory_status():
 # ==================== DECISION FORECASTING ====================
 
 @enterprise_bp.route('/forecasting/status', methods=['GET'])
+@enterprise_bp.route('/forecast/status', methods=['GET'])
 def forecast_status():
     """Retorna status do sistema de previsão de decisões."""
     return jsonify({
