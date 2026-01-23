@@ -655,7 +655,7 @@ function generateReviewSummary() {
     const summary = `
         <div class="row g-3">
             <div class="col-md-6">
-                <div class="card">
+                <div class="nexora-card">
                     <div class="card-body">
                         <h6 class="text-muted mb-3">Informações Básicas</h6>
                         <p><strong>Nome:</strong> ${document.getElementById('campaignName').value}</p>
@@ -664,7 +664,7 @@ function generateReviewSummary() {
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card">
+                <div class="nexora-card">
                     <div class="card-body">
                         <h6 class="text-muted mb-3">Plataforma & Objetivo</h6>
                         <p><strong>Plataforma:</strong> ${selectedPlatform}</p>
@@ -673,7 +673,7 @@ function generateReviewSummary() {
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card">
+                <div class="nexora-card">
                     <div class="card-body">
                         <h6 class="text-muted mb-3">Público-Alvo</h6>
                         <p><strong>Idade:</strong> ${document.getElementById('ageMin').value || '18'} - ${document.getElementById('ageMax').value || '65'} anos</p>
@@ -682,7 +682,7 @@ function generateReviewSummary() {
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card">
+                <div class="nexora-card">
                     <div class="card-body">
                         <h6 class="text-muted mb-3">Orçamento</h6>
                         <p><strong>Diário:</strong> R$ ${document.getElementById('dailyBudget').value}</p>

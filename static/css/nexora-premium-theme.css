@@ -31,9 +31,13 @@
     --accent-primary: #4f46e5; /* Indigo for primary actions */
     --accent-success: #22c55e; /* Green for success */
     --accent-warning: #f97316; /* Orange for warnings */
-    --accent-danger: #ef4444; /* Red for danger/errors */
-    --accent-info: #3b82f6; /* Blue for informational messages */
-
+    --accent-danger: #ef4444; /* Red for danger/errors */    --accent-info: #3b82f6; /* Blue for informational messages */
+    
+    /* NEXORA Signature Styles */
+    --nexora-green: #10b981;
+    --nexora-green-glow: rgba(16, 185, 129, 0.15);
+    --nexora-border-dashed: 2px dashed var(--nexora-green);
+}
     /* ============================================
        TYPOGRAPHY
        ============================================ */
@@ -206,10 +210,17 @@ a:hover {
 /* Cards */
 .card-nexora {
     background-color: var(--bg-secondary);
-    border: 1px solid var(--border-primary);
+    border: var(--nexora-border-dashed);
     border-radius: var(--radius-xl);
     padding: var(--spacing-6);
     box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+}
+
+.card-nexora:hover {
+    border-style: solid;
+    box-shadow: 0 0 20px var(--nexora-green-glow);
+    transform: translateY(-2px);
 }
 
 /* Forms */
