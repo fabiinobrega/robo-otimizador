@@ -298,19 +298,24 @@ def get_ranking():
 def activate_war_mode():
     """Ativa modo guerra - usa activate_war_mode."""
     data = request.get_json() or {}
-    result = war_mode.activate_war_mode(data.get('campaign_id', ''), data.get('config', {}))
+    result = war_mode.activate_war_mode(
+        level=data.get('level', 'alert'),
+        campaigns=data.get('campaigns', []),
+        config=data.get('config', {})
+    )
     return jsonify(result)
 
-@unicorn_bp.route('/warmode/status/<campaign_id>', methods=['GET'])
-def get_war_status(campaign_id):
+@unicorn_bp.route('/warmode/status', methods=['GET'])
+def get_war_status():
     """Obtem status do modo guerra - usa get_war_status."""
-    result = war_mode.get_war_status(campaign_id)
+    result = war_mode.get_war_status()
     return jsonify(result)
 
-@unicorn_bp.route('/warmode/deactivate/<campaign_id>', methods=['POST'])
-def deactivate_war_mode(campaign_id):
+@unicorn_bp.route('/warmode/deactivate', methods=['POST'])
+def deactivate_war_mode_route():
     """Desativa modo guerra - usa deactivate_war_mode."""
-    result = war_mode.deactivate_war_mode(campaign_id)
+    data = request.get_json() or {}
+    result = war_mode.deactivate_war_mode(reason=data.get('reason', 'manual'))
     return jsonify(result)
 
 
