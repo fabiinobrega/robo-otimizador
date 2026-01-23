@@ -60,37 +60,50 @@ def governance_status():
     return jsonify({
         "status": "active",
         "system": "GovernanceSystem",
-        "version": "1.0.0",
-        "policies_count": len(governance.policies),
+        "version": governance.current_version,
+        "version_history_count": len(governance.version_history),
+        "audit_logs_count": len(governance.audit_logs),
+        "compliance_rules": governance.compliance_rules,
         "timestamp": datetime.now().isoformat()
     })
 
 @enterprise_bp.route('/governance/policies', methods=['GET'])
 def list_policies():
-    """Lista todas as políticas."""
+    """Lista todas as políticas/regras de compliance."""
     return jsonify({
-        "policies": list(governance.policies.values()),
-        "total": len(governance.policies)
+        "compliance_rules": governance.compliance_rules,
+        "version_history": governance.version_history[-10:] if governance.version_history else [],
+        "total_versions": len(governance.version_history)
     })
 
 @enterprise_bp.route('/governance/policy', methods=['POST'])
 def create_policy():
-    """Cria uma nova política."""
+    """Cria uma nova versão de entidade."""
     data = request.get_json() or {}
-    result = governance.create_policy(
-        name=data.get('name', 'Nova Política'),
-        description=data.get('description', ''),
-        rules=data.get('rules', []),
-        severity=data.get('severity', 'medium')
+    result = governance.create_version(
+        entity_type=data.get('entity_type', 'policy'),
+        entity_id=data.get('entity_id', 'default'),
+        data=data.get('data', {}),
+        user=data.get('user', 'api')
     )
     return jsonify(result)
 
 @enterprise_bp.route('/governance/validate', methods=['POST'])
 def validate_action():
-    """Valida uma ação contra as políticas."""
+    """Valida uma ação contra as regras de compliance."""
     data = request.get_json() or {}
-    result = governance.validate_action(data.get('action', {}))
-    return jsonify(result)
+    action = data.get('action', {})
+    budget_change = action.get('budget_change_percent', 0)
+    max_allowed = governance.compliance_rules.get('max_budget_change_percent', 50)
+    
+    is_valid = budget_change <= max_allowed
+    return jsonify({
+        "valid": is_valid,
+        "action": action,
+        "rule_applied": "max_budget_change_percent",
+        "max_allowed": max_allowed,
+        "message": "Ação válida" if is_valid else f"Mudança de orçamento excede {max_allowed}%"
+    })
 
 
 # ==================== SINGLE SOURCE OF TRUTH ====================
