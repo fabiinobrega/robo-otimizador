@@ -2491,7 +2491,11 @@ def create_perfect_ad_v2():
 @app.route("/manus-connection")
 def manus_connection():
     """Página de conexão com Manus"""
-    return render_template("manus_connection.html")
+    status = {
+        "api_url": "https://api.manus.im/v1",
+        "last_sync": datetime.now().strftime("%d/%m/%Y %H:%M")
+    }
+    return render_template("manus_connection.html", status=status)
 
 
 @app.route("/not-found")
