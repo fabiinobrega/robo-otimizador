@@ -183,7 +183,7 @@ def objectives_status():
         "status": "active",
         "system": "HierarchicalObjectivesSystem",
         "version": "1.0.0",
-        "objectives_count": len(objectives.objectives),
+        "objectives_count": len(objectives.objectives_tree),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -202,7 +202,7 @@ def create_objective():
 @enterprise_bp.route('/objectives/tree', methods=['GET'])
 def get_objectives_tree():
     """Obtém árvore de objetivos."""
-    result = objectives.get_objectives_tree()
+    result = objectives.get_all_objectives()
     return jsonify(result)
 
 
@@ -215,7 +215,7 @@ def ux_status():
         "status": "active",
         "system": "EliteUXSystem",
         "version": "1.0.0",
-        "available_modes": list(elite_ux.modes.keys()),
+        "available_modes": elite_ux.get_available_modes(),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -246,6 +246,7 @@ def financial_status():
         "system": "FinancialProtectionSystem",
         "version": "1.0.0",
         "alerts_count": len(financial_protection.alerts),
+        "blocked_campaigns": len(financial_protection.blocked_campaigns),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -253,17 +254,23 @@ def financial_status():
 def validate_transaction():
     """Valida uma transação financeira."""
     data = request.get_json() or {}
-    result = financial_protection.validate_transaction(data)
+    campaign_id = data.get('campaign_id', 'default')
+    amount = data.get('amount', 0)
+    
+    # Usar check_spending_limits
+    result = financial_protection.check_spending_limits(campaign_id, amount)
     return jsonify(result)
 
-@enterprise_bp.route('/financial/limits', methods=['POST'])
-def set_limits():
-    """Define limites financeiros."""
-    data = request.get_json() or {}
-    result = financial_protection.set_limits(
-        user_id=data.get('user_id', 'default'),
-        limits=data.get('limits', {})
-    )
+@enterprise_bp.route('/financial/report', methods=['GET'])
+def get_spending_report():
+    """Obtém relatório de gastos."""
+    result = financial_protection.get_spending_report()
+    return jsonify(result)
+
+@enterprise_bp.route('/financial/protection-status', methods=['GET'])
+def get_protection_status():
+    """Obtém status de proteção."""
+    result = financial_protection.get_protection_status()
     return jsonify(result)
 
 
@@ -276,30 +283,32 @@ def personality_status():
         "status": "active",
         "system": "AIPersonalitySystem",
         "version": "1.0.0",
-        "available_personalities": list(ai_personality.personalities.keys()),
+        "available_styles": ai_personality.get_available_styles(),
+        "current_style": ai_personality.current_style,
         "timestamp": datetime.now().isoformat()
     })
 
 @enterprise_bp.route('/personality/set', methods=['POST'])
 def set_personality():
-    """Define a personalidade da IA."""
+    """Define o estilo de comunicação da IA."""
     data = request.get_json() or {}
-    result = ai_personality.set_personality(
-        user_id=data.get('user_id', 'default'),
-        personality=data.get('personality', 'professional')
-    )
+    style = data.get('style', 'professional')
+    result = ai_personality.set_communication_style(style)
     return jsonify(result)
 
-@enterprise_bp.route('/personality/generate', methods=['POST'])
-def generate_response():
-    """Gera resposta com personalidade."""
+@enterprise_bp.route('/personality/greeting', methods=['GET'])
+def get_greeting():
+    """Obtém saudação personalizada."""
+    result = ai_personality.get_greeting()
+    return jsonify({"greeting": result})
+
+@enterprise_bp.route('/personality/insight', methods=['POST'])
+def generate_insight():
+    """Gera insight personalizado."""
     data = request.get_json() or {}
-    result = ai_personality.generate_response(
-        user_id=data.get('user_id', 'default'),
-        message=data.get('message', ''),
-        context=data.get('context', {})
-    )
-    return jsonify(result)
+    topic = data.get('topic', 'performance')
+    result = ai_personality.generate_insight(topic)
+    return jsonify({"insight": result})
 
 
 # ==================== LIVING KNOWLEDGE BASE ====================
@@ -311,26 +320,34 @@ def knowledge_status():
         "status": "active",
         "system": "LivingKnowledgeBase",
         "version": "1.0.0",
-        "entries_count": len(knowledge_base.knowledge),
+        "playbooks_count": len(knowledge_base.playbooks),
+        "best_practices_count": len(knowledge_base.best_practices),
+        "case_studies_count": len(knowledge_base.case_studies),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/knowledge/add', methods=['POST'])
-def add_knowledge():
-    """Adiciona conhecimento à base."""
+@enterprise_bp.route('/knowledge/playbook', methods=['POST'])
+def add_playbook():
+    """Adiciona um playbook."""
     data = request.get_json() or {}
-    result = knowledge_base.add_knowledge(
-        topic=data.get('topic', ''),
-        content=data.get('content', ''),
-        source=data.get('source', 'api')
+    result = knowledge_base.add_playbook(
+        name=data.get('name', 'Novo Playbook'),
+        steps=data.get('steps', []),
+        category=data.get('category', 'general')
     )
     return jsonify(result)
 
-@enterprise_bp.route('/knowledge/search', methods=['POST'])
-def search_knowledge():
-    """Busca na base de conhecimento."""
-    data = request.get_json() or {}
-    result = knowledge_base.search(data.get('query', ''))
+@enterprise_bp.route('/knowledge/playbooks', methods=['GET'])
+def get_playbooks():
+    """Obtém todos os playbooks."""
+    result = knowledge_base.get_all_playbooks()
+    return jsonify(result)
+
+@enterprise_bp.route('/knowledge/best-practices', methods=['GET'])
+def get_best_practices():
+    """Obtém melhores práticas."""
+    category = request.args.get('category', None)
+    result = knowledge_base.get_best_practices(category)
     return jsonify(result)
 
 
@@ -343,18 +360,33 @@ def scale_status():
         "status": "active",
         "system": "ScaleProofSystem",
         "version": "1.0.0",
-        "metrics": scale_proof.get_metrics(),
+        "stress_tests_count": len(scale_proof.stress_tests),
+        "bottlenecks_identified": len(scale_proof.bottlenecks_identified),
         "timestamp": datetime.now().isoformat()
     })
 
 @enterprise_bp.route('/scale/test', methods=['POST'])
 def run_scale_test():
-    """Executa teste de escala."""
+    """Executa teste de stress."""
     data = request.get_json() or {}
-    result = scale_proof.run_test(
-        test_type=data.get('test_type', 'load'),
-        params=data.get('params', {})
+    result = scale_proof.run_stress_test(
+        test_name=data.get('test_name', 'default_test'),
+        concurrent_users=data.get('concurrent_users', 100),
+        duration_seconds=data.get('duration_seconds', 60)
     )
+    return jsonify(result)
+
+@enterprise_bp.route('/scale/capacity', methods=['GET'])
+def get_capacity_report():
+    """Obtém relatório de capacidade."""
+    result = scale_proof.get_capacity_report()
+    return jsonify(result)
+
+@enterprise_bp.route('/scale/readiness', methods=['GET'])
+def validate_scaling_readiness():
+    """Valida prontidão para escala."""
+    target = request.args.get('target', 10000)
+    result = scale_proof.validate_scaling_readiness(int(target))
     return jsonify(result)
 
 
@@ -367,18 +399,27 @@ def criticism_status():
         "status": "active",
         "system": "AISelfCriticismSystem",
         "version": "1.0.0",
-        "reviews_count": len(self_criticism.reviews),
+        "evaluations_count": len(self_criticism.evaluations),
+        "improvement_suggestions": len(self_criticism.improvement_suggestions),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/criticism/review', methods=['POST'])
-def review_decision():
-    """Revisa uma decisão da IA."""
+@enterprise_bp.route('/criticism/evaluate', methods=['POST'])
+def evaluate_decision():
+    """Avalia uma decisão da IA."""
     data = request.get_json() or {}
-    result = self_criticism.review_decision(
+    result = self_criticism.evaluate_decision(
         decision_id=data.get('decision_id', ''),
-        context=data.get('context', {})
+        decision_type=data.get('decision_type', 'optimization'),
+        context=data.get('context', {}),
+        outcome=data.get('outcome', {})
     )
+    return jsonify(result)
+
+@enterprise_bp.route('/criticism/report', methods=['GET'])
+def get_performance_report():
+    """Obtém relatório de performance."""
+    result = self_criticism.get_performance_report()
     return jsonify(result)
 
 
@@ -391,24 +432,30 @@ def context_status():
         "status": "active",
         "system": "BusinessContextMemory",
         "version": "1.0.0",
-        "contexts_count": len(context_memory.contexts),
+        "business_profiles_count": len(context_memory.business_profiles),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/context/store', methods=['POST'])
-def store_context():
-    """Armazena contexto de negócio."""
+@enterprise_bp.route('/context/profile', methods=['POST'])
+def set_business_profile():
+    """Define perfil de negócio."""
     data = request.get_json() or {}
-    result = context_memory.store_context(
+    result = context_memory.set_business_profile(
         business_id=data.get('business_id', 'default'),
-        context=data.get('context', {})
+        profile=data.get('profile', {})
     )
     return jsonify(result)
 
-@enterprise_bp.route('/context/get/<business_id>', methods=['GET'])
-def get_context(business_id):
-    """Obtém contexto de negócio."""
-    result = context_memory.get_context(business_id)
+@enterprise_bp.route('/context/profile/<business_id>', methods=['GET'])
+def get_business_profile(business_id):
+    """Obtém perfil de negócio."""
+    result = context_memory.get_business_profile(business_id)
+    return jsonify(result if result else {'error': 'Profile not found'})
+
+@enterprise_bp.route('/context/decision/<business_id>', methods=['GET'])
+def get_decision_context(business_id):
+    """Obtém contexto para decisão."""
+    result = context_memory.get_decision_context(business_id)
     return jsonify(result)
 
 
@@ -422,16 +469,28 @@ def forecast_status():
         "system": "DecisionForecastingSystem",
         "version": "1.0.0",
         "simulations_count": len(forecasting.simulations),
+        "forecasts_count": len(forecasting.forecasts),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/forecast/simulate', methods=['POST'])
-def simulate_scenario():
-    """Simula um cenário de decisão."""
+@enterprise_bp.route('/forecast/generate', methods=['POST'])
+def generate_forecast():
+    """Gera previsão."""
     data = request.get_json() or {}
-    result = forecasting.simulate_scenario(
-        scenario=data.get('scenario', {}),
-        variables=data.get('variables', {})
+    result = forecasting.generate_forecast(
+        metric=data.get('metric', 'revenue'),
+        horizon_days=data.get('horizon_days', 30),
+        context=data.get('context', {})
+    )
+    return jsonify(result)
+
+@enterprise_bp.route('/forecast/scenarios', methods=['POST'])
+def forecast_scenarios():
+    """Prevê cenários."""
+    data = request.get_json() or {}
+    result = forecasting.forecast_scenarios(
+        base_scenario=data.get('base_scenario', {}),
+        variations=data.get('variations', [])
     )
     return jsonify(result)
 
@@ -445,15 +504,24 @@ def entropy_status():
         "status": "active",
         "system": "SystemEntropyControl",
         "version": "1.0.0",
-        "entropy_level": entropy_control.get_entropy_level(),
+        "alerts_count": len(entropy_control.alerts),
+        "complexity_threshold": entropy_control.complexity_threshold,
         "timestamp": datetime.now().isoformat()
     })
 
 @enterprise_bp.route('/entropy/analyze', methods=['GET'])
 def analyze_entropy():
     """Analisa entropia do sistema."""
-    result = entropy_control.analyze()
+    result = entropy_control.analyze_system_entropy()
     return jsonify(result)
+
+@enterprise_bp.route('/entropy/health', methods=['GET'])
+def get_entropy_health():
+    """Obtém métricas de saúde."""
+    return jsonify({
+        "health_metrics": entropy_control.health_metrics,
+        "entropy_history": entropy_control.entropy_history[-10:] if entropy_control.entropy_history else []
+    })
 
 
 # ==================== EXPLAINABLE DECISIONS ====================
@@ -465,7 +533,8 @@ def explain_status():
         "status": "active",
         "system": "ExplainableDecisionPatterns",
         "version": "1.0.0",
-        "patterns_count": len(decision_patterns.patterns),
+        "templates_count": len(decision_patterns.decision_templates),
+        "history_count": len(decision_patterns.decision_history),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -474,9 +543,17 @@ def explain_decision():
     """Explica uma decisão."""
     data = request.get_json() or {}
     result = decision_patterns.explain_decision(
-        decision_id=data.get('decision_id', ''),
-        context=data.get('context', {})
+        decision_type=data.get('decision_type', 'optimization'),
+        context=data.get('context', {}),
+        factors=data.get('factors', [])
     )
+    return jsonify(result)
+
+@enterprise_bp.route('/explain/history', methods=['GET'])
+def get_decision_history():
+    """Obtém histórico de decisões."""
+    limit = request.args.get('limit', 10)
+    result = decision_patterns.get_decision_history(int(limit))
     return jsonify(result)
 
 
@@ -489,15 +566,33 @@ def legal_status():
         "status": "active",
         "system": "LegalGovernanceAutomation",
         "version": "1.0.0",
-        "compliance_rules": len(legal_governance.rules),
+        "platform_policies_count": len(legal_governance.platform_policies),
+        "regional_policies_count": len(legal_governance.regional_policies),
+        "violations_count": len(legal_governance.violations),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/legal/validate', methods=['POST'])
-def validate_compliance():
-    """Valida conformidade legal."""
+@enterprise_bp.route('/legal/check', methods=['POST'])
+def check_compliance():
+    """Verifica conformidade."""
     data = request.get_json() or {}
-    result = legal_governance.validate_compliance(data.get('action', {}))
+    result = legal_governance.check_compliance(
+        content=data.get('content', ''),
+        platform=data.get('platform', 'meta'),
+        region=data.get('region', 'BR')
+    )
+    return jsonify(result)
+
+@enterprise_bp.route('/legal/policies/<platform>', methods=['GET'])
+def get_platform_policies(platform):
+    """Obtém políticas de uma plataforma."""
+    result = legal_governance.get_applicable_policies(platform)
+    return jsonify(result)
+
+@enterprise_bp.route('/legal/report', methods=['GET'])
+def get_compliance_report():
+    """Obtém relatório de conformidade."""
+    result = legal_governance.get_compliance_report()
     return jsonify(result)
 
 
@@ -510,15 +605,25 @@ def ecosystem_status():
         "status": "active",
         "system": "EcosystemIntelligence",
         "version": "1.0.0",
-        "integrations_count": len(ecosystem_intel.integrations),
+        "competitors_tracked": len(ecosystem_intel.competitor_tracking),
+        "trends_analyzed": len(ecosystem_intel.trend_history),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/ecosystem/analyze', methods=['POST'])
-def analyze_ecosystem():
-    """Analisa o ecossistema."""
+@enterprise_bp.route('/ecosystem/insights', methods=['GET'])
+def get_ecosystem_insights():
+    """Obtém insights do ecossistema."""
+    result = ecosystem_intel.get_ecosystem_insights()
+    return jsonify(result)
+
+@enterprise_bp.route('/ecosystem/opportunity', methods=['POST'])
+def get_opportunity_score():
+    """Calcula score de oportunidade."""
     data = request.get_json() or {}
-    result = ecosystem_intel.analyze(data.get('scope', 'full'))
+    result = ecosystem_intel.get_opportunity_score(
+        market_segment=data.get('market_segment', 'general'),
+        context=data.get('context', {})
+    )
     return jsonify(result)
 
 
@@ -532,6 +637,7 @@ def strategy_status():
         "system": "StrategyLaboratory",
         "version": "1.0.0",
         "experiments_count": len(strategy_lab.experiments),
+        "simulations_count": len(strategy_lab.simulation_results),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -542,7 +648,28 @@ def create_experiment():
     result = strategy_lab.create_experiment(
         name=data.get('name', 'Novo Experimento'),
         hypothesis=data.get('hypothesis', ''),
-        variables=data.get('variables', {})
+        variables=data.get('variables', {}),
+        success_criteria=data.get('success_criteria', {})
+    )
+    return jsonify(result)
+
+@enterprise_bp.route('/strategy/simulate', methods=['POST'])
+def simulate_strategy():
+    """Simula uma estratégia."""
+    data = request.get_json() or {}
+    result = strategy_lab.simulate_strategy(
+        strategy=data.get('strategy', {}),
+        market_conditions=data.get('market_conditions', {}),
+        duration_days=data.get('duration_days', 30)
+    )
+    return jsonify(result)
+
+@enterprise_bp.route('/strategy/compare', methods=['POST'])
+def compare_strategies():
+    """Compara estratégias."""
+    data = request.get_json() or {}
+    result = strategy_lab.compare_strategies(
+        strategies=data.get('strategies', [])
     )
     return jsonify(result)
 
@@ -556,18 +683,43 @@ def collaboration_status():
         "status": "active",
         "system": "HumanAICollaboration",
         "version": "1.0.0",
-        "sessions_count": len(human_ai_collab.sessions),
+        "pending_approvals": len(human_ai_collab.pending_approvals),
+        "feedback_count": len(human_ai_collab.feedback_history),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/collaboration/start', methods=['POST'])
-def start_collaboration():
-    """Inicia uma sessão de colaboração."""
+@enterprise_bp.route('/collaboration/approval', methods=['POST'])
+def request_approval():
+    """Solicita aprovação humana."""
     data = request.get_json() or {}
-    result = human_ai_collab.start_session(
-        user_id=data.get('user_id', 'default'),
-        task=data.get('task', '')
+    result = human_ai_collab.request_approval(
+        action_type=data.get('action_type', 'optimization'),
+        details=data.get('details', {}),
+        urgency=data.get('urgency', 'normal')
     )
+    return jsonify(result)
+
+@enterprise_bp.route('/collaboration/pending', methods=['GET'])
+def get_pending_approvals():
+    """Obtém aprovações pendentes."""
+    result = human_ai_collab.get_pending_approvals()
+    return jsonify(result)
+
+@enterprise_bp.route('/collaboration/feedback', methods=['POST'])
+def submit_feedback():
+    """Envia feedback."""
+    data = request.get_json() or {}
+    result = human_ai_collab.submit_feedback(
+        decision_id=data.get('decision_id', ''),
+        rating=data.get('rating', 5),
+        comments=data.get('comments', '')
+    )
+    return jsonify(result)
+
+@enterprise_bp.route('/collaboration/insights', methods=['GET'])
+def get_collaboration_insights():
+    """Obtém insights de colaboração."""
+    result = human_ai_collab.get_collaboration_insights()
     return jsonify(result)
 
 
@@ -580,24 +732,36 @@ def velyra_training_status():
         "status": "active",
         "system": "VelyraMasterTraining",
         "version": "1.0.0",
-        "training_progress": velyra_training.get_progress(),
+        "modules_count": len(velyra_training.training_modules),
+        "certifications_count": len(velyra_training.certifications),
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/velyra/training/run', methods=['POST'])
-def run_velyra_training():
-    """Executa treinamento da Velyra."""
+@enterprise_bp.route('/velyra/training/start', methods=['POST'])
+def start_velyra_training():
+    """Inicia treinamento da Velyra."""
     data = request.get_json() or {}
-    result = velyra_training.run_training(
-        modules=data.get('modules', []),
-        intensity=data.get('intensity', 'standard')
+    result = velyra_training.start_training(
+        module=data.get('module', 'all')
     )
     return jsonify(result)
 
-@enterprise_bp.route('/velyra/training/results', methods=['GET'])
-def get_training_results():
-    """Obtém resultados do treinamento."""
-    result = velyra_training.get_results()
+@enterprise_bp.route('/velyra/training/execute', methods=['POST'])
+def execute_full_training():
+    """Executa treinamento completo."""
+    result = velyra_training.execute_full_training()
+    return jsonify(result)
+
+@enterprise_bp.route('/velyra/modules', methods=['GET'])
+def list_training_modules():
+    """Lista módulos de treinamento."""
+    result = velyra_training.list_all_modules()
+    return jsonify(result)
+
+@enterprise_bp.route('/velyra/capabilities', methods=['GET'])
+def get_velyra_capabilities():
+    """Obtém capacidades da Velyra."""
+    result = velyra_training.get_velyra_capabilities()
     return jsonify(result)
 
 
