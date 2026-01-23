@@ -459,6 +459,19 @@ def get_decision_context(business_id):
     return jsonify(result)
 
 
+# Alias para compatibilidade
+@enterprise_bp.route('/memory/status', methods=['GET'])
+def memory_status():
+    """Alias para context_status - Retorna status da memória de contexto."""
+    return jsonify({
+        "status": "active",
+        "system": "BusinessContextMemory",
+        "version": "1.0.0",
+        "business_profiles_count": len(context_memory.business_profiles),
+        "timestamp": datetime.now().isoformat()
+    })
+
+
 # ==================== DECISION FORECASTING ====================
 
 @enterprise_bp.route('/forecasting/status', methods=['GET'])
