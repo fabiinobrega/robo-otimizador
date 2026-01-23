@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}LTV Calculator - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-calculator me-2"></i>Calculadora de LTV</h1>
+            <p class="text-muted">Calcule o Lifetime Value dos seus clientes</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card bg-dark mb-4">
+                <div class="card-header"><h5 class="mb-0 text-white">Parâmetros</h5></div>
+                <div class="card-body">
+                    <div class="mb-3"><label class="form-label text-white">Ticket Médio (R$)</label><input type="number" class="form-control bg-dark text-white" value="150"></div>
+                    <div class="mb-3"><label class="form-label text-white">Frequência de Compra (por ano)</label><input type="number" class="form-control bg-dark text-white" value="4"></div>
+                    <div class="mb-3"><label class="form-label text-white">Tempo Médio de Retenção (anos)</label><input type="number" class="form-control bg-dark text-white" value="3"></div>
+                    <button class="btn btn-success"><i class="fas fa-calculator me-2"></i>Calcular LTV</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-dark border-success">
+                <div class="card-header"><h5 class="mb-0 text-success">Resultado</h5></div>
+                <div class="card-body text-center">
+                    <h1 class="text-success display-4">R$ 1.800</h1>
+                    <p class="text-muted">Lifetime Value Estimado</p>
+                    <hr class="border-secondary">
+                    <div class="row">
+                        <div class="col-6"><h4 class="text-info">R$ 450</h4><small class="text-muted">Valor Anual</small></div>
+                        <div class="col-6"><h4 class="text-warning">R$ 37,50</h4><small class="text-muted">Valor Mensal</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

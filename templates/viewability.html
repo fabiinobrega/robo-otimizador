@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Viewability - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-eye me-2"></i>Análise de Viewability</h1>
+            <p class="text-muted">Verifique se seus anúncios estão sendo realmente vistos</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-4"><div class="card bg-dark border-success"><div class="card-body text-center"><h3 class="text-success">78%</h3><p class="text-muted mb-0">Taxa de Viewability</p></div></div></div>
+        <div class="col-md-4"><div class="card bg-dark border-info"><div class="card-body text-center"><h3 class="text-info">2.8s</h3><p class="text-muted mb-0">Tempo Médio em Tela</p></div></div></div>
+        <div class="col-md-4"><div class="card bg-dark border-warning"><div class="card-body text-center"><h3 class="text-warning">65%</h3><p class="text-muted mb-0">Above the Fold</p></div></div></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-header"><h5 class="mb-0 text-white">Viewability por Formato</h5></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark">
+                            <thead><tr><th>Formato</th><th>Impressões</th><th>Viewable</th><th>Taxa</th></tr></thead>
+                            <tbody>
+                                <tr><td>Display 300x250</td><td>1.2M</td><td>936K</td><td class="text-success">78%</td></tr>
+                                <tr><td>Video In-Stream</td><td>450K</td><td>382K</td><td class="text-success">85%</td></tr>
+                                <tr><td>Native</td><td>800K</td><td>680K</td><td class="text-success">85%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

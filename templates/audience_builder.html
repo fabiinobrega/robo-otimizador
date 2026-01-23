@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Audience Builder - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-users-cog me-2"></i>Audience Builder</h1>
+            <p class="text-muted">Construa audiências personalizadas com IA</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card bg-dark mb-4">
+                <div class="card-header"><h5 class="mb-0 text-white">Criar Nova Audiência</h5></div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-white">Nome da Audiência</label>
+                        <input type="text" class="form-control bg-dark text-white" placeholder="Ex: Compradores de Alto Valor">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white">Segmentação Demográfica</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-select bg-dark text-white">
+                                    <option>Idade: 25-34</option>
+                                    <option>Idade: 35-44</option>
+                                    <option>Idade: 45-54</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-select bg-dark text-white">
+                                    <option>Gênero: Todos</option>
+                                    <option>Gênero: Masculino</option>
+                                    <option>Gênero: Feminino</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white">Interesses</label>
+                        <input type="text" class="form-control bg-dark text-white" placeholder="Ex: Marketing Digital, E-commerce, Tecnologia">
+                    </div>
+                    <button class="btn btn-success"><i class="fas fa-magic me-2"></i>Gerar Audiência com IA</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-info">
+                <div class="card-header"><h5 class="mb-0 text-info">Audiências Salvas</h5></div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item bg-dark text-white border-secondary">
+                            <strong>Compradores Premium</strong><br><small class="text-muted">2.5M pessoas</small>
+                        </div>
+                        <div class="list-group-item bg-dark text-white border-secondary">
+                            <strong>Leads Quentes</strong><br><small class="text-muted">850K pessoas</small>
+                        </div>
+                        <div class="list-group-item bg-dark text-white border-secondary">
+                            <strong>Remarketing 30 dias</strong><br><small class="text-muted">125K pessoas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5808,3 +5808,83 @@ def get_api_status():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ============================================================
+# PÁGINAS ADICIONAIS - ANALYTICS AVANÇADO
+# ============================================================
+
+@app.route('/ai-prediction')
+def ai_prediction_page():
+    """Página de Predição com IA."""
+    return render_template('ai_prediction.html')
+
+@app.route('/create-perfect-ad')
+def create_perfect_ad_page():
+    """Página de criação de anúncio perfeito (versão 1)."""
+    return redirect('/create-perfect-ad-v2')
+
+@app.route('/audience-builder')
+def audience_builder_page():
+    """Página de construção de audiência."""
+    return render_template('audience_builder.html')
+
+@app.route('/performance')
+def performance_page():
+    """Página de análise de performance."""
+    return render_template('performance.html')
+
+@app.route('/budget-optimizer')
+def budget_optimizer_page():
+    """Página de otimização de orçamento."""
+    return render_template('budget_optimizer.html')
+
+@app.route('/attribution')
+def attribution_page():
+    """Página de atribuição de conversões."""
+    return render_template('attribution.html')
+
+@app.route('/cohort-analysis')
+def cohort_analysis_page():
+    """Página de análise de coorte."""
+    return render_template('cohort_analysis.html')
+
+@app.route('/ltv-calculator')
+def ltv_calculator_page():
+    """Página de cálculo de LTV."""
+    return render_template('ltv_calculator.html')
+
+@app.route('/fraud-detection')
+def fraud_detection_page():
+    """Página de detecção de fraude."""
+    return render_template('fraud_detection.html')
+
+@app.route('/brand-safety')
+def brand_safety_page():
+    """Página de segurança de marca."""
+    return render_template('brand_safety.html')
+
+@app.route('/viewability')
+def viewability_page():
+    """Página de análise de viewability."""
+    return render_template('viewability.html')
+
+@app.route('/cross-channel')
+def cross_channel_page():
+    """Página de análise cross-channel."""
+    return render_template('cross_channel.html')
+
+@app.route('/incrementality')
+def incrementality_page():
+    """Página de análise de incrementalidade."""
+    return render_template('incrementality.html')
+
+@app.route('/mmm')
+def mmm_page():
+    """Página de Marketing Mix Modeling."""
+    return render_template('mmm.html')
+
+@app.route('/geo-testing')
+def geo_testing_page():
+    """Página de testes geográficos."""
+    return render_template('geo_testing.html')

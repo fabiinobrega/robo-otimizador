@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Fraud Detection - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-shield-alt me-2"></i>Detecção de Fraude</h1>
+            <p class="text-muted">Proteja suas campanhas contra tráfego fraudulento</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3"><div class="card bg-dark border-success"><div class="card-body text-center"><h3 class="text-success">98.5%</h3><p class="text-muted mb-0">Tráfego Válido</p></div></div></div>
+        <div class="col-md-3"><div class="card bg-dark border-danger"><div class="card-body text-center"><h3 class="text-danger">1.5%</h3><p class="text-muted mb-0">Tráfego Suspeito</p></div></div></div>
+        <div class="col-md-3"><div class="card bg-dark border-warning"><div class="card-body text-center"><h3 class="text-warning">R$ 2,450</h3><p class="text-muted mb-0">Economia Estimada</p></div></div></div>
+        <div class="col-md-3"><div class="card bg-dark border-info"><div class="card-body text-center"><h3 class="text-info">12</h3><p class="text-muted mb-0">IPs Bloqueados</p></div></div></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-header"><h5 class="mb-0 text-white">Atividades Suspeitas Recentes</h5></div>
+                <div class="card-body">
+                    <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Nenhuma atividade suspeita detectada nas últimas 24 horas.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

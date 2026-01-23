@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Budget Optimizer - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-coins me-2"></i>Budget Optimizer</h1>
+            <p class="text-muted">Otimize a distribuição do seu orçamento com IA</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card bg-dark mb-4">
+                <div class="card-header"><h5 class="mb-0 text-white">Configurar Orçamento</h5></div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-white">Orçamento Total Mensal</label>
+                        <input type="number" class="form-control bg-dark text-white" value="50000" placeholder="R$">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white">Objetivo Principal</label>
+                        <select class="form-select bg-dark text-white">
+                            <option>Maximizar Conversões</option>
+                            <option>Maximizar ROAS</option>
+                            <option>Minimizar CPA</option>
+                            <option>Maximizar Alcance</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success"><i class="fas fa-magic me-2"></i>Otimizar com IA</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-dark border-success">
+                <div class="card-header"><h5 class="mb-0 text-success">Distribuição Recomendada</h5></div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between"><span class="text-white">Facebook Ads</span><span class="text-success">R$ 20,000 (40%)</span></div>
+                        <div class="progress"><div class="progress-bar bg-success" style="width: 40%"></div></div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between"><span class="text-white">Google Ads</span><span class="text-info">R$ 15,000 (30%)</span></div>
+                        <div class="progress"><div class="progress-bar bg-info" style="width: 30%"></div></div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between"><span class="text-white">Instagram</span><span class="text-warning">R$ 10,000 (20%)</span></div>
+                        <div class="progress"><div class="progress-bar bg-warning" style="width: 20%"></div></div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between"><span class="text-white">TikTok</span><span class="text-primary">R$ 5,000 (10%)</span></div>
+                        <div class="progress"><div class="progress-bar bg-primary" style="width: 10%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

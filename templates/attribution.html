@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Attribution - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-route me-2"></i>Atribuição de Conversões</h1>
+            <p class="text-muted">Entenda a jornada do cliente e atribua conversões corretamente</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-dark">
+                <div class="card-header"><h5 class="mb-0 text-white">Modelo de Atribuição</h5></div>
+                <div class="card-body">
+                    <select class="form-select bg-dark text-white mb-3">
+                        <option>Last Click</option>
+                        <option>First Click</option>
+                        <option>Linear</option>
+                        <option>Time Decay</option>
+                        <option selected>Data-Driven (IA)</option>
+                    </select>
+                    <div class="alert alert-info"><i class="fas fa-robot me-2"></i>O modelo Data-Driven usa IA para atribuir conversões baseado em padrões reais.</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-dark border-success">
+                <div class="card-header"><h5 class="mb-0 text-success">Atribuição por Canal</h5></div>
+                <div class="card-body">
+                    <div class="mb-2"><span class="text-white">Facebook</span><span class="float-end text-success">42%</span></div>
+                    <div class="mb-2"><span class="text-white">Google</span><span class="float-end text-info">28%</span></div>
+                    <div class="mb-2"><span class="text-white">Instagram</span><span class="float-end text-warning">18%</span></div>
+                    <div class="mb-2"><span class="text-white">Orgânico</span><span class="float-end text-primary">12%</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

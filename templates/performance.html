@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Performance - NEXORA{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-tachometer-alt me-2"></i>Análise de Performance</h1>
+            <p class="text-muted">Métricas detalhadas de todas as suas campanhas</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-dark border-success">
+                <div class="card-body text-center">
+                    <h3 class="text-success">R$ 125.840</h3>
+                    <p class="text-muted mb-0">Receita Total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-info">
+                <div class="card-body text-center">
+                    <h3 class="text-info">4.2x</h3>
+                    <p class="text-muted mb-0">ROAS Médio</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-warning">
+                <div class="card-body text-center">
+                    <h3 class="text-warning">R$ 28,50</h3>
+                    <p class="text-muted mb-0">CPA Médio</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-primary">
+                <div class="card-body text-center">
+                    <h3 class="text-primary">3.2%</h3>
+                    <p class="text-muted mb-0">CTR Médio</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-header"><h5 class="mb-0 text-white">Performance por Campanha</h5></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark">
+                            <thead><tr><th>Campanha</th><th>Impressões</th><th>Cliques</th><th>CTR</th><th>Conversões</th><th>ROAS</th></tr></thead>
+                            <tbody>
+                                <tr><td>Black Friday 2024</td><td>2.5M</td><td>75K</td><td>3.0%</td><td>2,500</td><td class="text-success">5.2x</td></tr>
+                                <tr><td>Remarketing Q4</td><td>1.2M</td><td>48K</td><td>4.0%</td><td>1,800</td><td class="text-success">4.8x</td></tr>
+                                <tr><td>Prospecção Fria</td><td>3.8M</td><td>95K</td><td>2.5%</td><td>1,200</td><td class="text-warning">2.8x</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
