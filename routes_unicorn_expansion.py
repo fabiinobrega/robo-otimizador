@@ -893,3 +893,31 @@ def get_memory_status():
         ],
         "last_update": datetime.now().isoformat()
     })
+
+
+@unicorn_bp.route('/benchmark', methods=['GET'])
+def get_benchmark():
+    """Retorna dados de benchmark global."""
+    return jsonify({
+        "success": True,
+        "status": "active",
+        "system": "Global Benchmark",
+        "version": "2.0",
+        "benchmark_data": {
+            "industry_average_roas": 2.8,
+            "industry_average_ctr": 1.2,
+            "industry_average_cpc": 0.85,
+            "industry_average_cpm": 12.50
+        },
+        "your_performance": {
+            "roas": 4.2,
+            "ctr": 2.1,
+            "cpc": 0.65,
+            "cpm": 9.80,
+            "vs_industry": "+50%"
+        },
+        "competitors_tracked": 47,
+        "industries_analyzed": 12,
+        "data_points": 1250000,
+        "last_update": datetime.now().isoformat()
+    })
