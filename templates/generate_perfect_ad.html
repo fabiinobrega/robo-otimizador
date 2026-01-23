@@ -15,11 +15,11 @@
     </div>
 
     <!-- Formulário Principal -->
-    <div class="card mb-4" id="inputForm">
-        <div class="card-header bg-primary text-white">
+    <div class="nexora-card mb-4" id="inputForm">
+        <div class="nexora-card-header bg-primary text-white">
             <h5 class="mb-0">1. Informações do Produto</h5>
         </div>
-        <div class="card-body">
+        <div class="nexora-card-body">
             <div class="mb-3">
                 <label class="form-label">URL do Produto *</label>
                 <input type="url" class="form-control form-control-lg" id="productUrl" 
@@ -134,8 +134,8 @@
     </div>
 
     <!-- Loading -->
-    <div class="card mb-4 d-none" id="loadingCard">
-        <div class="card-body text-center">
+    <div class="nexora-card mb-4 d-none" id="loadingCard">
+        <div class="nexora-card-body text-center">
             <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
             <h5 id="loadingText">Analisando produto...</h5>
             <div class="progress mt-3">
@@ -155,11 +155,11 @@
         </div>
         
         <!-- Análise da Landing Page -->
-        <div class="card mb-4">
-            <div class="card-header bg-success text-white">
+        <div class="nexora-card mb-4">
+            <div class="nexora-card-header bg-success text-white">
                 <h5 class="mb-0"><i class="fas fa-search"></i> 2. Análise da Landing Page</h5>
             </div>
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <h6>Informações Extraídas:</h6>
@@ -178,11 +178,11 @@
         </div>
 
         <!-- Espionagem de Concorrentes -->
-        <div class="card mb-4">
-            <div class="card-header bg-warning text-dark">
+        <div class="nexora-card mb-4">
+            <div class="nexora-card-header bg-warning text-dark">
                 <h5 class="mb-0"><i class="fas fa-user-secret"></i> 3. Top Anúncios dos Concorrentes</h5>
             </div>
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <div id="competitorAds" class="row">
                     <div class="col-12 text-center">
                         <div class="spinner-border"></div>
@@ -193,11 +193,11 @@
         </div>
 
         <!-- Variantes Geradas -->
-        <div class="card mb-4">
-            <div class="card-header bg-info text-white">
+        <div class="nexora-card mb-4">
+            <div class="nexora-card-header bg-info text-white">
                 <h5 class="mb-0"><i class="fas fa-clone"></i> 4. Variantes de Anúncios Geradas</h5>
             </div>
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <div id="adVariants" class="row">
                     <div class="col-12 text-center">
                         <div class="spinner-border"></div>
@@ -208,11 +208,11 @@
         </div>
 
         <!-- Simulação de Performance -->
-        <div class="card mb-4">
-            <div class="card-header bg-danger text-white">
+        <div class="nexora-card mb-4">
+            <div class="nexora-card-header bg-danger text-white">
                 <h5 class="mb-0"><i class="fas fa-chart-line"></i> 5. Estimativa de Performance</h5>
             </div>
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <div class="row" id="performanceSimulation">
                     <div class="col-md-2">
                         <div class="text-center p-3 border rounded">
@@ -279,7 +279,7 @@
 
         <!-- Ações Finais -->
         <div class="nexora-card">
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <h5>Próximas Ações</h5>
                 <div class="d-flex gap-2 flex-wrap">
                     <button class="btn btn-outline-primary" onclick="editManually()">
@@ -642,8 +642,8 @@ function displayResults() {
     const competitors = generatedData.competitors?.ads || [];
     document.getElementById('competitorAds').innerHTML = competitors.slice(0, 3).map((ad, i) => `
         <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <div class="card-body">
+            <div class="nexora-card h-100">
+                <div class="nexora-card-body">
                     <div class="d-flex justify-content-between mb-2">
                         <h6 class="text-muted">Concorrente #${i+1}</h6>
                         <span class="badge bg-success">Score: ${ad.score || 95}</span>
@@ -662,19 +662,19 @@ function displayResults() {
     const variants = generatedData.copy?.variants || [];
     document.getElementById('adVariants').innerHTML = variants.slice(0, 3).map((v, i) => `
         <div class="col-md-4 mb-3">
-            <div class="card h-100 border-info">
-                <div class="card-header bg-info text-white">
+            <div class="nexora-card h-100 border-info">
+                <div class="nexora-card-header bg-info text-white">
                     <div class="d-flex justify-content-between">
                         <span>Variante #${i+1}</span>
                         <span class="badge bg-light text-dark">Score: ${v.score || 92}</span>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <h5>${v.headline || 'Título gerado pela IA'}</h5>
                     <p class="text-muted">${v.description || 'Descrição persuasiva...'}</p>
                     <span class="badge bg-primary">${v.cta || 'Comprar Agora'}</span>
                 </div>
-                <div class="card-footer">
+                <div class="nexora-card-footer">
                     <button class="btn btn-sm btn-outline-info w-100" onclick="selectVariant(${i})">
                         <i class="fas fa-check"></i> Selecionar
                     </button>
@@ -799,15 +799,15 @@ function previewMedia() {
                 <div class="nexora-card">
                     <div class="position-relative">
                         ${isVideo ? 
-                            `<video src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;" controls></video>` :
-                            `<img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="${file.name}">`
+                            `<video src="${e.target.result}" class="nexora-card-img-top" style="height: 150px; object-fit: cover;" controls></video>` :
+                            `<img src="${e.target.result}" class="nexora-card-img-top" style="height: 150px; object-fit: cover;" alt="${file.name}">`
                         }
                         <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" 
                                 onclick="removeMedia(${i})">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="card-body p-2">
+                    <div class="nexora-card-body p-2">
                         <small class="text-muted">${file.name}</small><br>
                         <small class="badge bg-secondary">${mediaItem.size}</small>
                     </div>

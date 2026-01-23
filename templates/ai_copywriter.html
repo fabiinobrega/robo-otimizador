@@ -24,11 +24,11 @@
 <!-- Formulário de Geração -->
 <div class="row">
     <div class="col-md-8">
-        <div class="card mb-4">
-            <div class="card-header">
+        <div class="nexora-card mb-4">
+            <div class="nexora-card-header">
                 <h5 class="mb-0"><i class="fas fa-cog"></i> Configurações da Copy</h5>
             </div>
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <form id="copyForm">
                     <div class="mb-3">
                         <label for="productName" class="form-label">Nome do Produto/Serviço *</label>
@@ -78,11 +78,11 @@
     </div>
     
     <div class="col-md-4">
-        <div class="card mb-4 border-info">
-            <div class="card-header bg-info text-white">
+        <div class="nexora-card mb-4 border-info">
+            <div class="nexora-card-header bg-info text-white">
                 <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Dicas</h6>
             </div>
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <ul class="small mb-0">
                     <li>Seja específico na descrição do produto</li>
                     <li>Defina claramente seu público-alvo</li>
@@ -93,11 +93,11 @@
             </div>
         </div>
         
-        <div class="card border-success">
-            <div class="card-header bg-success text-white">
+        <div class="nexora-card border-success">
+            <div class="nexora-card-header bg-success text-white">
                 <h6 class="mb-0"><i class="fas fa-robot"></i> Velyra Prime</h6>
             </div>
-            <div class="card-body">
+            <div class="nexora-card-body">
                 <p class="small mb-0">
                     <strong>Status:</strong> <span class="badge bg-success">Ativo</span><br>
                     A IA está pronta para gerar copies otimizadas para conversão!
@@ -111,10 +111,10 @@
 <div class="row" id="resultsSection" style="display: none;">
     <div class="col-12">
         <div class="nexora-card">
-            <div class="card-header">
+            <div class="nexora-card-header">
                 <h5 class="mb-0"><i class="fas fa-file-alt"></i> Copies Geradas</h5>
             </div>
-            <div class="card-body" id="resultsContent">
+            <div class="nexora-card-body" id="resultsContent">
                 <!-- Resultados serão inseridos aqui -->
             </div>
         </div>
@@ -179,11 +179,11 @@ function displayResults(copies) {
     copies.forEach((copy, index) => {
         html += `
             <div class="col-md-6 mb-3">
-                <div class="card border-primary">
-                    <div class="card-header bg-light">
+                <div class="nexora-card border-primary">
+                    <div class="nexora-card-header bg-light">
                         <strong>Variação ${index + 1}</strong>
                     </div>
-                    <div class="card-body">
+                    <div class="nexora-card-body">
                         <h6>Headline:</h6>
                         <p class="text-primary"><strong>${copy.headline || ''}</strong></p>
                         

@@ -14,8 +14,8 @@
             <!-- Status da Conexão -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <div class="card {% if status.connected %}border-success{% else %}border-warning{% endif %}">
-                        <div class="card-body">
+                    <div class="nexora-card {% if status.connected %}border-success{% else %}border-warning{% endif %}">
+                        <div class="nexora-card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h4 class="mb-2">
@@ -54,7 +54,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <div class="nexora-card">
-                        <div class="card-body text-center">
+                        <div class="nexora-card-body text-center">
                             <i class="fas fa-key fa-3x text-primary mb-3"></i>
                             <h5>Token</h5>
                             <p class="mb-0">
@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="nexora-card">
-                        <div class="card-body text-center">
+                        <div class="nexora-card-body text-center">
                             <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
                             <h5>Validade</h5>
                             <p class="mb-0">
@@ -84,7 +84,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="nexora-card">
-                        <div class="card-body text-center">
+                        <div class="nexora-card-body text-center">
                             <i class="fas fa-sync fa-3x text-info mb-3"></i>
                             <h5>Última Sync</h5>
                             <p class="mb-0 small">
@@ -99,7 +99,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="nexora-card">
-                        <div class="card-body text-center">
+                        <div class="nexora-card-body text-center">
                             <i class="fas fa-server fa-3x text-secondary mb-3"></i>
                             <h5>API URL</h5>
                             <p class="mb-0 small text-truncate">
@@ -115,10 +115,10 @@
             <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="nexora-card">
-                        <div class="card-header bg-primary text-white">
+                        <div class="nexora-card-header bg-primary text-white">
                             <h5 class="mb-0"><i class="fas fa-sync-alt"></i> Sincronização de Dados</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="nexora-card-body">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <h6><i class="fas fa-bullhorn"></i> Campanhas</h6>
@@ -165,10 +165,10 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="nexora-card">
-                        <div class="card-header bg-warning text-dark">
+                        <div class="nexora-card-header bg-warning text-dark">
                             <h5 class="mb-0"><i class="fas fa-coins"></i> Créditos Manus</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="nexora-card-body">
                             <div id="creditsInfo" class="text-center">
                                 <button onclick="checkCredits()" class="btn btn-warning">
                                     <i class="fas fa-sync"></i> Consultar Saldo
@@ -179,10 +179,10 @@
                 </div>
                 <div class="col-md-6">
                     <div class="nexora-card">
-                        <div class="card-header bg-info text-white">
+                        <div class="nexora-card-header bg-info text-white">
                             <h5 class="mb-0"><i class="fas fa-bell"></i> Webhooks</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="nexora-card-body">
                             <p class="mb-2">Eventos registrados:</p>
                             <ul class="list-unstyled">
                                 <li><i class="fas fa-check text-success"></i> campaign.created</li>
@@ -203,10 +203,10 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="nexora-card">
-                        <div class="card-header">
+                        <div class="nexora-card-header">
                             <h5 class="mb-0"><i class="fas fa-cog"></i> Configuração</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="nexora-card-body">
                             <div class="alert alert-info">
                                 <h6><i class="fas fa-info-circle"></i> Como Configurar</h6>
                                 <ol class="mb-0">

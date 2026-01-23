@@ -20,11 +20,11 @@
     <div class="row">
         <!-- Coluna Esquerda: Formulário de Edição -->
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+            <div class="nexora-card mb-4">
+                <div class="nexora-card-header bg-primary text-white">
                     <h5 class="mb-0">✏️ Editar Conteúdo do Anúncio</h5>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <!-- Headlines -->
                     <div class="mb-4">
                         <label for="headline" class="form-label"><strong>Headline (Título Principal)</strong></label>
@@ -172,11 +172,11 @@
 
         <!-- Coluna Direita: Preview -->
         <div class="col-md-4">
-            <div class="card sticky-top" style="top: 20px;">
-                <div class="card-header bg-info text-white">
+            <div class="nexora-card sticky-top" style="top: 20px;">
+                <div class="nexora-card-header bg-info text-white">
                     <h5 class="mb-0">👁️ Preview do Anúncio</h5>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <!-- Preview Facebook -->
                     <div id="facebookPreview" class="mb-4">
                         <h6 class="text-muted">Facebook/Instagram</h6>
@@ -201,8 +201,8 @@
                     </div>
 
                     <!-- Métricas Estimadas -->
-                    <div class="card bg-light">
-                        <div class="card-body">
+                    <div class="nexora-card bg-light">
+                        <div class="nexora-card-body">
                             <h6>📊 Métricas Estimadas</h6>
                             <div class="row text-center">
                                 <div class="col-6 mb-2">
@@ -288,7 +288,7 @@ function previewAdMedia() {
                     col.className = 'col-4';
                     col.innerHTML = `
                         <div class="nexora-card">
-                            <img src="${ev.target.result}" class="card-img-top" style="height: 80px; object-fit: cover;">
+                            <img src="${ev.target.result}" class="nexora-card-img-top" style="height: 80px; object-fit: cover;">
                         </div>
                     `;
                     preview.appendChild(col);

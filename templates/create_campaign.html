@@ -22,8 +22,8 @@
     </div>
     
     <!-- Progress Steps -->
-    <div class="card mb-4">
-        <div class="card-body">
+    <div class="nexora-card mb-4">
+        <div class="nexora-card-body">
             <div class="row">
                 <div class="col">
                     <div class="step-indicator" id="step1">
@@ -63,11 +63,11 @@
     <form id="campaignForm" action="/api/form/submit" method="POST" onsubmit="handleFormSubmit(event, 'campaignForm')">
         <!-- Step 1: Informações Básicas -->
         <div class="step-content active" id="content-step1">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+            <div class="nexora-card shadow-sm">
+                <div class="nexora-card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-info-circle"></i> Passo 1: Informações Básicas</h5>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <div class="row">
                         <div class="col-md-8">
                             <div class="mb-4">
@@ -103,9 +103,9 @@
                                 <p class="small mb-0">Use nomes que identifiquem claramente o produto, período e objetivo. Isso facilita a organização e análise posterior.</p>
                             </div>
                             
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">Exemplos de Nomes</h6>
+                            <div class="nexora-card bg-light">
+                                <div class="nexora-card-body">
+                                    <h6 class="nexora-card-title">Exemplos de Nomes</h6>
                                     <ul class="small mb-0">
                                         <li>Black Friday 2024 - Eletrônicos</li>
                                         <li>Lançamento Curso Online - Q1</li>
@@ -117,7 +117,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-white">
+                <div class="nexora-card-footer bg-white">
                     <div class="d-flex justify-content-end">
                         <button type="button" class="btn btn-primary" onclick="nextStep(2)">
                             Próximo <i class="fas fa-arrow-right"></i>
@@ -129,11 +129,11 @@
         
         <!-- Step 2: Plataforma & Objetivo -->
         <div class="step-content" id="content-step2">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+            <div class="nexora-card shadow-sm">
+                <div class="nexora-card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-bullseye"></i> Passo 2: Plataforma & Objetivo</h5>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <div class="mb-4">
                         <label class="form-label">Selecione a Plataforma <span class="text-danger">*</span></label>
                         <div class="row g-3">
@@ -194,7 +194,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-white">
+                <div class="nexora-card-footer bg-white">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-outline-secondary" onclick="prevStep(1)">
                             <i class="fas fa-arrow-left"></i> Anterior
@@ -209,11 +209,11 @@
         
         <!-- Step 3: Público-Alvo -->
         <div class="step-content" id="content-step3">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+            <div class="nexora-card shadow-sm">
+                <div class="nexora-card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-users"></i> Passo 3: Público-Alvo</h5>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <label class="form-label">Faixa Etária</label>
@@ -264,7 +264,7 @@
                         <p class="mb-0">Aproximadamente <strong>2.5M - 3.2M</strong> pessoas</p>
                     </div>
                 </div>
-                <div class="card-footer bg-white">
+                <div class="nexora-card-footer bg-white">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">
                             <i class="fas fa-arrow-left"></i> Anterior
@@ -279,11 +279,11 @@
         
         <!-- Step 4: Orçamento & Cronograma -->
         <div class="step-content" id="content-step4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+            <div class="nexora-card shadow-sm">
+                <div class="nexora-card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Passo 4: Orçamento & Cronograma</h5>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <label class="form-label">Orçamento Total <span class="text-danger">*</span></label>
@@ -347,8 +347,8 @@
                         </select>
                     </div>
                     
-                    <div class="card bg-light">
-                        <div class="card-body">
+                    <div class="nexora-card bg-light">
+                        <div class="nexora-card-body">
                             <h6><i class="fas fa-calculator"></i> Estimativa de Resultados</h6>
                             <div class="row text-center">
                                 <div class="col-md-3">
@@ -371,7 +371,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-white">
+                <div class="nexora-card-footer bg-white">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-outline-secondary" onclick="prevStep(3)">
                             <i class="fas fa-arrow-left"></i> Anterior
@@ -386,11 +386,11 @@
         
         <!-- Step 5: Revisão & Criação -->
         <div class="step-content" id="content-step5">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
+            <div class="nexora-card shadow-sm">
+                <div class="nexora-card-header bg-success text-white">
                     <h5 class="mb-0"><i class="fas fa-check-circle"></i> Passo 5: Revisão & Criação</h5>
                 </div>
-                <div class="card-body">
+                <div class="nexora-card-body">
                     <div class="alert alert-info">
                         <h6><i class="fas fa-info-circle"></i> Revise os Dados da Campanha</h6>
                         <p class="mb-0">Confira todas as informações antes de criar a campanha</p>
@@ -407,7 +407,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="card-footer bg-white">
+                <div class="nexora-card-footer bg-white">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-outline-secondary" onclick="prevStep(4)">
                             <i class="fas fa-arrow-left"></i> Anterior
@@ -656,7 +656,7 @@ function generateReviewSummary() {
         <div class="row g-3">
             <div class="col-md-6">
                 <div class="nexora-card">
-                    <div class="card-body">
+                    <div class="nexora-card-body">
                         <h6 class="text-muted mb-3">Informações Básicas</h6>
                         <p><strong>Nome:</strong> ${document.getElementById('campaignName').value}</p>
                         <p><strong>Categoria:</strong> ${document.getElementById('campaignCategory').value || 'Não especificada'}</p>
@@ -665,7 +665,7 @@ function generateReviewSummary() {
             </div>
             <div class="col-md-6">
                 <div class="nexora-card">
-                    <div class="card-body">
+                    <div class="nexora-card-body">
                         <h6 class="text-muted mb-3">Plataforma & Objetivo</h6>
                         <p><strong>Plataforma:</strong> ${selectedPlatform}</p>
                         <p><strong>Objetivo:</strong> ${document.getElementById('campaignObjective').value}</p>
@@ -674,7 +674,7 @@ function generateReviewSummary() {
             </div>
             <div class="col-md-6">
                 <div class="nexora-card">
-                    <div class="card-body">
+                    <div class="nexora-card-body">
                         <h6 class="text-muted mb-3">Público-Alvo</h6>
                         <p><strong>Idade:</strong> ${document.getElementById('ageMin').value || '18'} - ${document.getElementById('ageMax').value || '65'} anos</p>
                         <p><strong>Gênero:</strong> ${document.getElementById('gender').value}</p>
@@ -683,7 +683,7 @@ function generateReviewSummary() {
             </div>
             <div class="col-md-6">
                 <div class="nexora-card">
-                    <div class="card-body">
+                    <div class="nexora-card-body">
                         <h6 class="text-muted mb-3">Orçamento</h6>
                         <p><strong>Diário:</strong> R$ ${document.getElementById('dailyBudget').value}</p>
                         <p><strong>Período:</strong> ${document.getElementById('startDate').value} - ${document.getElementById('endDate').value || 'Contínuo'}</p>
