@@ -791,6 +791,82 @@ def api_campaigns():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
+@app.route("/api/campaigns/stats", methods=["GET"])
+def api_campaigns_stats():
+    """Get campaigns statistics."""
+    db = get_db()
+    try:
+        stats = db.execute(
+            """SELECT 
+                  COUNT(*) as total_campaigns,
+                  SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_campaigns,
+                  SUM(CASE WHEN status = 'paused' THEN 1 ELSE 0 END) as paused_campaigns,
+                  COALESCE(SUM(budget), 0) as total_budget
+               FROM campaigns"""
+        ).fetchone()
+        
+        metrics = db.execute(
+            """SELECT 
+                  COALESCE(SUM(impressions), 0) as total_impressions,
+                  COALESCE(SUM(clicks), 0) as total_clicks,
+                  COALESCE(SUM(conversions), 0) as total_conversions,
+                  COALESCE(SUM(spend), 0) as total_spend,
+                  COALESCE(SUM(revenue), 0) as total_revenue,
+                  COALESCE(AVG(roas), 0) as avg_roas
+               FROM campaign_metrics"""
+        ).fetchone()
+        
+        return jsonify({
+            "success": True,
+            "stats": {
+                "total_campaigns": stats["total_campaigns"] or 0,
+                "active_campaigns": stats["active_campaigns"] or 0,
+                "paused_campaigns": stats["paused_campaigns"] or 0,
+                "total_budget": stats["total_budget"] or 0,
+                "total_impressions": metrics["total_impressions"] or 0,
+                "total_clicks": metrics["total_clicks"] or 0,
+                "total_conversions": metrics["total_conversions"] or 0,
+                "total_spend": metrics["total_spend"] or 0,
+                "total_revenue": metrics["total_revenue"] or 0,
+                "avg_roas": round(metrics["avg_roas"] or 0, 2)
+            }
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/rules", methods=["GET"])
+def api_rules():
+    """Get automation rules."""
+    db = get_db()
+    try:
+        rules = db.execute(
+            "SELECT * FROM automation_rules ORDER BY created_at DESC"
+        ).fetchall()
+        return jsonify({
+            "success": True,
+            "rules": [dict(r) for r in rules]
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app.route("/api/integrations", methods=["GET"])
+def api_integrations():
+    """Get API integrations."""
+    db = get_db()
+    try:
+        integrations = db.execute(
+            "SELECT * FROM api_services ORDER BY name"
+        ).fetchall()
+        return jsonify({
+            "success": True,
+            "integrations": [dict(i) for i in integrations]
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 # ===== PAGE ROUTES =====
 
 @app.route("/")
@@ -829,6 +905,18 @@ def competitor_spy():
     return render_template("competitor_spy.html")
 
 
+@app.route("/analytics")
+def analytics():
+    """Página de Analytics Preditivo"""
+    return render_template("predictive_analytics.html")
+
+
+@app.route("/budget-calculator")
+def budget_calculator():
+    """Página de Calculadora de Orçamento"""
+    return render_template("optimization_budget.html")
+
+
 @app.route("/dco")
 def dco():
     return render_template("dco_builder.html")
@@ -862,6 +950,25 @@ def media_library():
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
+
+
+@app.route("/api/settings/general", methods=["GET"])
+def api_settings_general():
+    """Retorna configurações gerais do sistema."""
+    return jsonify({
+        "status": "success",
+        "settings": {
+            "timezone": "America/Sao_Paulo",
+            "locale": "pt-BR",
+            "currency": "BRL",
+            "date_format": "DD/MM/YYYY",
+            "notifications_enabled": True,
+            "auto_optimization": True,
+            "ai_suggestions": True,
+            "dark_mode": False,
+            "language": "pt-BR"
+        }
+    })
 
 
 @app.route("/notifications")
@@ -1024,6 +1131,7 @@ def api_operator_optimize():
 
 @app.route("/api/operator/chat", methods=["POST"])
 @app.route("/api/velyra/chat", methods=["POST"])  # Alias para compatibilidade
+@app.route("/api/v2/velyra/chat", methods=["POST"])  # Alias V2
 def api_operator_chat():
     """Chat with Velyra Prime"""
     data = request.get_json()

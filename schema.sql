@@ -357,3 +357,26 @@ CREATE TABLE IF NOT EXISTS automations (
 CREATE INDEX IF NOT EXISTS idx_automations_status ON automations(status);
 CREATE INDEX IF NOT EXISTS idx_automations_type ON automations(type);
 
+
+
+-- ===== TABELA DE SERVIÇOS DE API =====
+
+-- Tabela para armazenar integrações com serviços externos
+CREATE TABLE IF NOT EXISTS api_services (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT,
+    api_key TEXT,
+    api_secret TEXT,
+    endpoint_url TEXT,
+    status TEXT DEFAULT 'inactive',
+    is_connected BOOLEAN DEFAULT 0,
+    last_sync TEXT,
+    config_json TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índice para busca por status
+CREATE INDEX IF NOT EXISTS idx_api_services_status ON api_services(status);
+CREATE INDEX IF NOT EXISTS idx_api_services_name ON api_services(name);
