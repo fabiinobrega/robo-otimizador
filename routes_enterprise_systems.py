@@ -461,7 +461,7 @@ def get_decision_context(business_id):
 
 # ==================== DECISION FORECASTING ====================
 
-@enterprise_bp.route('/forecast/status', methods=['GET'])
+@enterprise_bp.route('/forecasting/status', methods=['GET'])
 def forecast_status():
     """Retorna status do sistema de previsão de decisões."""
     return jsonify({
@@ -473,7 +473,7 @@ def forecast_status():
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/forecast/generate', methods=['POST'])
+@enterprise_bp.route('/forecasting/generate', methods=['POST'])
 def generate_forecast():
     """Gera previsão."""
     data = request.get_json() or {}
@@ -484,7 +484,7 @@ def generate_forecast():
     )
     return jsonify(result)
 
-@enterprise_bp.route('/forecast/scenarios', methods=['POST'])
+@enterprise_bp.route('/forecasting/scenarios', methods=['POST'])
 def forecast_scenarios():
     """Prevê cenários."""
     data = request.get_json() or {}
@@ -526,7 +526,7 @@ def get_entropy_health():
 
 # ==================== EXPLAINABLE DECISIONS ====================
 
-@enterprise_bp.route('/explain/status', methods=['GET'])
+@enterprise_bp.route('/patterns/status', methods=['GET'])
 def explain_status():
     """Retorna status do sistema de decisões explicáveis."""
     return jsonify({
@@ -538,7 +538,7 @@ def explain_status():
         "timestamp": datetime.now().isoformat()
     })
 
-@enterprise_bp.route('/explain/decision', methods=['POST'])
+@enterprise_bp.route('/patterns/decision', methods=['POST'])
 def explain_decision():
     """Explica uma decisão."""
     data = request.get_json() or {}
@@ -549,7 +549,7 @@ def explain_decision():
     )
     return jsonify(result)
 
-@enterprise_bp.route('/explain/history', methods=['GET'])
+@enterprise_bp.route('/patterns/history', methods=['GET'])
 def get_decision_history():
     """Obtém histórico de decisões."""
     limit = request.args.get('limit', 10)
