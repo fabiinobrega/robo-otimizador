@@ -5534,6 +5534,16 @@ try:
 except ImportError as e:
     print(f"Warning: UI Premium routes not available: {e}")
 
+# ============================================
+# SISTEMAS ENTERPRISE - 19 SISTEMAS AVANÇADOS
+# ============================================
+try:
+    from routes_enterprise_systems import enterprise_bp
+    app.register_blueprint(enterprise_bp)
+    print("✅ Enterprise Systems (19 systems) loaded successfully!")
+except ImportError as e:
+    print(f"Warning: Enterprise Systems routes not available: {e}")
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
