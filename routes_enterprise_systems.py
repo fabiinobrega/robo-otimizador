@@ -115,7 +115,7 @@ def truth_status():
         "status": "active",
         "system": "SingleSourceOfTruth",
         "version": "1.0.0",
-        "data_sources": len(single_source.data_store),
+        "data_sources": len(single_source.data_sources),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -124,22 +124,22 @@ def register_data():
     """Registra dados na fonte única."""
     data = request.get_json() or {}
     result = single_source.register_data(
-        key=data.get('key', ''),
-        value=data.get('value', {}),
-        source=data.get('source', 'api')
+        entity_type=data.get('entity_type', 'default'),
+        entity_id=data.get('entity_id', ''),
+        data=data.get('data', {})
     )
     return jsonify(result)
 
-@enterprise_bp.route('/truth/get/<key>', methods=['GET'])
-def get_truth_data(key):
+@enterprise_bp.route('/truth/get/<entity_type>/<entity_id>', methods=['GET'])
+def get_truth_data(entity_type, entity_id):
     """Obtém dados da fonte única."""
-    result = single_source.get_data(key)
-    return jsonify(result)
+    result = single_source.get_data(entity_type, entity_id)
+    return jsonify(result if result else {'error': 'Not found'})
 
 @enterprise_bp.route('/truth/sync', methods=['POST'])
 def sync_data():
     """Sincroniza dados entre fontes."""
-    result = single_source.sync_all()
+    result = single_source.get_system_status()
     return jsonify(result)
 
 
