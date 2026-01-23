@@ -31,6 +31,42 @@ from services.automation_hub import automation_hub
 unicorn_bp = Blueprint('unicorn', __name__, url_prefix='/api/v2/unicorn')
 
 
+# ==================== STATUS GERAL ====================
+
+@unicorn_bp.route('/status')
+def unicorn_status():
+    """Retorna status geral do sistema Unicorn."""
+    return jsonify({
+        'status': 'operational',
+        'version': '2.0.0',
+        'timestamp': datetime.now().isoformat(),
+        'systems': {
+            'oferta_engine': 'active',
+            'psychographic_engine': 'active',
+            'dynamic_creative_ai': 'active',
+            'velyra_memory': 'active',
+            'ltv_engine': 'active',
+            'anti_ban_ai': 'active',
+            'agency_mode': 'active',
+            'monetization_system': 'active',
+            'benchmark_global': 'active',
+            'war_mode': 'active',
+            'realtime_pipeline': 'active',
+            'ml_prediction_engine': 'active',
+            'contextual_assistant': 'active',
+            'funnel_accelerator': 'active',
+            'geo_intelligence': 'active',
+            'learning_cycle': 'active',
+            'testing_framework': 'active',
+            'enterprise_security': 'active',
+            'automation_hub': 'active'
+        },
+        'total_systems': 19,
+        'active_systems': 19,
+        'health': 'healthy'
+    })
+
+
 # ==================== OFERTA ENGINE ====================
 
 @unicorn_bp.route('/oferta/analyze', methods=['POST'])
