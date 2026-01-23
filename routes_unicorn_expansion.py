@@ -239,21 +239,25 @@ def get_client_report(client_id):
 
 @unicorn_bp.route('/monetization/plans', methods=['GET'])
 def get_plans():
-    """Obtem planos."""
-    result = monetization_system.get_plans()
+    """Obtem planos - usa compare_plans."""
+    result = monetization_system.compare_plans()
     return jsonify(result)
 
 @unicorn_bp.route('/monetization/subscribe', methods=['POST'])
 def subscribe():
-    """Assina plano."""
+    """Assina plano - usa create_subscription."""
     data = request.get_json() or {}
-    result = monetization_system.subscribe(data.get('user_id', ''), data.get('plan_id', ''))
+    result = monetization_system.create_subscription(
+        user_id=data.get('user_id', 'demo_user'),
+        plan_type=data.get('plan_type', 'professional'),
+        payment_method=data.get('payment_method', {})
+    )
     return jsonify(result)
 
 @unicorn_bp.route('/monetization/usage/<user_id>', methods=['GET'])
 def get_usage(user_id):
-    """Obtem uso."""
-    result = monetization_system.get_usage(user_id)
+    """Obtem uso - usa get_usage_report."""
+    result = monetization_system.get_usage_report(user_id)
     return jsonify(result)
 
 
