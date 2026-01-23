@@ -135,6 +135,23 @@ def velyra_agents():
 # API V2 - ANÁLISE PREDITIVA
 # ============================================
 
+@advanced_bp.route('/api/v2/predictive/status', methods=['GET'])
+def predictive_status():
+    """Status do sistema de Análise Preditiva"""
+    if predictive_engine:
+        return jsonify({
+            'status': 'active',
+            'version': '1.0.0',
+            'models_loaded': 8,
+            'capabilities': [
+                'performance_forecasting',
+                'anomaly_detection',
+                'budget_optimization',
+                'trend_analysis'
+            ]
+        })
+    return jsonify({'error': 'Predictive Analytics not available', 'status': 'unavailable'}), 503
+
 @advanced_bp.route('/api/v2/predictive/forecast', methods=['POST'])
 def predictive_forecast():
     """Previsão de performance de campanha"""
