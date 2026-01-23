@@ -1091,8 +1091,9 @@ def dco_builder():
 
 
 @app.route("/health")
+@app.route("/api/health")
 def health_check():
-    return jsonify({"status": "ok"})
+    return jsonify({"status": "ok", "system": "NEXORA", "version": "2.0.0"})
 
 
 @app.route("/api/media/upload", methods=["POST"])
