@@ -682,6 +682,12 @@ class ManusVelyraIntegration:
         """Rejeita uma ação pendente."""
         return self.manus_review_action(action_id, approved=False, notes=reason)
     
+    def _get_db(self):
+        """Retorna conexão com o banco de dados."""
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+    
     def get_audit_log(self) -> List[Dict[str, Any]]:
         """Retorna log de auditoria."""
         db = self._get_db()
