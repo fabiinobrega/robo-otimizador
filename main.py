@@ -900,18 +900,96 @@ def api_rules():
 
 @app.route("/api/integrations", methods=["GET"])
 def api_integrations():
-    """Get API integrations."""
-    db = get_db()
-    try:
-        integrations = db.execute(
-            "SELECT * FROM api_services ORDER BY name"
-        ).fetchall()
-        return jsonify({
-            "success": True,
-            "integrations": [dict(i) for i in integrations]
-        })
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+    """
+    Get API integrations status.
+    Returns the status of all configured integrations including Meta Ads, Google Ads, and ClickBank.
+    """
+    # Check environment variables for configured integrations
+    integrations = []
+    
+    # Meta Ads / Facebook Integration
+    fb_token = os.environ.get('FACEBOOK_ACCESS_TOKEN', '')
+    fb_account = os.environ.get('FACEBOOK_AD_ACCOUNT_ID', '')
+    fb_pixel = os.environ.get('FACEBOOK_PIXEL_ID', '')
+    integrations.append({
+        "id": "meta_ads",
+        "name": "Meta Ads (Facebook/Instagram)",
+        "status": "connected" if fb_token and fb_account else "not_configured",
+        "icon": "fab fa-facebook",
+        "color": "#1877F2",
+        "details": {
+            "access_token": "configured" if fb_token else "missing",
+            "ad_account_id": fb_account if fb_account else "missing",
+            "pixel_id": fb_pixel if fb_pixel else "not_configured"
+        }
+    })
+    
+    # Google Ads Integration
+    google_client_id = os.environ.get('GOOGLE_ADS_CLIENT_ID', '')
+    google_developer_token = os.environ.get('GOOGLE_ADS_DEVELOPER_TOKEN', '')
+    integrations.append({
+        "id": "google_ads",
+        "name": "Google Ads",
+        "status": "connected" if google_client_id else "not_configured",
+        "icon": "fab fa-google",
+        "color": "#4285F4",
+        "details": {
+            "client_id": "configured" if google_client_id else "missing",
+            "developer_token": "configured" if google_developer_token else "missing"
+        }
+    })
+    
+    # ClickBank Integration
+    clickbank_hop = os.environ.get('CLICKBANK_HOP', 'fabiinobre')
+    integrations.append({
+        "id": "clickbank",
+        "name": "ClickBank",
+        "status": "connected" if clickbank_hop else "not_configured",
+        "icon": "fas fa-shopping-cart",
+        "color": "#00A651",
+        "details": {
+            "hop_id": clickbank_hop if clickbank_hop else "missing"
+        }
+    })
+    
+    # OpenAI Integration
+    openai_key = os.environ.get('OPENAI_API_KEY', '')
+    integrations.append({
+        "id": "openai",
+        "name": "OpenAI (GPT-4)",
+        "status": "connected" if openai_key else "not_configured",
+        "icon": "fas fa-brain",
+        "color": "#10A37F",
+        "details": {
+            "api_key": "configured" if openai_key else "missing"
+        }
+    })
+    
+    # Stripe Integration
+    stripe_key = os.environ.get('STRIPE_SECRET_KEY', '')
+    integrations.append({
+        "id": "stripe",
+        "name": "Stripe (Pagamentos)",
+        "status": "connected" if stripe_key else "not_configured",
+        "icon": "fab fa-stripe",
+        "color": "#635BFF",
+        "details": {
+            "secret_key": "configured" if stripe_key else "missing"
+        }
+    })
+    
+    # Count connected integrations
+    connected_count = sum(1 for i in integrations if i['status'] == 'connected')
+    
+    return jsonify({
+        "success": True,
+        "integrations": integrations,
+        "summary": {
+            "total": len(integrations),
+            "connected": connected_count,
+            "not_configured": len(integrations) - connected_count
+        }
+    })
 
 
 # ===== PAGE ROUTES =====
@@ -1226,8 +1304,23 @@ def api_operator_recommendations(campaign_id):
 
 @app.route("/api/ab-test/create", methods=["POST"])
 def api_ab_test_create():
-    """Create A/B test"""
-    data = request.get_json()
+    """
+    Create A/B test.
+    
+    Required parameters:
+    - campaign_id: ID of the campaign to test
+    - test_name: Name of the test
+    
+    Optional parameters:
+    - test_type: Type of test (headline, cta, image, description). Defaults to 'headline'
+    - original_content: Original content to create variations from
+    """
+    data = request.get_json() or {}
+    
+    # Set default test_type if not provided
+    test_type = data.get("test_type", "headline")
+    test_name = data.get("test_name", f"Teste A/B - {test_type.title()}")
+    campaign_id = data.get("campaign_id")
     
     try:
         db = get_db()
@@ -1235,9 +1328,9 @@ def api_ab_test_create():
             INSERT INTO ab_tests (campaign_id, test_name, test_type, status)
             VALUES (?, ?, ?, ?)
         """, (
-            data.get("campaign_id"),
-            data.get("test_name"),
-            data.get("test_type"),
+            campaign_id,
+            test_name,
+            test_type,
             "running"
         ))
         test_id = cursor.lastrowid
@@ -1245,7 +1338,7 @@ def api_ab_test_create():
         # Create variations
         variations = ab_testing_service.create_variations(
             data.get("original_content", {}),
-            data.get("test_type")
+            test_type
         )
         
         for i, variation in enumerate(variations):
@@ -1459,9 +1552,39 @@ def ad_editor():
 
 @app.route("/api/ad/generate-copy", methods=["POST"])
 def api_ad_generate_copy():
-    """Generate ad copy with OpenAI GPT-4"""
-    data = request.json
+    """
+    Generate ad copy with AI.
+    
+    Accepts multiple input formats:
+    - Format 1: {"product": {"title": "...", "description": "...", "target_audience": "..."}}
+    - Format 2: {"product": "Product Name", "description": "...", "target_audience": "..."}
+    - Format 3: {"title": "...", "description": "...", "target_audience": "..."}
+    
+    Optional parameters:
+    - platform: "facebook", "google", "both" (default: "facebook")
+    - num_variants: number of copy variants to generate (default: 5)
+    """
+    data = request.json or {}
+    
+    # Normalize product_info to handle multiple input formats
     product_info = data.get("product", {})
+    
+    # If product is a string, convert to dict format
+    if isinstance(product_info, str):
+        product_info = {
+            "title": product_info,
+            "description": data.get("description", ""),
+            "target_audience": data.get("target_audience", "")
+        }
+    
+    # If product is empty, try to build from root-level fields
+    if not product_info or not isinstance(product_info, dict):
+        product_info = {
+            "title": data.get("title") or data.get("name") or data.get("product", "Produto"),
+            "description": data.get("description", ""),
+            "target_audience": data.get("target_audience", "")
+        }
+    
     platform = data.get("platform", "facebook")
     num_variants = data.get("num_variants", 5)
     
@@ -4201,19 +4324,32 @@ from services.competitor_spy_engine import CompetitorSpyEngine
 
 @app.route('/api/spy/analyze-competitors', methods=['POST'])
 def spy_analyze_competitors():
-    """Analisa concorrentes ANTES de gerar anúncio"""
+    """
+    Analisa concorrentes ANTES de gerar anúncio.
+    
+    Parameters (all optional with defaults):
+    - product: Nome do produto (defaults to domain name or "Produto")
+    - niche: Nicho de mercado (defaults to "geral")
+    - platform: Plataforma (defaults to "facebook")
+    - domain: URL do domínio para análise (optional, can extract product name)
+    """
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         
+        # Get domain first to potentially extract product name
+        domain = data.get('domain', '')
+        
+        # Set defaults - product can be derived from domain
         product = data.get('product')
-        niche = data.get('niche')
-        platform = data.get('platform', 'facebook')
+        if not product and domain:
+            # Extract product name from domain
+            product = domain.replace('https://', '').replace('http://', '').split('/')[0].split('.')[0].title()
+        if not product:
+            product = 'Produto'
         
-        if not product or not niche:
-            return jsonify({
-                'status': 'error',
-                'message': 'Produto e nicho são obrigatórios'
-            }), 400
+        # Niche defaults to 'geral'
+        niche = data.get('niche', 'geral')
+        platform = data.get('platform', 'facebook')
         
         spy_engine = CompetitorSpyEngine()
         report = spy_engine.analyze_competitors(product, niche, platform)
@@ -5566,12 +5702,23 @@ def api_auto_scale():
     - Aumenta orçamento progressivamente
     - Ajusta públicos automaticamente
     - Mantém ROAS saudável
+    
+    Accepts campaign_id as string or integer.
     """
     try:
         data = request.get_json() or {}
-        campaign_id = data.get('campaign_id', 'default')
+        campaign_id_raw = data.get('campaign_id', 'default')
         
+        # Normalize campaign_id - try both string and integer versions
+        campaign_id = str(campaign_id_raw)
+        
+        # Try to find goal with string key first, then try integer key
         goal = SALES_GOALS.get(campaign_id)
+        if not goal and campaign_id.isdigit():
+            goal = SALES_GOALS.get(int(campaign_id))
+        if not goal:
+            goal = SALES_GOALS.get(campaign_id_raw)
+        
         if not goal:
             return jsonify({'success': False, 'error': 'Meta não definida'}), 400
         
