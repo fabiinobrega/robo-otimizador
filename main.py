@@ -5976,16 +5976,17 @@ try:
 except ImportError as e:
     print(f"Warning: Enterprise Systems routes not available: {e}")
 
+# Inicia o Auto Executor do Velyra (FORA do if __name__ para funcionar no Gunicorn)
+if auto_executor:
+    auto_executor.start()
+    print("✅ Velyra Auto Executor iniciado")
+
+# Inicia o Campaign Monitor
+if campaign_monitor:
+    campaign_monitor.start()
+    print("✅ Velyra Campaign Monitor iniciado - Monitoramento 24/7 ativo")
+
 if __name__ == "__main__":
-    # Inicia o Auto Executor do Velyra
-    if auto_executor:
-        auto_executor.start()
-        print("✅ Velyra Auto Executor iniciado")
-    
-    # Inicia o Campaign Monitor
-    if campaign_monitor:
-        campaign_monitor.start()
-        print("✅ Velyra Campaign Monitor iniciado - Monitoramento 24/7 ativo")
     
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
