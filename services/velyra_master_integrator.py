@@ -280,7 +280,7 @@ class VelyraMasterIntegrator:
         
         func_map = {
             91: lambda: self.war_spy.spy_complete_funnels(kwargs.get('competitor', 'CompetitorX')),
-            100: lambda: self.war_spy.detect_hot_offers(kwargs.get('niche', 'dental'))
+            100: lambda: {"success": True, "hot_offers": self.war_spy.detect_hot_offers(kwargs.get('niche', 'dental'))}
         }
         
         func = func_map.get(func_num, lambda: {"success": True, "message": f"Function {func_num} executed"})
