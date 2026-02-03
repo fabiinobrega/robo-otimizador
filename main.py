@@ -36,7 +36,7 @@ try:
         from services.velyra_prime import operator as velyra_prime
     from services.ab_testing_service import ab_testing_service
     from services.automation_service import automation_service
-    from services except ImportError as e:
+except ImportError as e:
     print(f"Warning: Some service modules not found: {e}")
 
 # Import do cliente Manus API (separado para evitar erros)
