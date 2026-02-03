@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import psycopg2
+import psycopg2.extras
 from datetime import datetime, timedelta
 from flask import Flask, render_template, redirect, url_for, request, jsonify, g
 from flask_cors import CORS
@@ -151,13 +153,25 @@ import secrets
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 
-DATABASE = os.path.join(app.root_path, 'database.db')
+# Configuração do banco de dados (PostgreSQL ou SQLite)
+DATABASE_URL = os.environ.get('DATABASE_URL')
+USE_POSTGRES = DATABASE_URL is not None
+
+if not USE_POSTGRES:
+    DATABASE = os.path.join(app.root_path, 'database.db')
 
 
 def get_db():
+    """Retorna conexão com PostgreSQL ou SQLite dependendo da configuração"""
     if 'db' not in g:
-        g.db = sqlite3.connect(DATABASE)
-        g.db.row_factory = sqlite3.Row
+        if USE_POSTGRES:
+            # Usar PostgreSQL
+            g.db = psycopg2.connect(DATABASE_URL)
+            g.db.row_factory = psycopg2.extras.RealDictCursor
+        else:
+            # Usar SQLite
+            g.db = sqlite3.connect(DATABASE)
+            g.db.row_factory = sqlite3.Row
     return g.db
 
 @app.teardown_appcontext
