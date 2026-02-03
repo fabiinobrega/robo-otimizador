@@ -62,8 +62,8 @@ except ImportError as e:
 try:
     from services.velyra_alert_system import alert_system
 except ImportError as e:
-    print(f"Warning: Velyra Auto Executor not available: {e}")
-    auto_executor = None
+    print(f"Warning: Alert System not available: {e}")
+    alert_system = None
 
 # Import do serviço MCP
 try:
