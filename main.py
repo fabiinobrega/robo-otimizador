@@ -162,11 +162,13 @@ if not USE_POSTGRES:
 
 
 def get_db():
-    """Retorna conexão com PostgreSQL ou SQLite dependendo da configuração"""
+    """Retorna conexão/cursor com PostgreSQL ou SQLite dependendo da configuração"""
     if 'db' not in g:
         if USE_POSTGRES:
-            # Usar PostgreSQL
-            g.db = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+            # Usar PostgreSQL - criar conexão e cursor
+            g.db_conn = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+            g.db = g.db_conn.cursor()
+            g.db.connection = g.db_conn  # Referência para commit/rollback
         else:
             # Usar SQLite
             g.db = sqlite3.connect(DATABASE)
@@ -186,14 +188,38 @@ def db_execute(query: str, params: tuple = None):
     db = get_db()
     converted_query = sql_param(query)
     if params:
-        return db.execute(converted_query, params)
-    return db.execute(converted_query)
+        db.execute(converted_query, params)
+    else:
+        db.execute(converted_query)
+    return db
+
+
+def db_commit():
+    """Faz commit na conexão correta (PostgreSQL ou SQLite)"""
+    if USE_POSTGRES:
+        db_conn = g.get('db_conn')
+        if db_conn:
+            db_conn.commit()
+    else:
+        db = g.get('db')
+        if db:
+            db_commit()
+
 
 @app.teardown_appcontext
 def close_connection(exception):
     db = g.pop('db', None)
+    db_conn = g.pop('db_conn', None)
     if db is not None:
-        db.close()
+        try:
+            db.close()
+        except:
+            pass
+    if db_conn is not None:
+        try:
+            db_conn.close()
+        except:
+            pass
 
 
 def init_db():
@@ -211,7 +237,7 @@ def init_db():
                     else:
                         # SQLite: usar executescript
                         db.cursor().executescript(schema)
-                db.commit()
+                db_commit()
                 print("Database initialized successfully")
             except Exception as e:
                 print(f"Error initializing database: {e}")
@@ -244,7 +270,7 @@ def log_activity(action, details=""):
             "INSERT INTO activity_logs (action, details) VALUES (?, ?)",
             (action, details),
         )
-        db.commit()
+        db_commit()
     except sqlite3.OperationalError as e:
         print(f"Error logging activity: {e}")
 
@@ -269,13 +295,22 @@ def api_campaign_create():
         return jsonify({"success": False, "message": "Campos obrigatórios faltando"}), 400
 
     try:
-        cursor = db.execute(
-            """INSERT INTO campaigns (name, platform, budget, start_date, end_date, objective, product_url, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (campaign_name, platform, float(budget), start_date, end_date or None, objective, product_url, "Draft", datetime.now().isoformat(), datetime.now().isoformat())
-        )
-        db.commit()
-        campaign_id = cursor.lastrowid
+        if USE_POSTGRES:
+            db.execute(
+                sql_param("""INSERT INTO campaigns (name, platform, budget, start_date, end_date, objective, product_url, status, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id"""),
+                (campaign_name, platform, float(budget), start_date, end_date or None, objective, product_url, "Draft", datetime.now().isoformat(), datetime.now().isoformat())
+            )
+            result = db.fetchone()
+            campaign_id = result['id'] if result else None
+        else:
+            cursor = db.execute(
+                """INSERT INTO campaigns (name, platform, budget, start_date, end_date, objective, product_url, status, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (campaign_name, platform, float(budget), start_date, end_date or None, objective, product_url, "Draft", datetime.now().isoformat(), datetime.now().isoformat())
+            )
+            campaign_id = cursor.lastrowid
+        db_commit()
 
         # Save segmentation if provided
         if data.get("segmentation"):
@@ -307,7 +342,7 @@ def api_campaign_create():
                  copy.get("callToAction"), copy.get("sentiment", "neutral"), json.dumps(copy.get("negativeKeywords", [])))
             )
 
-        db.commit()
+        db_commit()
         log_activity("Campanha Criada", f"Campanha '{campaign_name}' (ID: {campaign_id}) criada com sucesso.")
 
         return jsonify({
@@ -426,7 +461,7 @@ def api_campaign_update(campaign_id):
             
             query = sql_param(f"UPDATE campaigns SET {', '.join(updates)} WHERE id = ?")
             db.execute(query, params)
-            db.commit()
+            db_commit()
 
         log_activity("Campanha Atualizada", f"Campanha ID {campaign_id} atualizada.")
         
@@ -446,7 +481,7 @@ def api_campaign_delete(campaign_id):
             return jsonify({"success": False, "message": "Campanha não encontrada"}), 404
 
         db.execute(sql_param("DELETE FROM campaigns WHERE id = ?"), (campaign_id,))
-        db.commit()
+        db_commit()
         
         log_activity("Campanha Deletada", f"Campanha ID {campaign_id} deletada do sistema.")
         
@@ -496,7 +531,7 @@ def api_campaign_publish():
 
         db.execute(sql_param("UPDATE campaigns SET status = ?, last_publish_status = ? WHERE id = ?"), 
                    ("Active", publish_status, campaign_id))
-        db.commit()
+        db_commit()
         
         log_activity("Campanha Publicada", f"Campanha ID {campaign_id} publicada com sucesso.")
 
@@ -1271,7 +1306,7 @@ def api_upload_media():
                     "filetype": filetype
                 })
         
-        db.commit()
+        db_commit()
         log_activity("Upload de Mídia", f"{len(uploaded_files)} arquivo(s) enviado(s)")
 
         return jsonify({
@@ -1338,7 +1373,7 @@ def api_operator_chat():
                 sql_param("INSERT INTO chat_messages (sender, message) VALUES (?, ?)"),
                 ("operator", response)
             )
-            db.commit()
+            db_commit()
         except Exception as db_error:
             print(f"Warning: Could not save chat to DB: {db_error}")
         
@@ -1415,7 +1450,7 @@ def api_velyra_chat_with_media():
             "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
             ("user", full_message)
         )
-        db.commit()
+        db_commit()
         
         # Generate response with media context
         if uploaded_files:
@@ -1441,7 +1476,7 @@ def api_velyra_chat_with_media():
             "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
             ("operator", response)
         )
-        db.commit()
+        db_commit()
         
         return jsonify({
             "success": True,
@@ -1512,7 +1547,7 @@ def api_ab_test_create():
                 json.dumps(variation)
             ))
         
-        db.commit()
+        db_commit()
         log_activity("Teste A/B Criado", f"Teste '{data.get('test_name')}' criado com {len(variations)} variações")
         
         return jsonify({
@@ -1624,7 +1659,7 @@ def api_notification_read(notification_id):
             "UPDATE notifications SET is_read = 1 WHERE id = ?",
             (notification_id,)
         )
-        db.commit()
+        db_commit()
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -1671,7 +1706,7 @@ def api_report_generate():
             data.get("date_range_end"),
             json.dumps(report_data)
         ))
-        db.commit()
+        db_commit()
         
         return jsonify({
             "success": True,
@@ -1863,7 +1898,7 @@ def api_ad_publish():
             datetime.now().isoformat()
         ))
         
-        db.commit()
+        db_commit()
         
         return jsonify({
             "success": True,
@@ -2014,7 +2049,7 @@ def webhooks_manus():
         INSERT INTO manus_sync_logs (sync_type, pushed, pulled, errors, synced_at)
         VALUES (?, 0, 1, '[]', ?)
     """, (f'webhook_{event}', datetime.now().isoformat()))
-    db.commit()
+    db_commit()
     
     return jsonify({'success': True, 'received': True})
 
@@ -5188,7 +5223,7 @@ def api_admin_seed_database():
         # Limpar dados antigos
         cursor.execute("DELETE FROM campaign_metrics")
         cursor.execute("DELETE FROM campaigns")
-        db.commit()
+        db_commit()
         
         # Inserir campanhas mockadas com datas dinâmicas
         today = datetime.now()
@@ -5236,7 +5271,7 @@ def api_admin_seed_database():
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
                     """, (campaign_id, impressions, clicks, ctr, cpc, conversions, spend, revenue, cpa, roas))
         
-        db.commit()
+        db_commit()
         
         # Verificar dados inseridos
         cursor.execute("SELECT COUNT(*) FROM campaigns WHERE status = 'Active'")
@@ -5407,7 +5442,7 @@ def api_campaigns_create():
                VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (name, platform, objective, float(budget), status, datetime.now().isoformat(), datetime.now().isoformat())
         )
-        db.commit()
+        db_commit()
         campaign_id = cursor.lastrowid
         
         log_activity("Campanha Criada via API", f"Campanha '{name}' (ID: {campaign_id})")
