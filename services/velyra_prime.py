@@ -348,7 +348,48 @@ class VelyraPrime:
             return "🟢 Velyra Prime está ativo e monitorando suas campanhas 24/7. Tudo funcionando perfeitamente!"
         
         elif 'campanha' in message_lower and ('criar' in message_lower or 'nova' in message_lower):
-            return "Para criar uma nova campanha, acesse a página 'Criar Campanha' no menu lateral. Posso ajudá-lo com análise de produto, geração de copy e otimização de budget!"
+            # Detectar se é pedido para criar campanha Synadentix
+            if 'synadentix' in message_lower or 'google ads' in message_lower:
+                try:
+                    # Importar criador de campanhas
+                    from services.velyra_campaign_creator import create_synadentix_campaign
+                    
+                    # Detectar plataforma
+                    platform = "google_ads" if "google" in message_lower else "meta_ads"
+                    
+                    # Detectar orçamento
+                    budget = 100.0  # Padrão R$100
+                    if "orçamento" in message_lower or "budget" in message_lower:
+                        # Tentar extrair número
+                        import re
+                        numbers = re.findall(r'\d+', user_message)
+                        if numbers:
+                            budget = float(numbers[0])
+                    
+                    # Criar campanha
+                    result = create_synadentix_campaign(platform=platform, budget=budget)
+                    
+                    if result.get("success"):
+                        campaign_id = result.get("campaign_id")
+                        clickbank_link = result.get("clickbank_link", "N/A")
+                        return f"""✅ Campanha Synadentix criada com sucesso!
+
+📊 **Detalhes:**
+- Platform: {platform.upper()}
+- Campaign ID: {campaign_id}
+- Orçamento: R$ {budget:.2f}
+- ClickBank Link: {clickbank_link}
+- Affiliate ID: fabiinobre
+
+🚀 A campanha está PAUSADA. Acesse o Google Ads Manager para ativar!"""
+                    else:
+                        error = result.get("error", "Erro desconhecido")
+                        return f"❌ Erro ao criar campanha: {error}\n\nVerifique se as credenciais do Google Ads estão configuradas."
+                
+                except Exception as e:
+                    return f"❌ Erro ao criar campanha: {str(e)}\n\nVerifique as integrações e tente novamente."
+            else:
+                return "Para criar uma nova campanha, acesse a página 'Criar Campanha' no menu lateral. Posso ajudá-lo com análise de produto, geração de copy e otimização de budget!"
         
         elif 'otimizar' in message_lower or 'melhorar' in message_lower:
             return "Estou constantemente otimizando suas campanhas! Monitoro CTR, CPA, ROAS e faço ajustes automáticos. Quer ver as otimizações recentes?"
