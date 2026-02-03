@@ -23,13 +23,14 @@ class ManusAIService:
     
     def __init__(self):
         """Inicializar serviço Manus AI"""
-        self.api_key = os.environ.get("OPENAI_API_KEY", "")
-        self.base_url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+        # Usar créditos do Manus IA (esta conta)
+        self.api_key = os.environ.get("MANUS_IA_API_KEY", os.environ.get("OPENAI_API_KEY", ""))
+        self.base_url = "https://api.manus.im/v1"  # API do Manus
         self.model = "gpt-4.1-mini"  # Modelo padrão
         self.available = bool(self.api_key)
         
         if not self.available:
-            logger.warning("⚠️ OPENAI_API_KEY não configurada - Manus AI em modo offline")
+            logger.warning("⚠️ MANUS_IA_API_KEY não configurada - Manus AI em modo offline")
     
     def chat_completion(
         self,
