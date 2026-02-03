@@ -99,21 +99,48 @@
                         <li>Recomendações de otimização</li>
                         <li>Análise de performance</li>
                         <li>Criação de novas campanhas</li>
+                        <li>📎 Envie mídias para criar anúncios personalizados</li>
                     </ul>
                 </div>
             </div>
         </div>
 
+        <!-- Media Preview Area -->
+        <div id="mediaPreviewArea" style="display: none; border-top: 1px solid var(--border-color); padding: 12px 20px; background: var(--surface-color);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 13px; color: var(--text-secondary);">
+                    <i class="fas fa-paperclip"></i>
+                    Mídias anexadas
+                </span>
+                <button id="clearMediaBtn" class="nexora-btn nexora-btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                    <i class="fas fa-times"></i>
+                    Limpar
+                </button>
+            </div>
+            <div id="mediaPreviewContainer" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
+        </div>
+
         <!-- Chat Input -->
         <div style="border-top: 1px solid var(--border-color); padding: 20px;">
-            <div style="display: flex; gap: 12px;">
+            <div style="display: flex; gap: 12px; align-items: flex-end;">
+                <!-- Upload Button -->
+                <div class="upload-btn-wrapper">
+                    <button id="uploadMediaBtn" class="nexora-btn nexora-btn-secondary" title="Anexar mídia (imagem ou vídeo)">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="file" id="mediaInput" accept="image/*,video/*" multiple style="display: none;" />
+                </div>
+                
+                <!-- Text Input -->
                 <input 
                     type="text" 
                     id="chatInput" 
                     class="nexora-input" 
-                    placeholder="Digite sua mensagem..."
+                    placeholder="Digite sua mensagem ou anexe mídias para criar anúncios..."
                     style="flex: 1;"
                 />
+                
+                <!-- Send Button -->
                 <button id="sendMessageBtn" class="nexora-btn nexora-btn-primary">
                     <i class="fas fa-paper-plane"></i>
                     Enviar
@@ -121,7 +148,7 @@
             </div>
             <p style="margin: 12px 0 0 0; font-size: 12px; color: var(--text-secondary);">
                 <i class="fas fa-info-circle"></i>
-                A Velyra Prime usa IA para analisar e otimizar suas campanhas automaticamente.
+                Dica: Anexe imagens ou vídeos e peça "Crie um anúncio com esta mídia para [produto]"
             </p>
         </div>
     </div>
@@ -182,6 +209,81 @@
     margin-top: 12px;
 }
 
+/* Media in messages */
+.chat-message-media {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chat-message-media img,
+.chat-message-media video {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Media preview */
+.media-preview-item {
+    position: relative;
+    display: inline-block;
+}
+
+.media-preview-item img,
+.media-preview-item video {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+}
+
+.media-preview-item .remove-media {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.media-preview-item .media-type-badge {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 10px;
+}
+
+/* Upload button */
+.upload-btn-wrapper {
+    position: relative;
+}
+
+.upload-btn-wrapper:hover button {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Drag and drop */
+.drag-over {
+    border: 2px dashed var(--primary-color) !important;
+    background: rgba(0, 212, 255, 0.1) !important;
+}
+
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -224,6 +326,45 @@
         transform: scale(1);
     }
 }
+
+/* Markdown rendering in chat */
+.chat-message-content h1, 
+.chat-message-content h2, 
+.chat-message-content h3 {
+    margin: 16px 0 8px 0;
+    font-weight: 600;
+}
+
+.chat-message-content ul, 
+.chat-message-content ol {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.chat-message-content li {
+    margin: 4px 0;
+}
+
+.chat-message-content code {
+    background: rgba(0,0,0,0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.chat-message-content pre {
+    background: rgba(0,0,0,0.3);
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.chat-message-content blockquote {
+    border-left: 3px solid var(--primary-color);
+    padding-left: 12px;
+    margin: 12px 0;
+    color: var(--text-secondary);
+}
 </style>
 
 <script>
@@ -232,6 +373,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chatInput');
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     const clearChatBtn = document.getElementById('clearChatBtn');
+    const uploadMediaBtn = document.getElementById('uploadMediaBtn');
+    const mediaInput = document.getElementById('mediaInput');
+    const mediaPreviewArea = document.getElementById('mediaPreviewArea');
+    const mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
+    const clearMediaBtn = document.getElementById('clearMediaBtn');
+
+    // Store uploaded files
+    let uploadedFiles = [];
 
     // Load Velyra Prime status
     loadVelyraStatus();
@@ -247,50 +396,183 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clear chat
     clearChatBtn.addEventListener('click', function() {
         if (confirm('Deseja limpar todo o histórico de chat?')) {
-            // Keep only welcome message
             const welcomeMessage = chatMessages.querySelector('.chat-message-assistant');
             chatMessages.innerHTML = '';
             chatMessages.appendChild(welcomeMessage);
         }
     });
 
-    function sendMessage() {
-        const message = chatInput.value.trim();
-        if (!message) return;
+    // Upload media button
+    uploadMediaBtn.addEventListener('click', function() {
+        mediaInput.click();
+    });
 
-        // Add user message
-        addMessage(message, 'user');
+    // Handle file selection
+    mediaInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+
+    // Clear media
+    clearMediaBtn.addEventListener('click', function() {
+        uploadedFiles = [];
+        mediaPreviewContainer.innerHTML = '';
+        mediaPreviewArea.style.display = 'none';
+    });
+
+    // Drag and drop support
+    const chatCard = document.querySelector('.nexora-card:last-child');
+    
+    chatCard.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        chatCard.classList.add('drag-over');
+    });
+
+    chatCard.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        chatCard.classList.remove('drag-over');
+    });
+
+    chatCard.addEventListener('drop', function(e) {
+        e.preventDefault();
+        chatCard.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        for (let file of files) {
+            if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                uploadedFiles.push(file);
+                addMediaPreview(file);
+            } else {
+                alert('Apenas imagens e vídeos são aceitos.');
+            }
+        }
+        
+        if (uploadedFiles.length > 0) {
+            mediaPreviewArea.style.display = 'block';
+        }
+    }
+
+    function addMediaPreview(file) {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'media-preview-item';
+        
+        const isVideo = file.type.startsWith('video/');
+        const fileIndex = uploadedFiles.length - 1;
+        
+        if (isVideo) {
+            const video = document.createElement('video');
+            video.src = URL.createObjectURL(file);
+            video.muted = true;
+            previewItem.appendChild(video);
+        } else {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            previewItem.appendChild(img);
+        }
+        
+        // Type badge
+        const badge = document.createElement('span');
+        badge.className = 'media-type-badge';
+        badge.innerHTML = isVideo ? '<i class="fas fa-video"></i>' : '<i class="fas fa-image"></i>';
+        previewItem.appendChild(badge);
+        
+        // Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-media';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.onclick = function() {
+            uploadedFiles.splice(fileIndex, 1);
+            previewItem.remove();
+            if (uploadedFiles.length === 0) {
+                mediaPreviewArea.style.display = 'none';
+            }
+        };
+        previewItem.appendChild(removeBtn);
+        
+        mediaPreviewContainer.appendChild(previewItem);
+    }
+
+    async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message && uploadedFiles.length === 0) return;
+
+        // Add user message with media preview
+        addMessage(message, 'user', uploadedFiles);
         chatInput.value = '';
 
         // Show loading
         const loadingId = showLoading();
 
-        // Send to API
-        fetch('/api/velyra/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message: message })
-        })
-        .then(response => response.json())
-        .then(data => {
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('message', message);
+        
+        // Add files
+        for (let i = 0; i < uploadedFiles.length; i++) {
+            formData.append('media', uploadedFiles[i]);
+        }
+
+        // Clear uploaded files
+        const hadMedia = uploadedFiles.length > 0;
+        uploadedFiles = [];
+        mediaPreviewContainer.innerHTML = '';
+        mediaPreviewArea.style.display = 'none';
+
+        try {
+            let response;
+            
+            if (hadMedia) {
+                // Use multipart endpoint for media
+                response = await fetch('/api/velyra/chat-with-media', {
+                    method: 'POST',
+                    body: formData
+                });
+            } else {
+                // Use regular JSON endpoint
+                response = await fetch('/api/velyra/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+            }
+            
+            const data = await response.json();
             removeLoading(loadingId);
+            
             if (data.success) {
                 addMessage(data.response, 'assistant');
             } else {
                 addMessage('Desculpe, ocorreu um erro ao processar sua mensagem.', 'assistant');
             }
-        })
-        .catch(error => {
+        } catch (error) {
             removeLoading(loadingId);
             addMessage('Erro ao conectar com a Velyra Prime. Tente novamente.', 'assistant');
-        });
+        }
     }
 
-    function addMessage(text, sender) {
+    function addMessage(text, sender, files = []) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message chat-message-${sender}`;
+        
+        // Format text with markdown-like rendering
+        let formattedText = formatMessage(text);
+        
+        // Build media HTML
+        let mediaHtml = '';
+        if (files && files.length > 0) {
+            mediaHtml = '<div class="chat-message-media">';
+            for (let file of files) {
+                if (file.type.startsWith('video/')) {
+                    mediaHtml += `<video src="${URL.createObjectURL(file)}" controls style="max-width: 200px; border-radius: 8px;"></video>`;
+                } else {
+                    mediaHtml += `<img src="${URL.createObjectURL(file)}" alt="Mídia anexada">`;
+                }
+            }
+            mediaHtml += '</div>';
+        }
         
         messageDiv.innerHTML = `
             <div class="chat-message-avatar">
@@ -298,12 +580,48 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="chat-message-content">
                 <p><strong>${sender === 'user' ? 'Você' : 'Velyra Prime'}</strong></p>
-                <p>${text}</p>
+                ${formattedText}
+                ${mediaHtml}
             </div>
         `;
         
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function formatMessage(text) {
+        if (!text) return '';
+        
+        // Convert markdown-like syntax to HTML
+        let formatted = text
+            // Bold
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            // Headers
+            .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+            .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+            .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+            // Lists
+            .replace(/^• (.+)$/gm, '<li>$1</li>')
+            .replace(/^- (.+)$/gm, '<li>$1</li>')
+            .replace(/^\* (.+)$/gm, '<li>$1</li>')
+            // Numbered lists
+            .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+            // Code blocks
+            .replace(/```(.+?)```/gs, '<pre><code>$1</code></pre>')
+            // Inline code
+            .replace(/`(.+?)`/g, '<code>$1</code>')
+            // Blockquotes
+            .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+            // Line breaks
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+        
+        // Wrap in paragraph if not already
+        if (!formatted.startsWith('<')) {
+            formatted = '<p>' + formatted + '</p>';
+        }
+        
+        return formatted;
     }
 
     function showLoading() {

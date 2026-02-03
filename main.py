@@ -27,7 +27,10 @@ try:
     from services import dco_service
     from services import landing_page_builder_service
     from services import segmentation_service
-    from services.velyra_prime import operator as velyra_prime
+    try:
+        from services.velyra_prime_v3 import operator as velyra_prime
+    except ImportError:
+        from services.velyra_prime import operator as velyra_prime
     from services.ab_testing_service import ab_testing_service
     from services.automation_service import automation_service
     from services import openai_service
@@ -1289,6 +1292,107 @@ def api_operator_chat():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+
+@app.route("/api/velyra/chat-with-media", methods=["POST"])
+def api_velyra_chat_with_media():
+    """Chat with Velyra Prime with media attachments"""
+    import os
+    from werkzeug.utils import secure_filename
+    
+    UPLOAD_FOLDER = 'static/uploads/velyra_media'
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp4', 'webm', 'mov'}
+    
+    def allowed_file(filename):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    
+    try:
+        # Ensure upload folder exists
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+        
+        message = request.form.get('message', '')
+        files = request.files.getlist('media')
+        
+        # Process uploaded files
+        uploaded_files = []
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                # Add timestamp to filename to avoid conflicts
+                import time
+                timestamp = int(time.time())
+                filename = f"{timestamp}_{filename}"
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(filepath)
+                
+                # Determine file type
+                ext = filename.rsplit('.', 1)[1].lower()
+                file_type = 'video' if ext in {'mp4', 'webm', 'mov'} else 'image'
+                
+                uploaded_files.append({
+                    'filename': filename,
+                    'filepath': filepath,
+                    'url': f'/static/uploads/velyra_media/{filename}',
+                    'type': file_type
+                })
+        
+        # Build message with media context
+        media_context = ''
+        if uploaded_files:
+            media_types = [f['type'] for f in uploaded_files]
+            num_images = media_types.count('image')
+            num_videos = media_types.count('video')
+            
+            media_parts = []
+            if num_images > 0:
+                media_parts.append(f"{num_images} imagem(ns)")
+            if num_videos > 0:
+                media_parts.append(f"{num_videos} vídeo(s)")
+            
+            media_context = f"\n\n[Mídias anexadas: {', '.join(media_parts)}]"
+        
+        full_message = message + media_context if message else f"Usuário enviou mídias: {media_context}"
+        
+        # Save message to database
+        db = get_db()
+        db.execute(
+            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
+            ("user", full_message)
+        )
+        db.commit()
+        
+        # Generate response with media context
+        if uploaded_files:
+            # Enhance message for media-aware response
+            enhanced_message = message if message else "Crie um anúncio com as mídias que enviei"
+            if 'cri' in enhanced_message.lower() or 'anúncio' in enhanced_message.lower() or 'anuncio' in enhanced_message.lower():
+                enhanced_message += f" (usando as {len(uploaded_files)} mídia(s) anexada(s))"
+        else:
+            enhanced_message = message
+        
+        response = velyra_prime.chat_response(enhanced_message)
+        
+        # If media was uploaded, add media info to response
+        if uploaded_files:
+            media_info = "\n\n📎 **Mídias recebidas:**\n"
+            for f in uploaded_files:
+                icon = '🎬' if f['type'] == 'video' else '🖼️'
+                media_info += f"- {icon} {f['filename']}\n"
+            response += media_info
+        
+        # Save response
+        db.execute(
+            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
+            ("operator", response)
+        )
+        db.commit()
+        
+        return jsonify({
+            "success": True,
+            "response": response,
+            "uploaded_files": uploaded_files
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route("/api/operator/recommendations/<int:campaign_id>", methods=["GET"])
 def api_operator_recommendations(campaign_id):
