@@ -1,10 +1,24 @@
-"""
-AI Service - Serviço de IA usando Manus AI
-Gera copy, headlines, descriptions e CTAs otimizados
+"""AI Service - Serviço de IA com múltiplos backends
+Suporta: Manus AI (nativo), OpenAI API (fallback), Mock (último recurso)
 """
 
 import os
 import json
+
+# Try to import OpenAI
+OPENAI_AVAILABLE = False
+openai_client = None
+try:
+    import openai
+    api_key = os.environ.get('OPENAI_API_KEY', '')
+    if api_key:
+        openai_client = openai.OpenAI(api_key=api_key)
+        OPENAI_AVAILABLE = True
+        print("✅ OpenAI API configurada com sucesso")
+except ImportError:
+    print("⚠️ OpenAI SDK não instalado")
+except Exception as e:
+    print(f"⚠️ Erro ao configurar OpenAI: {e}")
 
 class OpenaiService:
     """Classe wrapper para compatibilidade - Agora usa Manus AI"""
@@ -52,7 +66,14 @@ def generate_ad_copy(product_info, platform="facebook", num_variants=5):
         except Exception as e:
             print(f"Erro na Manus AI, usando fallback: {e}")
     
-    # Fallback para copy gerado localmente
+    # Try OpenAI API as secondary fallback
+    if OPENAI_AVAILABLE and openai_client:
+        try:
+            return _generate_with_openai(product_info, num_variants)
+        except Exception as e:
+            print(f"Erro na OpenAI API, usando mock: {e}")
+    
+    # Final fallback: locally generated copy
     return _generate_mock_copy(product_info, num_variants)
 
 
@@ -122,6 +143,39 @@ def optimize_campaign_budget(campaign_data):
 
 
 # ===== FUNÇÕES FALLBACK (Geração Local) =====
+
+def _generate_with_openai(product_info, num_variants=5):
+    """Gera copy usando OpenAI GPT API"""
+    title = product_info.get('title') or product_info.get('name', 'Produto')
+    description = product_info.get('description', '')
+    target_audience = product_info.get('target_audience', 'público geral')
+    
+    prompt = f"""Crie {num_variants} variações de copy para anúncio do produto:
+    Produto: {title}
+    Descrição: {description}
+    Público-alvo: {target_audience}
+    
+    Para cada variação, forneça:
+    - headline (máx 40 caracteres)
+    - description (máx 125 caracteres)
+    - cta (call to action)
+    - score (0-100)
+    - reasoning (motivo do score)
+    
+    Responda em JSON: {{"variants": [...]}}"""
+    
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=1000
+        )
+        result = json.loads(response.choices[0].message.content)
+        return result
+    except Exception as e:
+        print(f"Erro ao processar resposta OpenAI: {e}")
+        raise
 
 def _generate_mock_copy(product_info, num_variants=5):
     """Gera copy otimizado localmente quando Manus AI não está disponível"""
