@@ -83,7 +83,11 @@ class CampaignAutomationService:
     def _needs_manual_approval(self, action: str, amount: float) -> bool:
         """Verifica se uma ação precisa de aprovação manual"""
         
-        # Ações que sempre precisam de aprovação
+        # Auto-aprovar criação de campanhas com orçamento baixo (< R$200)
+        if action == 'create_campaign' and amount < 200.00:
+            return False
+        
+        # Ações que sempre precisam de aprovação (exceto create_campaign com budget baixo)
         high_risk_actions = [
             'create_campaign',
             'delete_campaign',
