@@ -6140,3 +6140,78 @@ def mmm_page():
 def geo_testing_page():
     """Página de testes geográficos."""
     return render_template('geo_testing.html')
+
+# ===== MANUS/VELYRA INTEGRATION APIs =====
+@app.route("/api/manus/approvals/pending", methods=["GET"])
+def api_manus_pending_approvals():
+    """Lista ações pendentes de aprovação"""
+    try:
+        from services.manus_velyra_integration import ManusVelyraSupervisor
+        supervisor = ManusVelyraSupervisor()
+        pending = supervisor.get_pending_approvals()
+        return jsonify({"success": True, "pending": pending})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/manus/approvals/approve", methods=["POST"])
+def api_manus_approve_action():
+    """Aprova uma ação pendente"""
+    data = request.get_json()
+    action_id = data.get("action_id")
+    
+    if not action_id:
+        return jsonify({"success": False, "error": "action_id obrigatório"}), 400
+    
+    try:
+        from services.manus_velyra_integration import ManusVelyraSupervisor
+        supervisor = ManusVelyraSupervisor()
+        result = supervisor.approve_action(action_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/manus/approvals/reject", methods=["POST"])
+def api_manus_reject_action():
+    """Rejeita uma ação pendente"""
+    data = request.get_json()
+    action_id = data.get("action_id")
+    reason = data.get("reason", "Rejeitado pelo Manus")
+    
+    if not action_id:
+        return jsonify({"success": False, "error": "action_id obrigatório"}), 400
+    
+    try:
+        from services.manus_velyra_integration import ManusVelyraSupervisor
+        supervisor = ManusVelyraSupervisor()
+        result = supervisor.reject_action(action_id, reason)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/manus/autonomy/set", methods=["POST"])
+def api_manus_set_autonomy():
+    """Define nível de autonomia do Velyra"""
+    data = request.get_json()
+    level = data.get("level")
+    
+    if level not in ["supervised", "semi_autonomous", "autonomous"]:
+        return jsonify({"success": False, "error": "Nível inválido"}), 400
+    
+    try:
+        from services.manus_velyra_integration import ManusVelyraSupervisor
+        supervisor = ManusVelyraSupervisor()
+        supervisor.set_autonomy_level(level)
+        return jsonify({"success": True, "level": level})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/manus/audit/log", methods=["GET"])
+def api_manus_audit_log():
+    """Retorna log de auditoria"""
+    try:
+        from services.manus_velyra_integration import ManusVelyraSupervisor
+        supervisor = ManusVelyraSupervisor()
+        log = supervisor.get_audit_log()
+        return jsonify({"success": True, "log": log})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
