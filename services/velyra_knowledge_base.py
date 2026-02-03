@@ -1003,6 +1003,19 @@ Reformule sua pergunta e terei prazer em ajudar!""",
     def get_glossary_term(self, term: str) -> Optional[Dict[str, str]]:
         """Retorna definição de um termo do glossário."""
         return self.glossary.get(term.upper())
+    
+    # Métodos de compatibilidade
+    def get_all_training_modules(self) -> List[Dict[str, Any]]:
+        """Retorna todos os módulos de treinamento."""
+        return self.get_all_modules()
+    
+    def get_campaign_memories(self) -> List[Dict[str, Any]]:
+        """Retorna todas as memórias de campanhas."""
+        return self.memories
+    
+    def get_glossary(self) -> Dict[str, Dict[str, str]]:
+        """Retorna o glossário completo."""
+        return self.glossary
 
 
 # Instância global da base de conhecimento

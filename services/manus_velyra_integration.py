@@ -669,6 +669,27 @@ class ManusVelyraIntegration:
             }.get(level)
         }
     
+    def submit_action(self, action_type: str, parameters: Dict[str, Any], priority: str = "medium") -> str:
+        """Submete uma ação para aprovação (alias para request_approval)."""
+        result = self.request_approval(action_type, parameters)
+        return result.get('action_id', '')
+    
+    def approve_action(self, action_id: str) -> Dict[str, Any]:
+        """Aprova uma ação pendente."""
+        return self.manus_review_action(action_id, approved=True)
+    
+    def reject_action(self, action_id: str, reason: str = "") -> Dict[str, Any]:
+        """Rejeita uma ação pendente."""
+        return self.manus_review_action(action_id, approved=False, notes=reason)
+    
+    def get_audit_log(self) -> List[Dict[str, Any]]:
+        """Retorna log de auditoria."""
+        db = self._get_db()
+        cursor = db.execute(
+            "SELECT * FROM supervision_log ORDER BY timestamp DESC LIMIT 100"
+        )
+        return [dict(row) for row in cursor.fetchall()]
+    
     def check_action_permission(self, action_type: str, action_data: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Verifica se Velyra tem permissão para executar uma ação.
@@ -732,3 +753,7 @@ def get_pending_for_manus() -> List[Dict[str, Any]]:
 def check_velyra_permission(action_type: str, action_data: Dict[str, Any] = None) -> Dict[str, Any]:
     """Verifica permissão do Velyra para uma ação."""
     return manus_velyra.check_action_permission(action_type, action_data)
+
+# Alias para compatibilidade
+ManusVelyraSupervisor = ManusVelyraIntegration
+
