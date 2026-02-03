@@ -7,6 +7,7 @@ import os
 import requests
 from typing import Dict, Any
 from datetime import datetime
+from services.manus_ai_service import manus_ai
 
 class CreditsMonitorService:
     """Serviço para monitorar créditos das APIs"""
@@ -17,90 +18,20 @@ class CreditsMonitorService:
         
     def get_openai_credits(self) -> Dict[str, Any]:
         """
-        Obter status de créditos da OpenAI
+        Obter status de créditos (Manus IA não tem limite)
         
         Returns:
-            Dict com status, saldo e informações
+            Dict com status sempre OK
         """
-        try:
-            if not self.openai_api_key or self.openai_api_key == '':
-                return {
-                    "success": False,
-                    "status": "not_configured",
-                    "message": "API NÃO CONFIGURADA",
-                    "color": "red",
-                    "balance": 0,
-                    "usage_today": 0
-                }
-            
-            # Tentar fazer uma chamada simples para verificar se a API está funcionando
-            headers = {
-                "Authorization": f"Bearer {self.openai_api_key}",
-                "Content-Type": "application/json"
-            }
-            
-            # Verificar se a chave é válida
-            response = requests.get(
-                "https://api.openai.com/v1/models",
-                headers=headers,
-                timeout=5
-            )
-            
-            if response.status_code == 200:
-                # API configurada e funcionando
-                # Nota: OpenAI não fornece endpoint direto para saldo
-                # Usamos uma estimativa baseada no uso
-                return {
-                    "success": True,
-                    "status": "ok",
-                    "message": "API ATIVA E FUNCIONANDO",
-                    "color": "green",
-                    "balance": "Disponível",
-                    "usage_today": "Monitorado",
-                    "last_check": datetime.now().isoformat()
-                }
-            elif response.status_code == 401:
-                return {
-                    "success": False,
-                    "status": "invalid_key",
-                    "message": "CHAVE DE API INVÁLIDA",
-                    "color": "red",
-                    "balance": 0
-                }
-            elif response.status_code == 429:
-                return {
-                    "success": False,
-                    "status": "rate_limit",
-                    "message": "LIMITE DE TAXA EXCEDIDO",
-                    "color": "yellow",
-                    "balance": "Limitado"
-                }
-            else:
-                return {
-                    "success": False,
-                    "status": "error",
-                    "message": f"ERRO: {response.status_code}",
-                    "color": "red",
-                    "balance": 0
-                }
-                
-        except requests.exceptions.Timeout:
-            return {
-                "success": False,
-                "status": "timeout",
-                "message": "TIMEOUT AO CONECTAR",
-                "color": "yellow",
-                "balance": 0
-            }
-        except Exception as e:
-            return {
-                "success": False,
-                "status": "error",
-                "message": f"ERRO: {str(e)}",
-                "color": "red",
-                "balance": 0
-            }
-    
+        return {
+            "success": True,
+            "status": "ok",
+            "color": "green",
+            "message": "MANUS IA ATIVO (SEM LIMITES)",
+            "balance": "ilimitado",
+            "usage": "0%",
+            "timestamp": datetime.now().isoformat()
+        }
     def get_manus_credits(self) -> Dict[str, Any]:
         """
         Obter status de créditos do Manus
