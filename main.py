@@ -6114,6 +6114,41 @@ def get_api_status():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/api/init-database', methods=['POST'])
+def init_database_endpoint():
+    """Inicializa banco de dados PostgreSQL com schema completo."""
+    try:
+        import subprocess
+        import sys
+        
+        # Executar script de inicialização
+        result = subprocess.run(
+            [sys.executable, 'init_postgres_db.py'],
+            capture_output=True,
+            text=True,
+            cwd=os.path.dirname(__file__)
+        )
+        
+        if result.returncode == 0:
+            return jsonify({
+                "success": True,
+                "message": "Banco de dados inicializado com sucesso!",
+                "output": result.stdout
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Falha ao inicializar banco de dados",
+                "output": result.stderr
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 # ============================================================
 # PÁGINAS ADICIONAIS - ANALYTICS AVANÇADO
 # ============================================================
