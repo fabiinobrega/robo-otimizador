@@ -9,6 +9,12 @@ import re
 from datetime import datetime, timedelta
 import sqlite3
 import os
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 
 class NativeAIEngine:
@@ -421,7 +427,7 @@ class NativeAIEngine:
     def _save_learning(self, learning_entry):
         """Salva aprendizado no banco de dados"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''

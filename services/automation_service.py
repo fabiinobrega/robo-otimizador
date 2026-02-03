@@ -5,6 +5,12 @@ Sistema de automação e regras para campanhas
 import sqlite3
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 
 class AutomationService:
@@ -15,7 +21,7 @@ class AutomationService:
     
     def get_db(self):
         """Conectar ao banco de dados"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         return conn
     
@@ -115,7 +121,7 @@ class AutomationService:
             """).fetchall()
             
             for campaign in campaigns:
-                db.execute("""
+                db.execute(sql_param("")"
                     UPDATE campaigns 
                     SET status = 'Paused', updated_at = ?
                     WHERE id = ?
@@ -159,7 +165,7 @@ class AutomationService:
             for campaign in campaigns:
                 new_budget = campaign['budget'] * 1.15  # Aumentar 15%
                 
-                db.execute("""
+                db.execute(sql_param("")"
                     UPDATE campaigns 
                     SET budget = ?, updated_at = ?
                     WHERE id = ?
@@ -200,7 +206,7 @@ class AutomationService:
             """).fetchall()
             
             for campaign in campaigns:
-                db.execute("""
+                db.execute(sql_param("")"
                     UPDATE campaigns 
                     SET status = 'Active', updated_at = ?
                     WHERE id = ?
@@ -301,7 +307,7 @@ class AutomationService:
         db = self.get_db()
         
         try:
-            logs = db.execute("""
+            logs = db.execute(sql_param("")"
                 SELECT * FROM activity_logs
                 WHERE action LIKE '[Automação]%' OR action LIKE '[Alerta]%'
                 ORDER BY timestamp DESC

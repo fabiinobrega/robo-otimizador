@@ -18,6 +18,13 @@ from pathlib import Path
 
 from .task_models import Task, TaskStatus
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 
 class TaskQueue:
     """
@@ -39,7 +46,7 @@ class TaskQueue:
     
     def _init_database(self):
         """Inicializa o banco de dados"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Tabela de tarefas
@@ -86,7 +93,7 @@ class TaskQueue:
             bool: True se adicionada com sucesso
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -121,7 +128,7 @@ class TaskQueue:
             Task ou None se fila vazia
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Busca tarefa pendente mais antiga
@@ -159,7 +166,7 @@ class TaskQueue:
             bool: True se atualizada com sucesso
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -199,7 +206,7 @@ class TaskQueue:
             int: Número de tarefas pendentes
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -227,7 +234,7 @@ class TaskQueue:
             Lista de tarefas
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             if status:
@@ -263,7 +270,7 @@ class TaskQueue:
             Task ou None se não encontrada
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -294,7 +301,7 @@ class TaskQueue:
             int: Número de tarefas removidas
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cutoff_date = datetime.now().timestamp() - (older_than_days * 86400)
@@ -325,7 +332,7 @@ class TaskQueue:
             Dict com estatísticas
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Conta por status

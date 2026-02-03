@@ -11,6 +11,12 @@ import sqlite3
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from pathlib import Path
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 class NexoraAutomation:
     """
@@ -40,7 +46,7 @@ class NexoraAutomation:
             Automação criada
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Criar tabela se não existir
@@ -98,10 +104,10 @@ class NexoraAutomation:
             Resultado da execução
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 SELECT name, type, config
                 FROM automations
                 WHERE id = ? AND status = 'active'
@@ -134,7 +140,7 @@ class NexoraAutomation:
                 }
             
             # Atualizar last_run
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE automations
                 SET last_run = ?
                 WHERE id = ?
@@ -161,11 +167,11 @@ class NexoraAutomation:
             Lista de automações
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             if status:
-                cursor.execute("""
+                cursor.execute(sql_param("")"
                     SELECT id, name, type, schedule, status, last_run
                     FROM automations
                     WHERE status = ?
@@ -205,7 +211,7 @@ class NexoraAutomation:
     def _run_daily_report(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Gerar relatório diário"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Buscar dados do dia anterior
@@ -259,14 +265,14 @@ class NexoraAutomation:
     def _run_performance_check(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Verificar performance das campanhas"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             threshold_roas = config.get('threshold_roas', 1.5)
             threshold_ctr = config.get('threshold_ctr', 1.0)
             
             # Campanhas com baixa performance
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 SELECT id, name, roas, ctr
                 FROM campaigns
                 WHERE status = 'active'
@@ -301,7 +307,7 @@ class NexoraAutomation:
     def _run_budget_reallocation(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Realocar orçamento automaticamente"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Buscar campanhas ativas
@@ -336,7 +342,7 @@ class NexoraAutomation:
                     new_budget = budget
                 
                 if abs(new_budget - budget) > 1:
-                    cursor.execute("""
+                    cursor.execute(sql_param("")"
                         UPDATE campaigns SET budget = ? WHERE id = ?
                     """, (new_budget, campaign_id))
                     

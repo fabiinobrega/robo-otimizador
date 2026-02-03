@@ -9,6 +9,13 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 import requests
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 # Importar motor de IA nativa
 try:
     from services.native_ai_engine import native_ai
@@ -57,7 +64,7 @@ class VelyraPrime:
         
     def get_db(self):
         """Conectar ao banco de dados"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         return conn
     

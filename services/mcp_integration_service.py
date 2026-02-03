@@ -11,6 +11,12 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 import hashlib
 import secrets
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 
 class MCPIntegrationService:
@@ -46,7 +52,7 @@ class MCPIntegrationService:
             dict: Resultado da execução
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -63,7 +69,7 @@ class MCPIntegrationService:
             result = self._execute_command(command, params or {})
             
             # Atualizar status
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE mcp_commands 
                 SET status = ?, result = ?, executed_at = ?
                 WHERE id = ?
@@ -117,7 +123,7 @@ class MCPIntegrationService:
     def _cmd_create_campaign(self, params: Dict) -> Dict:
         """Cria uma nova campanha"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -149,7 +155,7 @@ class MCPIntegrationService:
     def _cmd_update_campaign(self, params: Dict) -> Dict:
         """Atualiza uma campanha existente"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             campaign_id = params.get('campaign_id')
@@ -192,13 +198,13 @@ class MCPIntegrationService:
     def _cmd_get_metrics(self, params: Dict) -> Dict:
         """Obtém métricas de uma campanha"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
             campaign_id = params.get('campaign_id')
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 SELECT * FROM campaign_metrics
                 WHERE campaign_id = ?
                 ORDER BY date DESC
@@ -382,7 +388,7 @@ class MCPIntegrationService:
             dict: Resultado do registro
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -415,11 +421,11 @@ class MCPIntegrationService:
             dict: Resultado do disparo
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 SELECT * FROM webhooks
                 WHERE event = ? AND active = 1
             """, (event,))
@@ -500,7 +506,7 @@ class MCPIntegrationService:
             dict: Resultado da emissão
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -538,7 +544,7 @@ class MCPIntegrationService:
             dict: Resultado do registro
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -557,7 +563,7 @@ class MCPIntegrationService:
     def get_telemetry(self, metric: str, start_date: str = None, end_date: str = None) -> Dict[str, Any]:
         """Obtém dados de telemetria"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             

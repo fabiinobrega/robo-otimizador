@@ -22,6 +22,12 @@ import sqlite3
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 from enum import Enum
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 
 class ActionPriority(Enum):
@@ -59,7 +65,7 @@ class ManusVelyraIntegration:
     def _init_database(self):
         """Inicializa tabelas necessárias no banco de dados."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Tabela de aprovações pendentes
@@ -342,7 +348,7 @@ class ManusVelyraIntegration:
     def _save_approval_request(self, approval: Dict[str, Any]):
         """Salva solicitação de aprovação no banco de dados."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -420,10 +426,10 @@ class ManusVelyraIntegration:
     def _get_pending_action(self, action_id: str) -> Optional[Dict[str, Any]]:
         """Busca ação pendente por ID."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('SELECT * FROM manus_approvals WHERE action_id = ?', (action_id,))
+            cursor.execute(sql_param('SELECT * FROM manus_approvals WHERE action_id = ?'), (action_id,))
             row = cursor.fetchone()
             conn.close()
             
@@ -444,10 +450,10 @@ class ManusVelyraIntegration:
     def _update_approval_status(self, action_id: str, status: ApprovalStatus, notes: str):
         """Atualiza status de aprovação."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('''
+            cursor.execute(sql_param('')'
                 UPDATE manus_approvals 
                 SET status = ?, reviewed_by = ?, reviewed_at = ?, review_notes = ?
                 WHERE action_id = ?
@@ -496,7 +502,7 @@ class ManusVelyraIntegration:
     def _save_learned_rule(self, rule: Dict[str, Any]):
         """Salva regra aprendida no banco de dados."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -520,7 +526,7 @@ class ManusVelyraIntegration:
                                manus_response: str, outcome: str):
         """Registra evento de supervisão."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -537,7 +543,7 @@ class ManusVelyraIntegration:
     def get_pending_approvals(self) -> List[Dict[str, Any]]:
         """Retorna lista de aprovações pendentes."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -574,7 +580,7 @@ class ManusVelyraIntegration:
     def get_supervision_stats(self) -> Dict[str, Any]:
         """Retorna estatísticas de supervisão."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Total de ações revisadas
@@ -684,7 +690,7 @@ class ManusVelyraIntegration:
     
     def _get_db(self):
         """Retorna conexão com o banco de dados."""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         return conn
     

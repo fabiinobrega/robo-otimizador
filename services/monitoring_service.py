@@ -11,6 +11,12 @@ from datetime import datetime, timedelta
 from functools import wraps
 from pathlib import Path
 import sqlite3
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 # Configurar logging avançado
 LOG_DIR = Path(__file__).parent.parent / "logs"
@@ -54,7 +60,7 @@ class PerformanceMonitor:
     def track_request(self, endpoint, method, duration, status_code, user_id=None):
         """Registra métricas de uma requisição"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Criar tabela se não existir
@@ -89,7 +95,7 @@ class PerformanceMonitor:
     def get_metrics_summary(self, hours=24):
         """Retorna resumo de métricas das últimas N horas"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cutoff_time = datetime.now() - timedelta(hours=hours)
@@ -125,7 +131,7 @@ class PerformanceMonitor:
     def get_slow_endpoints(self, threshold=1.0, limit=10):
         """Retorna endpoints mais lentos"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -173,7 +179,7 @@ class AlertSystem:
     def create_alert(self, alert_type, severity, message, details=None):
         """Cria um alerta no sistema"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Criar tabela se não existir
@@ -219,11 +225,11 @@ class AlertSystem:
     def get_active_alerts(self, severity=None):
         """Retorna alertas ativos"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             if severity:
-                cursor.execute('''
+                cursor.execute(sql_param('')'
                     SELECT id, alert_type, severity, message, details, created_at
                     FROM system_alerts
                     WHERE resolved = 0 AND severity = ?
@@ -258,10 +264,10 @@ class AlertSystem:
     def resolve_alert(self, alert_id):
         """Marca um alerta como resolvido"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('''
+            cursor.execute(sql_param('')'
                 UPDATE system_alerts
                 SET resolved = 1, resolved_at = ?
                 WHERE id = ?
@@ -300,7 +306,7 @@ class AnalyticsTracker:
     def track_event(self, event_type, event_name, properties=None, user_id=None):
         """Registra um evento de analytics"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Criar tabela se não existir
@@ -330,7 +336,7 @@ class AnalyticsTracker:
     def get_event_stats(self, event_type=None, hours=24):
         """Retorna estatísticas de eventos"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cutoff_time = datetime.now() - timedelta(hours=hours)
@@ -370,10 +376,10 @@ class AnalyticsTracker:
     def get_user_journey(self, user_id, limit=50):
         """Retorna jornada do usuário (últimos eventos)"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('''
+            cursor.execute(sql_param('')'
                 SELECT event_type, event_name, properties, timestamp
                 FROM analytics_events
                 WHERE user_id = ?

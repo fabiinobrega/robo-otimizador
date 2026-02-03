@@ -31,6 +31,13 @@ from typing import Dict, Any, List, Optional
 from pathlib import Path
 from enum import Enum
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 
 class DecisionType(Enum):
     """Tipos de decisão"""
@@ -95,7 +102,7 @@ class VelyraLearning:
     
     def _init_database(self):
         """Inicializa o banco de dados"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Tabela de padrões aprendidos
@@ -184,7 +191,7 @@ class VelyraLearning:
         print(f"[VELYRA LEARNING] 📝 Registrando decisão do Manus: {decision_id}")
         
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -240,7 +247,7 @@ class VelyraLearning:
         print(f"[VELYRA LEARNING] 🔍 Extraindo padrão: {pattern_id}")
         
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Verifica se padrão já existe
@@ -331,7 +338,7 @@ class VelyraLearning:
             LearningPattern se encontrado, None caso contrário
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Busca padrões com contexto similar
@@ -387,7 +394,7 @@ class VelyraLearning:
         print(f"[VELYRA LEARNING] 📊 Registrando execução da Velyra: {execution_id}")
         
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -424,7 +431,7 @@ class VelyraLearning:
             success: Se a execução foi bem-sucedida
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Busca execuções do padrão
@@ -475,7 +482,7 @@ class VelyraLearning:
         print(f"[VELYRA LEARNING] 💬 Manus forneceu feedback: {execution_id}")
         
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -498,7 +505,7 @@ class VelyraLearning:
             Dict com estatísticas
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Total de padrões aprendidos

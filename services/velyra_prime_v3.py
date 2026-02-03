@@ -21,6 +21,13 @@ import sqlite3
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 # Importar serviços criados
 try:
     from services.velyra_action_engine import VelyraActionEngine
@@ -782,7 +789,7 @@ Digite **"ajuda"** para ver todos os comandos disponíveis.
     def _get_dashboard_metrics(self) -> Dict[str, Any]:
         """Obtém métricas do dashboard."""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Campanhas ativas

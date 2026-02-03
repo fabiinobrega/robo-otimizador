@@ -12,6 +12,13 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 import threading
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 class VelyraCampaignMonitor:
     """
     Sistema de monitoramento 24/7 de campanhas
@@ -42,7 +49,7 @@ class VelyraCampaignMonitor:
     
     def _get_db(self):
         """Retorna conexão com o banco de dados"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         return conn
     

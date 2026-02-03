@@ -9,6 +9,12 @@ import sqlite3
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from pathlib import Path
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 class ManusExecutorBridge:
     """
@@ -44,7 +50,7 @@ class ManusExecutorBridge:
             platforms = campaign_strategy.get('platforms', ['google'])
             
             # Criar campanha no banco
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -72,7 +78,7 @@ class ManusExecutorBridge:
             # Aplicar segmentação
             if 'targeting' in campaign_strategy:
                 targeting = json.dumps(campaign_strategy['targeting'])
-                cursor.execute("""
+                cursor.execute(sql_param("")"
                     UPDATE campaigns SET targeting = ? WHERE id = ?
                 """, (targeting, campaign_id))
             
@@ -103,10 +109,10 @@ class ManusExecutorBridge:
         """
         try:
             # Buscar dados da campanha
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 SELECT name, objective, budget, targeting
                 FROM campaigns WHERE id = ?
             """, (campaign_id,))
@@ -125,7 +131,7 @@ class ManusExecutorBridge:
             # Por enquanto, simular sucesso
             
             # Atualizar status
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE campaigns 
                 SET status = 'synced_google', synced_at = ?
                 WHERE id = ?
@@ -158,10 +164,10 @@ class ManusExecutorBridge:
             Resultado da sincronização
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 SELECT name, objective, budget, targeting
                 FROM campaigns WHERE id = ?
             """, (campaign_id,))
@@ -176,7 +182,7 @@ class ManusExecutorBridge:
             
             # Aqui seria a integração real com Facebook Ads API
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE campaigns 
                 SET status = 'synced_facebook', synced_at = ?
                 WHERE id = ?
@@ -241,7 +247,7 @@ class ManusExecutorBridge:
             
             # Atualizar banco de dados
             if 'database' in updates:
-                conn = sqlite3.connect(self.db_path)
+                conn = get_db_connection()
                 cursor = conn.cursor()
                 
                 for query in updates['database']:
@@ -299,7 +305,7 @@ class ManusExecutorBridge:
     def _execute_budget_optimization(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Executar otimização de orçamento"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Buscar campanhas ativas
@@ -325,7 +331,7 @@ class ManusExecutorBridge:
                     action = "maintain"
                 
                 if new_budget != budget:
-                    cursor.execute("""
+                    cursor.execute(sql_param("")"
                         UPDATE campaigns SET budget = ? WHERE id = ?
                     """, (new_budget, campaign_id))
                     
@@ -358,10 +364,10 @@ class ManusExecutorBridge:
         try:
             threshold_roas = config.get('threshold_roas', 1.0)
             
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE campaigns
                 SET status = 'paused', paused_at = ?
                 WHERE status = 'active' AND roas < ?
@@ -390,10 +396,10 @@ class ManusExecutorBridge:
             threshold_roas = config.get('threshold_roas', 3.0)
             scale_factor = config.get('scale_factor', 1.5)
             
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE campaigns
                 SET budget = budget * ?
                 WHERE status = 'active' AND roas >= ?

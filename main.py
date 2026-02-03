@@ -173,6 +173,22 @@ def get_db():
             g.db.row_factory = sqlite3.Row
     return g.db
 
+
+def sql_param(query: str) -> str:
+    """Converte placeholders ? para %s quando usando PostgreSQL"""
+    if USE_POSTGRES:
+        return query.replace('?', '%s')
+    return query
+
+
+def db_execute(query: str, params: tuple = None):
+    """Executa query com conversão automática de placeholders"""
+    db = get_db()
+    converted_query = sql_param(query)
+    if params:
+        return db.execute(converted_query, params)
+    return db.execute(converted_query)
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = g.pop('db', None)
@@ -318,13 +334,13 @@ def api_campaign_list():
     try:
         if status:
             campaigns = db.execute(
-                "SELECT * FROM campaigns WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                sql_param("SELECT * FROM campaigns WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?"),
                 (status, limit, offset)
             ).fetchall()
-            total = db.execute("SELECT COUNT(*) as count FROM campaigns WHERE status = ?", (status,)).fetchone()[0]
+            total = db.execute(sql_param("SELECT COUNT(*) as count FROM campaigns WHERE status = ?"), (status,)).fetchone()[0]
         else:
             campaigns = db.execute(
-                "SELECT * FROM campaigns ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                sql_param("SELECT * FROM campaigns ORDER BY created_at DESC LIMIT ? OFFSET ?"),
                 (limit, offset)
             ).fetchall()
             total = db.execute("SELECT COUNT(*) as count FROM campaigns").fetchone()[0]
@@ -346,17 +362,17 @@ def api_campaign_read(campaign_id):
     db = get_db()
     
     try:
-        campaign = db.execute("SELECT * FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        campaign = db.execute(sql_param("SELECT * FROM campaigns WHERE id = ?"), (campaign_id,)).fetchone()
         if campaign is None:
             return jsonify({"success": False, "message": "Campanha não encontrada"}), 404
 
-        creatives = db.execute("SELECT * FROM campaign_creatives WHERE campaign_id = ?", (campaign_id,)).fetchall()
-        keywords = db.execute("SELECT * FROM campaign_keywords WHERE campaign_id = ?", (campaign_id,)).fetchall()
-        audiences = db.execute("SELECT * FROM campaign_audiences WHERE campaign_id = ?", (campaign_id,)).fetchall()
-        segmentation = db.execute("SELECT * FROM campaign_segmentation WHERE campaign_id = ?", (campaign_id,)).fetchone()
-        budget_config = db.execute("SELECT * FROM campaign_budget_config WHERE campaign_id = ?", (campaign_id,)).fetchone()
-        copy = db.execute("SELECT * FROM campaign_copy WHERE campaign_id = ?", (campaign_id,)).fetchone()
-        metrics = db.execute("SELECT * FROM campaign_metrics WHERE campaign_id = ?", (campaign_id,)).fetchone()
+        creatives = db.execute(sql_param("SELECT * FROM campaign_creatives WHERE campaign_id = ?"), (campaign_id,)).fetchall()
+        keywords = db.execute(sql_param("SELECT * FROM campaign_keywords WHERE campaign_id = ?"), (campaign_id,)).fetchall()
+        audiences = db.execute(sql_param("SELECT * FROM campaign_audiences WHERE campaign_id = ?"), (campaign_id,)).fetchall()
+        segmentation = db.execute(sql_param("SELECT * FROM campaign_segmentation WHERE campaign_id = ?"), (campaign_id,)).fetchone()
+        budget_config = db.execute(sql_param("SELECT * FROM campaign_budget_config WHERE campaign_id = ?"), (campaign_id,)).fetchone()
+        copy = db.execute(sql_param("SELECT * FROM campaign_copy WHERE campaign_id = ?"), (campaign_id,)).fetchone()
+        metrics = db.execute(sql_param("SELECT * FROM campaign_metrics WHERE campaign_id = ?"), (campaign_id,)).fetchone()
 
         return jsonify({
             "success": True,
@@ -382,7 +398,7 @@ def api_campaign_update(campaign_id):
     data = request.get_json()
     
     try:
-        campaign = db.execute("SELECT * FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        campaign = db.execute(sql_param("SELECT * FROM campaigns WHERE id = ?"), (campaign_id,)).fetchone()
         if not campaign:
             return jsonify({"success": False, "message": "Campanha não encontrada"}), 404
 
@@ -408,7 +424,7 @@ def api_campaign_update(campaign_id):
             params.append(datetime.now().isoformat())
             params.append(campaign_id)
             
-            query = f"UPDATE campaigns SET {', '.join(updates)} WHERE id = ?"
+            query = sql_param(f"UPDATE campaigns SET {', '.join(updates)} WHERE id = ?")
             db.execute(query, params)
             db.commit()
 
@@ -425,11 +441,11 @@ def api_campaign_delete(campaign_id):
     db = get_db()
     
     try:
-        campaign = db.execute("SELECT * FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        campaign = db.execute(sql_param("SELECT * FROM campaigns WHERE id = ?"), (campaign_id,)).fetchone()
         if not campaign:
             return jsonify({"success": False, "message": "Campanha não encontrada"}), 404
 
-        db.execute("DELETE FROM campaigns WHERE id = ?", (campaign_id,))
+        db.execute(sql_param("DELETE FROM campaigns WHERE id = ?"), (campaign_id,))
         db.commit()
         
         log_activity("Campanha Deletada", f"Campanha ID {campaign_id} deletada do sistema.")
@@ -451,7 +467,7 @@ def api_campaign_publish():
         return jsonify({"success": False, "message": "ID da campanha é obrigatório"}), 400
 
     try:
-        campaign = db.execute("SELECT * FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        campaign = db.execute(sql_param("SELECT * FROM campaigns WHERE id = ?"), (campaign_id,)).fetchone()
         if not campaign:
             return jsonify({"success": False, "message": "Campanha não encontrada"}), 404
 
@@ -465,7 +481,7 @@ def api_campaign_publish():
                 "campaign_id_external": f"meta_{campaign_id}_{random.randint(100000, 999999)}"
             }
             publish_results["meta"] = meta_result
-            db.execute("UPDATE campaigns SET meta_campaign_id = ? WHERE id = ?", 
+            db.execute(sql_param("UPDATE campaigns SET meta_campaign_id = ? WHERE id = ?"), 
                        (meta_result["campaign_id_external"], campaign_id))
 
         # Mock publishing to Google
@@ -475,10 +491,10 @@ def api_campaign_publish():
                 "campaign_id_external": f"google_{campaign_id}_{random.randint(100000, 999999)}"
             }
             publish_results["google"] = google_result
-            db.execute("UPDATE campaigns SET google_campaign_id = ? WHERE id = ?", 
+            db.execute(sql_param("UPDATE campaigns SET google_campaign_id = ? WHERE id = ?"), 
                        (google_result["campaign_id_external"], campaign_id))
 
-        db.execute("UPDATE campaigns SET status = ?, last_publish_status = ? WHERE id = ?", 
+        db.execute(sql_param("UPDATE campaigns SET status = ?, last_publish_status = ? WHERE id = ?"), 
                    ("Active", publish_status, campaign_id))
         db.commit()
         
@@ -1308,23 +1324,23 @@ def api_operator_chat():
     message = data.get("message", "")
     
     try:
-        # Salvar mensagem no banco
-        db = get_db()
-        db.execute(
-            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
-            ("user", message)
-        )
-        db.commit()
-        
-        # Gerar resposta
+        # Gerar resposta primeiro (não depende do banco)
         response = velyra_prime.chat_response(message)
         
-        # Salvar resposta
-        db.execute(
-            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
-            ("operator", response)
-        )
-        db.commit()
+        # Tentar salvar no banco (opcional, não bloqueia resposta)
+        try:
+            db = get_db()
+            db.execute(
+                sql_param("INSERT INTO chat_messages (sender, message) VALUES (?, ?)"),
+                ("user", message)
+            )
+            db.execute(
+                sql_param("INSERT INTO chat_messages (sender, message) VALUES (?, ?)"),
+                ("operator", response)
+            )
+            db.commit()
+        except Exception as db_error:
+            print(f"Warning: Could not save chat to DB: {db_error}")
         
         return jsonify({
             "success": True,
@@ -2789,7 +2805,7 @@ def campaign_detail_by_id(campaign_id):
     """Página de detalhes da campanha por ID"""
     db = get_db()
     try:
-        campaign = db.execute("SELECT * FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        campaign = db.execute(sql_param("SELECT * FROM campaigns WHERE id = ?"), (campaign_id,)).fetchone()
         if campaign:
             return render_template("campaign_detail.html", campaign=campaign)
         else:

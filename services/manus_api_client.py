@@ -12,6 +12,12 @@ from typing import Dict, List, Any, Optional
 import jwt
 import hashlib
 import secrets
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 
 class ManusAPIClient:
@@ -420,7 +426,7 @@ class ManusAPIClient:
         self.token_expires_at = datetime.now() + timedelta(seconds=expires_in)
         self.is_connected = True
         
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         try:
             db.execute("""
                 INSERT OR REPLACE INTO manus_api_tokens 
@@ -438,7 +444,7 @@ class ManusAPIClient:
     
     def _load_tokens(self):
         """Carrega tokens salvos do banco de dados"""
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         try:
             row = db.execute("""
                 SELECT access_token, refresh_token, expires_at 
@@ -458,7 +464,7 @@ class ManusAPIClient:
     
     def _save_oauth_state(self, state: str):
         """Salva state OAuth para validação"""
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         try:
             db.execute("""
                 INSERT INTO oauth_states (state, created_at)
@@ -470,9 +476,9 @@ class ManusAPIClient:
     
     def _validate_oauth_state(self, state: str) -> bool:
         """Valida state OAuth"""
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         try:
-            row = db.execute("""
+            row = db.execute(sql_param("")"
                 SELECT created_at FROM oauth_states 
                 WHERE state = ?
             """, (state,)).fetchone()
@@ -490,7 +496,7 @@ class ManusAPIClient:
     
     def _get_local_campaigns(self) -> List[Dict]:
         """Busca campanhas locais para sincronizar"""
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         db.row_factory = sqlite3.Row
         try:
             rows = db.execute("""
@@ -504,7 +510,7 @@ class ManusAPIClient:
     
     def _save_remote_campaign(self, campaign: Dict) -> Dict[str, Any]:
         """Salva campanha recebida da API Manus"""
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         try:
             db.execute("""
                 INSERT OR REPLACE INTO campaigns 
@@ -531,7 +537,7 @@ class ManusAPIClient:
     
     def _log_sync(self, sync_type: str, results: Dict):
         """Registra log de sincronização"""
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         try:
             db.execute("""
                 INSERT INTO manus_sync_logs 
@@ -550,7 +556,7 @@ class ManusAPIClient:
     
     def _get_last_sync_time(self) -> Optional[str]:
         """Retorna timestamp da última sincronização"""
-        db = sqlite3.connect(self.db_path)
+        db = get_db_connection()
         try:
             row = db.execute("""
                 SELECT synced_at FROM manus_sync_logs 

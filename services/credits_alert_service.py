@@ -8,6 +8,12 @@ from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 class CreditsAlertService:
     def __init__(self, db_path='database.db'):
@@ -18,7 +24,7 @@ class CreditsAlertService:
     def get_credits_balance(self):
         """Obtém o saldo atual de créditos"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -90,7 +96,7 @@ class CreditsAlertService:
     def log_alert(self, alert_data):
         """Registra alerta no banco de dados"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -159,7 +165,7 @@ class CreditsAlertService:
     def create_notification(self, alert_data):
         """Cria notificação no sistema"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Criar tabela de notificações se não existir
@@ -197,7 +203,7 @@ class CreditsAlertService:
     def get_unread_notifications(self):
         """Obtém notificações não lidas"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
@@ -227,10 +233,10 @@ class CreditsAlertService:
     def mark_notification_as_read(self, notification_id):
         """Marca notificação como lida"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('''
+            cursor.execute(sql_param('')'
                 UPDATE notifications
                 SET read = 1
                 WHERE id = ?
@@ -248,7 +254,7 @@ class CreditsAlertService:
     def set_unlimited_credits(self):
         """Define créditos como ilimitados"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Criar tabela se não existir

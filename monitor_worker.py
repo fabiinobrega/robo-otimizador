@@ -142,6 +142,7 @@ class ManusMonitor:
         """Busca campanhas do Google Ads"""
         try:
             if not self.google_ads_client or not GOOGLE_ADS_CUSTOMER_ID:
+                logger.info("    ℹ️ Google Ads não configurado - pulando")
                 return
             
             ga_service = self.google_ads_client.get_service("GoogleAdsService")
@@ -177,7 +178,8 @@ class ManusMonitor:
                 logger.info(f"    ✅ {campaign_count} campanhas monitoradas")
                 
         except Exception as e:
-            logger.error(f"    ❌ Erro ao buscar campanhas: {str(e)}")
+            logger.warning(f"    ⚠️ Google Ads API indisponível: {str(e)[:100]}")
+            logger.info("    ℹ️ Continuando em modo simulação")
     
     def meta_ads_monitor(self):
         """Monitoramento Meta Ads (Funções 51-100)"""

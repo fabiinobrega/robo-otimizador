@@ -35,6 +35,12 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 from enum import Enum
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 
 class LogLevel(Enum):
@@ -78,7 +84,7 @@ class ManusLogger:
     
     def _init_database(self):
         """Inicializa o banco de dados"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Tabela de logs
@@ -183,7 +189,7 @@ class ManusLogger:
             log_entry: Entrada de log
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -347,7 +353,7 @@ class ManusLogger:
             Lista de logs
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             query = "SELECT * FROM logs WHERE 1=1"
@@ -403,7 +409,7 @@ class ManusLogger:
             Dict com estatísticas
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Total de logs

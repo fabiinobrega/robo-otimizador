@@ -10,6 +10,12 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 import random
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres, execute_insert
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres, execute_insert
+
 
 class CampaignAutomationService:
     """Serviço para automação completa de campanhas com autorização"""
@@ -49,7 +55,7 @@ class CampaignAutomationService:
             dict: Resultado da solicitação
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -110,10 +116,10 @@ class CampaignAutomationService:
     ) -> Dict[str, Any]:
         """Aprova uma autorização de gasto"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE spend_authorizations
                 SET status = 'approved',
                     responded_at = ?,
@@ -140,10 +146,10 @@ class CampaignAutomationService:
     ) -> Dict[str, Any]:
         """Rejeita uma autorização de gasto"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE spend_authorizations
                 SET status = 'rejected',
                     responded_at = ?,
@@ -166,7 +172,7 @@ class CampaignAutomationService:
     def get_pending_authorizations(self) -> Dict[str, Any]:
         """Obtém todas as autorizações pendentes"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -256,12 +262,12 @@ class CampaignAutomationService:
     def _analyze_campaign_performance(self, campaign_id: int) -> Dict[str, Any]:
         """Analisa performance de uma campanha"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
             # Obter métricas dos últimos 7 dias
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 SELECT * FROM campaign_metrics
                 WHERE campaign_id = ?
                 ORDER BY date DESC
@@ -341,12 +347,12 @@ class CampaignAutomationService:
             return {'success': False, 'error': 'Ajuste automático desabilitado'}
         
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
             # Obter orçamento atual
-            cursor.execute("SELECT budget FROM campaigns WHERE id = ?", (campaign_id,))
+            cursor.execute(sql_param("SELECT budget FROM campaigns WHERE id = ?"), (campaign_id,))
             row = cursor.fetchone()
             
             if not row:
@@ -374,7 +380,7 @@ class CampaignAutomationService:
                 )
             
             # Atualizar orçamento
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE campaigns
                 SET budget = ?
                 WHERE id = ?
@@ -396,10 +402,10 @@ class CampaignAutomationService:
     def _auto_pause_campaign(self, campaign_id: int) -> Dict[str, Any]:
         """Pausa automaticamente uma campanha"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE campaigns
                 SET status = 'paused'
                 WHERE id = ?
@@ -421,7 +427,7 @@ class CampaignAutomationService:
     def optimize_all_campaigns(self) -> Dict[str, Any]:
         """Otimiza todas as campanhas ativas"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -462,7 +468,7 @@ class CampaignAutomationService:
     ) -> Dict[str, Any]:
         """Agenda uma ação para ser executada no futuro"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -494,7 +500,7 @@ class CampaignAutomationService:
     def get_automation_report(self, days: int = 7) -> Dict[str, Any]:
         """Gera relatório de automação"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             

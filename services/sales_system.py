@@ -8,6 +8,13 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 import json
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 
 class SalesSystem:
     """Sistema completo de vendas com CRM e automação"""
@@ -18,7 +25,7 @@ class SalesSystem:
     
     def _init_tables(self):
         """Inicializar tabelas do sistema de vendas"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Tabela de Leads
@@ -97,7 +104,7 @@ class SalesSystem:
     
     def create_lead(self, lead_data: Dict) -> Dict:
         """Criar novo lead no CRM"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Calcular score inicial
@@ -190,7 +197,7 @@ class SalesSystem:
     
     def _create_followup_sequence(self, lead_id: int):
         """Criar sequência automática de follow-up"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Sequência de 5 follow-ups
@@ -235,7 +242,7 @@ class SalesSystem:
     
     def get_sales_funnel(self) -> Dict:
         """Obter estatísticas do funil de vendas"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Leads por estágio
@@ -289,7 +296,7 @@ class SalesSystem:
     
     def get_lead_by_id(self, lead_id: int) -> Optional[Dict]:
         """Obter lead por ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -323,7 +330,7 @@ class SalesSystem:
     
     def update_lead_stage(self, lead_id: int, new_stage: str) -> Dict:
         """Atualizar estágio do lead no funil"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute('''
@@ -345,7 +352,7 @@ class SalesSystem:
     
     def create_opportunity(self, opportunity_data: Dict) -> Dict:
         """Criar nova oportunidade"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute('''
@@ -373,7 +380,7 @@ class SalesSystem:
     
     def get_pending_followups(self) -> List[Dict]:
         """Obter follow-ups pendentes"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -393,7 +400,7 @@ class SalesSystem:
     
     def mark_followup_sent(self, followup_id: int) -> Dict:
         """Marcar follow-up como enviado"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute('''
@@ -478,7 +485,7 @@ class SalesSystem:
     
     def get_sales_dashboard(self) -> Dict:
         """Obter dados para dashboard de vendas"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Total de leads

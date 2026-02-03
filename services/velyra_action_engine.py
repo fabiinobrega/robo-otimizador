@@ -26,11 +26,40 @@ import requests
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
+# Tentar importar psycopg2 para PostgreSQL
+try:
+    import psycopg2
+    import psycopg2.extras
+    POSTGRES_AVAILABLE = True
+except ImportError:
+    POSTGRES_AVAILABLE = False
+
 # Configurações
 DATABASE_PATH = os.environ.get('DATABASE_PATH', 'database.db')
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+USE_POSTGRES = bool(DATABASE_URL) and POSTGRES_AVAILABLE
 FACEBOOK_ACCESS_TOKEN = os.environ.get('FACEBOOK_ACCESS_TOKEN', '')
 FACEBOOK_AD_ACCOUNT_ID = os.environ.get('FACEBOOK_AD_ACCOUNT_ID', '')
 GOOGLE_ADS_TOKEN = os.environ.get('GOOGLE_ADS_DEVELOPER_TOKEN', '')
+
+def get_db_connection():
+    """Retorna conexão com PostgreSQL ou SQLite"""
+    if USE_POSTGRES:
+        return psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+    return get_db_connection()
+
+def sql_param(query: str) -> str:
+    """Converte placeholders ? para %s quando usando PostgreSQL"""
+    if USE_POSTGRES:
+        return query.replace('?', '%s')
+    return query
 
 
 class VelyraActionEngine:
@@ -723,13 +752,15 @@ class VelyraActionEngine:
     def _save_campaign_to_db(self, campaign_config: Dict[str, Any]) -> int:
         """Salva campanha no banco de dados."""
         try:
-            conn = sqlite3.connect(DATABASE_PATH)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('''
+            query = sql_param('''
                 INSERT INTO campaigns (name, platform, status, budget, start_date)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (
+            ''')
+            
+            cursor.execute(query, (
                 campaign_config['name'],
                 campaign_config['platform'],
                 campaign_config['status'],
@@ -737,7 +768,13 @@ class VelyraActionEngine:
                 campaign_config['created_at']
             ))
             
-            campaign_id = cursor.lastrowid
+            # Obter ID da campanha inserida
+            if USE_POSTGRES:
+                cursor.execute("SELECT lastval()")
+                campaign_id = cursor.fetchone()[0] if USE_POSTGRES else cursor.fetchone()['lastval']
+            else:
+                campaign_id = cursor.lastrowid
+            
             conn.commit()
             conn.close()
             
@@ -749,23 +786,28 @@ class VelyraActionEngine:
     def _get_campaigns_from_db(self) -> List[Dict[str, Any]]:
         """Busca campanhas do banco de dados."""
         try:
-            conn = sqlite3.connect(DATABASE_PATH)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('SELECT * FROM campaigns WHERE status = "active"')
+            cursor.execute("SELECT * FROM campaigns WHERE status = 'active'")
             rows = cursor.fetchall()
             conn.close()
             
-            return [
-                {
-                    'id': row[0],
-                    'name': row[1],
-                    'platform': row[2],
-                    'status': row[3],
-                    'budget': row[4]
-                }
-                for row in rows
-            ]
+            if USE_POSTGRES:
+                # PostgreSQL retorna dicts
+                return [dict(row) for row in rows]
+            else:
+                # SQLite retorna tuples
+                return [
+                    {
+                        'id': row[0],
+                        'name': row[1],
+                        'platform': row[2],
+                        'status': row[3],
+                        'budget': row[4]
+                    }
+                    for row in rows
+                ]
         except Exception as e:
             print(f"Erro ao buscar campanhas: {e}")
             return []
@@ -785,13 +827,15 @@ class VelyraActionEngine:
         
         # Também salvar no banco de dados
         try:
-            conn = sqlite3.connect(DATABASE_PATH)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute('''
+            query = sql_param('''
                 INSERT INTO activity_logs (timestamp, action, details)
                 VALUES (?, ?, ?)
-            ''', (
+            ''')
+            
+            cursor.execute(query, (
                 log_entry['timestamp'],
                 f"Velyra: {action_type}",
                 json.dumps(log_entry)

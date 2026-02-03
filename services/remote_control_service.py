@@ -10,6 +10,13 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 import secrets
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 
 class RemoteControlService:
     """Serviço para controle remoto do Nexora pelo Manus"""
@@ -31,7 +38,7 @@ class RemoteControlService:
             dict: Informações da sessão
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Gerar token de sessão
@@ -67,7 +74,7 @@ class RemoteControlService:
     def end_session(self, session_token: str) -> Dict[str, Any]:
         """Encerra uma sessão de controle"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -170,7 +177,7 @@ class RemoteControlService:
     
     def _action_create_campaign(self, params: Dict) -> Dict:
         """Cria uma campanha"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -198,7 +205,7 @@ class RemoteControlService:
     
     def _action_update_campaign(self, params: Dict) -> Dict:
         """Atualiza uma campanha"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         campaign_id = params.get('campaign_id')
@@ -233,7 +240,7 @@ class RemoteControlService:
     
     def _action_delete_campaign(self, params: Dict) -> Dict:
         """Deleta uma campanha"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -328,7 +335,7 @@ class RemoteControlService:
     
     def _action_get_status(self, params: Dict) -> Dict:
         """Obtém status do sistema"""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -384,7 +391,7 @@ class RemoteControlService:
     def _log_action(self, session_token: str, action: str, params: Dict):
         """Registra uma ação executada"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             session = self.active_sessions.get(session_token, {})
@@ -409,7 +416,7 @@ class RemoteControlService:
     def _increment_commands_counter(self, session_token: str):
         """Incrementa contador de comandos executados"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -429,7 +436,7 @@ class RemoteControlService:
     def get_session_info(self, session_token: str) -> Dict[str, Any]:
         """Obtém informações de uma sessão"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -458,7 +465,7 @@ class RemoteControlService:
     def get_active_sessions(self) -> Dict[str, Any]:
         """Lista todas as sessões ativas"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -483,7 +490,7 @@ class RemoteControlService:
     def get_audit_log(self, limit: int = 100) -> Dict[str, Any]:
         """Obtém log de auditoria"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             

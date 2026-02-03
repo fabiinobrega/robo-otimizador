@@ -12,6 +12,12 @@ from datetime import datetime
 from typing import Dict, Any
 import sqlite3
 import os
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 # Configurar logging
 logging.basicConfig(
@@ -38,7 +44,7 @@ class IntelligentLogger:
     def _init_logging_tables(self):
         """Inicializar tabelas de logging"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             # Tabela de logs
@@ -81,7 +87,7 @@ class IntelligentLogger:
             log_func(f"[{category}] {message}")
             
             # Salvar no banco
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -134,7 +140,7 @@ class IntelligentLogger:
             
             # Salvar alertas
             if alerts:
-                conn = sqlite3.connect(self.db_path)
+                conn = get_db_connection()
                 cursor = conn.cursor()
                 
                 for alert in alerts:
@@ -154,19 +160,19 @@ class IntelligentLogger:
         Buscar logs recentes
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
             if category:
-                cursor.execute("""
+                cursor.execute(sql_param("")"
                     SELECT * FROM system_logs
                     WHERE category = ?
                     ORDER BY created_at DESC
                     LIMIT ?
                 """, (category, limit))
             else:
-                cursor.execute("""
+                cursor.execute(sql_param("")"
                     SELECT * FROM system_logs
                     ORDER BY created_at DESC
                     LIMIT ?
@@ -186,7 +192,7 @@ class IntelligentLogger:
         Buscar alertas não resolvidos
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -210,10 +216,10 @@ class IntelligentLogger:
         Marcar alerta como resolvido
         """
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute("""
+            cursor.execute(sql_param("")"
                 UPDATE system_alerts
                 SET resolved = 1
                 WHERE id = ?

@@ -9,6 +9,13 @@ import sqlite3
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 
 class UXAuditService:
     """Serviço para auditoria de UX e usabilidade"""
@@ -433,7 +440,7 @@ class UXAuditService:
     def save_audit_report(self, report: Dict) -> Dict[str, Any]:
         """Salva relatório de auditoria no banco"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             cursor.execute("""

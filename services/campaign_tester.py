@@ -9,6 +9,12 @@ from datetime import datetime, timedelta
 import json
 from typing import Dict, List, Optional
 import time
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 class CampaignTester:
     """
@@ -77,7 +83,7 @@ def handle_errors(func):
         """
         Cria uma campanha de teste com configurações otimizadas
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         c = conn.cursor()
         
         # Criar campanha de teste
@@ -141,7 +147,7 @@ def handle_errors(func):
         """
         Monitora campanha em tempo real e faz ajustes automáticos
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         c = conn.cursor()
         
         # Buscar campanha
@@ -202,7 +208,7 @@ def handle_errors(func):
         Faz ajustes automáticos baseados no estágio e métricas
         """
         adjustments = []
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         c = conn.cursor()
         
         # Buscar campanha
@@ -298,7 +304,7 @@ def handle_errors(func):
         """
         Avança campanha para próximo estágio de aquecimento
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         c = conn.cursor()
         
         # Atualizar metadata da campanha
@@ -335,7 +341,7 @@ def handle_errors(func):
         """
         Gera relatório curto do estágio atual
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         c = conn.cursor()
         
         # Buscar campanha
@@ -426,7 +432,7 @@ def handle_errors(func):
         """
         Retorna status completo do aquecimento da campanha
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         c = conn.cursor()
         
         c.execute('SELECT * FROM campaigns WHERE id = ?', (campaign_id,))
@@ -488,7 +494,7 @@ def handle_errors(func):
         """
         Para teste de campanha
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         c = conn.cursor()
         
         # Atualizar status da campanha
@@ -531,7 +537,7 @@ def create_warming_tables():
     """
     Cria tabelas necessárias para aquecimento de campanhas
     """
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection()
     c = conn.cursor()
     
     # Tabela de aquecimento

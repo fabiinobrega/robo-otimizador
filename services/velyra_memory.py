@@ -12,6 +12,13 @@ from typing import Dict, List, Optional, Any
 from collections import defaultdict
 import sqlite3
 
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
+
 class VelyraMemory:
     """Sistema de memória evolutiva da IA Velyra."""
     
@@ -46,7 +53,7 @@ class VelyraMemory:
     
     def _init_database(self):
         """Inicializa o banco de dados de memória."""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Tabela de campanhas históricas
@@ -166,7 +173,7 @@ class VelyraMemory:
         learnings = self._extract_learnings(campaign_data, status)
         
         # Salvar no banco
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -215,7 +222,7 @@ class VelyraMemory:
     ) -> Dict[str, Any]:
         """Obtém recomendações baseadas na memória acumulada."""
         
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Buscar estratégias vencedoras para o contexto
@@ -319,7 +326,7 @@ class VelyraMemory:
     def get_niche_intelligence(self, niche: str) -> Dict[str, Any]:
         """Obtém inteligência acumulada sobre um nicho específico."""
         
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Estatísticas gerais do nicho
@@ -396,7 +403,7 @@ class VelyraMemory:
     def get_account_history(self, account_id: str) -> Dict[str, Any]:
         """Obtém histórico completo de uma conta."""
         
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -454,7 +461,7 @@ class VelyraMemory:
             f"{error_data.get('type', '')}_{error_data.get('context', '')}".encode()
         ).hexdigest()[:12]
         
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Verificar se erro já existe
@@ -494,7 +501,7 @@ class VelyraMemory:
     def get_similar_campaigns(self, campaign_params: Dict, limit: int = 5) -> List[Dict]:
         """Encontra campanhas similares no histórico."""
         
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -624,7 +631,7 @@ class VelyraMemory:
             json.dumps(strategy, sort_keys=True).encode()
         ).hexdigest()[:12]
         
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -673,7 +680,7 @@ class VelyraMemory:
             "context": json.dumps({"cpa": campaign_data.get("cpa", 0)})
         })
         
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         for pattern in patterns:
@@ -703,7 +710,7 @@ class VelyraMemory:
     
     def _get_budget_recommendation(self, niche: str, country: str, proposed_budget: float) -> Dict:
         """Recomenda orçamento baseado em histórico."""
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         cursor.execute("""

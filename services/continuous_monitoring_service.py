@@ -15,6 +15,12 @@ from collections import defaultdict
 
 # Importar Manus AI Service (substitui OpenAI)
 from services.manus_ai_service import manus_ai
+# Importar utilitários de banco de dados
+try:
+    from services.db_utils import get_db_connection, sql_param, is_postgres
+except ImportError:
+    from db_utils import get_db_connection, sql_param, is_postgres
+
 
 
 class ContinuousMonitoringService:
@@ -34,7 +40,7 @@ class ContinuousMonitoringService:
     def collect_system_metrics(self) -> Dict[str, Any]:
         """Coletar métricas de todo o sistema"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -99,7 +105,7 @@ class ContinuousMonitoringService:
     def track_performance_trends(self, days: int = 30) -> Dict[str, Any]:
         """Rastrear tendências de performance"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -171,7 +177,7 @@ class ContinuousMonitoringService:
         """Aprender padrões de campanhas bem-sucedidas"""
         try:
             # Coletar dados de campanhas
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
@@ -262,17 +268,17 @@ Retorne em formato JSON com:
     def predict_future_performance(self, campaign_id: int, days_ahead: int = 7) -> Dict[str, Any]:
         """Prever performance futura da campanha"""
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
             campaign = cursor.execute(
-                "SELECT * FROM campaigns WHERE id = ?",
+                sql_param("SELECT * FROM campaigns WHERE id = ?"),
                 (campaign_id,)
             ).fetchone()
             
             metrics = cursor.execute(
-                "SELECT * FROM campaign_metrics WHERE campaign_id = ?",
+                sql_param("SELECT * FROM campaign_metrics WHERE campaign_id = ?"),
                 (campaign_id,)
             ).fetchone()
             
