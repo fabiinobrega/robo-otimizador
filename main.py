@@ -166,8 +166,7 @@ def get_db():
     if 'db' not in g:
         if USE_POSTGRES:
             # Usar PostgreSQL
-            g.db = psycopg2.connect(DATABASE_URL)
-            g.db.row_factory = psycopg2.extras.RealDictCursor
+            g.db = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
         else:
             # Usar SQLite
             g.db = sqlite3.connect(DATABASE)
@@ -188,7 +187,14 @@ def init_db():
         if os.path.exists(schema_path):
             try:
                 with open(schema_path, 'r') as f:
-                    db.cursor().executescript(f.read())
+                    schema = f.read()
+                    if USE_POSTGRES:
+                        # PostgreSQL: executar comandos separadamente
+                        cursor = db.cursor()
+                        cursor.execute(schema)
+                    else:
+                        # SQLite: usar executescript
+                        db.cursor().executescript(schema)
                 db.commit()
                 print("Database initialized successfully")
             except Exception as e:
