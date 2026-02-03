@@ -48,6 +48,20 @@ except ImportError as e:
 try:
     from services.velyra_auto_executor import auto_executor
 except ImportError as e:
+    print(f"Warning: Auto Executor not available: {e}")
+    auto_executor = None
+
+# Import do Campaign Monitor
+try:
+    from services.velyra_campaign_monitor import campaign_monitor
+except ImportError as e:
+    print(f"Warning: Campaign Monitor not available: {e}")
+    campaign_monitor = None
+
+# Import do Alert System
+try:
+    from services.velyra_alert_system import alert_system
+except ImportError as e:
     print(f"Warning: Velyra Auto Executor not available: {e}")
     auto_executor = None
 
@@ -5967,6 +5981,11 @@ if __name__ == "__main__":
     if auto_executor:
         auto_executor.start()
         print("✅ Velyra Auto Executor iniciado")
+    
+    # Inicia o Campaign Monitor
+    if campaign_monitor:
+        campaign_monitor.start()
+        print("✅ Velyra Campaign Monitor iniciado - Monitoramento 24/7 ativo")
     
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
