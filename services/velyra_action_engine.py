@@ -26,13 +26,6 @@ import requests
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 
-# Importar utilitários de banco de dados
-try:
-    from services.db_utils import get_db_connection, sql_param, is_postgres
-except ImportError:
-    from db_utils import get_db_connection, sql_param, is_postgres
-
-
 # Tentar importar psycopg2 para PostgreSQL
 try:
     import psycopg2
@@ -53,7 +46,7 @@ def get_db_connection():
     """Retorna conexão com PostgreSQL ou SQLite"""
     if USE_POSTGRES:
         return psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
-    return get_db_connection()
+    return sqlite3.connect(DATABASE_PATH)
 
 def sql_param(query: str) -> str:
     """Converte placeholders ? para %s quando usando PostgreSQL"""

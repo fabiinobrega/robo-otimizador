@@ -453,11 +453,11 @@ class ManusVelyraIntegration:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param('')'
+            cursor.execute(sql_param('''
                 UPDATE manus_approvals 
                 SET status = ?, reviewed_by = ?, reviewed_at = ?, review_notes = ?
                 WHERE action_id = ?
-            ''', (status.value, 'manus', datetime.now().isoformat(), notes, action_id))
+            '''), (status.value, 'manus', datetime.now().isoformat(), notes, action_id))
             
             conn.commit()
             conn.close()
