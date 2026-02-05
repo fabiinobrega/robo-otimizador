@@ -167,13 +167,14 @@ def get_db():
         if USE_POSTGRES:
             # Usar PostgreSQL - criar conexão e cursor
             g.db_conn = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
-            g.db = g.db_conn.cursor()
-            g.db.connection = g.db_conn  # Referência para commit/rollback
+            g.db = g.db_conn
+
+            
         else:
             # Usar SQLite
             g.db = sqlite3.connect(DATABASE)
             g.db.row_factory = sqlite3.Row
-    return g.db
+    return g.db.cursor()
 
 
 def sql_param(query: str) -> str:
