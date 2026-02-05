@@ -478,10 +478,10 @@ class ManusAPIClient:
         """Valida state OAuth"""
         db = get_db_connection()
         try:
-            row = db.execute(sql_param("")"
+            row = db.execute(sql_param("""
                 SELECT created_at FROM oauth_states 
                 WHERE state = ?
-            """, (state,)).fetchone()
+            """), (state,)).fetchone()
             
             if not row:
                 return False

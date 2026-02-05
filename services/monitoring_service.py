@@ -229,12 +229,12 @@ class AlertSystem:
             cursor = conn.cursor()
             
             if severity:
-                cursor.execute(sql_param('')'
+                cursor.execute(sql_param('''
                     SELECT id, alert_type, severity, message, details, created_at
                     FROM system_alerts
                     WHERE resolved = 0 AND severity = ?
                     ORDER BY created_at DESC
-                ''', (severity,))
+                '''), (severity,))
             else:
                 cursor.execute('''
                     SELECT id, alert_type, severity, message, details, created_at
@@ -267,11 +267,11 @@ class AlertSystem:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param('')'
+            cursor.execute(sql_param('''
                 UPDATE system_alerts
                 SET resolved = 1, resolved_at = ?
                 WHERE id = ?
-            ''', (datetime.now().isoformat(), alert_id))
+            '''), (datetime.now().isoformat(), alert_id))
             
             conn.commit()
             conn.close()
@@ -379,13 +379,13 @@ class AnalyticsTracker:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param('')'
+            cursor.execute(sql_param('''
                 SELECT event_type, event_name, properties, timestamp
                 FROM analytics_events
                 WHERE user_id = ?
                 ORDER BY timestamp DESC
                 LIMIT ?
-            ''', (user_id, limit))
+            '''), (user_id, limit))
             
             results = cursor.fetchall()
             conn.close()

@@ -121,11 +121,11 @@ class AutomationService:
             """).fetchall()
             
             for campaign in campaigns:
-                db.execute(sql_param("")"
+                db.execute(sql_param("""
                     UPDATE campaigns 
                     SET status = 'Paused', updated_at = ?
                     WHERE id = ?
-                """, (datetime.now().isoformat(), campaign['id']))
+                """), (datetime.now().isoformat(), campaign['id']))
                 
                 # Registrar log
                 db.execute("""
@@ -165,11 +165,11 @@ class AutomationService:
             for campaign in campaigns:
                 new_budget = campaign['budget'] * 1.15  # Aumentar 15%
                 
-                db.execute(sql_param("")"
+                db.execute(sql_param("""
                     UPDATE campaigns 
                     SET budget = ?, updated_at = ?
                     WHERE id = ?
-                """, (new_budget, datetime.now().isoformat(), campaign['id']))
+                """), (new_budget, datetime.now().isoformat(), campaign['id']))
                 
                 # Registrar log
                 db.execute("""
@@ -206,11 +206,11 @@ class AutomationService:
             """).fetchall()
             
             for campaign in campaigns:
-                db.execute(sql_param("")"
+                db.execute(sql_param("""
                     UPDATE campaigns 
                     SET status = 'Active', updated_at = ?
                     WHERE id = ?
-                """, (datetime.now().isoformat(), campaign['id']))
+                """), (datetime.now().isoformat(), campaign['id']))
                 
                 # Registrar log
                 db.execute("""
@@ -307,12 +307,12 @@ class AutomationService:
         db = self.get_db()
         
         try:
-            logs = db.execute(sql_param("")"
+            logs = db.execute(sql_param("""
                 SELECT * FROM activity_logs
                 WHERE action LIKE '[Automação]%' OR action LIKE '[Alerta]%'
                 ORDER BY timestamp DESC
                 LIMIT ?
-            """, (limit,)).fetchall()
+            """), (limit,)).fetchall()
             
             return [dict(log) for log in logs]
         

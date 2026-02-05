@@ -165,18 +165,18 @@ class IntelligentLogger:
             cursor = conn.cursor()
             
             if category:
-                cursor.execute(sql_param("")"
+                cursor.execute(sql_param("""
                     SELECT * FROM system_logs
                     WHERE category = ?
                     ORDER BY created_at DESC
                     LIMIT ?
-                """, (category, limit))
+                """), (category, limit))
             else:
-                cursor.execute(sql_param("")"
+                cursor.execute(sql_param("""
                     SELECT * FROM system_logs
                     ORDER BY created_at DESC
                     LIMIT ?
-                """, (limit,))
+                """), (limit,))
             
             logs = [dict(row) for row in cursor.fetchall()]
             conn.close()
@@ -219,11 +219,11 @@ class IntelligentLogger:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 UPDATE system_alerts
                 SET resolved = 1
                 WHERE id = ?
-            """, (alert_id,))
+            """), (alert_id,))
             
             conn.commit()
             conn.close()

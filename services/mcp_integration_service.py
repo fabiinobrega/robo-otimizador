@@ -69,11 +69,11 @@ class MCPIntegrationService:
             result = self._execute_command(command, params or {})
             
             # Atualizar status
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 UPDATE mcp_commands 
                 SET status = ?, result = ?, executed_at = ?
                 WHERE id = ?
-            """, (
+            """), (
                 'completed' if result['success'] else 'failed',
                 json.dumps(result),
                 datetime.now().isoformat(),
@@ -204,12 +204,12 @@ class MCPIntegrationService:
             
             campaign_id = params.get('campaign_id')
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 SELECT * FROM campaign_metrics
                 WHERE campaign_id = ?
                 ORDER BY date DESC
                 LIMIT 30
-            """, (campaign_id,))
+            """), (campaign_id,))
             
             metrics = [dict(row) for row in cursor.fetchall()]
             conn.close()
@@ -425,10 +425,10 @@ class MCPIntegrationService:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 SELECT * FROM webhooks
                 WHERE event = ? AND active = 1
-            """, (event,))
+            """), (event,))
             
             webhooks = cursor.fetchall()
             conn.close()

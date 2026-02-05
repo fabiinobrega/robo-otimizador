@@ -107,11 +107,11 @@ class NexoraAutomation:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 SELECT name, type, config
                 FROM automations
                 WHERE id = ? AND status = 'active'
-            """, (automation_id,))
+            """), (automation_id,))
             
             automation = cursor.fetchone()
             
@@ -140,11 +140,11 @@ class NexoraAutomation:
                 }
             
             # Atualizar last_run
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 UPDATE automations
                 SET last_run = ?
                 WHERE id = ?
-            """, (datetime.now().isoformat(), automation_id))
+            """), (datetime.now().isoformat(), automation_id))
             
             conn.commit()
             conn.close()
@@ -171,12 +171,12 @@ class NexoraAutomation:
             cursor = conn.cursor()
             
             if status:
-                cursor.execute(sql_param("")"
+                cursor.execute(sql_param("""
                     SELECT id, name, type, schedule, status, last_run
                     FROM automations
                     WHERE status = ?
                     ORDER BY created_at DESC
-                """, (status,))
+                """), (status,))
             else:
                 cursor.execute("""
                     SELECT id, name, type, schedule, status, last_run
@@ -272,12 +272,12 @@ class NexoraAutomation:
             threshold_ctr = config.get('threshold_ctr', 1.0)
             
             # Campanhas com baixa performance
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 SELECT id, name, roas, ctr
                 FROM campaigns
                 WHERE status = 'active'
                 AND (roas < ? OR ctr < ?)
-            """, (threshold_roas, threshold_ctr))
+            """), (threshold_roas, threshold_ctr))
             
             low_performers = []
             for row in cursor.fetchall():
@@ -342,9 +342,9 @@ class NexoraAutomation:
                     new_budget = budget
                 
                 if abs(new_budget - budget) > 1:
-                    cursor.execute(sql_param("")"
+                    cursor.execute(sql_param("""
                         UPDATE campaigns SET budget = ? WHERE id = ?
-                    """, (new_budget, campaign_id))
+                    """), (new_budget, campaign_id))
                     
                     reallocations.append({
                         "campaign_id": campaign_id,

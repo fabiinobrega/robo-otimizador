@@ -78,9 +78,9 @@ class ManusExecutorBridge:
             # Aplicar segmentação
             if 'targeting' in campaign_strategy:
                 targeting = json.dumps(campaign_strategy['targeting'])
-                cursor.execute(sql_param("")"
+                cursor.execute(sql_param("""
                     UPDATE campaigns SET targeting = ? WHERE id = ?
-                """, (targeting, campaign_id))
+                """), (targeting, campaign_id))
             
             conn.commit()
             conn.close()
@@ -112,10 +112,10 @@ class ManusExecutorBridge:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 SELECT name, objective, budget, targeting
                 FROM campaigns WHERE id = ?
-            """, (campaign_id,))
+            """), (campaign_id,))
             
             campaign = cursor.fetchone()
             
@@ -131,11 +131,11 @@ class ManusExecutorBridge:
             # Por enquanto, simular sucesso
             
             # Atualizar status
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 UPDATE campaigns 
                 SET status = 'synced_google', synced_at = ?
                 WHERE id = ?
-            """, (datetime.now().isoformat(), campaign_id))
+            """), (datetime.now().isoformat(), campaign_id))
             
             conn.commit()
             conn.close()
@@ -167,10 +167,10 @@ class ManusExecutorBridge:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 SELECT name, objective, budget, targeting
                 FROM campaigns WHERE id = ?
-            """, (campaign_id,))
+            """), (campaign_id,))
             
             campaign = cursor.fetchone()
             
@@ -182,11 +182,11 @@ class ManusExecutorBridge:
             
             # Aqui seria a integração real com Facebook Ads API
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 UPDATE campaigns 
                 SET status = 'synced_facebook', synced_at = ?
                 WHERE id = ?
-            """, (datetime.now().isoformat(), campaign_id))
+            """), (datetime.now().isoformat(), campaign_id))
             
             conn.commit()
             conn.close()
@@ -331,9 +331,9 @@ class ManusExecutorBridge:
                     action = "maintain"
                 
                 if new_budget != budget:
-                    cursor.execute(sql_param("")"
+                    cursor.execute(sql_param("""
                         UPDATE campaigns SET budget = ? WHERE id = ?
-                    """, (new_budget, campaign_id))
+                    """), (new_budget, campaign_id))
                     
                     optimizations.append({
                         "campaign_id": campaign_id,
@@ -367,11 +367,11 @@ class ManusExecutorBridge:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 UPDATE campaigns
                 SET status = 'paused', paused_at = ?
                 WHERE status = 'active' AND roas < ?
-            """, (datetime.now().isoformat(), threshold_roas))
+            """), (datetime.now().isoformat(), threshold_roas))
             
             paused_count = cursor.rowcount
             
@@ -399,11 +399,11 @@ class ManusExecutorBridge:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param("")"
+            cursor.execute(sql_param("""
                 UPDATE campaigns
                 SET budget = budget * ?
                 WHERE status = 'active' AND roas >= ?
-            """, (scale_factor, threshold_roas))
+            """), (scale_factor, threshold_roas))
             
             scaled_count = cursor.rowcount
             

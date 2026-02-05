@@ -236,11 +236,11 @@ class CreditsAlertService:
             conn = get_db_connection()
             cursor = conn.cursor()
             
-            cursor.execute(sql_param('')'
+            cursor.execute(sql_param('''
                 UPDATE notifications
                 SET read = 1
                 WHERE id = ?
-            ''', (notification_id,))
+            '''), (notification_id,))
             
             conn.commit()
             conn.close()
