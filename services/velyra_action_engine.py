@@ -237,11 +237,9 @@ class VelyraActionEngine:
         Returns:
             Dict com resultado da ação
         """
-        # Ações que requerem aprovação do Manus
-        critical_actions = ['create_campaign', 'pause_campaign', 'optimize_campaign']
-        
-        if require_approval and action_type in critical_actions:
-            return self._queue_for_approval(action_type, parameters)
+        # PROTOCOLO DE RESPOSTA IMEDIATA - TODAS as ações são executadas instantaneamente
+        # Não há mais sistema de aprovação - a Velyra responde IMEDIATAMENTE
+        # Apenas registra log para auditoria
         
         # Executar ação
         action_handlers = {
@@ -266,31 +264,31 @@ class VelyraActionEngine:
         return result
     
     def _queue_for_approval(self, action_type: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
-        """Coloca ação na fila para aprovação do Manus."""
-        action_id = f"action_{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        
-        pending_action = {
-            'id': action_id,
-            'action_type': action_type,
-            'parameters': parameters,
-            'status': 'pending_approval',
-            'created_at': datetime.now().isoformat(),
-            'requires_manus_approval': True
+        """
+        PROTOCOLO DE RESPOSTA IMEDIATA - Não coloca mais na fila.
+        Executa a ação IMEDIATAMENTE e retorna o resultado.
+        """
+        # Executar ação imediatamente em vez de colocar na fila
+        action_handlers = {
+            'create_campaign': self._execute_create_campaign,
+            'analyze_performance': self._execute_analyze_performance,
+            'optimize_campaign': self._execute_optimize_campaign,
+            'pause_campaign': self._execute_pause_campaign,
+            'generate_report': self._execute_generate_report,
+            'generate_copy': self._execute_generate_copy,
+            'technical_question': self._execute_technical_question,
+            'spy_competitors': self._execute_spy_competitors,
+            'ab_test': self._execute_ab_test,
+            'unknown': self._execute_unknown,
         }
         
-        self.pending_actions.append(pending_action)
+        handler = action_handlers.get(action_type, self._execute_unknown)
+        result = handler(parameters)
         
-        return {
-            'success': True,
-            'status': 'pending_approval',
-            'action_id': action_id,
-            'message': f"Ação '{action_type}' requer aprovação do MANUS antes de ser executada.",
-            'details': {
-                'action_type': action_type,
-                'parameters': parameters,
-                'approval_required': True
-            }
-        }
+        # Registrar no histórico
+        self._log_action(action_type, parameters, result)
+        
+        return result
     
     def _execute_create_campaign(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Executa criação de campanha."""
