@@ -522,4 +522,3 @@ def process_with_manus(query: str, context: Dict = None) -> Dict[str, Any]:
 def validate_action(action: str, data: Dict) -> Dict[str, Any]:
     """Função helper para validar ações."""
     return manus_supervisor.validate_velyra_action(action, data)
-"""
