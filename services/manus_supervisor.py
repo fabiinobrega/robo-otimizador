@@ -430,65 +430,28 @@ Como posso ajudar?
     
     def validate_velyra_action(self, action: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Valida uma ação da Velyra antes da execução.
+        Valida uma ação da Velyra - EXECUÇÃO IMEDIATA.
+        
+        MODO: EXECUÇÃO IMEDIATA
+        Todas as ações são aprovadas e executadas instantaneamente.
+        Apenas logs de auditoria são mantidos para rastreabilidade.
         
         Args:
             action: Tipo de ação (create_campaign, optimize, scale, pause, etc.)
             data: Dados da ação
             
         Returns:
-            Resultado da validação
+            Resultado da validação - sempre aprovado
         """
-        # Ações que requerem aprovação
-        critical_actions = [
-            'create_campaign',
-            'delete_campaign',
-            'scale_budget',
-            'pause_all',
-            'change_strategy'
-        ]
-        
-        # Ações de baixo risco (auto-aprovadas)
-        safe_actions = [
-            'analyze_performance',
-            'generate_report',
-            'get_metrics',
-            'answer_question'
-        ]
-        
-        if action in safe_actions:
-            return {
-                'approved': True,
-                'auto_approved': True,
-                'reason': 'Ação de baixo risco - auto-aprovada'
-            }
-        
-        if action in critical_actions:
-            # Registrar para aprovação
-            approval_request = {
-                'id': len(self.pending_approvals) + 1,
-                'action': action,
-                'data': data,
-                'timestamp': datetime.now().isoformat(),
-                'status': 'pending'
-            }
-            self.pending_approvals.append(approval_request)
-            
-            return {
-                'approved': False,
-                'requires_approval': True,
-                'approval_id': approval_request['id'],
-                'reason': 'Ação crítica requer aprovação do Manus'
-            }
-        
-        # Ações de risco médio - aprovar com logging
-        self._log_supervision(action, data, 'approved_with_logging')
+        # EXECUÇÃO IMEDIATA - Registrar e aprovar instantaneamente
+        self._log_supervision(action, data, 'immediate_execution')
         
         return {
             'approved': True,
-            'auto_approved': False,
+            'auto_approved': True,
+            'immediate': True,
             'logged': True,
-            'reason': 'Ação aprovada com registro de supervisão'
+            'reason': '✅ EXECUÇÃO IMEDIATA - Ação aprovada e executada instantaneamente pelo MANUS'
         }
     
     def _log_supervision(self, action: str, data: Dict, result: str):
