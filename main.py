@@ -6047,15 +6047,21 @@ try:
 except ImportError as e:
     print(f"Warning: Enterprise Systems routes not available: {e}")
 
-# Inicia o Auto Executor do Velyra (FORA do if __name__ para funcionar no Gunicorn)
-if auto_executor:
-    auto_executor.start()
-    print("✅ Velyra Auto Executor iniciado")
-
-# Inicia o Campaign Monitor
-if campaign_monitor:
-    campaign_monitor.start()
-    print("✅ Velyra Campaign Monitor iniciado - Monitoramento 24/7 ativo")
+# NOTA: Auto Executor e Campaign Monitor são iniciados apenas no Background Worker
+# NÃO iniciar threads no Web Service para evitar lentidão no deploy
+# As threads são gerenciadas pelo monitor_worker.py
+#
+# Para habilitar threads no Web Service (não recomendado), defina:
+# ENABLE_WEB_SERVICE_THREADS=true
+if os.environ.get('ENABLE_WEB_SERVICE_THREADS', 'false').lower() == 'true':
+    if auto_executor:
+        auto_executor.start()
+        print("✅ Velyra Auto Executor iniciado")
+    if campaign_monitor:
+        campaign_monitor.start()
+        print("✅ Velyra Campaign Monitor iniciado - Monitoramento 24/7 ativo")
+else:
+    print("ℹ️ Threads de background desabilitadas no Web Service (gerenciadas pelo Background Worker)")
 
 if __name__ == "__main__":
     
