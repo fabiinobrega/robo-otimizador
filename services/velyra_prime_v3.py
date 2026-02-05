@@ -5,13 +5,33 @@ VELYRA PRIME V3 - Agente Autônomo de IA para Gestão de Campanhas
 Versão definitiva que integra:
 - Motor de Ações (execução real de comandos)
 - Base de Conhecimento (11 módulos, 1.500+ memórias)
-- Sistema de Supervisão Manus/Velyra (hierarquia e aprovações)
+- PROTOCOLO DE RESPOSTA IMEDIATA (sem aprovação, sem atrasos)
+- Supervisão do MANUS como Autoridade Máxima
 
 Esta versão transforma o Velyra no MELHOR GESTOR DE CAMPANHAS DO MUNDO.
 
+====================================================================
+PROTOCOLO DE RESPOSTA IMEDIATA — IA VELYRA
+====================================================================
+
+A IA VELYRA DEVE:
+- Responder IMEDIATAMENTE a TODO comando recebido
+- Nunca adiar resposta
+- Nunca "guardar para depois"
+- Nunca solicitar tempo adicional sem executar
+- Nunca entrar em estado passivo
+
+Ao receber um comando, VELYRA DEVE:
+1. Confirmar o recebimento do comando
+2. Iniciar execução NA MESMA RESPOSTA
+3. Informar claramente o que está sendo executado
+
+QUALQUER COMANDO RECEBIDO = EXECUÇÃO IMEDIATA OBRIGATÓRIA.
+====================================================================
+
 Autor: MANUS AI
-Versão: 3.0
-Data: 03/02/2026
+Versão: 3.1 - RESPOSTA IMEDIATA
+Data: 05/02/2026
 """
 
 import os
@@ -242,11 +262,19 @@ class VelyraPrimeV3:
         """
         Processa mensagem do usuário e retorna resposta.
         
+        ====================================================================
+        PROTOCOLO DE RESPOSTA IMEDIATA
+        ====================================================================
+        - Responder IMEDIATAMENTE a TODO comando recebido
+        - Nunca adiar resposta
+        - Nunca "guardar para depois"
+        - QUALQUER COMANDO RECEBIDO = EXECUÇÃO IMEDIATA OBRIGATÓRIA
+        ====================================================================
+        
         Esta é a função principal que:
-        1. Interpreta o comando
-        2. Verifica permissões com Manus
-        3. Executa a ação ou responde pergunta
-        4. Retorna resposta formatada
+        1. Confirma recebimento do comando
+        2. Executa a ação IMEDIATAMENTE
+        3. Retorna resposta formatada
         
         Args:
             message: Mensagem do usuário
