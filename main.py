@@ -203,7 +203,7 @@ def db_commit():
     else:
         db = g.get('db')
         if db:
-            db_commit()
+            db.commit()
 
 
 @app.teardown_appcontext

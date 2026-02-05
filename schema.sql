@@ -380,3 +380,42 @@ CREATE TABLE IF NOT EXISTS api_services (
 -- Índice para busca por status
 CREATE INDEX IF NOT EXISTS idx_api_services_status ON api_services(status);
 CREATE INDEX IF NOT EXISTS idx_api_services_name ON api_services(name);
+
+
+-- ===== TABELAS VELYRA PRIME =====
+
+-- Tabela de ações do Velyra Prime
+CREATE TABLE IF NOT EXISTS velyra_actions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    action_type TEXT NOT NULL,
+    action_data TEXT,
+    status TEXT DEFAULT 'pending',
+    priority TEXT DEFAULT 'medium',
+    requested_by TEXT DEFAULT 'velyra',
+    approved_by TEXT,
+    executed_at TEXT,
+    result TEXT,
+    error_message TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de autorizações de gasto
+CREATE TABLE IF NOT EXISTS spend_authorizations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    action_type TEXT NOT NULL,
+    amount REAL,
+    description TEXT,
+    status TEXT DEFAULT 'pending',
+    priority TEXT DEFAULT 'medium',
+    requested_by TEXT DEFAULT 'velyra',
+    approved_by TEXT,
+    approved_at TEXT,
+    expires_at TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índices para performance
+CREATE INDEX IF NOT EXISTS idx_velyra_actions_status ON velyra_actions(status);
+CREATE INDEX IF NOT EXISTS idx_velyra_actions_type ON velyra_actions(action_type);
+CREATE INDEX IF NOT EXISTS idx_spend_authorizations_status ON spend_authorizations(status);
