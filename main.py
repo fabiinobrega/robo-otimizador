@@ -12,6 +12,7 @@ import random
 import asyncio
 from functools import wraps
 from services.manus_ai_service import manus_ai
+from services import openai_service
 
 # Decorator para suportar rotas async no Flask
 def async_route(f):

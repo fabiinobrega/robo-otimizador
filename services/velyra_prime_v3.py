@@ -54,6 +54,15 @@ except ImportError:
     MANUS_INTEGRATION_AVAILABLE = False
     print("Warning: Manus Integration not available")
 
+# Importar Manus Supervisor (Autoridade Máxima)
+try:
+    from services.manus_supervisor import manus_supervisor, process_with_manus
+    MANUS_SUPERVISOR_AVAILABLE = True
+    print("✅ Manus Supervisor inicializado - Autoridade Máxima ativa")
+except ImportError:
+    MANUS_SUPERVISOR_AVAILABLE = False
+    print("Warning: Manus Supervisor not available")
+
 
 class VelyraPrimeV3:
     """
@@ -489,7 +498,44 @@ Estou monitorando suas campanhas 24/7 e pronta para executar ações!
 """
     
     def _handle_question(self, question: str) -> str:
-        """Responde perguntas técnicas usando a base de conhecimento."""
+        """
+        Responde perguntas usando hierarquia Manus -> Velyra.
+        
+        1. Perguntas estratégicas/complexas -> Manus Supervisor
+        2. Perguntas técnicas simples -> Base de Conhecimento local
+        """
+        question_lower = question.lower()
+        
+        # Identificar perguntas estratégicas que requerem Manus
+        strategic_keywords = [
+            'estratégia', 'estrategia', 'plano', 'aumentar roi', 'aumentar roas',
+            'melhorar', 'otimizar', 'escalar', 'análise', 'analise', 'analisa',
+            'métricas', 'metricas', 'performance', 'como está', 'como esta',
+            'resultado', 'campanha', 'budget', 'orçamento', 'lucro', 'vendas',
+            'recomenda', 'sugere', 'devo fazer', 'próximos passos'
+        ]
+        
+        is_strategic = any(kw in question_lower for kw in strategic_keywords)
+        
+        # Se é pergunta estratégica e Manus Supervisor está disponível
+        if is_strategic and MANUS_SUPERVISOR_AVAILABLE:
+            try:
+                result = process_with_manus(question)
+                if result.get('success'):
+                    response = result.get('response', '')
+                    source = result.get('source', 'manus_supervisor')
+                    
+                    # Adicionar badge do Manus
+                    if source == 'manus_api':
+                        response += "\n\n🛡️ *Análise validada pelo MANUS - Autoridade Máxima*"
+                    else:
+                        response += "\n\n🛡️ *Análise gerada pelo MANUS com dados reais do sistema*"
+                    
+                    return response
+            except Exception as e:
+                print(f"Erro ao consultar Manus Supervisor: {e}")
+        
+        # Fallback: Base de conhecimento local
         if not KNOWLEDGE_BASE_AVAILABLE:
             return "Desculpe, a base de conhecimento não está disponível no momento."
         
@@ -512,6 +558,15 @@ Estou monitorando suas campanhas 24/7 e pronta para executar ações!
             
             return response
         else:
+            # Tentar Manus como último recurso
+            if MANUS_SUPERVISOR_AVAILABLE:
+                try:
+                    result = process_with_manus(question)
+                    if result.get('success'):
+                        return result.get('response', '') + "\n\n🛡️ *Resposta do MANUS*"
+                except:
+                    pass
+            
             return "Não encontrei uma resposta específica para sua pergunta. Tente reformular ou pergunte sobre: métricas (CPA, ROAS, CTR), otimização, criativos, públicos ou estratégias."
     
     def _handle_action(self, action: str, data: Dict[str, Any], original_message: str) -> str:
