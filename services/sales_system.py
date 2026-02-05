@@ -31,7 +31,7 @@ class SalesSystem:
         # Tabela de Leads
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS leads (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 name TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 phone TEXT,
@@ -56,7 +56,7 @@ class SalesSystem:
         # Tabela de Atividades
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS activities (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 lead_id INTEGER NOT NULL,
                 type TEXT NOT NULL,
                 description TEXT,
@@ -70,7 +70,7 @@ class SalesSystem:
         # Tabela de Oportunidades
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS opportunities (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 lead_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 value REAL NOT NULL,
@@ -88,7 +88,7 @@ class SalesSystem:
         # Tabela de Follow-ups Automáticos
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS automated_followups (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 lead_id INTEGER NOT NULL,
                 sequence_step INTEGER DEFAULT 1,
                 message_template TEXT,
