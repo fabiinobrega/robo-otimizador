@@ -8,20 +8,14 @@ import json
 from datetime import datetime
 import random
 
-try:
-    from openai import OpenAI
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
+# Importar Manus AI Service (ÚNICO provedor de IA - OpenAI removida)
+from services.manus_ai_service import manus_ai
 
 class AdCopyGenerator:
     """Gera copy profissional para anúncios usando IA"""
     
     def __init__(self):
-        self.use_openai = OPENAI_AVAILABLE and os.getenv('OPENAI_API_KEY')
-        if self.use_openai:
-            self.client = OpenAI()
-            self.model = "gpt-4.1-mini"
+        self.manus_ai = manus_ai
     
     def generate_complete_ad_copy(self, product_data, platform='facebook', language='pt-BR'):
         """
@@ -36,33 +30,30 @@ class AdCopyGenerator:
             dict: Copy completa com múltiplas variações
         """
         
-        if self.use_openai:
-            return self._generate_with_openai(product_data, platform, language)
-        else:
-            return self._generate_with_native_ai(product_data, platform, language)
+        # Usar APENAS Manus AI para geração de copy
+        return self._generate_with_manus_ai(product_data, platform, language)
     
-    def _generate_with_openai(self, product_data, platform, language):
-        """Gera copy usando OpenAI"""
+    def _generate_with_manus_ai(self, product_data, platform, language):
+        """Gera copy usando Manus AI (ÚNICO provedor)"""
         try:
             prompt = self._build_prompt(product_data, platform, language)
             
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "Você é um copywriter profissional especializado em anúncios de alta conversão."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.8,
+            system_prompt = "Você é um copywriter profissional especializado em anúncios de alta conversão."
+            
+            content = self.manus_ai.generate_text(
+                prompt=prompt,
+                system_prompt=system_prompt,
                 max_tokens=2000
             )
             
-            content = response.choices[0].message.content
-            
-            # Parsear resposta
-            return self._parse_ai_response(content, product_data, platform)
+            if content:
+                # Parsear resposta
+                return self._parse_ai_response(content, product_data, platform)
+            else:
+                return self._generate_with_native_ai(product_data, platform, language)
             
         except Exception as e:
-            print(f"Erro ao gerar com OpenAI: {e}")
+            print(f"Erro ao gerar com Manus AI: {e}")
             return self._generate_with_native_ai(product_data, platform, language)
     
     def _generate_with_native_ai(self, product_data, platform, language):

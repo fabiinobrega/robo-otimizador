@@ -1,17 +1,21 @@
 """
-OPENAI CAMPAIGN CREATOR
-Criador de campanhas completas usando ChatGPT
+MANUS CAMPAIGN CREATOR
+Criador de campanhas completas usando EXCLUSIVAMENTE Manus AI
+OpenAI foi REMOVIDA conforme solicitação do usuário.
 """
 
 import os
 import json
-import requests
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
+# Importar Manus AI Service (ÚNICO provedor de IA)
+from services.manus_ai_service import manus_ai
+
+
 class OpenAICampaignCreator:
     """
-    Criador de campanhas baseado em ChatGPT
+    Criador de campanhas baseado em Manus AI (nome mantido para compatibilidade)
     
     Responsabilidades:
     - Criação de campanhas estruturadas
@@ -19,23 +23,16 @@ class OpenAICampaignCreator:
     - Criação de headlines e descrições
     - Argumentos de venda
     - Scripts e storytelling
+    
+    NOTA: Usa APENAS Manus AI. OpenAI foi removida.
     """
     
     def __init__(self):
-        self.api_key = os.getenv('OPENAI_API_KEY', '')
-        self.base_url = "https://api.openai.com/v1"
-        self.model = "gpt-4"
+        self.manus_ai = manus_ai
         
     def generate_campaign_copy(self, campaign_data: Dict[str, Any], platform: str = "google") -> Dict[str, Any]:
         """
-        Gerar copy completo para campanha
-        
-        Args:
-            campaign_data: Dados da campanha
-            platform: Plataforma (google, facebook, etc)
-            
-        Returns:
-            Copy completo
+        Gerar copy completo para campanha usando Manus AI
         """
         platform_specs = self._get_platform_specs(platform)
         
@@ -66,31 +63,31 @@ class OpenAICampaignCreator:
         """
         
         try:
-            response = self._call_gpt(prompt)
-            copy_variations = self._parse_json_response(response)
+            result = self.manus_ai.generate_json(
+                prompt=prompt,
+                system_prompt="Você é um copywriter e criador de conteúdo de marketing de classe mundial. Sempre responda em formato JSON estruturado e em português."
+            )
             
-            return {
-                "success": True,
-                "platform": platform,
-                "variations": copy_variations,
-                "generated_at": datetime.now().isoformat()
-            }
+            if result:
+                return {
+                    "success": True,
+                    "platform": platform,
+                    "variations": result,
+                    "generated_at": datetime.now().isoformat(),
+                    "engine": "Manus AI"
+                }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            pass
+            
+        return {
+            "success": False,
+            "error": "Manus AI temporariamente indisponível",
+            "engine": "Manus AI"
+        }
     
     def generate_headlines(self, product_data: Dict[str, Any], count: int = 10) -> Dict[str, Any]:
         """
-        Gerar headlines persuasivas
-        
-        Args:
-            product_data: Dados do produto
-            count: Quantidade de headlines
-            
-        Returns:
-            Headlines geradas
+        Gerar headlines persuasivas usando Manus AI
         """
         prompt = f"""
         Como copywriter especializado, crie {count} headlines persuasivas para:
@@ -117,30 +114,31 @@ class OpenAICampaignCreator:
         """
         
         try:
-            response = self._call_gpt(prompt)
-            headlines = self._parse_json_response(response)
+            result = self.manus_ai.generate_json(
+                prompt=prompt,
+                system_prompt="Você é um copywriter especializado em headlines de alta conversão."
+            )
             
-            return {
-                "success": True,
-                "headlines": headlines,
-                "count": len(headlines.get('headlines', [])) if isinstance(headlines, dict) else count,
-                "generated_at": datetime.now().isoformat()
-            }
+            if result:
+                return {
+                    "success": True,
+                    "headlines": result,
+                    "count": count,
+                    "generated_at": datetime.now().isoformat(),
+                    "engine": "Manus AI"
+                }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            pass
+            
+        return {
+            "success": False,
+            "error": "Manus AI temporariamente indisponível",
+            "engine": "Manus AI"
+        }
     
     def generate_sales_argument(self, product_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Gerar argumento de venda completo
-        
-        Args:
-            product_data: Dados do produto
-            
-        Returns:
-            Argumento de venda
+        Gerar argumento de venda completo usando Manus AI
         """
         prompt = f"""
         Como especialista em vendas, crie um argumento de venda completo para:
@@ -169,29 +167,30 @@ class OpenAICampaignCreator:
         """
         
         try:
-            response = self._call_gpt(prompt)
-            argument = self._parse_json_response(response)
+            result = self.manus_ai.generate_json(
+                prompt=prompt,
+                system_prompt="Você é um especialista em vendas e persuasão."
+            )
             
-            return {
-                "success": True,
-                "argument": argument,
-                "generated_at": datetime.now().isoformat()
-            }
+            if result:
+                return {
+                    "success": True,
+                    "argument": result,
+                    "generated_at": datetime.now().isoformat(),
+                    "engine": "Manus AI"
+                }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            pass
+            
+        return {
+            "success": False,
+            "error": "Manus AI temporariamente indisponível",
+            "engine": "Manus AI"
+        }
     
     def generate_storytelling(self, brand_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Gerar storytelling da marca
-        
-        Args:
-            brand_data: Dados da marca
-            
-        Returns:
-            Storytelling completo
+        Gerar storytelling da marca usando Manus AI
         """
         prompt = f"""
         Como especialista em storytelling, crie uma narrativa envolvente para:
@@ -221,29 +220,30 @@ class OpenAICampaignCreator:
         """
         
         try:
-            response = self._call_gpt(prompt)
-            storytelling = self._parse_json_response(response)
+            result = self.manus_ai.generate_json(
+                prompt=prompt,
+                system_prompt="Você é um especialista em storytelling e branding."
+            )
             
-            return {
-                "success": True,
-                "storytelling": storytelling,
-                "generated_at": datetime.now().isoformat()
-            }
+            if result:
+                return {
+                    "success": True,
+                    "storytelling": result,
+                    "generated_at": datetime.now().isoformat(),
+                    "engine": "Manus AI"
+                }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            pass
+            
+        return {
+            "success": False,
+            "error": "Manus AI temporariamente indisponível",
+            "engine": "Manus AI"
+        }
     
     def generate_video_script(self, video_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Gerar script de vídeo
-        
-        Args:
-            video_data: Dados do vídeo
-            
-        Returns:
-            Script completo
+        Gerar script de vídeo usando Manus AI
         """
         prompt = f"""
         Como roteirista de vídeos de marketing, crie um script para:
@@ -268,19 +268,26 @@ class OpenAICampaignCreator:
         """
         
         try:
-            response = self._call_gpt(prompt)
-            script = self._parse_json_response(response)
+            result = self.manus_ai.generate_json(
+                prompt=prompt,
+                system_prompt="Você é um roteirista especializado em vídeos de marketing."
+            )
             
-            return {
-                "success": True,
-                "script": script,
-                "generated_at": datetime.now().isoformat()
-            }
+            if result:
+                return {
+                    "success": True,
+                    "script": result,
+                    "generated_at": datetime.now().isoformat(),
+                    "engine": "Manus AI"
+                }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            pass
+            
+        return {
+            "success": False,
+            "error": "Manus AI temporariamente indisponível",
+            "engine": "Manus AI"
+        }
     
     def _get_platform_specs(self, platform: str) -> Dict[str, Any]:
         """Obter especificações da plataforma"""
@@ -306,58 +313,7 @@ class OpenAICampaignCreator:
         }
         
         return specs.get(platform, specs["google"])
-    
-    def _call_gpt(self, prompt: str, temperature: float = 0.8) -> str:
-        """Chamar API do ChatGPT"""
-        if not self.api_key:
-            return json.dumps({"error": "API key not configured"})
-        
-        try:
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
-            
-            data = {
-                "model": self.model,
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "Você é um copywriter e criador de conteúdo de marketing de classe mundial. Sempre responda em formato JSON estruturado e em português."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                "temperature": temperature
-            }
-            
-            response = requests.post(
-                f"{self.base_url}/chat/completions",
-                headers=headers,
-                json=data,
-                timeout=60
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                return result['choices'][0]['message']['content']
-            else:
-                return json.dumps({"error": f"API returned status {response.status_code}"})
-        except Exception as e:
-            return json.dumps({"error": str(e)})
-    
-    def _parse_json_response(self, response: str) -> Dict[str, Any]:
-        """Parse resposta JSON do GPT"""
-        try:
-            if "```json" in response:
-                json_str = response.split("```json")[1].split("```")[0].strip()
-            elif "```" in response:
-                json_str = response.split("```")[1].split("```")[0].strip()
-            else:
-                json_str = response.strip()
-            
-            return json.loads(json_str)
-        except:
-            return {"response": response}
+
+
+# Instância global para compatibilidade
+campaign_creator = OpenAICampaignCreator()

@@ -1,31 +1,20 @@
-"""AI Service - Serviço de IA com múltiplos backends
-Suporta: Manus AI (nativo), OpenAI API (fallback), Mock (último recurso)
+"""AI Service - Serviço de IA usando EXCLUSIVAMENTE Manus AI
+OpenAI foi REMOVIDA conforme solicitação do usuário.
+Todo trabalho de IA é realizado pelo Manus.
 """
 
 import os
 import json
 
-# Try to import OpenAI
-OPENAI_AVAILABLE = False
-openai_client = None
-try:
-    import openai
-    api_key = os.environ.get('OPENAI_API_KEY', '')
-    if api_key:
-        openai_client = openai.OpenAI(api_key=api_key)
-        OPENAI_AVAILABLE = True
-        print("✅ OpenAI API configurada com sucesso")
-except ImportError:
-    print("⚠️ OpenAI SDK não instalado")
-except Exception as e:
-    print(f"⚠️ Erro ao configurar OpenAI: {e}")
+# Importar Manus AI Service (ÚNICO provedor de IA)
+from services.manus_ai_service import manus_ai
 
 class OpenaiService:
-    """Classe wrapper para compatibilidade - Agora usa Manus AI"""
+    """Classe wrapper para compatibilidade - Usa APENAS Manus AI"""
     
     def __init__(self):
         """Inicializar serviço"""
-        pass
+        self.manus_ai = manus_ai
     
     def get_info(self):
         """Obter informações do serviço"""
@@ -33,22 +22,14 @@ class OpenaiService:
             "service": "ai_service.py",
             "class": "OpenaiService",
             "status": "active",
-            "engine": "Manus AI"
+            "engine": "Manus AI (ÚNICO)",
+            "openai_status": "REMOVIDA"
         }
-
-# Importar IA nativa (Manus AI)
-try:
-    from services.native_ai_engine import native_ai
-    NATIVE_AI_AVAILABLE = True
-    print("✅ Manus AI Engine inicializado com sucesso")
-except ImportError:
-    NATIVE_AI_AVAILABLE = False
-    print("⚠️ Manus AI Engine não disponível, usando fallback")
 
 
 def generate_ad_copy(product_info, platform="facebook", num_variants=5):
     """
-    Gera variações de copy para anúncios usando Manus AI
+    Gera variações de copy para anúncios usando APENAS Manus AI
     
     Args:
         product_info (dict): Informações do produto (title, price, benefits, etc.)
@@ -59,27 +40,45 @@ def generate_ad_copy(product_info, platform="facebook", num_variants=5):
         dict: Variantes geradas com headlines, descriptions e CTAs
     """
     
-    # Usar IA nativa (Manus AI)
-    if NATIVE_AI_AVAILABLE:
-        try:
-            return native_ai.generate_ad_copy(product_info, platform, num_variants)
-        except Exception as e:
-            print(f"Erro na Manus AI, usando fallback: {e}")
+    try:
+        # Usar Manus AI para geração
+        title = product_info.get('title') or product_info.get('name', 'Produto')
+        description = product_info.get('description', '')
+        target_audience = product_info.get('target_audience', 'público geral')
+        
+        prompt = f"""Crie {num_variants} variações de copy para anúncio do produto:
+        Produto: {title}
+        Descrição: {description}
+        Público-alvo: {target_audience}
+        Plataforma: {platform}
+        
+        Para cada variação, forneça:
+        - headline (máx 40 caracteres)
+        - description (máx 125 caracteres)
+        - cta (call to action)
+        - score (0-100)
+        - reasoning (motivo do score)
+        
+        Responda em JSON: {{"variants": [...]}}"""
+        
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é um copywriter especialista em anúncios de alta conversão."
+        )
+        
+        if result and 'variants' in result:
+            return result
+        
+    except Exception as e:
+        print(f"Erro ao gerar com Manus AI: {e}")
     
-    # Try OpenAI API as secondary fallback
-    if OPENAI_AVAILABLE and openai_client:
-        try:
-            return _generate_with_openai(product_info, num_variants)
-        except Exception as e:
-            print(f"Erro na OpenAI API, usando mock: {e}")
-    
-    # Final fallback: locally generated copy
-    return _generate_mock_copy(product_info, num_variants)
+    # Fallback: geração local
+    return _generate_local_copy(product_info, num_variants)
 
 
 def analyze_landing_page(url, html_content=None):
     """
-    Analisa uma landing page e extrai informações relevantes usando Manus AI
+    Analisa uma landing page usando APENAS Manus AI
     
     Args:
         url (str): URL da landing page
@@ -89,19 +88,35 @@ def analyze_landing_page(url, html_content=None):
         dict: Análise da página
     """
     
-    # Usar IA nativa (Manus AI)
-    if NATIVE_AI_AVAILABLE:
-        try:
-            return native_ai.analyze_landing_page(url, html_content)
-        except Exception as e:
-            print(f"Erro na Manus AI, usando fallback: {e}")
+    try:
+        prompt = f"""Analise a landing page: {url}
+        
+        Forneça:
+        1. Informações do produto (título, preço, categoria, público-alvo)
+        2. Benefícios identificados
+        3. Score de qualidade (0-100)
+        4. Insights sobre a página
+        5. Sugestões de melhoria
+        
+        Responda em JSON estruturado."""
+        
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é um especialista em análise de landing pages e conversão."
+        )
+        
+        if result:
+            return result
+            
+    except Exception as e:
+        print(f"Erro ao analisar com Manus AI: {e}")
     
-    return _generate_mock_analysis(url)
+    return _generate_local_analysis(url)
 
 
 def generate_targeting_suggestions(product_info, platform="facebook"):
     """
-    Gera sugestões de segmentação baseadas no produto usando Manus AI
+    Gera sugestões de segmentação usando APENAS Manus AI
     
     Args:
         product_info (dict): Informações do produto
@@ -111,19 +126,38 @@ def generate_targeting_suggestions(product_info, platform="facebook"):
         dict: Sugestões de segmentação
     """
     
-    # Usar IA nativa (Manus AI)
-    if NATIVE_AI_AVAILABLE:
-        try:
-            return native_ai.generate_targeting_suggestions(product_info, platform)
-        except Exception as e:
-            print(f"Erro na Manus AI, usando fallback: {e}")
+    try:
+        title = product_info.get('title') or product_info.get('name', 'Produto')
+        
+        prompt = f"""Gere sugestões de segmentação para o produto: {title}
+        Plataforma: {platform}
+        
+        Forneça:
+        1. Demographics (idade, gênero, localizações)
+        2. Interesses
+        3. Comportamentos
+        4. Públicos personalizados
+        5. Lookalike audience
+        
+        Responda em JSON estruturado."""
+        
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é um especialista em segmentação de anúncios digitais."
+        )
+        
+        if result:
+            return result
+            
+    except Exception as e:
+        print(f"Erro ao gerar segmentação com Manus AI: {e}")
     
-    return _generate_mock_targeting()
+    return _generate_local_targeting()
 
 
 def optimize_campaign_budget(campaign_data):
     """
-    Otimiza distribuição de orçamento entre campanhas usando Manus AI
+    Otimiza distribuição de orçamento usando APENAS Manus AI
     
     Args:
         campaign_data (list): Lista de campanhas com métricas
@@ -132,102 +166,79 @@ def optimize_campaign_budget(campaign_data):
         dict: Recomendações de redistribuição
     """
     
-    # Usar IA nativa (Manus AI)
-    if NATIVE_AI_AVAILABLE:
-        try:
-            return native_ai.optimize_campaign_budget(campaign_data)
-        except Exception as e:
-            print(f"Erro na Manus AI, usando fallback: {e}")
+    try:
+        prompt = f"""Analise as campanhas e otimize a distribuição de orçamento:
+        
+        Campanhas: {json.dumps(campaign_data, ensure_ascii=False)}
+        
+        Forneça recomendações de redistribuição para maximizar ROAS.
+        Responda em JSON com: recommendations, total_savings"""
+        
+        result = manus_ai.generate_json(
+            prompt=prompt,
+            system_prompt="Você é um especialista em otimização de orçamento de campanhas."
+        )
+        
+        if result:
+            return result
+            
+    except Exception as e:
+        print(f"Erro ao otimizar com Manus AI: {e}")
     
     return {"recommendations": [], "total_savings": 0}
 
 
 # ===== FUNÇÕES FALLBACK (Geração Local) =====
 
-def _generate_with_openai(product_info, num_variants=5):
-    """Gera copy usando OpenAI GPT API"""
-    title = product_info.get('title') or product_info.get('name', 'Produto')
-    description = product_info.get('description', '')
-    target_audience = product_info.get('target_audience', 'público geral')
+def _generate_local_copy(product_info, num_variants=5):
+    """Gera copy localmente quando Manus AI não está disponível"""
     
-    prompt = f"""Crie {num_variants} variações de copy para anúncio do produto:
-    Produto: {title}
-    Descrição: {description}
-    Público-alvo: {target_audience}
-    
-    Para cada variação, forneça:
-    - headline (máx 40 caracteres)
-    - description (máx 125 caracteres)
-    - cta (call to action)
-    - score (0-100)
-    - reasoning (motivo do score)
-    
-    Responda em JSON: {{"variants": [...]}}"""
-    
-    try:
-        response = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=1000
-        )
-        result = json.loads(response.choices[0].message.content)
-        return result
-    except Exception as e:
-        print(f"Erro ao processar resposta OpenAI: {e}")
-        raise
-
-def _generate_mock_copy(product_info, num_variants=5):
-    """Gera copy otimizado localmente quando Manus AI não está disponível"""
-    
-    # Aceitar tanto 'title' quanto 'name'
     title = product_info.get('title') or product_info.get('name', 'Produto Incrível')
     price = product_info.get('price', '99.90')
     description = product_info.get('description', '')
-    target_audience = product_info.get('target_audience', 'público geral')
     
     variants = [
         {
-            "headline": f"{title} - Oferta Especial! 🔥",
-            "description": f"{description[:100]}... Aproveite agora e ganhe desconto exclusivo!" if description else "Aproveite agora e ganhe desconto exclusivo. Entrega rápida e garantia total!",
+            "headline": f"{title} - Oferta Especial!",
+            "description": f"{description[:100]}... Aproveite agora!" if description else "Aproveite agora e ganhe desconto exclusivo!",
             "cta": "Comprar Agora",
             "score": 95,
             "reasoning": "Usa urgência e benefícios claros"
         },
         {
-            "headline": f"Transforme sua vida com {title}! ✨",
-            "description": "Milhares de clientes satisfeitos. Não perca esta oportunidade única!",
+            "headline": f"Transforme sua vida com {title}!",
+            "description": "Milhares de clientes satisfeitos. Não perca!",
             "cta": "Quero Aproveitar",
             "score": 92,
             "reasoning": "Apelo emocional + prova social"
         },
         {
             "headline": f"Última Chance: {title} com 30% OFF",
-            "description": "Estoque limitado! Garanta o seu antes que acabe.",
+            "description": "Estoque limitado! Garanta o seu.",
             "cta": "Garantir Desconto",
             "score": 90,
             "reasoning": "Escassez + desconto"
         },
         {
             "headline": f"{title} por apenas R$ {price}",
-            "description": "Qualidade premium, preço acessível. Parcele em até 12x sem juros!",
+            "description": "Qualidade premium, preço acessível. Parcele em 12x!",
             "cta": "Ver Oferta",
             "score": 88,
             "reasoning": "Foco no preço + parcelamento"
         },
         {
             "headline": f"Descubra o {title} que todos querem",
-            "description": "Produto mais vendido do mês! Entrega grátis para todo o Brasil.",
+            "description": "Produto mais vendido! Entrega grátis.",
             "cta": "Comprar",
             "score": 85,
-            "reasoning": "Prova social + benefício de entrega"
+            "reasoning": "Prova social + benefício"
         }
     ]
     
     return {"variants": variants[:num_variants]}
 
 
-def _generate_mock_analysis(url):
+def _generate_local_analysis(url):
     """Gera análise localmente"""
     
     return {
@@ -257,7 +268,7 @@ def _generate_mock_analysis(url):
     }
 
 
-def _generate_mock_targeting():
+def _generate_local_targeting():
     """Gera segmentação localmente"""
     
     return {
@@ -284,3 +295,7 @@ def _generate_mock_targeting():
             "percentage": 1
         }
     }
+
+
+# Instância global para compatibilidade
+openai_service = OpenaiService()

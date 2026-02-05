@@ -1,29 +1,4 @@
-"""
-OPENAI OPTIMIZATION ENGINE
-Motor de otimização usando ChatGPT para análise e recomendações
-"""
-
-import os
-import json
-import requests
-from typing import Dict, List, Optional, Any
-from datetime import datetime
-
-class OpenAIOptimizationEngine:
-    """
-    Motor de otimização baseado em ChatGPT
-    
-    Responsabilidades:
-    - Avaliação inteligente de campanhas
-    - Recomendações de performance
-    - Raciocínio avançado sobre dados
-    - Tomada de decisão estratégica
-    """
-    
-    def __init__(self):
-        self.api_key = os.getenv('OPENAI_API_KEY', '')
-        self.base_url = "https://api.openai.com/v1"
-        self.model = "gpt-4"
+"""\nMANUS OPTIMIZATION ENGINE\nMotor de otimização usando EXCLUSIVAMENTE Manus AI\nOpenAI foi REMOVIDA conforme solicitação do usuário.\n"""\n\nimport os\nimport json\nfrom typing import Dict, List, Optional, Any\nfrom datetime import datetime\n\n# Importar Manus AI Service (ÚNICO provedor de IA)\nfrom services.manus_ai_service import manus_ai\n\n\nclass OpenAIOptimizationEngine:\n    """\n    Motor de otimização baseado em Manus AI (nome mantido para compatibilidade)\n    \n    Responsabilidades:\n    - Avaliação inteligente de campanhas\n    - Recomendações de performance\n    - Raciocínio avançado sobre dados\n    - Tomada de decisão estratégica\n    \n    NOTA: Usa APENAS Manus AI. OpenAI foi removida.\n    """\n    \n    def __init__(self):\n        self.manus_ai = manus_ai
         
     def evaluate_campaign(self, campaign_data: Dict[str, Any]) -> Dict[str, Any]:
         """

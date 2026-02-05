@@ -1,6 +1,6 @@
 """
-Manus AI Service - Serviço de IA usando Manus Agent
-Substitui OpenAI para melhor performance e zero custo adicional
+Manus AI Service - Serviço de IA usando EXCLUSIVAMENTE Manus Agent
+OpenAI foi REMOVIDA. Todo trabalho de IA é feito pelo Manus.
 
 Autor: Manus AI Agent
 Data: 21/12/2024
@@ -17,14 +17,14 @@ logger = logging.getLogger(__name__)
 
 class ManusAIService:
     """
-    Serviço de IA usando Manus Agent
-    Substitui OpenAI com mesma interface mas melhor custo-benefício
+    Serviço de IA usando EXCLUSIVAMENTE Manus Agent
+    OpenAI foi REMOVIDA. Todo trabalho de IA é feito pelo Manus.
     """
     
     def __init__(self):
         """Inicializar serviço Manus AI"""
-        # Usar créditos do Manus IA (esta conta)
-        self.api_key = os.environ.get("MANUS_IA_API_KEY", os.environ.get("OPENAI_API_KEY", ""))
+        # Usar APENAS créditos do Manus IA (OpenAI REMOVIDA)
+        self.api_key = os.environ.get("MANUS_IA_API_KEY", "")
         self.base_url = "https://api.manus.im/v1"  # API do Manus
         self.model = "gpt-4.1-mini"  # Modelo padrão
         self.available = bool(self.api_key)

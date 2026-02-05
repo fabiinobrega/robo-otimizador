@@ -1,17 +1,21 @@
 """
-OPENAI STRATEGIC ENGINE
-Motor estratégico usando ChatGPT para decisões de marketing de alto nível
+MANUS STRATEGIC ENGINE
+Motor estratégico usando EXCLUSIVAMENTE Manus AI
+OpenAI foi REMOVIDA conforme solicitação do usuário.
 """
 
 import os
 import json
-import requests
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
+# Importar Manus AI Service (ÚNICO provedor de IA)
+from services.manus_ai_service import manus_ai
+
+
 class OpenAIStrategicEngine:
     """
-    Motor estratégico baseado em ChatGPT
+    Motor estratégico baseado em Manus AI (nome mantido para compatibilidade)
     
     Responsabilidades:
     - Análise de persona e público-alvo
@@ -20,12 +24,12 @@ class OpenAIStrategicEngine:
     - Planejamento de funis de venda
     - Estratégias de teste A/B
     - Otimização contínua
+    
+    NOTA: Usa APENAS Manus AI. OpenAI foi removida.
     """
     
     def __init__(self):
-        self.api_key = os.getenv('OPENAI_API_KEY', '')
-        self.base_url = "https://api.openai.com/v1"
-        self.model = "gpt-4"  # Usar GPT-4 para estratégia
+        self.manus_ai = manus_ai
         
     def analyze_persona(self, business_data: Dict[str, Any]) -> Dict[str, Any]:
         """

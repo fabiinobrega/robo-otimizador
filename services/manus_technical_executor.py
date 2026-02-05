@@ -1,7 +1,8 @@
 """
 Manus Technical Executor - Executor Técnico
-Manus EXECUTA tudo que OpenAI pensou
+Manus EXECUTA tudo que Manus AI pensou
 Cria campanhas, anúncios, pixel do Facebook, configura eventos
+NOTA: OpenAI foi REMOVIDA. Todo trabalho de IA é feito pelo Manus.
 """
 
 import os
@@ -14,8 +15,9 @@ logger = logging.getLogger(__name__)
 
 class ManusTechnicalExecutor:
     """
-    Executor técnico que EXECUTA tudo que OpenAI pensou
+    Executor técnico que EXECUTA tudo que Manus AI pensou
     Não pensa - apenas executa com precisão
+    NOTA: OpenAI foi REMOVIDA. Todo trabalho de IA é feito pelo Manus.
     """
     
     def __init__(self):
@@ -23,11 +25,11 @@ class ManusTechnicalExecutor:
     
     def execute_complete_campaign(self, strategy, copy, total_budget, duration_days, platform='facebook'):
         """
-        Executa campanha completa baseada na estratégia do OpenAI
+        Executa campanha completa baseada na estratégia do Manus AI
         
         Args:
-            strategy (dict): Estratégia criada pelo OpenAI
-            copy (dict): Copy criado pelo OpenAI
+            strategy (dict): Estratégia criada pelo Manus AI
+            copy (dict): Copy criado pelo Manus AI
             total_budget (float): Orçamento total
             duration_days (int): Duração em dias
             platform (str): Plataforma

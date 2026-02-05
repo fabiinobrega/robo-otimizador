@@ -23,9 +23,9 @@ class ManusNexoraDeepIntegration:
     """
     
     def __init__(self):
-        self.manus_api_key = os.getenv('OPENAI_API_KEY', '')
-        self.base_url = "https://api.openai.com/v1"
-        self.model = "gpt-4.1-mini"
+        # Usar Manus AI Service (ÚNICO provedor de IA - OpenAI removida)
+        from services.manus_ai_service import manus_ai
+        self.manus_ai = manus_ai
         
     def generate_complete_campaign(self, product_data: Dict[str, Any]) -> Dict[str, Any]:
         """
