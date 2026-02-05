@@ -171,7 +171,7 @@ class CreditsAlertService:
             # Criar tabela de notificações se não existir
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS notifications (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     type TEXT NOT NULL,
                     level TEXT NOT NULL,
                     message TEXT NOT NULL,
@@ -183,7 +183,7 @@ class CreditsAlertService:
             # Inserir notificação
             cursor.execute('''
                 INSERT INTO notifications (type, level, message, created_at)
-                VALUES (?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s)
             ''', (
                 'credits_alert',
                 alert_data['level'],
@@ -260,7 +260,7 @@ class CreditsAlertService:
             # Criar tabela se não existir
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS credits (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     user_id INTEGER DEFAULT 1,
                     balance INTEGER DEFAULT 999999999,
                     plan TEXT DEFAULT 'Unlimited',
@@ -272,9 +272,10 @@ class CreditsAlertService:
             
             # Definir créditos ilimitados
             cursor.execute('''
-                INSERT OR REPLACE INTO credits (id, balance, plan, unlimited, updated_at)
-                VALUES (1, 999999999, 'Unlimited ∞', 1, ?)
-            ''', (datetime.now().isoformat(),))
+                INSERT INTO credits (id, balance, plan, unlimited, updated_at)
+                VALUES (1, 999999999, 'Unlimited ∞', 1, %s)
+                ON CONFLICT (id) DO UPDATE SET balance = 999999999, plan = 'Unlimited ∞', unlimited = 1, updated_at = %s
+            ''', (datetime.now().isoformat(), datetime.now().isoformat()))
             
             conn.commit()
             conn.close()

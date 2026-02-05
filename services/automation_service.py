@@ -30,11 +30,11 @@ class AutomationService:
         db = self.get_db()
         
         try:
-            cursor = db.execute("""
+            cursor = db.execute(sql_param("""
                 INSERT INTO automation_rules 
                 (name, rule_type, conditions, actions, is_active, created_at)
                 VALUES (?, ?, ?, ?, ?, ?)
-            """, (
+            """), (
                 rule_data.get('name'),
                 rule_data.get('rule_type'),
                 rule_data.get('conditions'),
@@ -64,10 +64,10 @@ class AutomationService:
         executed = []
         
         try:
-            rules = db.execute("""
+            rules = db.execute(sql_param("""
                 SELECT * FROM automation_rules 
                 WHERE is_active = 1
-            """).fetchall()
+            """)).fetchall()
             
             for rule in rules:
                 rule_dict = dict(rule)
@@ -111,14 +111,14 @@ class AutomationService:
         
         try:
             # Buscar campanhas ativas com ROAS < 1
-            campaigns = db.execute("""
+            campaigns = db.execute(sql_param("""
                 SELECT c.id, c.name, m.roas, m.spend
                 FROM campaigns c
                 JOIN campaign_metrics m ON c.id = m.campaign_id
                 WHERE c.status = 'Active' 
                 AND m.roas < 1.0 
                 AND m.spend > 50
-            """).fetchall()
+            """)).fetchall()
             
             for campaign in campaigns:
                 db.execute(sql_param("""
@@ -128,10 +128,10 @@ class AutomationService:
                 """), (datetime.now().isoformat(), campaign['id']))
                 
                 # Registrar log
-                db.execute("""
+                db.execute(sql_param("""
                     INSERT INTO activity_logs (action, details)
                     VALUES (?, ?)
-                """, (
+                """), (
                     '[Automação] Campanha Pausada',
                     f"Campanha '{campaign['name']}' pausada automaticamente por baixo ROAS"
                 ))
@@ -153,14 +153,14 @@ class AutomationService:
         
         try:
             # Buscar campanhas com alto ROAS
-            campaigns = db.execute("""
+            campaigns = db.execute(sql_param("""
                 SELECT c.id, c.name, c.budget, m.roas, m.conversions
                 FROM campaigns c
                 JOIN campaign_metrics m ON c.id = m.campaign_id
                 WHERE c.status = 'Active' 
                 AND m.roas > 3.0 
                 AND m.conversions > 10
-            """).fetchall()
+            """)).fetchall()
             
             for campaign in campaigns:
                 new_budget = campaign['budget'] * 1.15  # Aumentar 15%
@@ -172,10 +172,10 @@ class AutomationService:
                 """), (new_budget, datetime.now().isoformat(), campaign['id']))
                 
                 # Registrar log
-                db.execute("""
+                db.execute(sql_param("""
                     INSERT INTO activity_logs (action, details)
                     VALUES (?, ?)
-                """, (
+                """), (
                     '[Automação] Budget Aumentado',
                     f"Budget da campanha '{campaign['name']}' aumentado de R$ {campaign['budget']:.2f} para R$ {new_budget:.2f}"
                 ))
@@ -197,13 +197,13 @@ class AutomationService:
         
         try:
             # Buscar campanhas pausadas recentemente
-            campaigns = db.execute("""
+            campaigns = db.execute(sql_param("""
                 SELECT c.id, c.name, m.roas
                 FROM campaigns c
                 JOIN campaign_metrics m ON c.id = m.campaign_id
                 WHERE c.status = 'Paused' 
                 AND m.roas > 2.0
-            """).fetchall()
+            """)).fetchall()
             
             for campaign in campaigns:
                 db.execute(sql_param("""
@@ -213,10 +213,10 @@ class AutomationService:
                 """), (datetime.now().isoformat(), campaign['id']))
                 
                 # Registrar log
-                db.execute("""
+                db.execute(sql_param("""
                     INSERT INTO activity_logs (action, details)
                     VALUES (?, ?)
-                """, (
+                """), (
                     '[Automação] Campanha Reativada',
                     f"Campanha '{campaign['name']}' reativada automaticamente por melhora no ROAS"
                 ))
@@ -238,20 +238,20 @@ class AutomationService:
         
         try:
             # Buscar campanhas com gasto > 80% do budget
-            campaigns = db.execute("""
+            campaigns = db.execute(sql_param("""
                 SELECT c.id, c.name, c.budget, m.spend
                 FROM campaigns c
                 JOIN campaign_metrics m ON c.id = m.campaign_id
                 WHERE c.status = 'Active' 
                 AND m.spend > (c.budget * 0.8)
-            """).fetchall()
+            """)).fetchall()
             
             for campaign in campaigns:
                 # Registrar alerta
-                db.execute("""
+                db.execute(sql_param("""
                     INSERT INTO activity_logs (action, details)
                     VALUES (?, ?)
-                """, (
+                """), (
                     '[Alerta] Gasto Alto',
                     f"Campanha '{campaign['name']}' já gastou {(campaign['spend']/campaign['budget']*100):.1f}% do budget"
                 ))

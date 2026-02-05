@@ -269,7 +269,7 @@ def log_activity(action, details=""):
     db = get_db()
     try:
         db.execute(
-            "INSERT INTO activity_logs (action, details) VALUES (?, ?)",
+            sql_param("INSERT INTO activity_logs (action, details) VALUES (?, ?)"),
             (action, details),
         )
         db_commit()
@@ -1298,7 +1298,7 @@ def api_upload_media():
                 filetype = file.mimetype.split("/")[0] if file.mimetype else "unknown"
 
                 db.execute(
-                    "INSERT INTO media_files (filename, url, filetype) VALUES (?, ?, ?)",
+                    sql_param("INSERT INTO media_files (filename, url, filetype) VALUES (?, ?, ?)"),
                     (filename, file_url, filetype),
                 )
                 
@@ -1449,7 +1449,7 @@ def api_velyra_chat_with_media():
         # Save message to database
         db = get_db()
         db.execute(
-            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
+            sql_param("INSERT INTO chat_messages (sender, message) VALUES (?, ?)"),
             ("user", full_message)
         )
         db_commit()
@@ -1475,7 +1475,7 @@ def api_velyra_chat_with_media():
         
         # Save response
         db.execute(
-            "INSERT INTO chat_messages (sender, message) VALUES (?, ?)",
+            sql_param("INSERT INTO chat_messages (sender, message) VALUES (?, ?)"),
             ("operator", response)
         )
         db_commit()
@@ -1522,10 +1522,10 @@ def api_ab_test_create():
     
     try:
         db = get_db()
-        cursor = db.execute("""
+        cursor = db.execute(sql_param("""
             INSERT INTO ab_tests (campaign_id, test_name, test_type, status)
             VALUES (?, ?, ?, ?)
-        """, (
+        """), (
             campaign_id,
             test_name,
             test_type,
@@ -1540,10 +1540,10 @@ def api_ab_test_create():
         )
         
         for i, variation in enumerate(variations):
-            db.execute("""
+            db.execute(sql_param("""
                 INSERT INTO ab_test_variations (test_id, variation_name, content_json)
                 VALUES (?, ?, ?)
-            """, (
+            """), (
                 test_id,
                 f"Variação {chr(65 + i)}",
                 json.dumps(variation)
@@ -1698,10 +1698,10 @@ def api_report_generate():
         }
         
         # Salvar relatório
-        cursor = db.execute("""
+        cursor = db.execute(sql_param("""
             INSERT INTO reports (report_name, report_type, date_range_start, date_range_end, data_json)
             VALUES (?, ?, ?, ?, ?)
-        """, (
+        """), (
             data.get("report_name", "Relatório Personalizado"),
             data.get("report_type", "performance"),
             data.get("date_range_start"),
@@ -1878,10 +1878,10 @@ def api_ad_publish():
     
     try:
         # Criar campanha no banco
-        cursor = db.execute("""
+        cursor = db.execute(sql_param("""
             INSERT INTO campaigns (name, platform, status, budget, objective)
             VALUES (?, ?, ?, ?, ?)
-        """, (
+        """), (
             f"Anúncio Perfeito - {config.get('platform', 'Facebook')}",
             config.get("platform", "facebook"),
             "active" if not config.get("useSandbox") else "draft",
@@ -1891,10 +1891,10 @@ def api_ad_publish():
         campaign_id = cursor.lastrowid
         
         # Log da ação
-        db.execute("""
+        db.execute(sql_param("""
             INSERT INTO activity_logs (action, details, timestamp)
             VALUES (?, ?, ?)
-        """, (
+        """), (
             "campaign_published",
             f"Campanha #{campaign_id} publicada via Gerar Anúncio Perfeito",
             datetime.now().isoformat()
@@ -2047,10 +2047,10 @@ def webhooks_manus():
     
     # Log do webhook
     db = get_db()
-    db.execute("""
+    db.execute(sql_param("""
         INSERT INTO manus_sync_logs (sync_type, pushed, pulled, errors, synced_at)
         VALUES (?, 0, 1, '[]', ?)
-    """, (f'webhook_{event}', datetime.now().isoformat()))
+    """), (f'webhook_{event}', datetime.now().isoformat()))
     db_commit()
     
     return jsonify({'success': True, 'received': True})

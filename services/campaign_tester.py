@@ -101,11 +101,11 @@ def handle_errors(func):
             'test_mode': True
         }
         
-        c.execute('''
+        c.execute(sql_param('''
             INSERT INTO campaigns (name, status, platform, objective, daily_budget, 
                                  target_audience, creatives, created_at, metadata)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
+        '''), (
             test_campaign['name'],
             test_campaign['status'],
             test_campaign['platform'],
@@ -125,10 +125,10 @@ def handle_errors(func):
         campaign_id = c.lastrowid
         
         # Criar registro de aquecimento
-        c.execute('''
+        c.execute(sql_param('''
             INSERT INTO campaign_warming (campaign_id, stage, started_at, status)
             VALUES (?, ?, ?, ?)
-        ''', (campaign_id, 1, datetime.now().isoformat(), 'active'))
+        '''), (campaign_id, 1, datetime.now().isoformat(), 'active'))
         
         conn.commit()
         conn.close()
@@ -158,11 +158,11 @@ def handle_errors(func):
             return {'success': False, 'error': 'Campanha não encontrada'}
         
         # Buscar métricas atuais
-        c.execute('''
+        c.execute(sql_param('''
             SELECT * FROM campaign_metrics 
             WHERE campaign_id = ? 
             ORDER BY timestamp DESC LIMIT 1
-        ''', (campaign_id,))
+        '''), (campaign_id,))
         metrics = c.fetchone()
         
         # Determinar estágio atual
@@ -283,11 +283,11 @@ def handle_errors(func):
         
         # Registrar ajustes
         for adj in adjustments:
-            c.execute('''
+            c.execute(sql_param('''
                 INSERT INTO campaign_adjustments 
                 (campaign_id, adjustment_type, action, reason, timestamp)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (
+            '''), (
                 campaign_id,
                 adj['type'],
                 adj['action'],
@@ -317,17 +317,17 @@ def handle_errors(func):
                  (json.dumps(metadata), campaign_id))
         
         # Finalizar estágio anterior
-        c.execute('''
+        c.execute(sql_param('''
             UPDATE campaign_warming 
             SET status = 'completed', completed_at = ?
             WHERE campaign_id = ? AND stage = ?
-        ''', (datetime.now().isoformat(), campaign_id, new_stage - 1))
+        '''), (datetime.now().isoformat(), campaign_id, new_stage - 1))
         
         # Criar novo estágio
-        c.execute('''
+        c.execute(sql_param('''
             INSERT INTO campaign_warming (campaign_id, stage, started_at, status)
             VALUES (?, ?, ?, ?)
-        ''', (campaign_id, new_stage, datetime.now().isoformat(), 'active'))
+        '''), (campaign_id, new_stage, datetime.now().isoformat(), 'active'))
         
         conn.commit()
         conn.close()
@@ -349,19 +349,19 @@ def handle_errors(func):
         campaign = c.fetchone()
         
         # Buscar métricas
-        c.execute('''
+        c.execute(sql_param('''
             SELECT * FROM campaign_metrics 
             WHERE campaign_id = ? 
             ORDER BY timestamp DESC LIMIT 1
-        ''', (campaign_id,))
+        '''), (campaign_id,))
         metrics = c.fetchone()
         
         # Buscar ajustes recentes
-        c.execute('''
+        c.execute(sql_param('''
             SELECT * FROM campaign_adjustments 
             WHERE campaign_id = ? 
             ORDER BY timestamp DESC LIMIT 5
-        ''', (campaign_id,))
+        '''), (campaign_id,))
         recent_adjustments = c.fetchall()
         
         conn.close()
@@ -443,19 +443,19 @@ def handle_errors(func):
             return {'success': False, 'error': 'Campanha não encontrada'}
         
         # Buscar histórico de aquecimento
-        c.execute('''
+        c.execute(sql_param('''
             SELECT * FROM campaign_warming 
             WHERE campaign_id = ? 
             ORDER BY stage ASC
-        ''', (campaign_id,))
+        '''), (campaign_id,))
         warming_history = c.fetchall()
         
         # Buscar todos os ajustes
-        c.execute('''
+        c.execute(sql_param('''
             SELECT * FROM campaign_adjustments 
             WHERE campaign_id = ? 
             ORDER BY timestamp DESC
-        ''', (campaign_id,))
+        '''), (campaign_id,))
         all_adjustments = c.fetchall()
         
         conn.close()
@@ -502,18 +502,18 @@ def handle_errors(func):
                  ('paused', campaign_id))
         
         # Finalizar aquecimento ativo
-        c.execute('''
+        c.execute(sql_param('''
             UPDATE campaign_warming 
             SET status = 'stopped', completed_at = ?
             WHERE campaign_id = ? AND status = 'active'
-        ''', (datetime.now().isoformat(), campaign_id))
+        '''), (datetime.now().isoformat(), campaign_id))
         
         # Registrar motivo
-        c.execute('''
+        c.execute(sql_param('''
             INSERT INTO campaign_adjustments 
             (campaign_id, adjustment_type, action, reason, timestamp)
             VALUES (?, ?, ?, ?, ?)
-        ''', (
+        '''), (
             campaign_id,
             'test',
             'stopped',
@@ -541,9 +541,9 @@ def create_warming_tables():
     c = conn.cursor()
     
     # Tabela de aquecimento
-    c.execute('''
+    c.execute(sql_param('''
         CREATE TABLE IF NOT EXISTS campaign_warming (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             campaign_id INTEGER NOT NULL,
             stage INTEGER NOT NULL,
             started_at TEXT NOT NULL,
@@ -551,12 +551,12 @@ def create_warming_tables():
             status TEXT DEFAULT 'active',
             FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
         )
-    ''')
+    '''))
     
     # Tabela de ajustes
-    c.execute('''
+    c.execute(sql_param('''
         CREATE TABLE IF NOT EXISTS campaign_adjustments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             campaign_id INTEGER NOT NULL,
             adjustment_type TEXT NOT NULL,
             action TEXT NOT NULL,
@@ -564,7 +564,7 @@ def create_warming_tables():
             timestamp TEXT NOT NULL,
             FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
         )
-    ''')
+    '''))
     
     conn.commit()
     conn.close()
